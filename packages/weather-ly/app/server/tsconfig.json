@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "lib": ["esnext", "es5", "es6", "es7", "es2015", "es2017", "dom", "ES2017.Object", "ESNext.AsyncIterable"],
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "outDir": "dist",
+    "paths": {
+      "common/*": ["../../../common/*"]
+    },
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": false,
+    "target": "es6",
+    "typeRoots": [
+      "./typings/",
+      "./node_modules/@types"
+    ]
+  },
+  "include": ["**/*"],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

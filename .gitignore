@@ -1,0 +1,26 @@
+# Logs
+logs
+log/
+*.log
+
+# Dependency directory
+node_modules
+
+# Jest Coverage report directory
+coverage
+*.xml
+
+#IDEs and editors
+
+## VSCode ##
+.vscode
+
+### OSX ###
+*.DS_Store
+
+packages/**/.env
+
+.eslintcache
+
+# Build files
+dist

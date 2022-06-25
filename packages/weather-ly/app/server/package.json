@@ -1,0 +1,33 @@
+{
+  "name": "weather-ly-server",
+  "version": "1.0.0",
+  "description": "Server running the weather.ly app",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --ext=jsx,ts,tsx src",
+    "start": "ts-node -r tsconfig-paths/register --project tsconfig.json index.ts",
+    "test:u": "jest --config jest.config.json",
+    "test:i": "jest --config jest.config.i.json --passWithNoTests",
+    "test:a": "jest --config jest.config.a.json --passWithNoTests",
+    "test:all": "npm run test:u & npm run test:i & nom run test:a"
+  },
+  "author": "Mark P Thomas",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-node": "^10.8.1",
+    "tsconfig-paths": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.2",
+    "@types/node": "^18.0.0",
+    "chai": "^4.3.6",
+    "jest": "^28.1.1",
+    "nodemon": "^2.0.16",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.4"
+  }
+}
