@@ -14,18 +14,26 @@ default:
 	@echo "\tmake install_deps       # Installs all node dependencies required for project"
 	@echo "\tmake delete_deps        # Deletes all node dependencies required for project"
 	@echo ""
+	@echo "=== Containers ==="
+	@echo ""
 	@echo "=== Databases ==="
-	@echo ""
-	@echo "=== Services ==="
-	@echo ""
-	@echo "=== Images ==="
 	@echo ""
 	@echo "=== Builds ==="
 	@echo "\tmake build_frontends    # Builds the frontend of all apps"
 	@echo "\tmake build_weather_ly   # Builds the frontend to the weather.ly app"
+	@echo ""
+	@echo "=== Services ==="
 
+# Project
+init: init_setup init_start_project
 
+init_setup: delete_envs setup_envs install_deps
 
+init_start_project: build_frontends
+
+clear_project: delete_deps delete_envs
+
+# Files
 setup_envs:
 	@echo "Generating .env files from .env.example files..."
 	find ./packages -name ".env.example" -exec dirname {} \; | exargs -t -I % cp -n %/.env.example %/.env
@@ -46,16 +54,15 @@ delete_deps:
 	@echo "Deleting all dependencies from project..."
 	find . -type d -name 'node_modules' -prune -exec rm -Rf '{}' +
 
+# Containers
+
+# Databases
+
+# Builds
 build_weather_ly:
 	@echo "Building weather.ly..."
 	cd ./packages/app/ui; yarn build
 
 build_frontends: build_weather_ly
 
-init: init_setup init_start_project
-
-init_setup: delete_envs setup_envs install_deps
-
-init_start_project: build_frontends
-
-clear_project: delete_deps delete_envs
+# Services
