@@ -21,8 +21,9 @@ default:
 	@echo "=== Images ==="
 	@echo ""
 	@echo "=== Builds ==="
-	@echo "\tmake build_weather_ly   # Builds the frontend to the weather.ly app"
 	@echo "\tmake build_frontends    # Builds the frontend of all apps"
+	@echo "\tmake build_weather_ly   # Builds the frontend to the weather.ly app"
+
 
 
 setup_envs:
