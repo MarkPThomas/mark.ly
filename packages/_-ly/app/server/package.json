@@ -6,26 +6,24 @@
     "build": "tsc",
     "lint": "eslint --ext=jsx,ts,tsx src",
     "start": "ts-node -r tsconfig-paths/register --project tsconfig.json index.ts",
+    "test": "npm run test:u & npm run test:i & npm run test:a",
     "test:u": "jest --config jest.config.json",
     "test:i": "jest --config jest.config.i.json --passWithNoTests",
-    "test:a": "jest --config jest.config.a.json --passWithNoTests",
-    "test:all": "npm run test:u & npm run test:i & nom run test:a"
+    "test:a": "jest --config jest.config.a.json --passWithNoTests"
   },
-  "author": "Mark P Thomas",
+  "author": "Mark P Thomas <markporterthomas@gmail.com> (https://github.com/MarkPThomas)",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "express": "^4.18.1",
     "ts-node": "^10.8.1",
     "tsconfig-paths": "^4.0.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.2",
     "@types/node": "^18.0.0",
-    "@types/react": "^18.0.14",
-    "@types/react-dom": "^18.0.5",
     "chai": "^4.3.6",
     "jest": "^28.1.1",
     "nodemon": "^2.0.16",

@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/MarkPThomas/mark.ly.git"
   },
-  "author": "Mark P Thomas",
+  "author": "Mark P Thomas <markporterthomas@gmail.com> (https://github.com/MarkPThomas)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/MarkPThomas/mark.ly/issues"

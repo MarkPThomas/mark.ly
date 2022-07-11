@@ -1,0 +1,7 @@
+{
+  "watch": ["."],
+  "ext": "ts,js,tsx",
+  "ignore": ["**/*.test.ts", "build"],
+  "exec": "ts-node -r tsconfig-paths/registered --project tsconfig.json index.ts"
+  'run-s build:server start:server'
+}
