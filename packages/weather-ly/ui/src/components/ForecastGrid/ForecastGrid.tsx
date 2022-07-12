@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Point } from '../../../../server/api/forecast'
 
-export const Forecast = (props) => {
+export const ForecastGrid = (props) => {
   const [forecast, setForecast] = useState({});
 
   useEffect(() => {
-    Point.getForecast({ latitude: 39.5883597956832, longitude: -105.6434294488281 })
+    Point.getForecastGridData({ latitude: 39.5883597956832, longitude: -105.6434294488281 })
       .then(result => setForecast(result))
       .catch((err) => {
         console.log('Error!', err);
