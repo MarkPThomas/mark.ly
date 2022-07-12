@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Point, GridPoint } from '../../../../server/api/forecast'
 
 export const Forecast = (props) => {
-  const [forecast, setForecast] = useState('');
+  const [forecast, setForecast] = useState({});
 
   useEffect(() => {
     Point.getForecast({ latitude: 39.5883597956832, longitude: -105.6434294488281 })

@@ -1,1 +1,1 @@
-export { ICoord, IGrid } from './location.interfaces'
+export * from './NOAA';
