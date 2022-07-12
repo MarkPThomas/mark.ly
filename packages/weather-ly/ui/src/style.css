@@ -7,7 +7,49 @@ html {
   margin: 0;
   padding: .5em;
   background-color: #ddd;
-  color: red;
+  color: black;
   background-image: linear-gradient(to bottom, #eee, #999);
   background-repeat: no-repeat;
+}
+
+.forecast-carousel {
+  display: flex;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 9pt;
+  margin: 10px 0;
+}
+
+.forecast-tile {
+  text-align: center;
+  align-items: stretch;
+  width: 124px;
+  padding: 0 19px;
+}
+
+.forecast-tile>div {
+  width: 86px;
+}
+
+.forecast-tile>p {
+  margin: 0 0 10px;
+}
+
+.forecast-title {
+  font-weight: bolder;
+  color: black;
+}
+
+.forecast-snippet {}
+
+.forecast-temp {
+  font-weight: bold;
+  align-self: flex-end;
+}
+
+.temp-low {
+  color: #15a3e0;
+}
+
+.temp-high {
+  color: #ef3725;
 }
