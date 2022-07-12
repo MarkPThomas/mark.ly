@@ -11,7 +11,9 @@ export class App extends React.Component {
     return (
       <>
         <div>
-          <Button message="Click Me!" />
+          <Button message="Click For Grid Data!" />
+          <Button message="Click For Forecast!" />
+          <Button message="Click For Hourly Forecast!" />
           <Forecast />
         </div>
       </>
