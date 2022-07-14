@@ -1,8 +1,6 @@
 export interface IGeometry {
-  "type": string,
+  "type": string, // Polygon
   "coordinates": [
-    [
-      [number, number]
-    ]
+    [number, number][]
   ]
 }

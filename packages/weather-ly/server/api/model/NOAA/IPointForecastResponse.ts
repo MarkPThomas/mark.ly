@@ -3,7 +3,7 @@ export interface IPointForecastResponse {
   "id": string,
   "type": string,
   "geometry": {
-    "type": string,
+    "type": string, // Point
     "coordinates": [number, number]
   },
   "properties": {
