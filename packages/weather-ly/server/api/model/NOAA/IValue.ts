@@ -1,4 +1,4 @@
-export interface IValueSimple {
+export interface IValue {
   "validTime": string,
   "value": number
 }

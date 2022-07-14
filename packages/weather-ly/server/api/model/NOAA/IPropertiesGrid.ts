@@ -1,6 +1,6 @@
 import { Intensity } from "./enums";
 import { IPropertiesMeta } from "./IPropertiesMeta";
-import { IValueSimple } from "./IValueSimple";
+import { IValue } from "./IValue";
 
 export interface IPropertiesGrid extends IPropertiesMeta {
   "@id": string,
@@ -11,51 +11,51 @@ export interface IPropertiesGrid extends IPropertiesMeta {
   "gridY": string,
   "temperature": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "dewpoint": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "maxTemperature": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "minTemperature": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "relativeHumidity": {
     "uom": string, // "wmoUnit:percent",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "apparentTemperature": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "heatIndex": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "windChill": {
     "uom": string, // "wmoUnit:degC",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "skyCover": {
     "uom": string, // "wmoUnit:percent",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "windDirection": {
     "uom": string, // "wmoUnit:degree_(angle)",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "windSpeed": {
     "uom": string, // "wmoUnit:km_h-1",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "windGust": {
     "uom": string, // "wmoUnit:km_h-1",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "weather": {
     "values": [{
@@ -74,46 +74,46 @@ export interface IPropertiesGrid extends IPropertiesMeta {
   },
   "probabilityOfPrecipitation": {
     "uom": string, // "wmoUnit:percent",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "quantitativePrecipitation": {},
   "iceAccumulation": {
     "uom": string, // "wmoUnit:mm",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "snowfallAmount": {
     "uom": string, // "wmoUnit:mm",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "snowLevel": {
     "uom": string, // "wmoUnit:m",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "ceilingHeight": {
     "uom": string, // "wmoUnit:m",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "visibility": {
     "uom": string, // "wmoUnit:m",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "transportWindSpeed": {
     "uom": string, // "wmoUnit:km_h-1",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "transportWindDirection": {
     "uom": string, // "wmoUnit:degree_(angle)",
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "mixingHeight": {
     "uom": string, // "wmoUnit:m",
-    "values": [IValueSimple]
+    "values": [IValue]
   },
   "hainesIndex": {
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "lightningActivityLevel": {
-    "values": [IValueSimple]
+    "values": IValue[]
   },
   "twentyFootWindSpeed": {
     "values": []
