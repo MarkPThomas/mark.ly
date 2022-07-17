@@ -1,2 +1,2 @@
-# mark.ly
-Personal website app and supporting app projects.
+# Weather.ly
+App that provides weather-related functionality by interfacing with APIs such as the NOAA endpoint.
