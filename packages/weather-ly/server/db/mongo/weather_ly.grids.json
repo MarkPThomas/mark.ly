@@ -1,0 +1,31 @@
+[
+  {
+    "gridId": "BOT",
+    "gridX": 39,
+    "gridY": 55,
+    "coordinates": []
+  },
+  {
+    "gridId": "BOU",
+    "gridX": 39,
+    "gridY": 55,
+    "coordinates": [
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      },
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      },
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      },
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      }
+    ]
+  }
+]
