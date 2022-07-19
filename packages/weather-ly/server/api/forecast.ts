@@ -7,7 +7,8 @@ import {
   IForecastResponse,
   Coordinate,
   Grid,
-  IGeometry
+  IGeometry,
+  IElevation
 } from './model';
 
 class GridCache {
@@ -39,7 +40,7 @@ class GridCache {
     return index;
   }
 
-  static updateCache(grid: IGrid, geometry: IGeometry) {
+  static updateCache(grid: IGrid, geometry: IGeometry, elevation: IElevation) {
     console.log('Updating cache...');
     const gridIndex = GridCache.getIndex(grid);
     console.log(`Grid cached at index ${gridIndex}`);
@@ -61,7 +62,7 @@ export class GridPoint {
     console.log('Fetching Grid URL for grid data:', GridPoint.getEndpoint(grid));
     const result = await Requests.get<IForecastGridResponse>(`${GridPoint.getEndpoint(grid)}`);
     if (updateCache) {
-      GridCache.updateCache(grid, result.geometry);
+      GridCache.updateCache(grid, result.geometry, result.properties.elevation);
     }
     return result;
   }
@@ -70,7 +71,7 @@ export class GridPoint {
     console.log('Fetching Grid URL for forecast:', GridPoint.getEndpoint(grid));
     const result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast`);
     if (updateCache) {
-      GridCache.updateCache(grid, result.geometry);
+      GridCache.updateCache(grid, result.geometry, result.properties.elevation);
     }
     return result;
   }
@@ -79,7 +80,7 @@ export class GridPoint {
     console.log('Fetching Grid URL for hourly forecast:', GridPoint.getEndpoint(grid));
     const result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast/hourly`);
     if (updateCache) {
-      GridCache.updateCache(grid, result.geometry);
+      GridCache.updateCache(grid, result.geometry, result.properties.elevation);
     }
     return result;
   }
@@ -128,7 +129,8 @@ export class Point {
     return {
       gridId: result.properties.gridId,
       gridX: result.properties.gridX,
-      gridY: result.properties.gridY
+      gridY: result.properties.gridY,
+      elevation: undefined
     };
   };
 }

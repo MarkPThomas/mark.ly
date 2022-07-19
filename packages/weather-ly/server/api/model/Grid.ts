@@ -1,6 +1,13 @@
-import { IGrid } from './NOAA';
 import { ICoordinate } from './Coordinate';
 import { IBounds, Bounds } from './Bounds';
+import { IElevation } from './NOAA';
+
+export interface IGrid {
+  gridId: string,
+  gridX: number,
+  gridY: number,
+  elevation: IElevation
+}
 
 export class Grid implements IGrid {
   private _office: string;
@@ -16,12 +23,22 @@ export class Grid implements IGrid {
     return this._gridY;
   }
 
+  private _elevation: IElevation;
+  public get elevation() {
+    return this._elevation;
+  }
+
   private _bounds: IBounds;
 
-  constructor(grid: IGrid, boundary: ICoordinate[] = []) {
+  constructor(
+    grid: IGrid,
+    boundary: ICoordinate[] = [],
+    elevation?: IElevation
+  ) {
     this._office = grid.gridId;
     this._gridX = grid.gridX;
     this._gridY = grid.gridY;
+    this._elevation = grid.elevation ?? elevation;
     this._bounds = new Bounds();
     this._bounds.addCoords(boundary);
   }
