@@ -1,0 +1,1 @@
+// GridPoint.getForecast({ office: 'BOU', gridX: 39, gridY: 55 })

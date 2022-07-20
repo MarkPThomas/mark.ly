@@ -1,0 +1,29 @@
+[
+  {
+    "gridId": "BOU",
+    "gridX": 39,
+    "gridY": 55,
+    "elevation": {
+      "unitCode": "wmoUnit:m",
+      "value": 0
+    },
+    "coordinates": [
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      },
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      },
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      },
+      {
+        "latitude": 39.0,
+        "longitude": -105.0
+      }
+    ]
+  }
+]

@@ -1,0 +1,211 @@
+[
+  {
+    "name": "Desert",
+    "groupId": 1,
+    "points": [
+      {
+        "pointId": 8,
+        "name": "Indian Creek",
+        "latitude": 38.02520880653333,
+        "longitude": -109.53941773096282,
+        "gridId": ""
+      },
+      {
+        "pointId": 9,
+        "name": "Canyonlands National Park",
+        "latitude": 38.31364599165795,
+        "longitude": -109.85667228698729,
+        "gridId": ""
+      },
+      {
+        "pointId": 10,
+        "name": "Arches National Park",
+        "latitude": 38.70391142341995,
+        "longitude": -109.56324129476073,
+        "gridId": ""
+      },
+      {
+        "pointId": 11,
+        "name": "Castle Valley",
+        "latitude": 38.651399423709364,
+        "longitude": -109.36782360076903,
+        "gridId": ""
+      },
+      {
+        "pointId": 12,
+        "name": "Fisher Towers",
+        "latitude": 38.721344951529915,
+        "longitude": -109.2970132827759,
+        "gridId": ""
+      },
+      {
+        "pointId": 13,
+        "name": "Colorado National Monument",
+        "latitude": 39.032014392349595,
+        "longitude": -108.64900188404135,
+        "gridId": ""
+      },
+      {
+        "pointId": 14,
+        "name": "Valley of the Gods",
+        "latitude": 37.29133062148915,
+        "longitude": -109.83611583709714,
+        "gridId": ""
+      }
+    ]
+  },
+  {
+    "name": "14ers",
+    "groupId": 2,
+    "points": [
+      {
+        "pointId": 20,
+        "name": "Mount Rainier",
+        "latitude": 46.864885961378874,
+        "longitude": -121.77520751953125,
+        "gridId": ""
+      }
+    ]
+  },
+  {
+    "name": "CO 14ers",
+    "groupId": 3,
+    "points": [
+      {
+        "pointId": 1,
+        "name": "Mount Evans",
+        "latitude": 39.5883597956832,
+        "longitude": -105.6434294488281,
+        "gridId": ""
+      },
+      {
+        "pointId": 2,
+        "name": "Longs Peak",
+        "latitude": 40.25465664861477,
+        "longitude": -105.61598153435622,
+        "gridId": ""
+      },
+      {
+        "pointId": 3,
+        "name": "Mount Elbert",
+        "latitude": 39.1175691724784,
+        "longitude": -106.44306234084068,
+        "gridId": ""
+      }
+    ]
+  },
+  {
+    "name": "CA 14ers",
+    "groupId": 4,
+    "points": [
+      {
+        "pointId": 21,
+        "name": "Mount Whitney",
+        "latitude": 36.57817885334464,
+        "longitude": -118.29297065734862,
+        "gridId": ""
+      },
+      {
+        "pointId": 22,
+        "name": "North Palisade",
+        "latitude": 37.14444546942509,
+        "longitude": -118.50608825683594,
+        "gridId": ""
+      }
+    ]
+  },
+  {
+    "name": "Wyoming",
+    "groupId": 5,
+    "points": []
+  },
+  {
+    "name": "Front Range Weekday Cragging",
+    "groupId": 6,
+    "points": [
+      {
+        "pointId": 15,
+        "name": "Flatirons",
+        "latitude": 39.99040478081514,
+        "longitude": -105.29324769973753,
+        "gridId": ""
+      },
+      {
+        "pointId": 16,
+        "name": "Eldorado Canyon",
+        "latitude": 39.933938892934265,
+        "longitude": -105.30520090134814,
+        "gridId": ""
+      },
+      {
+        "pointId": 17,
+        "name": "North Table Mountain",
+        "latitude": 39.76747405596686,
+        "longitude": -105.21587553550488,
+        "gridId": ""
+      },
+      {
+        "pointId": 18,
+        "name": "Clear Creek Canyon",
+        "latitude": 39.781437611923735,
+        "longitude": -105.29300014022736,
+        "gridId": ""
+      }
+    ]
+  },
+  {
+    "name": "Front Range Weekend Cragging",
+    "groupId": 7,
+    "points": [
+      {
+        "pointId": 4,
+        "name": "Lumpy Ridge",
+        "latitude": 40.40274027142786,
+        "longitude": -105.51184153184295,
+        "gridId": ""
+      },
+      {
+        "pointId": 5,
+        "name": "Turkey Rocks",
+        "latitude": 39.11466644710745,
+        "longitude": -105.2360560465604,
+        "gridId": ""
+      },
+      {
+        "pointId": 6,
+        "name": "Vedauwoo",
+        "latitude": 41.16509612795423,
+        "longitude": -105.37478555459528,
+        "gridId": ""
+      },
+      {
+        "pointId": 15,
+        "name": "Flatirons",
+        "latitude": 39.99040478081514,
+        "longitude": -105.29324769973753,
+        "gridId": ""
+      },
+      {
+        "pointId": 16,
+        "name": "Eldorado Canyon",
+        "latitude": 39.933938892934265,
+        "longitude": -105.30520090134814,
+        "gridId": ""
+      },
+      {
+        "pointId": 17,
+        "name": "North Table Mountain",
+        "latitude": 39.76747405596686,
+        "longitude": -105.21587553550488,
+        "gridId": ""
+      },
+      {
+        "pointId": 18,
+        "name": "Clear Creek Canyon",
+        "latitude": 39.781437611923735,
+        "longitude": -105.29300014022736,
+        "gridId": ""
+      }
+    ]
+  }
+]
