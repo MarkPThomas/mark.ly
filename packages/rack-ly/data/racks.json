@@ -1,0 +1,26 @@
+[
+  {
+    "userIds": [ "Mark" ],
+    "expiration": null,
+    "rack": {
+      "cams": [
+        {
+          "manufacturer": "Black Diamond",
+          "modelName": "Camalot",
+          "lineName": "C4",
+          "size": "8",
+          "color": "yellow",
+          "quantity": 5
+        },
+        {
+          "manufacturer": "Black Diamond",
+          "modelName": "Camalot",
+          "lineName": "C4",
+          "size": "8",
+          "color": "yellow",
+          "quantity": 5
+        }
+       ]
+    }
+  }
+]
