@@ -1,0 +1,74 @@
+[
+  {
+    "manufacturer": "Black Diamond",
+    "model": "Honnold Edition",
+    "type": "single",
+    "dryTreated": true,
+    "diameter": 9,
+    "diameterUnit": "mm",
+    "length": 70,
+    "lengthUnit": "m",
+    "weight": 58,
+    "weightUnit": "g/m"
+  },
+  {
+    "manufacturer": "Black Diamond",
+    "model": "BD 10.2",
+    "type": "single",
+    "dryTreated": false,
+    "diameter": 10.2,
+    "diameterUnit": "mm",
+    "length": 60,
+    "lengthUnit": "m",
+    "weight": 66,
+    "weightUnit": "g/m"
+  },
+  {
+    "manufacturer": "Maxim",
+    "model": "Pinnacle",
+    "type": "single",
+    "dryTreated": true,
+    "diameter": 9.5,
+    "diameterUnit": "mm",
+    "length": 80,
+    "lengthUnit": "m",
+    "weight": 61,
+    "weightUnit": "g/m"
+  },
+  {
+    "manufacturer": "EDELRID",
+    "model": "Swift",
+    "type": "single",
+    "dryTreated": true,
+    "diameter": 8.9,
+    "diameterUnit": "mm",
+    "length": 80,
+    "lengthUnit": "m",
+    "weight": 52,
+    "weightUnit": "g/m"
+  },
+  {
+    "manufacturer": "EDELRID",
+    "model": "Swift",
+    "type": "single",
+    "dryTreated": true,
+    "diameter": 8.0,
+    "diameterUnit": "mm",
+    "length": 70,
+    "lengthUnit": "m",
+    "weight": 52,
+    "weightUnit": "g/m"
+  },
+  {
+    "manufacturer": "EDELRID",
+    "model": "Swift",
+    "type": "single",
+    "dryTreated": true,
+    "diameter": 8.9,
+    "diameterUnit": "mm",
+    "length": 60,
+    "lengthUnit": "m",
+    "weight": 52,
+    "weightUnit": "g/m"
+  }
+]

@@ -1,0 +1,698 @@
+[
+  {
+    "manufacturer": "Black Diamond",
+    "models": [
+      {
+        "modelName": "Camalot",
+        "lines": [
+          {
+            "lineName": "C4",
+            "cams": [
+              {
+                "size": "8",
+                "color": "yellow",
+                "minRange": 193,
+                "minRangeUnit": "mm",
+                "maxRange": 321.2,
+                "maxRangeUnit": "mm",
+                "weight": 965,
+                "weightUnit": "g"
+              },
+              {
+                "size": "7",
+                "color": "red",
+                "minRange": 150,
+                "minRangeUnit": "mm",
+                "maxRange": 253.3,
+                "maxRangeUnit": "mm",
+                "weight": 709,
+                "weightUnit": "g"
+              },
+              {
+                "size": "6",
+                "color": "green",
+                "minRange": 114.1,
+                "minRangeUnit": "mm",
+                "maxRange": 195,
+                "maxRangeUnit": "mm",
+                "weight": 529.9,
+                "weightUnit": "g"
+              },
+              {
+                "size": "5",
+                "color": "purple",
+                "minRange": 85.4,
+                "minRangeUnit": "mm",
+                "maxRange": 148.5,
+                "maxRangeUnit": "mm",
+                "weight": 348.1,
+                "weightUnit": "g"
+              },
+              {
+                "size": "4",
+                "color": "silver",
+                "minRange": 66,
+                "minRangeUnit": "mm",
+                "maxRange": 114.7,
+                "maxRangeUnit": "mm",
+                "weight": 257.8,
+                "weightUnit": "g"
+              },
+              {
+                "size": "3",
+                "color": "blue",
+                "minRange": 50.7,
+                "minRangeUnit": "mm",
+                "maxRange": 87.9,
+                "maxRangeUnit": "mm",
+                "weight": 181.1,
+                "weightUnit": "g"
+              },
+              {
+                "size": "2",
+                "color": "yellow",
+                "minRange": 37.2,
+                "minRangeUnit": "mm",
+                "maxRange": 64.9,
+                "maxRangeUnit": "mm",
+                "weight": 140.3,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1",
+                "color": "red",
+                "minRange": 1.19,
+                "minRangeUnit": "mm",
+                "maxRange": 2.05,
+                "maxRangeUnit": "mm",
+                "weight": 123.9,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.75",
+                "color": "green",
+                "minRange": 23.9,
+                "minRangeUnit": "mm",
+                "maxRange": 41.2,
+                "maxRangeUnit": "mm",
+                "weight": 107.5,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.5",
+                "color": "purple",
+                "minRange": 19.6,
+                "minRangeUnit": "mm",
+                "maxRange": 33.5,
+                "maxRangeUnit": "mm",
+                "weight": 93,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.4",
+                "color": "silver",
+                "minRange": 26.7,
+                "minRangeUnit": "mm",
+                "maxRange": 15.5,
+                "maxRangeUnit": "mm",
+                "weight": 77.5,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.3",
+                "color": "blue",
+                "minRange": 13.8,
+                "minRangeUnit": "mm",
+                "maxRange": 23.4,
+                "maxRangeUnit": "mm",
+                "weight": 69.8,
+                "weightUnit": "g"
+              }
+            ]
+          },
+          {
+            "lineName": "Ultralight",
+            "cams": []
+          },
+          {
+            "lineName": "X4",
+            "cams": [
+              {
+                "size": "0.75",
+                "color": "green",
+                "minRange": 24,
+                "minRangeUnit": "mm",
+                "maxRange": 41.2,
+                "maxRangeUnit": "mm",
+                "weight": 112,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.5",
+                "color": "purple",
+                "minRange": 19.8,
+                "minRangeUnit": "mm",
+                "maxRange": 33.7,
+                "maxRangeUnit": "mm",
+                "weight": 91,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.4",
+                "color": "silver",
+                "minRange": 15.5,
+                "minRangeUnit": "mm",
+                "maxRange": 26.6,
+                "maxRangeUnit": "mm",
+                "weight": 82,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.3",
+                "color": "blue",
+                "minRange": 12.4,
+                "minRangeUnit": "mm",
+                "maxRange": 21.2,
+                "maxRangeUnit": "mm",
+                "weight": 75,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.2",
+                "color": "yellow",
+                "minRange": 9.9,
+                "minRangeUnit": "mm",
+                "maxRange": 16.5,
+                "maxRangeUnit": "mm",
+                "weight": 54,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.1",
+                "color": "red",
+                "minRange": 8.4,
+                "minRangeUnit": "mm",
+                "maxRange": 13.8,
+                "maxRangeUnit": "mm",
+                "weight": 51,
+                "weightUnit": "g"
+              }
+            ]
+          },
+          {
+            "lineName": "C3",
+            "cams": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "manufacturer": "Totem",
+    "models": [
+      {
+        "modelName": "Totem Cam",
+        "lines": [
+          {
+            "lineName": "Totem Cam",
+            "cams": [
+              {
+                "size": "1.80",
+                "color": "orange",
+                "minRange": 39.7,
+                "minRangeUnit": "mm",
+                "maxRange": 64.2,
+                "maxRangeUnit": "mm",
+                "weight": 144,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1.50",
+                "color": "red",
+                "minRange": 31.6,
+                "minRangeUnit": "mm",
+                "maxRange": 52.2,
+                "maxRangeUnit": "mm",
+                "weight": 132,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1.25",
+                "color": "green",
+                "minRange": 25.7,
+                "minRangeUnit": "mm",
+                "maxRange": 42.3,
+                "maxRangeUnit": "mm",
+                "weight": 109,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1.00",
+                "color": "purple",
+                "minRange": 20.9,
+                "minRangeUnit": "mm",
+                "maxRange": 34.2,
+                "maxRangeUnit": "mm",
+                "weight": 95,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.8",
+                "color": "yellow",
+                "minRange": 17,
+                "minRangeUnit": "mm",
+                "maxRange": 27.7,
+                "maxRangeUnit": "mm",
+                "weight": 83,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.65",
+                "color": "blue",
+                "minRange": 13.8,
+                "minRangeUnit": "mm",
+                "maxRange": 22.5,
+                "maxRangeUnit": "mm",
+                "weight": 75,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.5",
+                "color": "black",
+                "minRange": 11.7,
+                "minRangeUnit": "mm",
+                "maxRange": 18.9,
+                "maxRangeUnit": "mm",
+                "weight": 69,
+                "weightUnit": "g"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "manufacturer": "DMM",
+    "models": [
+      {
+        "modelName": "Dragon",
+        "lines": [
+          {
+            "lineName": "Dragon",
+            "cams": [
+              {
+                "size": "8",
+                "color": "green",
+                "minRange": 116,
+                "minRangeUnit": "mm",
+                "maxRange": 195,
+                "maxRangeUnit": "mm",
+                "weight": 515,
+                "weightUnit": "g"
+              },
+              {
+                "size": "7",
+                "color": "purple",
+                "minRange": 88,
+                "minRangeUnit": "mm",
+                "maxRange": 149,
+                "maxRangeUnit": "mm",
+                "weight": 362,
+                "weightUnit": "g"
+              },
+              {
+                "size": "6",
+                "color": "silver",
+                "minRange": 68,
+                "minRangeUnit": "mm",
+                "maxRange": 114,
+                "maxRangeUnit": "mm",
+                "weight": 299,
+                "weightUnit": "g"
+              },
+              {
+                "size": "5",
+                "color": "blue",
+                "minRange": 50,
+                "minRangeUnit": "mm",
+                "maxRange": 85,
+                "maxRangeUnit": "mm",
+                "weight": 208,
+                "weightUnit": "g"
+              },
+              {
+                "size": "4",
+                "color": "gold",
+                "minRange": 38,
+                "minRangeUnit": "mm",
+                "maxRange": 64,
+                "maxRangeUnit": "mm",
+                "weight": 154,
+                "weightUnit": "g"
+              },
+              {
+                "size": "3",
+                "color": "red",
+                "minRange": 29,
+                "minRangeUnit": "mm",
+                "maxRange": 50,
+                "maxRangeUnit": "mm",
+                "weight": 128,
+                "weightUnit": "g"
+              },
+              {
+                "size": "2",
+                "color": "green",
+                "minRange": 24,
+                "minRangeUnit": "mm",
+                "maxRange": 41,
+                "maxRangeUnit": "mm",
+                "weight": 117,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1",
+                "color": "purple",
+                "minRange": 20,
+                "minRangeUnit": "mm",
+                "maxRange": 33,
+                "maxRangeUnit": "mm",
+                "weight": 103,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0",
+                "color": "silver",
+                "minRange": 16,
+                "minRangeUnit": "mm",
+                "maxRange": 25,
+                "maxRangeUnit": "mm",
+                "weight": 85,
+                "weightUnit": "g"
+              },
+              {
+                "size": "00",
+                "color": "blue",
+                "minRange": 14,
+                "minRangeUnit": "mm",
+                "maxRange": 21,
+                "maxRangeUnit": "mm",
+                "weight": 75,
+                "weightUnit": "g"
+              }
+            ]
+          },
+          {
+            "lineName": "Dragonfly",
+            "cams": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "manufacturer": "Fixe",
+    "models": [
+      {
+        "modelName": "Alien",
+        "lines": [
+          {
+            "lineName": "Alien",
+            "cams": [
+              {
+                "size": "2.5",
+                "color": "clear",
+                "minRange": 35,
+                "minRangeUnit": "mm",
+                "maxRange": 58,
+                "maxRangeUnit": "mm",
+                "weight": 136,
+                "weightUnit": "g"
+              },
+              {
+                "size": "2.0",
+                "color": "pruple",
+                "minRange": 30,
+                "minRangeUnit": "mm",
+                "maxRange": 50,
+                "maxRangeUnit": "mm",
+                "weight": 124,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1.5",
+                "color": "orange",
+                "minRange": 26,
+                "minRangeUnit": "mm",
+                "maxRange": 40,
+                "maxRangeUnit": "mm",
+                "weight": 120,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1.25",
+                "color": "gold",
+                "minRange": 25,
+                "minRangeUnit": "mm",
+                "maxRange": 38,
+                "maxRangeUnit": "mm",
+                "weight": 109,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1.0",
+                "color": "red",
+                "minRange": 20,
+                "minRangeUnit": "mm",
+                "maxRange": 33,
+                "maxRangeUnit": "mm",
+                "weight": 84,
+                "weightUnit": "g"
+              },
+              {
+                "manufacturer": "Fixe",
+                "model": "Alien",
+                "size": "7/8",
+                "color": "silver",
+                "minRange": 17,
+                "minRangeUnit": "mm",
+                "maxRange": 30,
+                "maxRangeUnit": "mm",
+                "weight": 82,
+                "weightUnit": "g"
+              },
+              {
+                "size": "3/4",
+                "color": "yellow",
+                "minRange": 15,
+                "minRangeUnit": "mm",
+                "maxRange": 25,
+                "maxRangeUnit": "mm",
+                "weight": 80,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1/2",
+                "color": "green",
+                "minRange": 13,
+                "minRangeUnit": "mm",
+                "maxRange": 22,
+                "maxRangeUnit": "mm",
+                "weight": 70,
+                "weightUnit": "g"
+              },
+              {
+                "size": "3/8",
+                "color": "blue",
+                "minRange": 10,
+                "minRangeUnit": "mm",
+                "maxRange": 17,
+                "maxRangeUnit": "mm",
+                "weight": 68,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.33",
+                "color": "black",
+                "minRange": 8,
+                "minRangeUnit": "mm",
+                "maxRange": 14,
+                "maxRangeUnit": "mm",
+                "weight": 64,
+                "weightUnit": "g"
+              }
+            ]
+          },
+          {
+            "lineName": "Revolution",
+            "cams": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "manufacturer": "Wild Country",
+    "models": [
+      {
+        "modelName": "Friend",
+        "lines": [
+          {
+            "lineName": "Friend",
+            "cams": [
+              {
+                "size": "4",
+                "color": "silver",
+                "minRange": 66.8,
+                "minRangeUnit": "mm",
+                "maxRange": 112.1,
+                "maxRangeUnit": "mm",
+                "weight": 260,
+                "weightUnit": "g"
+              },
+              {
+                "size": "3",
+                "color": "blue",
+                "minRange": 52.7,
+                "minRangeUnit": "mm",
+                "maxRange": 88.0,
+                "maxRangeUnit": "mm",
+                "weight": 192,
+                "weightUnit": "g"
+              },
+              {
+                "size": "2",
+                "color": "yellow",
+                "minRange": 41.5,
+                "minRangeUnit": "mm",
+                "maxRange": 69.3,
+                "maxRangeUnit": "mm",
+                "weight": 142,
+                "weightUnit": "g"
+              },
+              {
+                "size": "1",
+                "color": "red",
+                "minRange": 31.7,
+                "minRangeUnit": "mm",
+                "maxRange": 53.6,
+                "maxRangeUnit": "mm",
+                "weight": 123,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.75",
+                "color": "green",
+                "minRange": 25.8,
+                "minRangeUnit": "mm",
+                "maxRange": 43.0,
+                "maxRangeUnit": "mm",
+                "weight": 102,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.5",
+                "color": "purple",
+                "minRange": 20.6,
+                "minRangeUnit": "mm",
+                "maxRange": 34.5,
+                "maxRangeUnit": "mm",
+                "weight": 88,
+                "weightUnit": "g"
+              },
+              {
+                "size": "0.4",
+                "color": "silver",
+                "minRange": 15.8,
+                "minRangeUnit": "mm",
+                "maxRange": 26.37,
+                "maxRangeUnit": "mm",
+                "weight": 75,
+                "weightUnit": "g"
+              }
+            ]
+          },
+          {
+            "lineName": "Zero",
+            "cams": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "manufacturer": "Valley Giant",
+    "models": [
+      {
+        "modelName": "Valley Giant",
+        "lines": [
+          {
+            "lineName": "Valley Giant",
+            "cams": [
+              {
+                "size": "9",
+                "color": "silver",
+                "minRange": 145,
+                "minRangeUnit": "mm",
+                "maxRange": 229,
+                "maxRangeUnit": "mm",
+                "weight": 880,
+                "weightUnit": "g"
+              },
+              {
+                "size": "12",
+                "color": "silver",
+                "minRange": 188,
+                "minRangeUnit": "mm",
+                "maxRange": 305,
+                "maxRangeUnit": "mm",
+                "weight": 990,
+                "weightUnit": "g"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "manufacturer": "Merlin",
+    "models": [
+      {
+        "modelName": "Merlin",
+        "lines": [
+          {
+            "lineName": "Merlin",
+            "cams": [
+              {
+                "manufacturer": "Merlin",
+                "model": "Merlin",
+                "size": "8",
+                "color": "silver",
+                "minRange": 139.7,
+                "minRangeUnit": "mm",
+                "maxRange": 251.5,
+                "maxRangeUnit": "mm",
+                "weight": 570,
+                "weightUnit": "g"
+              },
+              {
+                "manufacturer": "Merlin",
+                "model": "Merlin",
+                "size": "11",
+                "color": "silver",
+                "minRange": 185.4,
+                "minRangeUnit": "mm",
+                "maxRange": 327.7,
+                "maxRangeUnit": "mm",
+                "weight": 820,
+                "weightUnit": "g"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

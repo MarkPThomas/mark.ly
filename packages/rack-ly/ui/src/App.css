@@ -1,0 +1,149 @@
+.incrementor {
+  width: 24;
+  display: flex;
+  align-items: stretch;
+  margin: 0 3px;
+}
+
+.incrementor > form {
+  margin: 0 3px 0 0;
+}
+
+.menu {
+  background-color: aqua;
+  display: flex;
+  align-items: stretch;
+}
+
+.menu-category {
+  border: black solid 1px;
+  border-radius: 3px;
+  padding: 5px;
+}
+
+.menu-category:hover {
+  background-color: chartreuse;
+  cursor: pointer;
+}
+
+.product-group {
+  border: black solid 1px;
+  border-radius: 5px;
+  background-color: lightgoldenrodyellow;
+  margin: 5px;
+  padding: 5px;
+}
+
+.title-shadow {
+  font-weight: bold;
+  color: black;
+  text-shadow: 1px 1px 2px  lightslategray;
+}
+
+.product-title-block, .area-title-block, .crag-title-block {
+  background-color: linen;
+}
+
+.product-manufacturer {
+  font-size: large;
+}
+
+.product-model, .route-area {
+  font-size: medium;
+  background-color: lightskyblue;
+  border: black solid 1px;
+}
+
+.route-crag {
+  font-size: medium;
+  background-color: lightgray;
+  border: black solid 1px;
+}
+
+.route-item {
+  display: flex;
+  align-items: stretch;
+  font-size: medium;
+  background-color: white;
+  border: black solid 1px;
+}
+
+.route-name {
+  font-weight: bold;
+}
+
+.route-rating {
+  margin: 0 5px;
+}
+
+.route-length {
+  font-style: italic;
+}
+
+.product-model:hover, .route-area:hover, .route-crag:hover {
+  background-color: lightgreen;
+  cursor: pointer;
+}
+
+.items-list {
+  border: lime 1px dashed;
+}
+
+.cam-item, .rope-item {
+  display: flex;
+  align-items: stretch;
+  margin: 5px;
+  padding: 5px;
+  border: darkgray solid 1px;
+  border-radius: 5px;
+  background-color: lightblue;
+}
+
+.cam-size {
+  font-weight: bold;
+}
+
+.cam-color {
+  font-weight: lighter;
+  font-style: italic;
+  margin: 0 5px;
+}
+
+.cam-image {
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+}
+
+.rope-length {
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.selectable:hover {
+  background-color: lightpink;
+  border-color: red 1px solid;
+  cursor: pointer;
+}
+
+.isSelected {
+  background-color: yellow;
+  border: red 2px solid;
+}
+
+.horizontal {
+  display: flex;
+  align-items: stretch;
+}
+
+.user, .routes-area, .product-group, .rack {
+  border: black 1px solid;
+  border-radius: 5px;
+  box-shadow: 10px 10px 5px #aaaaaa;
+  padding: 5px;
+  margin: 5px;
+}
+
+.user-rack-short > div {
+  color: red;
+}
