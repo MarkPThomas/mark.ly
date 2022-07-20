@@ -1,6 +1,7 @@
 [
   {
     "name": "Desert",
+    "groupId": 1,
     "points": [
       {
         "pointId": 8,
@@ -55,6 +56,7 @@
   },
   {
     "name": "14ers",
+    "groupId": 2,
     "points": [
       {
         "pointId": 20,
@@ -67,6 +69,7 @@
   },
   {
     "name": "CO 14ers",
+    "groupId": 3,
     "points": [
       {
         "pointId": 1,
@@ -93,6 +96,7 @@
   },
   {
     "name": "CA 14ers",
+    "groupId": 4,
     "points": [
       {
         "pointId": 21,
@@ -112,10 +116,12 @@
   },
   {
     "name": "Wyoming",
+    "groupId": 5,
     "points": []
   },
   {
     "name": "Front Range Weekday Cragging",
+    "groupId": 6,
     "points": [
       {
         "pointId": 15,
@@ -149,6 +155,7 @@
   },
   {
     "name": "Front Range Weekend Cragging",
+    "groupId": 7,
     "points": [
       {
         "pointId": 4,
