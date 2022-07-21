@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Forecast } from './components/Forecast/Forecast';
 import { ForecastHourly } from './components/ForecastHourly/ForecastHourly';
 import { ForecastGrid } from './components/ForecastGrid/ForecastGrid';
-import { Button } from './components/shared/Button'
+import { Button } from './shared/components/Button'
 import { ForeCastSelector } from './components/ForecastSelector/ForecastSelector';
 
 import pointsData from '../../server/db/mongo/data/weather_ly.points.json';

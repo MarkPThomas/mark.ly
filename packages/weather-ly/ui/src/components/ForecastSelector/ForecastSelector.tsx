@@ -3,7 +3,7 @@ import {
   IGroupResponse
 } from '../../../../server/api/model';
 
-import { Button } from "../shared/Button";
+import { Button } from "../../shared/components/Button";
 
 type propsType = {
   points: IPointResponse[];
