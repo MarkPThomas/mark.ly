@@ -4,7 +4,7 @@ import { IForecastResponse } from '../../../../server/api/model';
 import { IForecastPeriod } from '../../../../server/api/model/NOAA/IForecastPeriod';
 import { ForecastTile } from './ForecastTile';
 
-export const Forecast = (props) => {
+export const ForecastCarousel = (props) => {
   const [forecast, setForecast] = useState({} as IForecastResponse);
   let currentKey = 0;
 
@@ -36,7 +36,11 @@ export const Forecast = (props) => {
         }
 
       </div>
+      <div>
+        <a href="/hourly">Forecast Hourly</a> |  <a href="/gridData">Forecast Grid</a>
+      </div>
       <pre>
+        <h2>JSON Data</h2>
         {JSON.stringify(forecast, null, 2)}
       </pre>
     </>

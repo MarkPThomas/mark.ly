@@ -16,6 +16,7 @@ export const ForecastHourly = (props) => {
   return (
     <div>
       <pre>
+        <h2>JSON Data</h2>
         {JSON.stringify(forecast, null, 2)}
       </pre>
     </div>

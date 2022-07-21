@@ -26,6 +26,7 @@ export const ForeCastSelector = (props: propsType) => {
               })
             }
           </ul>
+          <a href="/weekly">Weekly-Forecast Carousel</a>
         </div>
       </div>
       <div>
