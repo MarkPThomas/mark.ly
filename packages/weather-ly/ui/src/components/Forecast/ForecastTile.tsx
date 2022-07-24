@@ -2,6 +2,8 @@ export const ForecastTile = ({ title, url, snippet, temp, tempUnit, isDaytime })
   const tempPrefix = isDaytime ? 'High' : 'Low';
   let tempAttr = `forecast-temp ${isDaytime ? 'temp-high' : 'temp-low'}`;
 
+  // TODO:
+  // Display snippet as tooltip and collapsed row that can be toggled open & closed
   return (
     <div className="forecast-tile">
       <p className="forecast-title">{title}</p>
