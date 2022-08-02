@@ -1,7 +1,11 @@
-import pointsData from '../../data/weather_ly.points.json';
-import gridsData from '../../data/weather_ly.grids.json';
-import groupsData from '../../data/weather_ly.pointGroups.json';
+import {
+  points,
+  grids,
+  groups,
+  forecastsAligned
+} from '../../data';
 
-export const getAllPoints = () => pointsData;
-export const getAllGrids = () => gridsData;
-export const getAllPointGroups = () => groupsData;
+export const getAllPoints = () => points;
+export const getAllGrids = () => grids;
+export const getAllPointGroups = () => groups;
+export const getStaticForecasts = () => forecastsAligned;

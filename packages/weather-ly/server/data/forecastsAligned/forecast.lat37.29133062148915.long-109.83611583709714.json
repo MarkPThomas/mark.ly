@@ -1,0 +1,264 @@
+{
+	"@context": [
+		"https://geojson.org/geojson-ld/geojson-context.jsonld",
+		{
+			"@version": "1.1",
+			"wx": "https://api.weather.gov/ontology#",
+			"geo": "http://www.opengis.net/ont/geosparql#",
+			"unit": "http://codes.wmo.int/common/unit/",
+			"@vocab": "https://api.weather.gov/ontology#"
+		}
+	],
+	"type": "Feature",
+	"geometry": {
+		"type": "Polygon",
+		"coordinates": [
+			[
+				[
+					-109.8425678,
+					37.296495
+				],
+				[
+					-109.8395054,
+					37.2743261
+				],
+				[
+					-109.8116589,
+					37.276758900000004
+				],
+				[
+					-109.8147157,
+					37.298928100000005
+				],
+				[
+					-109.8425678,
+					37.296495
+				]
+			]
+		]
+	},
+	"properties": {
+		"updated": "2022-08-02T04:56:12+00:00",
+		"units": "us",
+		"forecastGenerator": "BaselineForecastGenerator",
+		"generatedAt": "2022-08-02T05:04:14+00:00",
+		"updateTime": "2022-08-02T04:56:12+00:00",
+		"validTimes": "2022-08-01T22:00:00+00:00/P7DT3H",
+		"elevation": {
+			"unitCode": "wmoUnit:m",
+			"value": 1413.9672
+		},
+		"periods": [
+			{
+				"number": 1,
+				"name": "Tonight",
+				"startTime": "2022-08-01T23:00:00-06:00",
+				"endTime": "2022-08-02T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 70,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 mph",
+				"windDirection": "WNW",
+				"icon": "https://api.weather.gov/icons/land/night/sct?size=medium",
+				"shortForecast": "Partly Cloudy",
+				"detailedForecast": "Partly cloudy, with a low around 70. West northwest wind around 5 mph."
+			},
+			{
+				"number": 2,
+				"name": "Tuesday",
+				"startTime": "2022-08-02T06:00:00-06:00",
+				"endTime": "2022-08-02T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 94,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 15 mph",
+				"windDirection": "W",
+				"icon": "https://api.weather.gov/icons/land/day/few?size=medium",
+				"shortForecast": "Sunny",
+				"detailedForecast": "Sunny, with a high near 94. West wind 5 to 15 mph."
+			},
+			{
+				"number": 3,
+				"name": "Tuesday Night",
+				"startTime": "2022-08-02T18:00:00-06:00",
+				"endTime": "2022-08-03T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 71,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 15 mph",
+				"windDirection": "WNW",
+				"icon": "https://api.weather.gov/icons/land/night/sct?size=medium",
+				"shortForecast": "Partly Cloudy",
+				"detailedForecast": "Partly cloudy, with a low around 71. West northwest wind 5 to 15 mph."
+			},
+			{
+				"number": 4,
+				"name": "Wednesday",
+				"startTime": "2022-08-03T06:00:00-06:00",
+				"endTime": "2022-08-03T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 95,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "WNW",
+				"icon": "https://api.weather.gov/icons/land/day/few?size=medium",
+				"shortForecast": "Sunny",
+				"detailedForecast": "Sunny, with a high near 95. West northwest wind 5 to 10 mph."
+			},
+			{
+				"number": 5,
+				"name": "Wednesday Night",
+				"startTime": "2022-08-03T18:00:00-06:00",
+				"endTime": "2022-08-04T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 72,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "NNW",
+				"icon": "https://api.weather.gov/icons/land/night/sct?size=medium",
+				"shortForecast": "Partly Cloudy",
+				"detailedForecast": "Partly cloudy, with a low around 72. North northwest wind 5 to 10 mph."
+			},
+			{
+				"number": 6,
+				"name": "Thursday",
+				"startTime": "2022-08-04T06:00:00-06:00",
+				"endTime": "2022-08-04T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 96,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "ESE",
+				"icon": "https://api.weather.gov/icons/land/day/sct/tsra_hi,20?size=medium",
+				"shortForecast": "Mostly Sunny then Slight Chance Showers And Thunderstorms",
+				"detailedForecast": "A slight chance of showers and thunderstorms after noon. Mostly sunny, with a high near 96. Chance of precipitation is 20%."
+			},
+			{
+				"number": 7,
+				"name": "Thursday Night",
+				"startTime": "2022-08-04T18:00:00-06:00",
+				"endTime": "2022-08-05T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 71,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 15 mph",
+				"windDirection": "SE",
+				"icon": "https://api.weather.gov/icons/land/night/tsra,30/tsra,20?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Mostly cloudy, with a low around 71. Chance of precipitation is 30%."
+			},
+			{
+				"number": 8,
+				"name": "Friday",
+				"startTime": "2022-08-05T06:00:00-06:00",
+				"endTime": "2022-08-05T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 92,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "SE",
+				"icon": "https://api.weather.gov/icons/land/day/tsra_hi?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Partly sunny, with a high near 92."
+			},
+			{
+				"number": 9,
+				"name": "Friday Night",
+				"startTime": "2022-08-05T18:00:00-06:00",
+				"endTime": "2022-08-06T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 70,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "E",
+				"icon": "https://api.weather.gov/icons/land/night/tsra_sct?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Mostly cloudy, with a low around 70."
+			},
+			{
+				"number": 10,
+				"name": "Saturday",
+				"startTime": "2022-08-06T06:00:00-06:00",
+				"endTime": "2022-08-06T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 90,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "SE",
+				"icon": "https://api.weather.gov/icons/land/day/sct/tsra_hi?size=medium",
+				"shortForecast": "Mostly Sunny then Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms after noon. Mostly sunny, with a high near 90."
+			},
+			{
+				"number": 11,
+				"name": "Saturday Night",
+				"startTime": "2022-08-06T18:00:00-06:00",
+				"endTime": "2022-08-07T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 69,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "WNW",
+				"icon": "https://api.weather.gov/icons/land/night/tsra_sct?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Mostly cloudy, with a low around 69."
+			},
+			{
+				"number": 12,
+				"name": "Sunday",
+				"startTime": "2022-08-07T06:00:00-06:00",
+				"endTime": "2022-08-07T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 88,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "SE",
+				"icon": "https://api.weather.gov/icons/land/day/tsra_hi?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Partly sunny, with a high near 88."
+			},
+			{
+				"number": 13,
+				"name": "Sunday Night",
+				"startTime": "2022-08-07T18:00:00-06:00",
+				"endTime": "2022-08-08T06:00:00-06:00",
+				"isDaytime": false,
+				"temperature": 68,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "ESE",
+				"icon": "https://api.weather.gov/icons/land/night/tsra_sct?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Mostly cloudy, with a low around 68."
+			},
+			{
+				"number": 14,
+				"name": "Monday",
+				"startTime": "2022-08-08T06:00:00-06:00",
+				"endTime": "2022-08-08T18:00:00-06:00",
+				"isDaytime": true,
+				"temperature": 87,
+				"temperatureUnit": "F",
+				"temperatureTrend": null,
+				"windSpeed": "5 to 10 mph",
+				"windDirection": "ESE",
+				"icon": "https://api.weather.gov/icons/land/day/tsra_hi?size=medium",
+				"shortForecast": "Chance Showers And Thunderstorms",
+				"detailedForecast": "A chance of showers and thunderstorms. Partly sunny, with a high near 87."
+			}
+		]
+	}
+}

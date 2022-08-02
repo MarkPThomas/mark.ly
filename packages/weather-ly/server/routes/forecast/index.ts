@@ -39,7 +39,11 @@ export const getForecasts = async (req: Request, res: Response, next) => {
     const result = await forecastService.getForecasts(coords);
     res.send(result);
   } else if (groupName) {
-    const result = forecastService.getForecastsByGroup(groupName);
+    const result = await forecastService.getForecastsByGroup(groupName);
+    res.send(result);
+  } else {
+    console.log('Getting static forecasts');
+    const result = await forecastService.getForecasts();
     res.send(result);
   }
 }

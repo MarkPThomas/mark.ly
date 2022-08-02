@@ -137,18 +137,17 @@ export class Point {
     return GridPoint.getForecastGridData(grid[0], grid[1]);
   }
 
-  // TODO: Make server http call to this from react rather than import
-  static async getForecast(coord: ICoordinate): Promise<IForecastResponse> {
+  static async getForecast(coord: ICoordinate, writeData = false): Promise<IForecastResponse> {
     const grid: [IGrid, boolean] = await Point.getGrid(coord);
-    // return GridPoint.getForecast(grid[0], grid[1]);
     const response = await GridPoint.getForecast(grid[0], grid[1]);
-    // if (response) {
-    //   fsPromises.writeFile(
-    //     `forecast-${response.geometry.coordinates[0][0]}.${response.geometry.coordinates[0][1]}.json`,
-    //     JSON.stringify(response),
-    //     'utf-8'
-    //   )
-    // }
+    if (writeData && response) {
+      console.log('Writing response to file...');
+      fsPromises.writeFile(
+        `./server/data/forecast.lat${coord.latitude}.long${coord.longitude}.json`,
+        JSON.stringify(response, null, '\t'),
+        'utf-8'
+      )
+    }
     return response;
   }
 

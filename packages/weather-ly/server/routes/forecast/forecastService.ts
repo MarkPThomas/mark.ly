@@ -14,8 +14,22 @@ export const getForecast = (coord: ICoordinate): Promise<IForecastResponse> => {
   return api.getForecast(coord);
 };
 
-export const getForecasts = (coords: ICoordinate[]): Promise<IForecastResponse[]> => {
-  return api.getForecasts(coords);
+export const getForecasts = (coords: ICoordinate[] = []): Promise<IForecastResponse[]> => {
+  if (coords.length) {
+    return api.getForecasts(coords);
+  } else {
+    return new Promise((resolve, reject) => {
+      console.log('Getting forecasts from data...')
+      const result: IForecastResponse[] = data.getStaticForecasts();
+      if (result) {
+        console.log('getForecasts Result: ', result);
+        resolve(result);
+      } else {
+        console.log('getForecasts faied!');
+        reject();
+      }
+    });
+  }
 };
 
 export const getForecastsByGroup = (groupName: string) => {
