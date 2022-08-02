@@ -11,7 +11,7 @@ type propsType = {
 }
 
 export const ForeCastSelector = (props: propsType) => {
-
+  console.log('pointGroups: ', props.pointGroups);
   return (
     <>
       <div>
@@ -22,7 +22,7 @@ export const ForeCastSelector = (props: propsType) => {
               props.pointGroups.map(pointGroup => {
                 const url = `/groupForecast/${pointGroup.groupId.toString()}`;
 
-                return (<li><a href={url}>{pointGroup.name}</a></li>);
+                return (<li key={url}><a href={url}>{pointGroup.name}</a></li>);
               })
             }
           </ul>
@@ -85,13 +85,13 @@ export const ForeCastSelector = (props: propsType) => {
                 })
               }
             </ul>
-            <h2>In Group: {props.pointGroups[0].name}</h2>
+            <h2>In Group: {props.pointGroups[0]?.name}</h2>
             <ul>
               {
-                props.pointGroups[0].points.map(point => {
+                props.pointGroups[0]?.points.map(point => {
                   const pointId = point.pointId.toString();
                   return (
-                    <li>
+                    <li key={pointId}>
                       <input type="checkbox" id={pointId} name={pointId} value={pointId} />
                       <label htmlFor={pointId}>{point.name}</label>
                     </li>

@@ -11,6 +11,8 @@ import {
   IElevation
 } from './model';
 
+import { promises as fsPromises } from 'fs';
+
 class GridCache {
   static cache: Grid[] = [];
 
@@ -51,14 +53,14 @@ class GridCache {
         new Coordinate(geometry.coordinates[0][2]),
         new Coordinate(geometry.coordinates[0][3])
       ]
-      GridCache.cache[gridIndex] = new Grid(grid, coords);
+      GridCache.cache[gridIndex] = new Grid(grid, coords, elevation);
     }
   }
 }
 
 export class GridPoint {
 
-  static async getForecastGridData(grid: IGrid, updateCache: boolean = false) {
+  static async getForecastGridData(grid: IGrid, updateCache: boolean = false): Promise<IForecastGridResponse> {
     console.log('Fetching Grid URL for grid data:', GridPoint.getEndpoint(grid));
     const result = await Requests.get<IForecastGridResponse>(`${GridPoint.getEndpoint(grid)}`);
     if (updateCache) {
@@ -67,16 +69,37 @@ export class GridPoint {
     return result;
   }
 
-  static async getForecast(grid: IGrid, updateCache: boolean = false) {
+  static async getForecast(grid: IGrid, updateCache: boolean = false): Promise<IForecastResponse> {
     console.log('Fetching Grid URL for forecast:', GridPoint.getEndpoint(grid));
-    const result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast`);
-    if (updateCache) {
-      GridCache.updateCache(grid, result.geometry, result.properties.elevation);
+    let retries = 5;
+    let delayMs = 500;
+    if (retries) {
+      try {
+        // let result;
+        // setTimeout(async () => {
+        //   console.log('setTimeout for result');
+        //   result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast`);
+        //   if (updateCache) {
+        //     GridCache.updateCache(grid, result.geometry, result.properties.elevation);
+        //   }
+        // }, delayMs)
+        const result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast`);
+        if (updateCache) {
+          GridCache.updateCache(grid, result.geometry, result.properties.elevation);
+        }
+        console.log('Returning result');
+        return result;
+      } catch (error) {
+        retries--;
+        console.log(`${GridPoint.getEndpoint(grid)}/forecast retries=${retries}`);
+        return;
+      }
+    } else {
+
     }
-    return result;
   }
 
-  static async getForecastHourly(grid: IGrid, updateCache: boolean = false) {
+  static async getForecastHourly(grid: IGrid, updateCache: boolean = false): Promise<IForecastResponse> {
     console.log('Fetching Grid URL for hourly forecast:', GridPoint.getEndpoint(grid));
     const result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast/hourly`);
     if (updateCache) {
@@ -90,19 +113,115 @@ export class GridPoint {
   }
 }
 
+export enum Days {
+  Sunday,
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday
+}
+
+
+type offsetForecast = {
+  offset: number;
+  // offsetLength: number;
+  rawForecast: IForecastResponse
+};
+
 export class Point {
 
-  static async getForecastGridData(coord: ICoordinate) {
+  static async getForecastGridData(coord: ICoordinate): Promise<IForecastGridResponse> {
     const grid: [IGrid, boolean] = await Point.getGrid(coord);
     return GridPoint.getForecastGridData(grid[0], grid[1]);
   }
 
-  static async getForecast(coord: ICoordinate) {
+  // TODO: Make server http call to this from react rather than import
+  static async getForecast(coord: ICoordinate): Promise<IForecastResponse> {
     const grid: [IGrid, boolean] = await Point.getGrid(coord);
-    return GridPoint.getForecast(grid[0], grid[1]);
+    // return GridPoint.getForecast(grid[0], grid[1]);
+    const response = await GridPoint.getForecast(grid[0], grid[1]);
+    // if (response) {
+    //   fsPromises.writeFile(
+    //     `forecast-${response.geometry.coordinates[0][0]}.${response.geometry.coordinates[0][1]}.json`,
+    //     JSON.stringify(response),
+    //     'utf-8'
+    //   )
+    // }
+    return response;
   }
 
-  static async getForecastHourly(coord: ICoordinate) {
+  static async getForecasts(coords: ICoordinate[]): Promise<IForecastResponse[]> {
+    const forecastCBs = [];
+    coords.forEach(coord => {
+      forecastCBs.push(() => Point.getForecast(coord));
+    })
+    const rawForecasts: IForecastResponse[] = await Promise.all(forecastCBs);
+
+    // Determine offset index
+    let maxDayIndexOffset = 0;
+    let minDayIndexOffset = Number.POSITIVE_INFINITY;
+    let minLength = Number.POSITIVE_INFINITY;
+
+    const offsetForecasts: offsetForecast[] = [];
+    rawForecasts.forEach(rawForecast => {
+      const periods = rawForecast.properties.periods;
+      const offsetForecast: offsetForecast = {
+        offset: 0,
+        // offsetLength: periods.length,
+        rawForecast
+      };
+      for (let i = 0; i < periods.length; i++) {
+        const titleComponent = periods[i].name.split(' ')[0];
+        if (Days[titleComponent]) {
+          const offsetLength = periods.length - i;
+          if (i > maxDayIndexOffset) {
+            maxDayIndexOffset = i;
+          }
+          if (i < minDayIndexOffset) {
+            minDayIndexOffset = i;
+          }
+          if (offsetLength < minLength) {
+            minLength = offsetLength;
+          }
+          if (i > offsetForecast.offset) {
+            offsetForecast.offset = i;
+            // offsetForecast.offsetLength = offsetLength;
+          }
+          break;
+        }
+      }
+      offsetForecasts.push(offsetForecast);
+    });
+    console.log('offset Forecasts: ', offsetForecasts);
+
+    // Trim left or right to new array
+    const normalizedForecasts: IForecastResponse[] = [];
+    const deltaDayIndexOffset = maxDayIndexOffset - minDayIndexOffset;
+    const deltaMinLength = minLength + deltaDayIndexOffset;
+    offsetForecasts.forEach(offsetForecast => {
+      const localDeltaMaxIndex = maxDayIndexOffset - offsetForecast.offset;
+      const localStartIndex = deltaDayIndexOffset + localDeltaMaxIndex;
+      const localEndIndex = localStartIndex + deltaMinLength;
+
+      const normalizedPeriods = offsetForecast.rawForecast.properties.periods.slice(localStartIndex, localEndIndex);
+      console.log('normalized periods: ', normalizedPeriods);
+      offsetForecast.rawForecast.properties.periods = normalizedPeriods;
+      normalizedForecasts.push(offsetForecast.rawForecast);
+    })
+    console.log('normalized Forecasts: ', normalizedForecasts);
+
+    return normalizedForecasts;
+  }
+
+  static async getForecastsByGroup(groupName: string): Promise<IForecastResponse[]> {
+    // TODO: Get coords by group name
+    const coords = [];
+    return Point.getForecasts(coords);
+  }
+
+  static async getForecastHourly(coord: ICoordinate): Promise<IForecastResponse> {
     const grid: [IGrid, boolean] = await Point.getGrid(coord);
     return GridPoint.getForecastHourly(grid[0], grid[1]);
   }

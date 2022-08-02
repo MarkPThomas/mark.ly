@@ -6,24 +6,44 @@ import {
   Navigate
 } from 'react-router-dom';
 
+import { Points } from './api';
+
 import { Forecast } from './components/Forecast';
 import { ForecastHourly } from './components/ForecastHourly/ForecastHourly';
 import { ForecastGrid } from './components/ForecastGrid/ForecastGrid';
 import { ForeCastSelector } from './components/ForecastSelector/ForecastSelector';
 
-import pointsData from '../../server/db/mongo/data/weather_ly.points.json';
-import gridsData from '../../server/db/mongo/data/weather_ly.grids.json';
-import groupsData from '../../server/db/mongo/data/weather_ly.pointGroups.json';
 import { IGroupResponse, IPointResponse } from '../../server/api/model';
 
+import pointsRaw from '../../server/data/weather_ly.points.json';
+console.log('pointsRaw: ', pointsRaw);
+import pointGroupsRaw from '../../server/data/weather_ly.pointGroups.json';
+console.log('pointGroupsRaw: ', pointGroupsRaw);
 
 export const App = () => {
   const [forecastGroup, setForecastGroup] = useState({} as IGroupResponse);
   const [forecast, setForecast] = useState({} as IPointResponse);
+  const [points, setPoints] = useState([] as IPointResponse[]);
+  const [pointGroups, setPointGroups] = useState([] as IGroupResponse[]);
 
   useEffect(() => {
-    setForecast(pointsData[0]);
-    setForecastGroup(groupsData[0]);
+    if (points.length === 0) {
+      Points.getPoints()
+        .then(result => {
+          console.log('getPoints: ', result);
+          setForecast(result[0]);
+          setPoints(result);
+        });
+    }
+
+    if (pointGroups.length === 0) {
+      Points.getPointGroups()
+        .then(result => {
+          console.log('getPointGroups: ', result);
+          setForecastGroup(result[0]);
+          setPointGroups(result);
+        });
+    }
   }, []);
 
   return (
@@ -32,8 +52,8 @@ export const App = () => {
         <Routes>
           <Route path="/" element={
             <ForeCastSelector
-              points={pointsData as IPointResponse[]}
-              pointGroups={groupsData as IGroupResponse[]}
+              points={points}
+              pointGroups={pointGroups}
             />
           } />
           <Route path="/weekly" element={<Forecast pointGroup={forecastGroup} />} />
