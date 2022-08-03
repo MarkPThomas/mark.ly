@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ErrorBoundary from '../../shared/components/ErrorBoundary';
 
 import { Forecasts as ForecastsApi } from '../../api';
@@ -8,19 +9,20 @@ import { ForecastTiles } from "./ForecastTiles";
 
 type Prop = {
   pointGroup: IGroupResponse;
+  pointGroups: IGroupResponse[];
+  forecastGroupSelectionHandler: (e) => void;
 };
 
 export const Forecasts = (props: Prop) => {
   const [groupForecasts, setGroupForecasts] = useState(props.pointGroup);
   useEffect(() => {
-    // const pointGroup = props.pointGroup;
     const updatedGroupForecasts = { ...groupForecasts };
     console.log('props.pointGroup: ', props.pointGroup);
     console.log('updatedGroupForecasts: ', updatedGroupForecasts);
     if (Object.keys(updatedGroupForecasts).length) {
       console.log('Getting forecasts!');
       // TODO: Determine how grids should be stored in data. Below is partial implementation of premature optimization.
-      //    Point ID needs to be associated with forcast, so either assumed all coord or all grid. Mixed case a lot more work & might not apply.
+      //    Point ID needs to be associated with forecast, so either assumed all coord or all grid. Mixed case a lot more work & might not apply.
       // const gridIds = [];
       // const gridXs = [];
       // const gridYs = [];
@@ -30,8 +32,8 @@ export const Forecasts = (props: Prop) => {
       updatedGroupForecasts.points?.forEach(point => {
         if (point.gridId) {
           console.log('Need to get forecasts by gridId!');
+          // TODO: ByGrid
           // gridIds.push(point.gridId);
-
           // gridXs.push(point.gridX);
           // gridYs.push(point.gridY);
         } else {
@@ -42,11 +44,11 @@ export const Forecasts = (props: Prop) => {
       })
 
       console.log('Getting forecasts for group:', updatedGroupForecasts.name);
+      // TODO: ByGrid
       // const results = await Promise.all([
       //   ForecastsApi.getForecastsByGrids(gridIds, gridXs, gridYs),
       //   ForecastsApi.getForecasts(latitudes, longitudes)
       // ]);
-
       // console.log('Forecast grid results: ', results[0].length);
       // console.log('Forecast coord results: ', results[1].length);
       // const forecasts = results[0].concat(results[1]);
@@ -54,7 +56,6 @@ export const Forecasts = (props: Prop) => {
       ForecastsApi.getForecasts(latitudes, longitudes)
         .then(result => {
           console.log('Forecast coord results: ', result.length);
-          // updatedGroupForecasts.forecasts = new Map();
           updatedGroupForecasts.forecasts = {};
           for (let i = 0; i < updatedGroupForecasts.points.length; i++) {
             updatedGroupForecasts.forecasts[updatedGroupForecasts.points[i].pointId] = result[i];
@@ -68,17 +69,27 @@ export const Forecasts = (props: Prop) => {
     return () => { };
   }, []);
 
-  // TODO: Make title clickable to select another group to display
-  // TODO: Make horizontal scroll bars or toggle arrows
+  const navigate = useNavigate();
 
-  // TODO: With fetched api data, also cache API data fetched for session (clear @ some interval/time of day when NOAA changes)
-
-  // TODO: Future improvements are to have a parent component state of timestamp of forecast last fetched for points,
-  //    and use this to determine which points to update forecasts for
+  const handleChange = (e) => {
+    e.preventDefault();
+    const id = e.target.value;
+    props.forecastGroupSelectionHandler(id);
+    navigate('/weekly');
+  }
 
   let key = 0;
   return (
     <div className="forecast-group">
+      <select id="groups" name="groups" onChange={handleChange} value={groupForecasts.groupId}>
+        {
+          props.pointGroups.map(pointGroup =>
+            <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>
+              {pointGroup.name}
+            </option>
+          )
+        }
+      </select>
       <h1>{groupForecasts.name} Forecasts</h1>
       {
         groupForecasts.forecasts &&

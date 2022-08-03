@@ -4,13 +4,20 @@ import { Forecasts } from './Forecasts';
 
 type Prop = {
   pointGroup: IGroupResponse;
+  pointGroups: IGroupResponse[];
+  forecastGroupSelectionHandler: (e) => void;
 };
 
 export const Forecast = (props: Prop) => {
 
   return (
     <>
-      <Forecasts pointGroup={props.pointGroup} />
+      <a href="/">Home</a>
+      <Forecasts
+        pointGroup={props.pointGroup}
+        pointGroups={props.pointGroups}
+        forecastGroupSelectionHandler={props.forecastGroupSelectionHandler}
+      />
     </>
   );
 }
