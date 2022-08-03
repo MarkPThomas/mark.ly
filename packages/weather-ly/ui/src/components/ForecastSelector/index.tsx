@@ -56,7 +56,11 @@ export const ForeCastSelector = (props: propsType) => {
           <label htmlFor="groups">Add to group:</label>
           <select id="groups" name="groups">
             <option value="none">-</option>
-            {props.pointGroups.map(pointGroup => <option value={pointGroup.groupId}>{pointGroup.name}</option>)}
+            {
+              props.pointGroups.map(pointGroup =>
+                <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>{pointGroup.name}</option>
+              )
+            }
           </select>
           <Button message='Add' onClick={undefined} cbArgs={undefined} />
         </div>
@@ -70,7 +74,11 @@ export const ForeCastSelector = (props: propsType) => {
             <label htmlFor="editGroup">Edit group:</label>
             <select id="editGroup" name="editGroup">
               <option value="none">-</option>
-              {props.pointGroups.map(pointGroup => <option value={pointGroup.groupId}>{pointGroup.name}</option>)}
+              {
+                props.pointGroups.map(pointGroup =>
+                  <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>{pointGroup.name}</option>
+                )
+              }
             </select>
             <Button message='Edit' onClick={undefined} cbArgs={undefined} />
           </div>
@@ -79,7 +87,11 @@ export const ForeCastSelector = (props: propsType) => {
             <label htmlFor="editGroup">Merge with group:</label>
             <select id="mergeGroup" name="mergeGroup">
               <option value="none">-</option>
-              {props.pointGroups.map(pointGroup => <option value={pointGroup.groupId}>{pointGroup.name}</option>)}
+              {
+                props.pointGroups.map(pointGroup =>
+                  <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>{pointGroup.name}</option>
+                )
+              }
             </select>
             <Button message='Merge' onClick={undefined} cbArgs={undefined} />
           </div>
@@ -93,7 +105,7 @@ export const ForeCastSelector = (props: propsType) => {
                 props.points.map(point => {
                   const pointId = point.pointId.toString();
                   return (
-                    <li>
+                    <li key={pointId}>
                       <input type="checkbox" id={pointId} name={pointId} value={pointId} />
                       <label htmlFor={pointId}>{point.name}</label>
                     </li>

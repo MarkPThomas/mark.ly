@@ -14,6 +14,7 @@ type Prop = {
 
 export const ForecastTiles = (props: Prop) => {
   const [forecast, setForecast] = useState({} as IForecastResponse);
+  const [showSnippet, setShowSnippet] = useState(false);
   let currentKey = 0;
 
   useEffect(() => {
@@ -42,8 +43,12 @@ export const ForecastTiles = (props: Prop) => {
     return () => { };
   }, []);
 
+  const handleClick = () => {
+    setShowSnippet(!showSnippet);
+  }
+
   return (
-    <div className="forecast-tiles">
+    <div className="forecast-tiles" onClick={handleClick}>
       {
         forecast.properties?.periods &&
         forecast.properties.periods.map((period: IForecastPeriod) =>
@@ -52,6 +57,7 @@ export const ForecastTiles = (props: Prop) => {
             title={period.name}
             url={period.icon}
             snippet={period.shortForecast}
+            showSnippet={showSnippet}
             temp={period.temperature}
             tempUnit={period.temperatureUnit}
             isDaytime={period.isDaytime}

@@ -79,7 +79,10 @@ export const App = () => {
           <Route path="/weekly" element={
             <Forecast
               key={forecastGroup.groupId}
-              pointGroup={forecastGroup} />
+              pointGroup={forecastGroup}
+              pointGroups={pointGroups}
+              forecastGroupSelectionHandler={handleForecastGroupSelection}
+            />
           } />
           <Route path="/hourly" element={
             <ForecastHourly
