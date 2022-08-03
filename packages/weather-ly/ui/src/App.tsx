@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,44 +6,92 @@ import {
   Navigate
 } from 'react-router-dom';
 
-import { ForecastCarousel } from './components/Forecast/ForecastCarousel';
-import { ForecastHourly } from './components/ForecastHourly/ForecastHourly';
-import { ForecastGrid } from './components/ForecastGrid/ForecastGrid';
-import { ForeCastSelector } from './components/ForecastSelector/ForecastSelector';
+import { Points as PointsApi } from './api';
 
-import pointsData from '../../server/db/mongo/data/weather_ly.points.json';
-import gridsData from '../../server/db/mongo/data/weather_ly.grids.json';
-import groupsData from '../../server/db/mongo/data/weather_ly.pointGroups.json';
+import { Forecast } from './components/Forecast';
+import { ForecastHourly } from './components/ForecastHourly';
+import { ForecastGrid } from './components/ForecastGrid';
+import { ForeCastSelector } from './components/ForecastSelector';
+
 import { IGroupResponse, IPointResponse } from '../../server/api/model';
 
+import pointsRaw from '../../server/data/weather_ly.points.json';
+console.log('pointsRaw: ', pointsRaw);
+import pointGroupsRaw from '../../server/data/weather_ly.pointGroups.json';
+console.log('pointGroupsRaw: ', pointGroupsRaw);
 
 export const App = () => {
-  const forecastTypes = {
-    grid: 'grid',
-    weekly: 'weekly',
-    hourly: 'hourly'
+  const [forecastGroup, setForecastGroup] = useState({} as IGroupResponse);
+  const [forecast, setForecast] = useState({} as IPointResponse);
+  const [points, setPoints] = useState([] as IPointResponse[]);
+  const [pointGroups, setPointGroups] = useState([] as IGroupResponse[]);
+
+  useEffect(() => {
+    if (points.length === 0) {
+      PointsApi.getPoints()
+        .then(result => {
+          console.log('getPoints: ', result);
+          setForecast(result[0]);
+          setPoints(result);
+        });
+    }
+
+    if (pointGroups.length === 0) {
+      PointsApi.getPointGroups()
+        .then(result => {
+          console.log('getPointGroups: ', result);
+          setForecastGroup(result[0]);
+          setPointGroups(result);
+        });
+    }
+  }, []);
+
+  const handleForecastGroupSelection = (groupId) => {
+    console.log('groupId: ', groupId);
+    console.log('pointGroups: ', pointGroups);
+    const selectedGroup = pointGroups.filter(pointGroup => pointGroup.groupId === groupId);
+    console.log('selectedGroup: ', selectedGroup);
+    setForecastGroup(selectedGroup[0]);
   }
 
-  const [forecastType, setForecastType] = useState(forecastTypes.weekly);
+  const handleForecastHourlySelection = (e) => {
+    console.log('handleForecastGroupSelection.e', e);
+    setForecast(points[e]);
+  }
 
-  const handleClick = (newForecastType) => {
-    console.log('Setting Type', newForecastType);
-    setForecastType(newForecastType);
+  const handleForecastGridSelection = (e) => {
+    console.log('handleForecastGroupSelection.e', e);
+    setForecast(points[e]);
   }
 
   return (
     <>
+      {console.log('forecastGroup: ', forecastGroup)}
       <Router>
         <Routes>
           <Route path="/" element={
             <ForeCastSelector
-              points={pointsData as IPointResponse[]}
-              pointGroups={groupsData as IGroupResponse[]}
+              points={points}
+              pointGroups={pointGroups}
+              forecastGroupSelectionHandler={handleForecastGroupSelection}
             />
           } />
-          <Route path="/weekly" element={<ForecastCarousel />} />
-          <Route path="/hourly" element={<ForecastHourly />} />
-          <Route path="/gridData" element={<ForecastGrid />} />
+          <Route path="/weekly" element={
+            <Forecast
+              key={forecastGroup.groupId}
+              pointGroup={forecastGroup}
+              pointGroups={pointGroups}
+              forecastGroupSelectionHandler={handleForecastGroupSelection}
+            />
+          } />
+          <Route path="/hourly" element={
+            <ForecastHourly
+              point={forecast} />
+          } />
+          <Route path="/gridData" element={
+            <ForecastGrid
+              point={forecast} />
+          } />
           <Route path="/home">
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

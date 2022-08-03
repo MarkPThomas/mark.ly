@@ -17,6 +17,7 @@
     "start:prod:client": "echo starting client... && webpack server --config webpack.client.config.js --node-env production",
     "start:dev:server": "echo starting server... && nodemon --ignore dist --exec 'node dist/server/bundle.js'",
     "start:prod:server": "echo starting server... && node dist/server/bundle.js",
+    "start:dev:server:watch": "npm-run-all --parallel start:dev:server build:dev:server:watch",
     "start:dev:browserless": "npm-run-all --parallel start:dev:server build:dev:server:watch start:dev:client",
     "start:dev": "npm-run-all --parallel start:dev:server build:dev:server:watch start:dev:client sync:watch",
     "start:prod": "npm-run-all --parallel start:prod:server start:prod:client",

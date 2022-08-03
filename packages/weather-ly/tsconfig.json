@@ -14,11 +14,20 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "paths": {
+      "common/*": [
+        "../../../common/*"
+      ],
+      "server/*": [
+        "../../server/*"
+      ]
+    },
     "preserveSymlinks": true,
     "resolveJsonModule": true
   },
   "include": [
     "ui",
-    "server"
+    "server",
+    "../common/utils"
   ]
 }

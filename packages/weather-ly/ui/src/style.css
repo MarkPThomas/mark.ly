@@ -12,11 +12,29 @@ html {
   background-repeat: no-repeat;
 }
 
-.forecast-carousel {
+.forecast-group-header {
+  display: flex;
+  align-items: flex-end;
+}
+
+.forecast-group-header>h2 {
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-bottom: 0;
+}
+
+.forecast-group-header>div {
+  font-size: 9pt;
+  margin: 0 10px;
+}
+
+.forecast-tiles {
   display: flex;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 9pt;
   margin: 10px 0;
+  /* flex-direction: column;
+  justify-content: space-between; */
 }
 
 .forecast-tile {

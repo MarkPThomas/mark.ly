@@ -8,6 +8,6 @@ app.listen(port, () => {
   Logger.log(`Listening to ${config.app.appName} on port ${port}`);
 })
 
-connectDB();
+// connectDB();
 
 export default app;

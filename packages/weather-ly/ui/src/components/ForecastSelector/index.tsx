@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import {
   IPointResponse,
   IGroupResponse
@@ -8,9 +10,20 @@ import { Button } from "../../shared/components/Button";
 type propsType = {
   points: IPointResponse[];
   pointGroups: IGroupResponse[];
+  forecastGroupSelectionHandler: (e) => void
 }
 
 export const ForeCastSelector = (props: propsType) => {
+  console.log('pointGroups: ', props.pointGroups);
+
+  const navigate = useNavigate();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const id = e.target.parentNode.id;
+    props.forecastGroupSelectionHandler(id);
+    navigate('/weekly');
+  }
 
   return (
     <>
@@ -22,7 +35,10 @@ export const ForeCastSelector = (props: propsType) => {
               props.pointGroups.map(pointGroup => {
                 const url = `/groupForecast/${pointGroup.groupId.toString()}`;
 
-                return (<li><a href={url}>{pointGroup.name}</a></li>);
+                return (
+                  <li id={String(pointGroup.groupId)} key={pointGroup.groupId}>
+                    <a href={'/weekly'} onClick={handleClick}>{pointGroup.name}</a>
+                  </li>);
               })
             }
           </ul>
@@ -40,7 +56,11 @@ export const ForeCastSelector = (props: propsType) => {
           <label htmlFor="groups">Add to group:</label>
           <select id="groups" name="groups">
             <option value="none">-</option>
-            {props.pointGroups.map(pointGroup => <option value={pointGroup.groupId}>{pointGroup.name}</option>)}
+            {
+              props.pointGroups.map(pointGroup =>
+                <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>{pointGroup.name}</option>
+              )
+            }
           </select>
           <Button message='Add' onClick={undefined} cbArgs={undefined} />
         </div>
@@ -54,7 +74,11 @@ export const ForeCastSelector = (props: propsType) => {
             <label htmlFor="editGroup">Edit group:</label>
             <select id="editGroup" name="editGroup">
               <option value="none">-</option>
-              {props.pointGroups.map(pointGroup => <option value={pointGroup.groupId}>{pointGroup.name}</option>)}
+              {
+                props.pointGroups.map(pointGroup =>
+                  <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>{pointGroup.name}</option>
+                )
+              }
             </select>
             <Button message='Edit' onClick={undefined} cbArgs={undefined} />
           </div>
@@ -63,7 +87,11 @@ export const ForeCastSelector = (props: propsType) => {
             <label htmlFor="editGroup">Merge with group:</label>
             <select id="mergeGroup" name="mergeGroup">
               <option value="none">-</option>
-              {props.pointGroups.map(pointGroup => <option value={pointGroup.groupId}>{pointGroup.name}</option>)}
+              {
+                props.pointGroups.map(pointGroup =>
+                  <option key={String(pointGroup.groupId)} value={pointGroup.groupId}>{pointGroup.name}</option>
+                )
+              }
             </select>
             <Button message='Merge' onClick={undefined} cbArgs={undefined} />
           </div>
@@ -77,7 +105,7 @@ export const ForeCastSelector = (props: propsType) => {
                 props.points.map(point => {
                   const pointId = point.pointId.toString();
                   return (
-                    <li>
+                    <li key={pointId}>
                       <input type="checkbox" id={pointId} name={pointId} value={pointId} />
                       <label htmlFor={pointId}>{point.name}</label>
                     </li>
@@ -85,13 +113,13 @@ export const ForeCastSelector = (props: propsType) => {
                 })
               }
             </ul>
-            <h2>In Group: {props.pointGroups[0].name}</h2>
+            <h2>In Group: {props.pointGroups[0]?.name}</h2>
             <ul>
               {
-                props.pointGroups[0].points.map(point => {
+                props.pointGroups[0]?.points.map(point => {
                   const pointId = point.pointId.toString();
                   return (
-                    <li>
+                    <li key={pointId}>
                       <input type="checkbox" id={pointId} name={pointId} value={pointId} />
                       <label htmlFor={pointId}>{point.name}</label>
                     </li>
