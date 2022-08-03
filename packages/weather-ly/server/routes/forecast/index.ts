@@ -23,10 +23,6 @@ export const getForecasts = async (req: Request, res: Response, next) => {
   const longitudes = (req.query.longs as string).split(',');
   const grids = req.params.grids;
 
-  console.log('req.query: ', req.query);
-  console.log('latitudes:', latitudes);
-  console.log('longitudes:', longitudes);
-
   if (
     Array.isArray(latitudes) && Array.isArray(longitudes)
     && latitudes.length
