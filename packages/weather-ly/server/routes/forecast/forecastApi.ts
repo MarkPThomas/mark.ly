@@ -1,4 +1,4 @@
-import { ICoordinate } from '../../api/model';
+import { ICoordinate, IGrid } from '../../api/model';
 import { Point } from '../../api/forecast';
 
 export const getForecast = (coord: ICoordinate) => {
@@ -9,6 +9,6 @@ export const getForecasts = (coords: ICoordinate[]) => {
   return Point.getForecasts(coords);
 }
 
-export const getForecastsByGroup = (groupName: string) => {
-  return Point.getForecastsByGroup(groupName);
+export const getForecastsByGrids = (grids: IGrid[]) => {
+  return Point.getForecastsByGrids(grids);
 }

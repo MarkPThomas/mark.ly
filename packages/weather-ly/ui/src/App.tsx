@@ -6,12 +6,12 @@ import {
   Navigate
 } from 'react-router-dom';
 
-import { Points } from './api';
+import { Points as PointsApi } from './api';
 
 import { Forecast } from './components/Forecast';
-import { ForecastHourly } from './components/ForecastHourly/ForecastHourly';
-import { ForecastGrid } from './components/ForecastGrid/ForecastGrid';
-import { ForeCastSelector } from './components/ForecastSelector/ForecastSelector';
+import { ForecastHourly } from './components/ForecastHourly';
+import { ForecastGrid } from './components/ForecastGrid';
+import { ForeCastSelector } from './components/ForecastSelector';
 
 import { IGroupResponse, IPointResponse } from '../../server/api/model';
 
@@ -28,7 +28,7 @@ export const App = () => {
 
   useEffect(() => {
     if (points.length === 0) {
-      Points.getPoints()
+      PointsApi.getPoints()
         .then(result => {
           console.log('getPoints: ', result);
           setForecast(result[0]);
@@ -37,7 +37,7 @@ export const App = () => {
     }
 
     if (pointGroups.length === 0) {
-      Points.getPointGroups()
+      PointsApi.getPointGroups()
         .then(result => {
           console.log('getPointGroups: ', result);
           setForecastGroup(result[0]);
@@ -46,19 +46,49 @@ export const App = () => {
     }
   }, []);
 
+  const handleForecastGroupSelection = (groupId) => {
+    console.log('groupId: ', groupId);
+    console.log('pointGroups: ', pointGroups);
+    const selectedGroup = pointGroups.filter(pointGroup => pointGroup.groupId === groupId);
+    console.log('selectedGroup: ', selectedGroup);
+    setForecastGroup(selectedGroup[0]);
+  }
+
+  const handleForecastHourlySelection = (e) => {
+    console.log('handleForecastGroupSelection.e', e);
+    setForecast(points[e]);
+  }
+
+  const handleForecastGridSelection = (e) => {
+    console.log('handleForecastGroupSelection.e', e);
+    setForecast(points[e]);
+  }
+
   return (
     <>
+      {console.log('forecastGroup: ', forecastGroup)}
       <Router>
         <Routes>
           <Route path="/" element={
             <ForeCastSelector
               points={points}
               pointGroups={pointGroups}
+              forecastGroupSelectionHandler={handleForecastGroupSelection}
             />
           } />
-          <Route path="/weekly" element={<Forecast pointGroup={forecastGroup} />} />
-          <Route path="/hourly" element={<ForecastHourly point={forecast} />} />
-          <Route path="/gridData" element={<ForecastGrid point={forecast} />} />
+          <Route path="/weekly" element={
+            <Forecast
+              key={forecastGroup.groupId}
+              pointGroup={forecastGroup} />
+          } />
+          <Route path="/hourly" element={
+            <ForecastHourly
+              point={forecast} />
+          } />
+          <Route path="/gridData" element={
+            <ForecastGrid
+              point={forecast} />
+          } />
           <Route path="/home">
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

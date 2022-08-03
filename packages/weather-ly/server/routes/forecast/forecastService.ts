@@ -4,6 +4,7 @@ import * as data from './forecastData';
 import {
   ICoordinate,
   IForecastResponse,
+  IGrid,
   IGridResponse,
   IGroupResponse,
   IPointResponse
@@ -15,25 +16,37 @@ export const getForecast = (coord: ICoordinate): Promise<IForecastResponse> => {
 };
 
 export const getForecasts = (coords: ICoordinate[] = []): Promise<IForecastResponse[]> => {
+  console.log('coords: ', coords);
   if (coords.length) {
+    console.log('getForecasts from api');
     return api.getForecasts(coords);
   } else {
-    return new Promise((resolve, reject) => {
-      console.log('Getting forecasts from data...')
-      const result: IForecastResponse[] = data.getStaticForecasts();
-      if (result) {
-        console.log('getForecasts Result: ', result);
-        resolve(result);
-      } else {
-        console.log('getForecasts faied!');
-        reject();
-      }
-    });
+    console.log('getForecasts from static data');
+    return getDataForecasts();
   }
 };
 
-export const getForecastsByGroup = (groupName: string) => {
-  return api.getForecastsByGroup(groupName);
+export const getForecastsByGrids = (grids: IGrid[] = []) => {
+  if (grids.length) {
+    return api.getForecastsByGrids(grids);
+  } else {
+    console.log('getForecastsByGridIds from static data');
+    return getDataForecasts();
+  }
+};
+
+const getDataForecasts = (): Promise<IForecastResponse[]> => {
+  return new Promise((resolve, reject) => {
+    console.log('Getting forecasts from data...')
+    const result: IForecastResponse[] = data.getStaticForecasts();
+    if (result) {
+      console.log('getForecasts Result: ', result);
+      resolve(result);
+    } else {
+      console.log('getForecasts faied!');
+      reject();
+    }
+  });
 };
 
 export const getAllPoints = (): Promise<IPointResponse[]> => {

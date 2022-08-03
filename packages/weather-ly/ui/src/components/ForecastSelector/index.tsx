@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import {
   IPointResponse,
   IGroupResponse
@@ -8,10 +10,21 @@ import { Button } from "../../shared/components/Button";
 type propsType = {
   points: IPointResponse[];
   pointGroups: IGroupResponse[];
+  forecastGroupSelectionHandler: (e) => void
 }
 
 export const ForeCastSelector = (props: propsType) => {
   console.log('pointGroups: ', props.pointGroups);
+
+  const navigate = useNavigate();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const id = e.target.parentNode.id;
+    props.forecastGroupSelectionHandler(id);
+    navigate('/weekly');
+  }
+
   return (
     <>
       <div>
@@ -22,7 +35,10 @@ export const ForeCastSelector = (props: propsType) => {
               props.pointGroups.map(pointGroup => {
                 const url = `/groupForecast/${pointGroup.groupId.toString()}`;
 
-                return (<li key={url}><a href={url}>{pointGroup.name}</a></li>);
+                return (
+                  <li id={String(pointGroup.groupId)} key={pointGroup.groupId}>
+                    <a href={'/weekly'} onClick={handleClick}>{pointGroup.name}</a>
+                  </li>);
               })
             }
           </ul>

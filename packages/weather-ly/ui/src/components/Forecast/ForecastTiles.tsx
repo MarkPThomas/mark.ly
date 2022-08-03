@@ -8,7 +8,8 @@ import { Forecasts } from '../../api';
 import { ForecastTile } from './ForecastTile';
 
 type Prop = {
-  coordinate: IPointResponse;
+  coordinate?: IPointResponse;
+  forecast?: IForecastResponse;
 };
 
 export const ForecastTiles = (props: Prop) => {
@@ -16,8 +17,15 @@ export const ForecastTiles = (props: Prop) => {
   let currentKey = 0;
 
   useEffect(() => {
+    const forecastProps = props.forecast;
+    console.log('ForecastTiles-forecast: ', forecast);
+    console.log('ForecastTiles-forecastProps: ', forecastProps);
     const coordinate = props.coordinate;
-    if (coordinate) {
+    console.log('ForecastTiles-coordinate: ', coordinate);
+    if (forecastProps && !Object.keys(forecast).length) {
+      console.log('Setting supplied forecasts');
+      setForecast(forecastProps);
+    } else if (coordinate && !Object.keys(forecast).length) {
       const latitude = coordinate.latitude.toString();
       const longitude = coordinate.longitude.toString();
       console.log('Getting forecast for coordinate:', coordinate);
@@ -35,26 +43,21 @@ export const ForecastTiles = (props: Prop) => {
   }, []);
 
   return (
-    <>
-      <div className="forecast-tiles">
-        {
-          forecast.properties && forecast.properties.periods &&
-          forecast.properties.periods.map((period: IForecastPeriod) =>
-            <ForecastTile
-              key={`${props.coordinate.latitude}-${props.coordinate.longitude}-${currentKey++}`}
-              title={period.name}
-              url={period.icon}
-              snippet={period.shortForecast}
-              temp={period.temperature}
-              tempUnit={period.temperatureUnit}
-              isDaytime={period.isDaytime}
-            />
-          )
-        }
-      </div>
-      {/* <pre>
-        {JSON.stringify(forecast, null, 2)}
-      </pre> */}
-    </>
+    <div className="forecast-tiles">
+      {
+        forecast.properties?.periods &&
+        forecast.properties.periods.map((period: IForecastPeriod) =>
+          <ForecastTile
+            key={`${props.coordinate.latitude}-${props.coordinate.longitude}-${currentKey++}`}
+            title={period.name}
+            url={period.icon}
+            snippet={period.shortForecast}
+            temp={period.temperature}
+            tempUnit={period.temperatureUnit}
+            isDaytime={period.isDaytime}
+          />
+        )
+      }
+    </div>
   );
 }

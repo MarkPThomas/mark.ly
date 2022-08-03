@@ -19,10 +19,19 @@ export const getForecast = async (req: Request, res: Response, next) => {
 }
 
 export const getForecasts = async (req: Request, res: Response, next) => {
-  const latitudes = req.query.lats;
-  const longitudes = req.query.longs;
-  const groupName = req.params.groupName;
-  if (Array.isArray(latitudes) && Array.isArray(longitudes) && latitudes.length === longitudes.length) {
+  const latitudes = (req.query.lats as string).split(',');
+  const longitudes = (req.query.longs as string).split(',');
+  const grids = req.params.grids;
+
+  console.log('req.query: ', req.query);
+  console.log('latitudes:', latitudes);
+  console.log('longitudes:', longitudes);
+
+  if (
+    Array.isArray(latitudes) && Array.isArray(longitudes)
+    && latitudes.length
+    && latitudes.length === longitudes.length
+  ) {
     const coords: ICoordinate[] = [];
     for (let i = 0; i < latitudes.length; i++) {
       const latitude = Number(latitudes[i]);
@@ -38,8 +47,11 @@ export const getForecasts = async (req: Request, res: Response, next) => {
 
     const result = await forecastService.getForecasts(coords);
     res.send(result);
-  } else if (groupName) {
-    const result = await forecastService.getForecastsByGroup(groupName);
+  } else if (
+    Array.isArray(grids)
+    && grids.length
+  ) {
+    const result = await forecastService.getForecastsByGrids(grids);
     res.send(result);
   } else {
     console.log('Getting static forecasts');

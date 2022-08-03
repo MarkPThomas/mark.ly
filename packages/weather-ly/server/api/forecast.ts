@@ -20,7 +20,7 @@ class GridCache {
     let currentGrid = null;
     GridCache.cache.forEach(grid => {
       if (grid.isInGrid(coord)) {
-        console.log(`Getting Grid ${JSON.stringify(grid)} from cache ${JSON.stringify(GridCache.cache)}`);
+        console.log(`Getting Grid from cache`);
         currentGrid = grid;
         return;
       }
@@ -34,7 +34,7 @@ class GridCache {
       if (gridCurrent.gridId === grid.gridId
         && gridCurrent.gridX === grid.gridX
         && gridCurrent.gridY === grid.gridY) {
-        console.log(`Getting Grid index ${indexCurrent} from cache ${JSON.stringify(GridCache.cache)}`);
+        console.log(`Getting Grid index from cache`);
         index = indexCurrent;
         return;
       }
@@ -130,41 +130,16 @@ type offsetForecast = {
   rawForecast: IForecastResponse
 };
 
-export class Point {
+const alignAndTrimForecasts = (rawForecasts: IForecastResponse[]): IForecastResponse[] => {
+  // Determine offset index
+  let maxDayIndexOffset = 0;
+  let minDayIndexOffset = Number.POSITIVE_INFINITY;
+  let minLength = Number.POSITIVE_INFINITY;
 
-  static async getForecastGridData(coord: ICoordinate): Promise<IForecastGridResponse> {
-    const grid: [IGrid, boolean] = await Point.getGrid(coord);
-    return GridPoint.getForecastGridData(grid[0], grid[1]);
-  }
+  const offsetForecasts: offsetForecast[] = [];
+  rawForecasts.forEach(rawForecast => {
+    if (rawForecast) {
 
-  static async getForecast(coord: ICoordinate, writeData = false): Promise<IForecastResponse> {
-    const grid: [IGrid, boolean] = await Point.getGrid(coord);
-    const response = await GridPoint.getForecast(grid[0], grid[1]);
-    if (writeData && response) {
-      console.log('Writing response to file...');
-      fsPromises.writeFile(
-        `./server/data/forecast.lat${coord.latitude}.long${coord.longitude}.json`,
-        JSON.stringify(response, null, '\t'),
-        'utf-8'
-      )
-    }
-    return response;
-  }
-
-  static async getForecasts(coords: ICoordinate[]): Promise<IForecastResponse[]> {
-    const forecastCBs = [];
-    coords.forEach(coord => {
-      forecastCBs.push(() => Point.getForecast(coord));
-    })
-    const rawForecasts: IForecastResponse[] = await Promise.all(forecastCBs);
-
-    // Determine offset index
-    let maxDayIndexOffset = 0;
-    let minDayIndexOffset = Number.POSITIVE_INFINITY;
-    let minLength = Number.POSITIVE_INFINITY;
-
-    const offsetForecasts: offsetForecast[] = [];
-    rawForecasts.forEach(rawForecast => {
       const periods = rawForecast.properties.periods;
       const offsetForecast: offsetForecast = {
         offset: 0,
@@ -192,32 +167,68 @@ export class Point {
         }
       }
       offsetForecasts.push(offsetForecast);
-    });
-    console.log('offset Forecasts: ', offsetForecasts);
+    }
+  });
+  console.log('offset Forecasts: ', offsetForecasts);
 
-    // Trim left or right to new array
-    const normalizedForecasts: IForecastResponse[] = [];
-    const deltaDayIndexOffset = maxDayIndexOffset - minDayIndexOffset;
-    const deltaMinLength = minLength + deltaDayIndexOffset;
-    offsetForecasts.forEach(offsetForecast => {
-      const localDeltaMaxIndex = maxDayIndexOffset - offsetForecast.offset;
-      const localStartIndex = deltaDayIndexOffset + localDeltaMaxIndex;
-      const localEndIndex = localStartIndex + deltaMinLength;
+  // Trim left or right to new array
+  const normalizedForecasts: IForecastResponse[] = [];
+  const deltaDayIndexOffset = maxDayIndexOffset - minDayIndexOffset;
+  const deltaMinLength = minLength + deltaDayIndexOffset;
+  offsetForecasts.forEach(offsetForecast => {
+    const localDeltaMaxIndex = maxDayIndexOffset - offsetForecast.offset;
+    const localStartIndex = deltaDayIndexOffset + localDeltaMaxIndex;
+    const localEndIndex = localStartIndex + deltaMinLength;
 
-      const normalizedPeriods = offsetForecast.rawForecast.properties.periods.slice(localStartIndex, localEndIndex);
-      console.log('normalized periods: ', normalizedPeriods);
-      offsetForecast.rawForecast.properties.periods = normalizedPeriods;
-      normalizedForecasts.push(offsetForecast.rawForecast);
-    })
-    console.log('normalized Forecasts: ', normalizedForecasts);
+    const normalizedPeriods = offsetForecast.rawForecast.properties.periods.slice(localStartIndex, localEndIndex);
+    console.log('normalized periods: ', normalizedPeriods);
+    offsetForecast.rawForecast.properties.periods = normalizedPeriods;
+    normalizedForecasts.push(offsetForecast.rawForecast);
+  })
+  console.log('normalized Forecasts: ', normalizedForecasts);
 
-    return normalizedForecasts;
+  return normalizedForecasts;
+}
+
+export class Point {
+
+  static async getForecastGridData(coord: ICoordinate): Promise<IForecastGridResponse> {
+    const grid: [IGrid, boolean] = await Point.getGrid(coord);
+    return GridPoint.getForecastGridData(grid[0], grid[1]);
   }
 
-  static async getForecastsByGroup(groupName: string): Promise<IForecastResponse[]> {
-    // TODO: Get coords by group name
-    const coords = [];
-    return Point.getForecasts(coords);
+  static async getForecast(coord: ICoordinate, writeData = false): Promise<IForecastResponse> {
+    const grid: [IGrid, boolean] = await Point.getGrid(coord);
+    console.log('Getting forecast for coord: ', coord);
+    const response = await GridPoint.getForecast(grid[0], grid[1]);
+    if (writeData && response) {
+      console.log('Writing response to file...');
+      fsPromises.writeFile(
+        `./server/data/forecast.lat${coord.latitude}.long${coord.longitude}.json`,
+        JSON.stringify(response, null, '\t'),
+        'utf-8'
+      )
+    }
+    return response;
+  }
+
+  static async getForecasts(coords: ICoordinate[]): Promise<IForecastResponse[]> {
+    const forecastCBs = [];
+    coords.forEach(coord => {
+      forecastCBs.push(Point.getForecast(coord)); // TODO: See about changes to updateCache
+    })
+    const rawForecasts: IForecastResponse[] = await Promise.all(forecastCBs);
+    console.log('rawForecasts: ', rawForecasts);
+    return alignAndTrimForecasts(rawForecasts);
+  }
+
+  static async getForecastsByGrids(grids: IGrid[]): Promise<IForecastResponse[]> {
+    const forecastCBs = [];
+    grids.forEach(grid => {
+      forecastCBs.push(() => GridPoint.getForecast(grid)); // TODO: See about changes to updateCache
+    })
+    const rawForecasts: IForecastResponse[] = await Promise.all(forecastCBs);
+    return alignAndTrimForecasts(rawForecasts);
   }
 
   static async getForecastHourly(coord: ICoordinate): Promise<IForecastResponse> {
