@@ -12,6 +12,8 @@ import { Forecast } from './components/Forecast';
 import { ForecastHourly } from './components/ForecastHourly';
 import { ForecastGrid } from './components/ForecastGrid';
 import { ForeCastSelector } from './components/ForecastSelector';
+import { Location } from './components/Location';
+import { Group } from './components/Group';
 
 import { IGroupResponse, IPointResponse } from '../../server/api/model';
 
@@ -71,7 +73,6 @@ export const App = () => {
         <Routes>
           <Route path="/" element={
             <ForeCastSelector
-              points={points}
               pointGroups={pointGroups}
               forecastGroupSelectionHandler={handleForecastGroupSelection}
             />
@@ -91,6 +92,16 @@ export const App = () => {
           <Route path="/gridData" element={
             <ForecastGrid
               point={forecast} />
+          } />
+          <Route path="/location" element={
+            <Location
+              points={points}
+              pointGroups={pointGroups} />
+          } />
+          <Route path="/group" element={
+            <Group
+              points={points}
+              pointGroups={pointGroups} />
           } />
           <Route path="/home">
           </Route>
