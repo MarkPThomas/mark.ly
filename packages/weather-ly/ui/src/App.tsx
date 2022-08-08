@@ -43,7 +43,7 @@ export const App = () => {
     }
   }, []);
 
-  const handleForecastGroupSelection = (groupId) => {
+  const handleForecastGroupSelection = (groupId: string) => {
     console.log('groupId: ', groupId);
     console.log('pointGroups: ', pointGroups);
     const selectedGroup = pointGroups.filter(pointGroup => pointGroup.groupId === groupId);

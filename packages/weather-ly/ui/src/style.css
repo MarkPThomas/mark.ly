@@ -109,3 +109,28 @@ input:invalid {
   outline: 2px solid red;
   border-radius: 5px;
 }
+
+.pt-item {
+  border: black solid 1px;
+  border-radius: 5px;
+  background-color: beige;
+  padding: 0 5px;
+}
+
+.pt-item:hover {
+  border: blue solid 2px;
+  background-color: bisque;
+  cursor: pointer;
+}
+
+.pt-item-title {
+  display: flex;
+}
+
+.pt-item-name {
+  font-weight: bold;
+}
+
+.pt-item-coords {
+  font-style: italic;
+}
