@@ -71,3 +71,41 @@ html {
 .temp-high {
   color: #ef3725;
 }
+
+.pt-editor {
+  display: flex;
+}
+
+.pt-editor>.add-plus {
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 0 5px;
+  margin: 0 5px;
+  cursor: pointer;
+  color: green;
+  font-weight: bold;
+  background-color: aquamarine
+}
+
+.pt-editor>.add-plus.disabled {
+  cursor: not-allowed;
+  font-weight: normal;
+  color: gray;
+  border: gray;
+  background-color: #999;
+}
+
+.pt-editor-error {
+  background-color: ivory;
+  border: none;
+  outline: 2px solid red;
+  border-radius: 5px;
+  color: red;
+}
+
+input:invalid {
+  background-color: ivory;
+  border: none;
+  outline: 2px solid red;
+  border-radius: 5px;
+}

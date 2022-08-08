@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ErrorBoundary from '../../shared/components/ErrorBoundary';
+import { ErrorBoundary } from '../../shared/components/ErrorBoundary';
 
 import { Forecasts as ForecastsApi } from '../../api';
 import { IGroupResponse } from "../../../../server/api/model";

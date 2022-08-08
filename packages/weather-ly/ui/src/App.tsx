@@ -17,11 +17,6 @@ import { Group } from './components/Group';
 
 import { IGroupResponse, IPointResponse } from '../../server/api/model';
 
-import pointsRaw from '../../server/data/weather_ly.points.json';
-console.log('pointsRaw: ', pointsRaw);
-import pointGroupsRaw from '../../server/data/weather_ly.pointGroups.json';
-console.log('pointGroupsRaw: ', pointGroupsRaw);
-
 export const App = () => {
   const [forecastGroup, setForecastGroup] = useState({} as IGroupResponse);
   const [forecast, setForecast] = useState({} as IPointResponse);
@@ -66,6 +61,19 @@ export const App = () => {
     setForecast(points[e]);
   }
 
+  const addPoint = (point: IPointResponse) => {
+    // TODO: Push update to server for getting new points
+    console.log('Adding point!', point);
+    // TODO: Add validation of unique points in local set?
+    // TODO: Add validation of unique points in server global set?
+
+    console.log('Old Points:', points);
+    const newPoints = [...points];
+    newPoints.unshift(point);
+    setPoints(newPoints);
+    console.log('New Points:', points);
+  };
+
   return (
     <>
       {console.log('forecastGroup: ', forecastGroup)}
@@ -96,7 +104,11 @@ export const App = () => {
           <Route path="/location" element={
             <Location
               points={points}
-              pointGroups={pointGroups} />
+              pointGroup={forecastGroup}
+              pointGroups={pointGroups}
+              forecastGroupSelectionHandler={handleForecastGroupSelection}
+              addPointsHandler={addPoint}
+            />
           } />
           <Route path="/group" element={
             <Group

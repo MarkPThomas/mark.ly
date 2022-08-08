@@ -14,9 +14,9 @@ export const ForeCastSelector = (props: propsType) => {
 
   const navigate = useNavigate();
 
-  const handleClick = (e) => {
-    e.preventDefault();
-    const id = e.target.parentNode.id;
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+    const id = event.currentTarget.parentElement.id;
     props.forecastGroupSelectionHandler(id);
     navigate('/weekly');
   }
