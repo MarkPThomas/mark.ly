@@ -20,25 +20,6 @@ type propsType = {
 }
 
 export const Location = (props: propsType) => {
-  const [currentPoint, setCurrentPoint] = useState({} as IPointResponse);
-  const [showForecast, setShowForecast] = useState(false);
-  const [groupForecasts, setGroupForecasts] = useState(props.pointGroup);
-
-  // const handleAddToGroup = (
-  //   event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  // ) => {
-
-  // }
-
-  // const handleShowForecast = () => {
-  //   setShowForecast(!showForecast);
-  // }
-
-  // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   event.preventDefault();
-  //   const id = event.target.value;
-  //   props.forecastGroupSelectionHandler(id);
-  // }
 
   return (
     <>

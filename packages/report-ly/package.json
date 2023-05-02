@@ -1,7 +1,7 @@
 {
   "name": "report-ly",
   "version": "1.0.0",
-  "description": "",
+  "description": "An app to render trip reports.",
   "main": "server/index.ts",
   "scripts": {
     "build:dev:client": "webpack --config webpack.client.config.js --node-env development",
