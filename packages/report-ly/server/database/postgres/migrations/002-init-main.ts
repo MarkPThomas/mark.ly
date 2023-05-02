@@ -1,4 +1,4 @@
-export class _template1 {
+export class InitMain002 {
   public async up(client): Promise<void> {
     await client.query(
       `CREATE TABLE "report_trip" (
@@ -25,7 +25,7 @@ export class _template1 {
           REFERENCES "page" ("id")
           ON DELETE SET NULL
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=1022`
     );
 
     await client.query(
@@ -64,7 +64,7 @@ export class _template1 {
           REFERENCES "report_video" ("id")
           ON DELETE SET NULL
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=34331`
     );
 
     // Many-to-many

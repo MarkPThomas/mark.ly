@@ -9,13 +9,18 @@ app.listen(port, () => {
 
 export default app;
 
-// axios.get(`https://api.weather.gov/gridpoints/BOU/39,55/forecast`)
-//   .then(res => {
-//     const div = document.createElement('div');
-//     div.setAttribute('id', 'App');
-//     document.body.appendChild(div);
-//     ReactDOM.render(<App />, div);
-//   })
-//   .catch(err => {
-//     console.log(err.stack);
-//   });
+// public static $blogCategories = [
+//   'trip-reports' => 'Trip Reports',
+//   'articles' => 'Articles'
+// ];
+
+// public static $reportCategories = [
+//   'alaska' => 'Alaska',
+//   'california' => 'California',
+//   'canada' => 'Canada',
+//   'colorado' => 'Colorado',
+//   'idaho' => 'Idaho',
+//   'utah' => 'Utah',
+//   'washington' => 'Washington',
+//   'wyoming' => 'Wyoming'
+// ];
