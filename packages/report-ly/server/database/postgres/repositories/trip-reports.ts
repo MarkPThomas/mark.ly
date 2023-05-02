@@ -1,3 +1,4 @@
+import { Connection, getConnection } from '..';
 import { fooBar } from '../../../interfaces';
 
 export class TripReportsRepository {
