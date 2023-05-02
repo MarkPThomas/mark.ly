@@ -1,7 +1,9 @@
 
 // TODO: Needs user table for page table
+// TODO: See about decoupling report_trip from page table. Maintain association a different way.
+//    Maybe also for album, photo, video (media service?) & reference (data service?)
 
-export class _template1 {
+export class Init001 {
   public async up(client): Promise<void> {
     // Common
     // Enums
@@ -13,27 +15,6 @@ export class _template1 {
         PRIMARY KEY("id")
       )`
     );
-
-
-
-    // Uncertain
-    // await client.query(
-    //   `CREATE TABLE "photo_annotated" (
-    //     "id" int(11) NOT NULL AUTO_INCREMENT,
-    //     "title" varchar(100) NOT NULL,
-    //     "url" varchar(200) DEFAULT NULL,
-    //     "tasks" text,
-    //     "status_id" int(11) NOT NULL DEFAULT '1',
-    //     "is_public" tinyint(1) NOT NULL DEFAULT '0',
-    //     PRIMARY KEY ("id"),
-    //     KEY "fk_annotated_images_status1_idx" ("status_id"),
-    //     CONSTRAINT "fk_annotated_images_status1"
-    //       FOREIGN KEY ("status_id")
-    //       REFERENCES "status" ("id")
-    //       ON DELETE CASCADE
-    //       ON UPDATE CASCADE
-    //   )`
-    // );
 
     // Media
     await client.query(
@@ -71,7 +52,7 @@ export class _template1 {
           REFERENCES "status" ("id")
           ON DELETE CASCADE
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=285`
     );
 
     await client.query(
@@ -96,7 +77,7 @@ export class _template1 {
           REFERENCES "photo_album" ("id")
           ON DELETE CASCADE
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=31334`
     );
 
     await client.query(
@@ -120,7 +101,7 @@ export class _template1 {
           REFERENCES "photo_album" ("id")
           ON DELETE SET NULL
           ON UPDATE CASCADE
-      )`
+      )  AUTO_INCREMENT=247`
     );
 
     await client.query(
@@ -142,7 +123,7 @@ export class _template1 {
           REFERENCES "status" ("id")
           ON DELETE CASCADE
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=447`
     );
 
     await client.query(
@@ -197,7 +178,7 @@ export class _template1 {
           REFERENCES "photo" ("id")
           ON DELETE CASCADE
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=31678`
     );
 
     await client.query(
@@ -213,7 +194,7 @@ export class _template1 {
           REFERENCES "video" ("id")
           ON DELETE CASCADE
           ON UPDATE CASCADE
-      )`
+      ) AUTO_INCREMENT=250`
     );
 
     // Enums
@@ -223,7 +204,7 @@ export class _template1 {
         "name" varchar(100) NOT NULL,
         "description" varchar(500) DEFAULT NULL,
         PRIMARY KEY("id")
-      )`
+      ) AUTO_INCREMENT=5`
     );
 
     await client.query(
@@ -232,9 +213,10 @@ export class _template1 {
         "name" varchar(45) NOT NULL,
         "description" varchar(500) DEFAULT NULL,
         PRIMARY KEY ("id")
-      )`
+      ) AUTO_INCREMENT=6`
     );
 
+    // Other
     await client.query(
       `CREATE TABLE "page" (
         "id" int(11) NOT NULL AUTO_INCREMENT,
@@ -260,95 +242,69 @@ export class _template1 {
       ) AUTO_INCREMENT=1023`
     );
 
-    await client.query(
-      ``
-    );
-
-    await client.query(
-      ``
-    );
-
-    await client.query(
-      ``
-    );
-
-
-
-
-
-
-
-    await client.query(
-      ``
-    );
-
-    await client.query(
-      ``
-    );
-
     // Views
-    await client.query(
-      `VIEW "report_trip_body_view" AS
-      select
-        "b"."report_trip_id" AS "report_trip_id",
-        "b"."sequence" AS "sequence",
-        "header"."name" AS "header_name",
-        "b"."header" AS "header",
-        "b"."text_body" AS "text_body",
-        "rp"."suppress_caption" AS "photo_suppress_caption",
-        "rp"."custom_caption" AS "photo_custom_caption",
-        "p"."album_id" AS "photo_album_id",
-        "p"."url" AS "photo_url",
-        "p"."width" AS "photo_width",
-        "p"."height" AS "photo_height",
-        "p"."caption" AS "photo_caption",
-        "p"."latitude" AS "photo_latitude",
-        "p"."longitude" AS "photo_longitude",
-        "p"."time_stamp" AS "photo_time_stamp",
-        "p"."is_public" AS "photo_is_public",
-        "rv"."suppress_caption" AS "video_suppress_caption",
-        "rv"."custom_caption" AS "video_custom_caption",
-        "v"."photo_album_id" AS "video_album_id",
-        "v"."url" AS "video_url",
-        "v"."orientation_landscape" AS "video_orientation_landscape",
-        "v"."caption" AS "video_caption",
-        "v"."latitude" AS "video_latitude",
-        "v"."longitude" AS "video_longitude",
-        "v"."time_stamp" AS "video_time_stamp",
-        "v"."is_public" AS "video_is_public"
-      from (
-        (
-          (
-            (
-              (
-                "report_trip_body" "b"
-                left join "header_type" "header"
-                on (
-                  ("b"."header_type_id" = "header"."id")
-                )
-              )
-              left join "report_photo" "rp"
-              on (
-                ("b"."report_photo_id" = "rp"."id")
-              )
-            )
-            left join "photo" "p"
-            on (
-              ("rp"."photo_id" = "p"."id")
-            )
-          )
-          left join "report_video" "rv"
-          on (
-            ("b"."report_video_id" = "rv"."id")
-          )
-        )
-        left join "video" "v"
-        on (
-          ("rv"."video_id" = "v"."id")
-        )
-      )
-      order by "b"."report_trip_id", "b"."sequence"`
-    );
+    // await client.query(
+    //   `VIEW "report_trip_body_view" AS
+    //   select
+    //     "b"."report_trip_id" AS "report_trip_id",
+    //     "b"."sequence" AS "sequence",
+    //     "header"."name" AS "header_name",
+    //     "b"."header" AS "header",
+    //     "b"."text_body" AS "text_body",
+    //     "rp"."suppress_caption" AS "photo_suppress_caption",
+    //     "rp"."custom_caption" AS "photo_custom_caption",
+    //     "p"."album_id" AS "photo_album_id",
+    //     "p"."url" AS "photo_url",
+    //     "p"."width" AS "photo_width",
+    //     "p"."height" AS "photo_height",
+    //     "p"."caption" AS "photo_caption",
+    //     "p"."latitude" AS "photo_latitude",
+    //     "p"."longitude" AS "photo_longitude",
+    //     "p"."time_stamp" AS "photo_time_stamp",
+    //     "p"."is_public" AS "photo_is_public",
+    //     "rv"."suppress_caption" AS "video_suppress_caption",
+    //     "rv"."custom_caption" AS "video_custom_caption",
+    //     "v"."photo_album_id" AS "video_album_id",
+    //     "v"."url" AS "video_url",
+    //     "v"."orientation_landscape" AS "video_orientation_landscape",
+    //     "v"."caption" AS "video_caption",
+    //     "v"."latitude" AS "video_latitude",
+    //     "v"."longitude" AS "video_longitude",
+    //     "v"."time_stamp" AS "video_time_stamp",
+    //     "v"."is_public" AS "video_is_public"
+    //   from (
+    //     (
+    //       (
+    //         (
+    //           (
+    //             "report_trip_body" "b"
+    //             left join "header_type" "header"
+    //             on (
+    //               ("b"."header_type_id" = "header"."id")
+    //             )
+    //           )
+    //           left join "report_photo" "rp"
+    //           on (
+    //             ("b"."report_photo_id" = "rp"."id")
+    //           )
+    //         )
+    //         left join "photo" "p"
+    //         on (
+    //           ("rp"."photo_id" = "p"."id")
+    //         )
+    //       )
+    //       left join "report_video" "rv"
+    //       on (
+    //         ("b"."report_video_id" = "rv"."id")
+    //       )
+    //     )
+    //     left join "video" "v"
+    //     on (
+    //       ("rv"."video_id" = "v"."id")
+    //     )
+    //   )
+    //   order by "b"."report_trip_id", "b"."sequence"`
+    // );
   }
 
   public async down(client): Promise<void> {
