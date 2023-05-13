@@ -1,0 +1,20 @@
+INSERT INTO "grade_alpine"
+VALUES
+(1,'N/A','N/A','N/A','Not specified, but might apply.'),
+(2,'F','Facile','Easy','Easy climbing, little or no belaying, well protected. May involve crevassed but straightforward glaciers.'),
+(3,'PD-','Peu Difficile','A Little Difficult','Moderate climbing, usually requires some belaying, possible rappel on descent. Exposed scrambling, crevassed glaciers.'),
+(4,'PD','Peu Difficile','A Little Difficult','Moderate climbing, usually requires some belaying, possible rappel on descent. Exposed scrambling, crevassed glaciers.'),
+(5,'PD+','Peu Difficile','A Little Difficult','Moderate climbing, usually requires some belaying, possible rappel on descent. Exposed scrambling, crevassed glaciers.'),
+(6,'AD-','Assez Difficile','Fairly Difficult','Belayed climbing, in addition to large amounts of exposed but easier terrain. A wide range of protective systems are needed. Steep climbing or long snow/ice slopes above 50-degrees; for experienced alpine climbers only.'),
+(7,'AD','Assez Difficile','Fairly Difficult','Belayed climbing, in addition to large amounts of exposed but easier terrain. A wide range of protective systems are needed. Steep climbing or long snow/ice slopes above 50-degrees; for experienced alpine climbers only.'),
+(8,'AD+','Assez Difficile','Fairly Difficult','Belayed climbing, in addition to large amounts of exposed but easier terrain. A wide range of protective systems are needed. Steep climbing or long snow/ice slopes above 50-degrees; for experienced alpine climbers only.'),
+(9,'D-','Difficile','Difficult','Climbing at a fairly high standard. Routes either involve many hundreds of meters of moderate climbing or a harder but shorter route.'),
+(10,'D','Difficile','Difficult','Climbing at a fairly high standard. Routes either involve many hundreds of meters of moderate climbing or a harder but shorter route.'),
+(11,'D+','Difficile','Difficult','Climbing at a fairly high standard. Routes either involve many hundreds of meters of moderate climbing or a harder but shorter route.'),
+(12,'TD-','Tres Difficile','Very Difficult','Usually have very long sections of hard climbing. Climbing need to move very fast and be very efficient to keep guidebook time. Routes are usually serious and remote.'),
+(13,'TD','Tres Difficile','Very Difficult','Usually have very long sections of hard climbing. Climbing need to move very fast and be very efficient to keep guidebook time. Routes are usually serious and remote.'),
+(14,'TD+','Tres Difficile','Very Difficult','Usually have very long sections of hard climbing. Climbing need to move very fast and be very efficient to keep guidebook time. Routes are usually serious and remote.'),
+(15,'ED1','Extremement Difficile','Extremely Difficult','The most serious climbs with the mostcontinuous difficulties. Increasing levels ofdifficuly indicated by ED1, ED2, etc.'),
+(16,'ED2','Extremement Difficile','Extremely Difficult','The most serious climbs with the mostcontinuous difficulties. Increasing levels ofdifficuly indicated by ED1, ED2, etc.'),
+(17,'ED3','Extremement Difficile','Extremely Difficult','The most serious climbs with the mostcontinuous difficulties. Increasing levels ofdifficuly indicated by ED1, ED2, etc.'),
+(18,'ED4','Extremement Difficile','Extremely Difficult','The most serious climbs with the mostcontinuous difficulties. Increasing levels ofdifficuly indicated by ED1, ED2, etc.');
