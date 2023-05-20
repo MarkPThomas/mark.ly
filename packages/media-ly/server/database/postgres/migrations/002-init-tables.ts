@@ -94,10 +94,13 @@ export class InitTables002 {
         "description" text,
         "website_URL" varchar(500) DEFAULT NULL,
         "book_title" varchar(200) DEFAULT NULL,
-        "book_author" varchar(500) DEFAULT NULL COMMENT 'Format is [{lastName, firstName}; {lastName, firstName}]...',
-        "book_URL" varchar(500) DEFAULT NULL COMMENT 'For book purchase\n',
+        "book_author" varchar(500) DEFAULT NULL
+          COMMENT 'Format is [{lastName, firstName}; {lastName, firstName}]...',
+        "book_URL" varchar(500) DEFAULT NULL
+          COMMENT 'For book purchase\n',
         "status_id" int(11) NOT NULL DEFAULT '1',
-        "private_file_URL" varchar(500) DEFAULT NULL COMMENT 'URL_private field used as the entry can be public, but a link may be provided to a private PDF or other file originally online that is meant to be used for private reference only\n',
+        "private_file_URL" varchar(500) DEFAULT NULL
+          COMMENT 'URL_private field used as the entry can be public, but a link may be provided to a private PDF or other file originally online that is meant to be used for private reference only\n',
         "is_public" tinyint(1) NOT NULL DEFAULT '0',
         PRIMARY KEY ("id"),
         KEY "fk_references_offline_status1_idx" ("status_id"),

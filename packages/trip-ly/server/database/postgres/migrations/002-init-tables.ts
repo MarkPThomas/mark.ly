@@ -23,7 +23,8 @@ export class InitTables002 {
         "name" varchar(45) NOT NULL,
         "description" text,
         "camp_type_id" int(11) NOT NULL,
-        "requires_permit" tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Requires a permit or reservation.',
+        "requires_permit" tinyint(1) NOT NULL DEFAULT '1'
+          COMMENT 'Requires a permit or reservation.',
         "has_parking" tinyint(1) DEFAULT NULL,
         "has_water" tinyint(1) DEFAULT NULL,
         "has_restroom" tinyint(1) DEFAULT NULL,
