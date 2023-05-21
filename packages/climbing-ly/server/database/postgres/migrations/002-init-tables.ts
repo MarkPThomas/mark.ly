@@ -909,8 +909,10 @@ export class InitTables002 {
         "id" int(11) NOT NULL,
         "name" varchar(45) DEFAULT NULL,
         "description" text,
-        "climbing_rating_envelope" varchar(100) DEFAULT NULL COMMENT 'Determined programmatically.',
-        "climbing_rack_envelope" varchar(200) DEFAULT NULL COMMENT 'Determined programmatically.',
+        "climbing_rating_envelope" varchar(100) DEFAULT NULL
+          COMMENT 'Determined programmatically.',
+        "climbing_rack_envelope" varchar(200) DEFAULT NULL
+          COMMENT 'Determined programmatically.',
         PRIMARY KEY ("id")
       )`
     );
