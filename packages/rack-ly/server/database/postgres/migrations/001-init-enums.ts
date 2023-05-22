@@ -1,19 +1,6 @@
 export class InitEnums001 {
   public async up(client): Promise<void> {
     await client.query(
-      `CREATE TABLE "climbing_rack_big_bro" (
-        "id" int(11) NOT NULL AUTO_INCREMENT,
-        "company" varchar(45) DEFAULT NULL,
-        "color" varchar(45) DEFAULT NULL,
-        "size_label" varchar(10) NOT NULL,
-        "weight" int(11) DEFAULT NULL COMMENT 'grams',
-        "size_min" float DEFAULT NULL COMMENT 'mm',
-        "size_max" float DEFAULT NULL COMMENT 'mm',
-        PRIMARY KEY ("id")
-      ) AUTO_INCREMENT=5`
-    );
-
-    await client.query(
       `CREATE TABLE "climbing_rack_cam_axle_type" (
         "id" int(11) NOT NULL AUTO_INCREMENT,
         "name" varchar(45) NOT NULL,
