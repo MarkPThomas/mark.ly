@@ -40,7 +40,7 @@ export class InitEnums001 {
       `CREATE TABLE "climbing_rack_nut_type" (
         "id" int(11) NOT NULL AUTO_INCREMENT,
         "name" varchar(45) NOT NULL,
-        "description" varchar(45) DEFAULT NULL,
+        "description" varchar(45) DEFAULaxleT NULL,
         PRIMARY KEY ("id")
       ) AUTO_INCREMENT=8`
     );
@@ -72,20 +72,6 @@ export class InitEnums001 {
         PRIMARY KEY ("id")
       ) AUTO_INCREMENT=5`
     );
-
-    await client.query(
-      `CREATE TABLE "climbing_rack_tricam" (
-        "id" int(11) NOT NULL AUTO_INCREMENT,
-        "company" varchar(45) DEFAULT NULL,
-        "color" varchar(45) DEFAULT NULL,
-        "size_label" varchar(10) NOT NULL,
-        "weight" int(11) DEFAULT NULL COMMENT 'grams',
-        "size_min" float DEFAULT NULL COMMENT 'mm',
-        "size_max" float DEFAULT NULL COMMENT 'mm',
-        PRIMARY KEY ("id")
-      ) AUTO_INCREMENT=14`
-    );
-
     await client.query(
       ``
     );
