@@ -28,10 +28,19 @@ default:
 init: init_setup init_start_project
 
 init_setup: delete_envs setup_envs install_deps
+# init_setup: delete_envs setup_envs pull_images install_deps setup_pm2
 
 init_start_project: build_frontends
+# init_start_project: start_containers wait_for_containers run_migrations run_seeds build_frontends start_services
+
+restart_backend: stop_containers nuke_containers start_containers run_migrations run_seeds
+
+start_project: start_containers start_services
+
+stop_project: stop_services stop_containers
 
 clear_project: delete_deps delete_envs
+# clear_project: nuke_containers nuke_services delete_deps delete_envs
 
 # Files
 setup_envs:
@@ -40,7 +49,7 @@ setup_envs:
 
 delete_envs:
 	@echo "Deleting all .env files from project..."
-	fing .packages -name ".env" | exargs -t -r -n 1 rm
+	find .packages -name ".env" | exargs -t -r -n 1 rm
 
 install_deps:
 	@echo "Installing all dependencies in project..."
@@ -55,8 +64,44 @@ delete_deps:
 	find . -type d -name 'node_modules' -prune -exec rm -Rf '{}' +
 
 # Containers
+pull_images:
+   @echo "Pulling images for Docker..."
+   docker-compose pull
+
+
+start_containers:
+   @echo "Starting Docker containers..."
+   docker-compose up -d
+
+
+stop_containers:
+   @echo "Stopping Docker containers..."
+   docker-compose stop
+
+
+nuke_containers:
+   @echo "Nuking Docker containers..."
+   docker-compose down -v --remove-orphans
 
 # Databases
+run_migrations_postgres:
+#	@echo "Running migrations for Postgress..."
+#	cd ./packages/common; yarn typeorm migration:run
+
+run_migrations: run_migrations_postgres
+
+create_test_db_postgres:
+#	@echo "Setup local PG database for testing ..."
+# cd ./packages/common; export PGPASSWORD=password; pg_dump -U nexus -h localhost content_authoring_home -s > schema.sql; yarn typeorm query "`cat ../dev/postgres-setup/test-db/create_test_db.sql`"; psql -U nexus -h localhost content_authoring_home_test < schema.sql; rm schema.sql;
+
+drop_test_db_postgres:
+#	@echo "Drop local PG database for testing ..."
+#	cd ./packages/common; yarn typeorm query "`cat ../dev/postgres-setup/test-db/drop_test_db.sql`"
+
+run_seeds:
+	@echo "Running seeds for postgres..."
+#	cat ./packages/dev/postgres-setup/postgres-scripts/* | docker-compose exec -T postgres psql -U nexus -d content_authoring_home
+	@echo "Finished seeding postgres..."
 
 # Builds
 build_weather_ly:
@@ -66,3 +111,35 @@ build_weather_ly:
 build_frontends: build_weather_ly
 
 # Services
+setup_pm2:
+	@echo "Setup PM2 TypeScript support..."
+	yarn pm2 install typescript
+
+start_services:
+	@echo "Starting services..."
+	yarm pm2 start ecosystem.config.js
+
+recreate_services:
+   @echo "Recreating project services..."
+   yarn pm2 delete ecosystem.config.js
+   yarn pm2 start ecosystem.config.js
+
+
+restart_services:
+   @echo "Restarting project services..."
+   yarn pm2 restart ecosystem.config.js
+
+
+stop_services:
+   @echo "Stopping services..."
+   yarn pm2 stop ecosystem.config.js
+
+
+nuke_services:
+   @echo "Nuking services..."
+   yarn pm2 delete ecosystem.config.js
+
+
+ps:
+   yarn pm2 ps ecosystem.config.js
+
