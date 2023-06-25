@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "ES2019",
+    "module": "commonjs",
+    "lib": [
+      "ES2019"
+    ],
+    "baseUrl": ".",
+    "sourceMap": true,
+    "allowJs": true,
+    "outDir": "./build",
+    "typeRoots": [
+      "./typings/",
+      "./node_modules/@types/"
+    ],
+    "paths": {
+      "common/*": [
+        "../common/*"
+      ]
+    },
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "./node_modules/*",
+    "./build/*"
+  ]
+}
