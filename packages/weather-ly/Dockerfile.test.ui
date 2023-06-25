@@ -1,0 +1,10 @@
+FROM node:16-alpine as uiBuild
+
+WORKDIR /weather-ly
+
+COPY ./weather-ly/package.json /weather-ly/package.json
+COPY ./weather-ly/yarn.lock /weather-ly/yarn.lock
+
+RUN yarn install --silent
+
+COPY ./weather-ly .
