@@ -1,0 +1,1 @@
+export const APU_UI_BASE_URL = 'api-ui';

@@ -1,0 +1,10 @@
+FROM node:16-alpine as uiBuild
+
+WORKDIR /app-ui
+
+COPY ./app-ui/package.json /app-ui/package.json
+COPY ./app-ui/yarn.lock /app-ui/yarn.lock
+
+RUN yarn install --silent
+
+COPY ./app-ui .

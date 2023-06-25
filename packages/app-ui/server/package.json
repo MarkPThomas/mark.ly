@@ -1,0 +1,35 @@
+{
+  "name": "app-ui-server",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --ext=ts,tsx .",
+    "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f4- | xargs -t -r eslint --ext=ts,tsx",
+    "start": "ts-node -r tsconfig-paths/register --project tsconfig.json index.ts",
+    "server:dev": "SERVER_ENV=true ./node_modules/.bin/nodemon --delay 1800ms",
+    "server:run": "NODE_OPTIONS='--max-http-header-size 81000' ts-node -r tsconfig-paths/register --project tsconfig.json index.ts"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "connect": "^3.7.0",
+    "dotenv": "^16.0.3",
+    "koa": "^2.14.2",
+    "koa-body": "^6.0.1",
+    "koa-mount": "^4.0.0",
+    "koa-proxies": "^0.12.3",
+    "koa-router": "^12.0.0",
+    "koa-static": "^5.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stoppable": "^1.1.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.6",
+    "@types/koa-router": "^7.4.4",
+    "@types/node": "^20.2.3",
+    "nodemon": "^2.0.22",
+    "typescript": "^5.0.4"
+  }
+}

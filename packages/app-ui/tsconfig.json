@@ -1,0 +1,56 @@
+{
+  "compilerOptions": {
+    "outDir": "build/dist",
+    "module": "esnext",
+    "target": "es6",
+    "lib": [
+      "es2017",
+      "es7",
+      "es6",
+      "dom",
+      "es5",
+      "esnext.asynciterable"
+    ],
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "alwaysStrict": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": "src",
+    "noFallthroughCasesInSwitch": true
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "src/setupProxy.ts",
+    "src/bundle-analyze.js",
+    "server",
+    "coverage"
+  ],
+  "include": [
+    "src"
+  ]
+}
