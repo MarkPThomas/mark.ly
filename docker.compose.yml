@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  postgres:
+    build:
+      context: ./packages/dev/postgres-hll
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./packages/dev/postgres-setup/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U nexus -d content_authoring_home'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: content_authoring_home
+
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbit
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: "wget -q -T 1 localhost:15672/ -O /dev/null"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  queue-manager:
+    image: harbor.vnerd.com/library/queue-manager:latest
+    ports:
+      - 3022:3022
+    depends_on:
+      - rabbit
+      - postgres
+    environment:
+      DB_CONN_URL: postgres://nexus:password@postgres/queuemanager
+      LOG_LEVEL: info
+      PORT: 3022
+      RABBIT_HOST: rabbit
+      RABBIT_LOGIN: guest
+      RABBIT_PASSWORD: guest
+      RABBIT_PORT: 5672
+      RABBIT_MANAGEMENT_PORT: 15672
+      BOUNDED_CONTEXT: 'content-authoring-home'
+    healthcheck:
+      test: "wget -q -T 1 localhost:3022/ -O /dev/null"
+      interval: 5s
+      timeout: 5s
+      retries: 10

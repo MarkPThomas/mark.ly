@@ -1,0 +1,109 @@
+# For CI use
+version: '3.7'
+
+services:
+  common:
+    container_name: common
+    build:
+      context: ./packages/common
+      dockerfile: ./Dockerfile.dev
+    env_file: ./packages/common/.env.test.example
+    volumes:
+      - common_nm:/common/node_modules
+    depends_on:
+      - postgres
+
+  ## Packages
+  content-authoring-home-api:
+    container_name: content-authoring-home-api
+    build:
+      context: ./packages
+      dockerfile: ./content-authoring-home-api/Dockerfile.dev
+    env_file: ./packages/content-authoring-home-api/.env.test.example
+    volumes:
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+    depends_on:
+      - common
+
+  author-home-app:
+    container_name: author-home-app
+    build:
+      context: ./packages
+      dockerfile: ./author-home/Dockerfile.dev
+    env_file: ./packages/author-home/server/.env.test.example
+    volumes:
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+    depends_on:
+      - common
+
+  author-home-app-ui:
+    container_name: author-home-app-ui
+    build:
+      context: ./packages
+      dockerfile: ./author-home/Dockerfile.test.ui
+
+  external-api:
+    container_name: external-api
+    build:
+      context: ./packages
+      dockerfile: ./external-api/Dockerfile
+    env_file: ./packages/content-home-api/.env.test.example
+    volumes:
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+    depends_on:
+      - common
+
+  ## Infrastructure
+  postgres:
+    container_name: postgres
+    build:
+      context: ./packages/common/dev/postgres-hll
+      dockerfile: ./Dockerfile
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./packages/common/dev/postgres-setup/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    shm_size: 256M
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U nexus -d content_authoring_home'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: content_authoring_home
+
+  mocks:
+    container_name: mocks
+    build:
+      context: ./packages
+      dockerfile: ./dev/mocks/Dockerfile
+    volumes:
+      - ./packages/common/hydra/author.schema.v1.json:/author.schema.v1.json
+      - ./packages/common/hydra/author.schema.v2.json:/author.schema.v2.json
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'curl',
+          '-f',
+          'http://localhost:3000/system/health-check'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  common_nm:
+  pg_data:
+
+

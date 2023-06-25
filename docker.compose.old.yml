@@ -1,0 +1,130 @@
+version: '3.7'
+
+services:
+  common:
+    container_name: common
+    build:
+      context: ./packages/common
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - common_nm:/common/node_modules
+
+  content-authoring-home-api:
+    container_name: content-authoring-home-api
+    build:
+      context: ./packages
+      dockerfile: ./content-authoring-home-api/Dockerfile.dev
+    env_file: ./packages/content-authoring-home-api/.env.example
+    volumes:
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+      - ./packages/content-authoring-home-api:/content-authoring-home-api
+      - /content-authoring-home-api/node_modules
+    ports:
+      - 4012:3082
+    depends_on:
+      - common
+      - postgres-setup
+
+  content-home-api:
+    container_name: content-home-api
+    build:
+      context: ./packages
+      dockerfile: ./content-home-api/Dockerfile.dev
+    volumes:
+      - ./packages/content-home-api:/content-home-api
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+      - /content-home-api/node_modules
+    ports:
+      - 3002:3051
+    depends_on:
+      - common
+      - postgres-setup
+
+  author-home-app:
+    container_name: author-home-app
+    build:
+      context: ./packages
+      dockerfile: ./author-home/Dockerfile.dev
+    env_file: ./packages/author-home/server/.env.example
+    volumes:
+      - ./packages/author-home:/author-home
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+      - /author-home/node_modules
+      - /author-home/build
+      - ./packages/content-authoring-home-api/build/static:/static
+    ports:
+      - 3004:3014
+      - 9001:9001 #DEBUG PORT
+    depends_on:
+      - common
+      - postgres-setup
+
+  #
+  # Shared resources, databases, etc.
+  #
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3-management
+    hostname: rabbit
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: rabbitmq-diagnostics is_running
+      interval: '5s'
+      timeout: '5s'
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./packages/dev/postgres-setup/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    shm_size: 256M
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U nexus -d content_authoring_home'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: content_authoring_home
+
+  postgres-setup:
+    container_name: postgres-setup
+    build:
+      context: packages/dev/postgres-setup
+      dockerfile: ./Dockerfile
+    working_dir: /common
+    volumes:
+      - ./packages/common:/common
+      - common_nm:/common/node_modules
+    environment:
+      HOST: postgres
+      PORT: 5432
+      USER: nexus
+      PASSWORD: password
+      DATABASE: content_authoring_home
+    depends_on:
+      - postgres
+      - common
+
+volumes:
+  common_nm:
+  pg_data:
+  rabbit_data:
+
+
