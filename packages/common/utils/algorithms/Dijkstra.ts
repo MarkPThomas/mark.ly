@@ -20,12 +20,12 @@ export const findShortestPath = (graph: IGraph, startNode: string, endNode: stri
     for (let child in childDistances) {
       if (child === startNode) {
         continue;
-      } else {
-        const newdistance = distances[node] + childDistances[child];
-        if (!distances[child] || newdistance < distances[child]) {
-          distances[child] = newdistance;
-          parents[child] = node;
-        }
+      }
+
+      const newdistance = distances[node] + childDistances[child];
+      if (!distances[child] || newdistance < distances[child]) {
+        distances[child] = newdistance;
+        parents[child] = node;
       }
     }
 
