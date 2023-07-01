@@ -8,7 +8,7 @@ export abstract class Heap {
   }
 
   poll() {
-    return this.nodes[0];
+    return this.nodes[0] ?? null;
   }
 
   size() {
