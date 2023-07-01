@@ -1,22 +1,11 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
     "target": "es6",
     "module": "commonjs",
-    "lib": [
-      "esnext",
-      "es5",
-      "es6",
-      "es7",
-      "es2015",
-      "es2017",
-      "dom",
-      "ES2017.Object",
-      "ESNext.AsyncIterable"
-    ],
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -24,7 +13,22 @@
     "strictPropertyInitialization": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "baseUrl": "./",
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "esnext",
+      "es5",
+      "es6",
+      "es7",
+      "es2015",
+      "es2017",
+      "es2021",
+      "scripthost",
+      "dom",
+      "ES2017.Object",
+      "ESNext.AsyncIterable"
+    ],
     "outDir": "build",
     "typeRoots": [
       "./typings/",
@@ -35,7 +39,11 @@
     "**/*.ts"
   ],
   "exclude": [
-    "./node_modules/*",
-    "./build/*"
+    "node_modules",
+    "build",
+    "scripts",
+    "webpack",
+    "jest",
+    "coverage"
   ]
 }
