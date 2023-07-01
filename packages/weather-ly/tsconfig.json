@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "esnext", // Look into this addition vs. commonJs
+    "allowSyntheticDefaultImports": true, // Look into this addition
     "downlevelIteration": true,
     "lib": [
       "dom",
@@ -29,5 +30,18 @@
     "ui",
     "server",
     "../common/utils"
-  ]
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "src/setupProxy.ts",
+    "src/bundle-analyze.js",
+    "server",
+    "coverage"
+  ],
 }
