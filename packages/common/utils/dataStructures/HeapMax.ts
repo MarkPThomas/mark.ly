@@ -5,7 +5,7 @@ export class MaxHeap extends Heap {
     super(size);
   }
 
-  protected shouldSwap(parentIndex: number, childIndex: number) {
-    return this.nodes[parentIndex] < this.nodes[childIndex];
+  protected shouldSwap(swapIndex: number, targetIndex: number) {
+    return this.nodes[swapIndex] < this.nodes[targetIndex];
   }
 }
