@@ -7,6 +7,14 @@ export class Node<K> extends NodeBase<Node<K>, K> {
 }
 
 export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
+  getTail() {
+    let node = this.head;
+    while (node && node.next) {
+      node = node.next;
+    }
+
+    return node ?? null;
+  }
 
   prepend(key: K) {
     const node = new Node(key);
@@ -16,6 +24,7 @@ export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
   prependNode(node: Node<K>) {
     node.next = this.head;
     this.head = node;
+    this.length++;
   }
 
   append(key: K) {
@@ -33,6 +42,7 @@ export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
     } else {
       this.head = node;
     }
+    this.length++;
   }
 
   remove(key: K) {
@@ -45,6 +55,7 @@ export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
         } else {
           this.head = null;
         }
+        this.length--;
 
         return currNode;
       }
@@ -65,6 +76,7 @@ export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
       let nextHead = removedHead.next;
       removedHead.next = null;
       this.head = nextHead;
+      this.length--;
     }
     return removedHead;
   }
@@ -79,6 +91,7 @@ export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
     if (prevNode) {
       prevNode.next = null;
     }
+    this.length--;
     return prevNode;
   }
 }

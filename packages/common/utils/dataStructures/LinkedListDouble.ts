@@ -25,6 +25,10 @@ export class NodeDouble<K> extends NodeBase<NodeDouble<K>, K> {
 export class LinkedListDouble<K> extends LinkedListBase<NodeDouble<K>, K> {
   private tail: NodeDouble<K> | null;
 
+  getTail() {
+    return this.tail ?? null;
+  }
+
   prepend(key: K) {
     const node = new NodeDouble(key);
     this.prependNode(node);
