@@ -5,6 +5,8 @@ export interface ILinkedList<N extends Node<N, K>, K> {
   appendNode(node: N): void;
 
   find(key: K): N | null;
+  getHead(): N | null;
+  getTail(): N | null;
 
   remove(key: K): N | null;
   removeNode(node: N): N | null;
@@ -12,6 +14,9 @@ export interface ILinkedList<N extends Node<N, K>, K> {
   removeTail(): N | null;
 
   moveToHead(node: N): void;
+
+  size(): number;
+  toArray(): Node<N, K>[];
 }
 
 export abstract class Node<N, K> {
@@ -27,6 +32,14 @@ export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList
   protected length: number = 0;
   protected head: N | null;
 
+  constructor(items: any[] | null = null) {
+    if (items !== null) {
+      for (let i = items.length - 1; 0 <= i; i--) {
+        this.prepend(items[i]);
+      }
+    }
+  }
+
   find(key: K) {
     let node: N | null = this.head;
     while (node) {
@@ -38,6 +51,9 @@ export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList
     return node;
   }
 
+  getHead() {
+    return this.head ?? null;
+  }
 
   moveToHead(node: N) {
     this.removeNode(node);
@@ -48,10 +64,24 @@ export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList
     return this.length;
   }
 
+  toArray() {
+    // TODO: Work out generating unique keys from values & returning arrays of the values
+    const output = [];
+    let node = this.head;
+    while (node) {
+      output.push(node);
+      node = node.next;
+    }
+
+    return output;
+  }
+
   abstract prepend(key: K): void;
   abstract prependNode(node: N): void;
   abstract append(key: K): void;
   abstract appendNode(node: N): void;
+
+  abstract getTail(): N | null;
 
   abstract remove(key: K): N | null;
   abstract removeNode(node: N): N | null;
