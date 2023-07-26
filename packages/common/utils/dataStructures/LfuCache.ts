@@ -11,21 +11,33 @@ class NodeDoubleKeyVal<K> extends NodeDouble<K> {
 
 export class LfuCache<K> {
   private capacity: number;
-  private countMap: Map<K, number>;
-  private valueMap: Map<K, NodeDoubleKeyVal<K>>;
-  private countMapSorted: Map<number, LinkedListDouble<K>>;
+  private countMap: Map<K, number> = new Map<K, number>();
+  private valueMap: Map<K, NodeDoubleKeyVal<K>> = new Map<K, NodeDoubleKeyVal<K>>();
+  private countMapSorted: Map<number, LinkedListDouble<K>> = new Map<number, LinkedListDouble<K>>();
 
-  constructor(capacity = 0) {
+  constructor(capacity: number = 0) {
     this.capacity = capacity;
+  }
 
-    this.countMap = new Map<K, number>();
-    this.valueMap = new Map<K, NodeDoubleKeyVal<K>>();
-    this.countMapSorted = new Map<number, LinkedListDouble<K>>();
+  limit() {
+    return this.capacity;
+  }
+
+  size() {
+    return this.countMap.size;
+  }
+
+  toArray(): [number, any][] {
+    const entries: [number, any][] = [];
+    this.countMapSorted.forEach((items, count) => {
+      entries.push([count, items.toArray()]);
+    })
+    return entries;
   }
 
   get(key: K) {
-    if (this.capacity === 0 || !this.valueMap.has(key) || !this.countMap.has(key)) {
-      return;
+    if (!this.valueMap.has(key) || !this.countMap.has(key)) {
+      return null;
     }
 
     const nodeToUse: NodeDoubleKeyVal<K> = this.valueMap.get(key)!;
@@ -39,7 +51,7 @@ export class LfuCache<K> {
     this.countMap.set(key, newCount);
     this.addToCountMapSorted(newCount, nodeToUse);
 
-    return nodeToUse!.val;
+    return nodeToUse.val;
   }
 
   put(key: K, val: any) {
@@ -62,7 +74,7 @@ export class LfuCache<K> {
       this.countMap.set(key, newCount);
       this.addToCountMapSorted(newCount, node);
     } else {
-      if (this.valueMap.size === this.capacity) {
+      if (this.capacity > 0 && this.valueMap.size === this.capacity) {
         const lowestCountKey = [...this.countMapSorted.entries()].sort((a, b) => a[0] - b[0])[0][0];
         const evictNode = this.countMapSorted.get(lowestCountKey)!.removeHead() as NodeDoubleKeyVal<K>;
         const evictKey = evictNode.val;
