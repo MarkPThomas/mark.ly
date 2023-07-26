@@ -13,7 +13,7 @@ export interface ILinkedList<N extends Node<N, K>, K> {
   removeHead(): N | null;
   removeTail(): N | null;
 
-  moveToHead(node: N): void;
+  moveToHead(node: N): boolean;
 
   size(): number;
   toArray(): Node<N, K>[];
@@ -30,7 +30,7 @@ export abstract class Node<N, K> {
 
 export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList<N, K> {
   protected length: number = 0;
-  protected head: N | null;
+  protected head: N | null = null;
 
   constructor(items: any[] | null = null) {
     if (items !== null) {
@@ -56,8 +56,11 @@ export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList
   }
 
   moveToHead(node: N) {
-    this.removeNode(node);
-    this.prependNode(node);
+    if (this.removeNode(node) !== null) {
+      this.prependNode(node);
+      return true;
+    }
+    return false;
   }
 
   size() {

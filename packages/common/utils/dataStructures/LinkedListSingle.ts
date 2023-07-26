@@ -92,6 +92,9 @@ export class LinkedList<K> extends LinkedListBase<Node<K>, K> {
       prevNode.next = null;
     }
     this.length--;
+    if (prevNode === this.head) {
+      this.head = null;
+    }
     return prevNode;
   }
 }
