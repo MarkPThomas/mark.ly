@@ -1,19 +1,12 @@
-import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
+import { LinkedListDouble } from './LinkedListDouble';
+import { NodeDoubleKeyVal } from './LinkedListNodes';
 
-class NodeDoubleKeyVal<K> extends NodeDouble<K> {
-  val: any;
 
-  constructor(key: K, val: any) {
-    super(key);
-    this.val = val;
-  }
-}
-
-export class LruCache<K> {
+export class LruCache<K, V> {
   private capacity;
   private count = 0;
-  private cache = new Map<K, NodeDoubleKeyVal<K>>();
-  private list: LinkedListDouble<K> = new LinkedListDouble<K>;
+  private cache = new Map<K, NodeDoubleKeyVal<K, V>>();
+  private list: LinkedListDouble<V> = new LinkedListDouble<V>();
 
   constructor(capacity: number = 0) {
     this.capacity = capacity;
@@ -32,7 +25,7 @@ export class LruCache<K> {
   }
 
   get(key: K) {
-    const node: NodeDoubleKeyVal<K> | undefined = this.cache.get(key);
+    const node: NodeDoubleKeyVal<K, V> | undefined = this.cache.get(key);
     if (node) {
       this.list.moveToHead(node);
       return node.val;
@@ -41,17 +34,17 @@ export class LruCache<K> {
   }
 
   put(key: K, val: any) {
-    let node: NodeDoubleKeyVal<K> | undefined = this.cache.get(key);
+    let node: NodeDoubleKeyVal<K, V> | undefined = this.cache.get(key);
     if (node) {
       node.val = val;
       this.list.moveToHead(node);
     } else {
       node = new NodeDoubleKeyVal(key, val);
       this.cache.set(key, node);
-      this.list.prependNode(node);
+      this.list.prepend(node);
       this.count++;
       if (this.capacity > 0 && this.count > this.capacity) {
-        const tail = this.list.removeTail() as NodeDoubleKeyVal<K>;
+        const tail = this.list.removeTail() as NodeDoubleKeyVal<K, V>;
         this.cache.delete(tail.key);
         this.count--;
       }
