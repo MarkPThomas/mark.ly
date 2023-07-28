@@ -1,40 +1,23 @@
-import { LinkedList as LinkedListBase, Node as NodeBase } from './LinkedList';
+import { LinkedList as LinkedListBase, Node } from './LinkedList';
+import { NodeDouble } from './LinkedListNodes';
 
-export class NodeDouble<K> extends NodeBase<NodeDouble<K>, K> {
-  prev: NodeDouble<K> | null;
+export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
+  protected tail: NodeDouble<V> | null = null;
 
-  constructor(key: K) {
-    super(key);
-  }
-
-  removeNode() {
-    let isRemoved = false;
-    if (this.prev) {
-      this.prev.next = this.next;
-      isRemoved = true;
+  constructor(items: V[] | null = null) {
+    super();
+    if (items !== null) {
+      this.fromArray(items);
     }
-
-    if (this.next) {
-      this.next.prev = this.prev;
-      isRemoved = true;
-    }
-    return isRemoved;
   }
-}
-
-export class LinkedListDouble<K> extends LinkedListBase<NodeDouble<K>, K> {
-  private tail: NodeDouble<K> | null;
 
   getTail() {
     return this.tail ?? null;
   }
 
-  prepend(key: K) {
-    const node = new NodeDouble(key);
-    this.prependNode(node);
-  }
+  prepend(valueOrNode: V | NodeDouble<V>) {
+    const node = this.getNodeDouble(valueOrNode);
 
-  prependNode(node: NodeDouble<K>) {
     node.next = this.head;
     if (this.head) {
       this.head.prev = node;
@@ -45,12 +28,9 @@ export class LinkedListDouble<K> extends LinkedListBase<NodeDouble<K>, K> {
     this.length++;
   }
 
-  append(val: K) {
-    const node = new NodeDouble(val);
-    this.appendNode(node);
-  }
+  append(valueOrNode: V | NodeDouble<V>) {
+    const node = this.getNodeDouble(valueOrNode);
 
-  appendNode(node: NodeDouble<K>) {
     node.prev = this.tail;
     if (this.tail) {
       this.tail.next = node;
@@ -61,57 +41,59 @@ export class LinkedListDouble<K> extends LinkedListBase<NodeDouble<K>, K> {
     this.length++;
   }
 
-  remove(key: K) {
-    if (this.head && key === this.head.key) {
+  remove(
+    valueOrNode: V | NodeDouble<V>,
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+  ) {
+    const value = this.isNodeDouble(valueOrNode)
+      ? (valueOrNode as NodeDouble<V>).val
+      : valueOrNode as V;
+
+    if (this.head && this.head.val === value) {
       return this.removeHead();
     }
-    if (this.tail && key === this.tail.key) {
+    if (this.tail && this.tail.val === value) {
       return this.removeTail();
     }
 
-    let node = this.head;
-    while (node) {
-      if (node.key === key) {
-        return this.removeNode(node);
+    if (this.isNodeDouble(valueOrNode) && (valueOrNode as NodeDouble<V>).removeNode()) {
+      this.length--;
+      return valueOrNode as NodeDouble<V>;
+    } else {
+      let currNode = this.head;
+      while (currNode) {
+        if (this.areEqual(valueOrNode, currNode, cb)) {
+          currNode.removeNode();
+          this.length--;
+
+          return currNode;
+        }
+        currNode = currNode.next as NodeDouble<V>;
       }
-      node = node.next;
     }
 
     return null;
   }
 
-  removeNode(node: NodeDouble<K>) {
-    if (this.head && node.key === this.head.key) {
-      return this.removeHead();
-    }
-    if (this.tail && node.key === this.tail.key) {
-      return this.removeTail();
-    }
-
-    if (node.removeNode()) {
-      this.length--;
-      return node;
-    } else {
-      return null;
-    }
-  }
-
   removeHead() {
-    const removedHead: NodeDouble<K> | null = this.head;
+    const removedHead: NodeDouble<V> | null = this.head;
     if (removedHead) {
-      const nextHead = removedHead.next;
+      const nextHead = removedHead.next as NodeDouble<V>;
       removedHead.next = null;
       if (nextHead) {
-        nextHead.prev = null;
+        (nextHead as NodeDouble<V>).prev = null;
       }
       this.head = nextHead;
+      if (this.head === null) {
+        this.tail = null;
+      }
       this.length--;
     }
     return removedHead;
   }
 
   removeTail() {
-    const removedTail = this.tail;
+    const removedTail: NodeDouble<V> | null = this.tail;
     if (removedTail) {
       const previousTail = removedTail.prev;
       removedTail.prev = null;
@@ -119,8 +101,126 @@ export class LinkedListDouble<K> extends LinkedListBase<NodeDouble<K>, K> {
         previousTail.next = null;
       }
       this.tail = previousTail;
+      if (this.tail === null) {
+        this.head = null;
+      }
       this.length--;
     }
     return removedTail;
   }
+
+  move(
+    valueOrNode: V | NodeDouble<V>,
+    spaces: number,
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+  ): boolean {
+    if (!spaces || this.length < 2) {
+      return false;
+    }
+
+    // Find matching node
+    let currNode = this.head as NodeDouble<V>;
+    let prevNode = null;
+    while (currNode) {
+      if (this.areEqual(valueOrNode, currNode, cb)) {
+        if ((currNode === this.head && spaces < 0)
+          || (currNode === this.tail && spaces > 0)) {
+          // Node cannot be moved, abort before altering list
+          return false;
+        }
+
+        // Save matched node
+        const nodeMove = currNode;
+
+        // Attach neighboring nodes around matched node
+        if (!prevNode) {
+          if (currNode.next) {
+            // head of multi-node
+            this.head = currNode.next as NodeDouble<V>;
+            this.head.prev = null;
+          }
+        } else {
+          prevNode.next = currNode.next;
+          if (currNode.next) {
+            // mid of multi-node
+            (currNode.next as NodeDouble<V>).prev = prevNode as NodeDouble<V>;
+          } else {
+            // tail of multi-node
+            this.tail = prevNode;
+            this.tail.next = null;
+          }
+        }
+
+        if (spaces > 0 && currNode.next) {
+          // Moving node forward
+          currNode = currNode.next as NodeDouble<V>;
+          while (currNode && spaces) {
+            prevNode = currNode;
+            currNode = currNode.next as NodeDouble<V>;
+            spaces--;
+          }
+        } else if (spaces < 0 && prevNode) {
+          // Moving node backward
+          currNode = currNode.next as NodeDouble<V>;
+          while (prevNode && spaces) {
+            currNode = prevNode;
+            prevNode = prevNode.prev;
+            spaces++;
+          }
+        }
+
+        // Insert matched node at new position
+        nodeMove.prev = prevNode;
+        if (prevNode) {
+          prevNode.next = nodeMove;
+        } else {
+          // Inserted at head
+          this.head = nodeMove;
+        }
+
+        nodeMove.next = currNode;
+        if (currNode) {
+          currNode.prev = nodeMove;
+        } else {
+          // Inserted at tail
+          this.tail = nodeMove;
+        }
+
+        return true;
+      }
+      prevNode = currNode;
+      currNode = currNode.next as NodeDouble<V>;
+    }
+
+    return false;
+  }
+
+  reverse(): void {
+    let prevNode = null;
+    let currNode = this.head;
+
+    while (currNode) {
+      const tempNode = currNode.next as NodeDouble<V>;
+      currNode.next = prevNode;
+      if (prevNode) {
+        prevNode.prev = currNode;
+      }
+
+      prevNode = currNode;
+      currNode = tempNode;
+    }
+    this.head = prevNode;
+  }
+
+  protected getNodeDouble(valueOrNode: V | NodeDouble<V>) {
+    return (this.isNodeDouble(valueOrNode))
+      ? valueOrNode as NodeDouble<V>
+      : new NodeDouble(valueOrNode as V);
+  }
+
+  protected isNodeDouble(valueOrNode: V | NodeDouble<V>) {
+    return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeDouble);
+  }
 }
+
+export { NodeDouble };
