@@ -35,7 +35,7 @@ describe('##LinkedListSingle', () => {
       expect(linkedList.size()).toEqual(5);
     });
 
-    it('should return the updated size of the linked list after appending a key', () => {
+    it('should return the updated size of the linked list after appending a value', () => {
       const values = [1, 2, 3, 4, 5];
       const linkedList = new LinkedList<number>(values);
 
@@ -47,7 +47,7 @@ describe('##LinkedListSingle', () => {
 
     });
 
-    it('should return the updated size of the linked list after prepending a key', () => {
+    it('should return the updated size of the linked list after prepending a value', () => {
       const values = [1, 2, 3, 4, 5];
       const linkedList = new LinkedList<number>(values);
 
@@ -59,7 +59,7 @@ describe('##LinkedListSingle', () => {
 
     });
 
-    it('should return the updated size of the linked list after removing a key', () => {
+    it('should return the updated size of the linked list after removing a value', () => {
       const values = [1, 2, 3, 4, 5];
       const linkedList = new LinkedList<number>(values);
 
@@ -193,19 +193,72 @@ describe('##LinkedListSingle', () => {
       expect(linkedList.find(1)).toBeNull();
     });
 
-    it('should return null if key is not found', () => {
+    it('should return null if value is not found', () => {
       const values = [1, 2, 3, 4, 5];
       const linkedList = new LinkedList<number>(values);
 
       expect(linkedList.find(-1)).toBeNull();
     });
 
-    it('should return the node with the key that is found', () => {
+    it('should return the node with the value that is found', () => {
       const values = [1, 2, 3, 4, 5];
       const linkedList = new LinkedList<number>(values);
 
       const node = new Node(3);
       expect(linkedList.find(3)?.val).toEqual(node.val);
+    });
+
+    it('should return the node with the matching object reference that is found', () => {
+      type demo = { foo: string, bar: number }
+      const demo1: demo = { foo: 'A', bar: 1 };
+      const demo2: demo = { foo: 'B', bar: 2 };
+      const demo3: demo = { foo: 'C', bar: 3 };
+      const values: demo[] = [demo1, demo2, demo3];
+      const linkedList = new LinkedList<demo>(values);
+
+      expect(linkedList.find(demo2)?.val).toEqual(demo2);
+    });
+
+    it(`should return the node with the matching object reference that is found when a
+      default equality callback has been specified`, () => {
+      type demo = { foo: string, bar: number }
+      const demo1: demo = { foo: 'A', bar: 1 };
+      const demo2: demo = { foo: 'B', bar: 2 };
+      const demo3: demo = { foo: 'C', bar: 3 };
+      const values: demo[] = [demo1, demo2, demo3];
+      const linkedList = new LinkedList<demo>(values);
+
+      const cb = (a: demo, b: demo) => a.foo === b.foo;
+      linkedList.setMatchCB(cb);
+
+      expect(linkedList.find(demo2, null)?.val).toEqual(demo2);
+    });
+
+    it('should return the node that matches by the default equality callback provided for a value object', () => {
+      type demo = { foo: string, bar: number }
+      const demo1: demo = { foo: 'A', bar: 1 };
+      const demo2: demo = { foo: 'B', bar: 2 };
+      const demo3: demo = { foo: 'C', bar: 3 };
+      const values: demo[] = [demo1, demo2, demo3];
+      const linkedList = new LinkedList<demo>(values);
+
+      const cb = (a: demo, b: demo) => a.foo === b.foo;
+      linkedList.setMatchCB(cb);
+
+      expect(linkedList.find({ foo: 'B', bar: 4 })?.val).toEqual({ foo: 'B', bar: 2 });
+    });
+
+    it('should return the node that matches by the override equality callback provided for a value object', () => {
+      type demo = { foo: string, bar: number }
+      const demo1: demo = { foo: 'A', bar: 1 };
+      const demo2: demo = { foo: 'B', bar: 2 };
+      const demo3: demo = { foo: 'C', bar: 3 };
+      const values: demo[] = [demo1, demo2, demo3];
+      const linkedList = new LinkedList<demo>(values);
+
+      const cb = (a: demo, b: demo) => a.foo === b.foo;
+
+      expect(linkedList.find({ foo: 'B', bar: 4 }, cb)?.val).toEqual({ foo: 'B', bar: 2 });
     });
   });
 
@@ -531,7 +584,7 @@ describe('##LinkedListSingle', () => {
       expect(linkedList.move(node, 0)).toBeFalsy();
 
       expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
-    })
+    });
 
     it('should move a found node forward by the positive number of positions specified', () => {
       const values = [1, 2, 3, 4, 5];
@@ -555,6 +608,18 @@ describe('##LinkedListSingle', () => {
       expect(linkedList.move(node, 4)).toBeTruthy();
 
       expect(linkedList.toArray()).toEqual([1, 2, 4, 5, 3]);
+    });
+
+    it('should move a head node forward by the positive number of positions specified', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedList<number>(values);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+
+      const node = new Node<number>(1);
+      expect(linkedList.move(node, 1)).toBeTruthy();
+
+      expect(linkedList.toArray()).toEqual([2, 1, 3, 4, 5]);
     });
 
     it('should move a found node backward by the negative number of positions specified', () => {
@@ -581,7 +646,19 @@ describe('##LinkedListSingle', () => {
       expect(linkedList.toArray()).toEqual([3, 1, 2, 4, 5]);
     });
 
-    it('should reverse a list of 2 items when the first item is specified to move forward by 1', () => {
+    it('should move a tail node backward by the negative number of positions specified', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedList<number>(values);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+
+      const node = new Node<number>(5);
+      expect(linkedList.move(node, -1)).toBeTruthy();
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 4]);
+    });
+
+    it('should reverse a list of 2 items when the first item is specified to move forward', () => {
       const values = [1, 2];
       const linkedList = new LinkedList<number>(values);
 
@@ -591,7 +668,43 @@ describe('##LinkedListSingle', () => {
       expect(linkedList.move(node, 1)).toBeTruthy();
 
       expect(linkedList.toArray()).toEqual([2, 1]);
-    })
+    });
+
+    it('should reverse a list of 2 items when the last item is specified to move backward', () => {
+      const values = [1, 2];
+      const linkedList = new LinkedList<number>(values);
+
+      expect(linkedList.toArray()).toEqual([1, 2]);
+
+      const node = new Node<number>(2);
+      expect(linkedList.move(node, -1)).toBeTruthy();
+
+      expect(linkedList.toArray()).toEqual([2, 1]);
+    });
+
+    it('should do nothing in a list of 2 items when the first item is specified to move backward', () => {
+      const values = [1, 2];
+      const linkedList = new LinkedList<number>(values);
+
+      expect(linkedList.toArray()).toEqual([1, 2]);
+
+      const node = new Node<number>(1);
+      expect(linkedList.move(node, -1)).toBeTruthy();
+
+      expect(linkedList.toArray()).toEqual([1, 2]);
+    });
+
+    it('should do nothing in a list of 2 items when the last item is specified to move forward', () => {
+      const values = [1, 2];
+      const linkedList = new LinkedList<number>(values);
+
+      expect(linkedList.toArray()).toEqual([1, 2]);
+
+      const node = new Node<number>(2);
+      expect(linkedList.move(node, 1)).toBeTruthy();
+
+      expect(linkedList.toArray()).toEqual([1, 2]);
+    });
   });
 
 

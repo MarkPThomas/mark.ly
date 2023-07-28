@@ -1,63 +1,69 @@
-export interface ILinkedList<N extends Node<N, K>, K> {
-  prepend(key: K): void;
-  prependNode(node: N): void;
-  append(key: K): void;
-  appendNode(node: N): void;
+import { Node } from './LinkedListNodes';
 
-  find(key: K): N | null;
+export interface ILinkedList<N extends Node<V>, V> {
+  prepend(valueOrNode: V | N): void;
+  append(valueOrNode: V | N): void;
+  find(valueOrNode: V | N): N | null;
+  remove(valueOrNode: V | N): N | null;
+  move(valueOrNode: V | N, spaces: number): boolean;
+  // prependList
+  // appendList
+
   getHead(): N | null;
-  getTail(): N | null;
-
-  remove(key: K): N | null;
-  removeNode(node: N): N | null;
   removeHead(): N | null;
-  removeTail(): N | null;
+  moveToHead(valueOrNode: V | N): boolean;
 
-  moveToHead(node: N): boolean;
+  getTail(): N | null;
+  removeTail(): N | null;
+  moveToTail(valueOrNode: V | N): boolean;
 
   size(): number;
-  toArray(): Node<N, K>[];
+  toArray(): V[];
+  setMatchCB(callBack: (a: V, b: V) => boolean): void;
+  reverse(): void;
+  // sort
 }
 
-export abstract class Node<N, K> {
-  key: K;
-  next: N | null;
-
-  constructor(key: K) {
-    this.key = key;
-  }
-}
-
-export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList<N, K> {
+export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N, V> {
   protected length: number = 0;
   protected head: N | null = null;
+  protected callBack: ((a: V, b: V) => boolean) | undefined = undefined;
 
-  constructor(items: any[] | null = null) {
+  constructor(items: V[] | null = null) {
     if (items !== null) {
-      for (let i = items.length - 1; 0 <= i; i--) {
-        this.prepend(items[i]);
-      }
+      this.fromArray(items);
     }
   }
 
-  find(key: K) {
-    let node: N | null = this.head;
+  find(
+    valueOrNode: V | N,
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+  ) {
+    let node = this.head;
     while (node) {
-      if (node.key === key) {
+      if (this.areEqual(valueOrNode, node, cb)) {
         return node;
       }
-      node = node.next;
+      node = node.next as N;
     }
-    return node;
+    return null;
   }
 
   getHead() {
     return this.head ?? null;
   }
 
-  moveToHead(node: N) {
-    if (this.removeNode(node) !== null) {
-      this.prependNode(node);
+  moveToHead(valueOrNode: V | N) {
+    if (this.remove(valueOrNode) !== null) {
+      this.prepend(valueOrNode);
+      return true;
+    }
+    return false;
+  }
+
+  moveToTail(valueOrNode: V | N) {
+    if (this.remove(valueOrNode) !== null) {
+      this.append(valueOrNode);
       return true;
     }
     return false;
@@ -68,26 +74,59 @@ export abstract class LinkedList<N extends Node<N, K>, K> implements ILinkedList
   }
 
   toArray() {
-    // TODO: Work out generating unique keys from values & returning arrays of the values
     const output = [];
     let node = this.head;
     while (node) {
-      output.push(node);
-      node = node.next;
+      output.push(node.val);
+      node = node.next as N;
     }
 
     return output;
   }
 
-  abstract prepend(key: K): void;
-  abstract prependNode(node: N): void;
-  abstract append(key: K): void;
-  abstract appendNode(node: N): void;
+  setMatchCB(callBack: (a: V, b: V) => boolean) {
+    this.callBack = callBack;
+  }
+
+  protected getNode(valueOrNode: V | Node<V>) {
+    return (typeof valueOrNode === 'object' && valueOrNode instanceof Node)
+      ? valueOrNode as Node<V>
+      : new Node(valueOrNode as V);
+  }
+
+  protected areEqual(
+    valueOrNode: V | Node<V>,
+    node: Node<V>,
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined) {
+
+    if (cb === undefined) {
+      cb = this.callBack;
+    } else if (cb === null) {
+      cb = undefined;
+    }
+
+    return ((!(valueOrNode instanceof Node) && node.equals(valueOrNode as V, cb))
+      || node.val === (valueOrNode as Node<V>).val)
+  }
+
+  protected fromArray(items: V[]) {
+    for (let i = items.length - 1; 0 <= i; i--) {
+      this.prepend(items[i]);
+    }
+  }
+
+  abstract prepend(valueOrNode: V | N): void;
+  abstract append(valueOrNode: V | N): void;
 
   abstract getTail(): N | null;
 
-  abstract remove(key: K): N | null;
-  abstract removeNode(node: N): N | null;
+  abstract remove(valueOrNode: V | N): N | null;
   abstract removeHead(): N | null;
   abstract removeTail(): N | null;
+
+  abstract move(valueOrNode: V | N, spaces: number): boolean;
+
+  abstract reverse(): void;
 }
+
+export { Node };

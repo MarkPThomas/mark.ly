@@ -11,16 +11,14 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
   }
 
   prepend(valueOrNode: V | Node<V>) {
-    const node = valueOrNode instanceof Node<V> ? valueOrNode as Node<V> : new Node(valueOrNode as V);
-
+    const node = this.getNode(valueOrNode);
     node.next = this.head;
     this.head = node;
     this.length++;
   }
 
   append(valueOrNode: V | Node<V>) {
-    const node = valueOrNode instanceof Node<V> ? valueOrNode as Node<V> : new Node(valueOrNode as V);
-
+    const node = this.getNode(valueOrNode);
     let currNode = this.head;
     while (currNode && currNode.next) {
       currNode = currNode.next;
@@ -35,7 +33,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
 
   remove(
     valueOrNode: V | Node<V>,
-    cb: ((a: V, b: V) => boolean) | undefined = undefined
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
   ) {
     let currNode = this.head;
     let prevNode = null;
@@ -95,9 +93,9 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
   move(
     valueOrNode: V | Node<V>,
     spaces: number,
-    cb: ((a: V, b: V) => boolean) | undefined = undefined
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
   ): boolean {
-    if (!spaces) {
+    if (!spaces || this.length < 2) {
       return false;
     }
 
@@ -107,12 +105,14 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
     while (currNode) {
       if (this.areEqual(valueOrNode, currNode, cb)) {
         const nodeMove = currNode;
+        if ((this.head === nodeMove && spaces < 0
+          || nodeMove.next === null && spaces > 0)) {
+          return true;
+        }
         if (prevNode) {
           prevNode.next = currNode.next;
         } else if (currNode.next) {
           this.head = currNode.next;
-        } else {
-          return false;
         }
 
         if (spaces > 0) {
