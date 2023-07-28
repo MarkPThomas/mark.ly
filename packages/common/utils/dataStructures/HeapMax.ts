@@ -1,6 +1,6 @@
 import { Heap } from './Heap';
 
-export class MaxHeap extends Heap {
+export class MaxHeap<T> extends Heap<T> {
   constructor(size: number | null = null) {
     super(size);
   }

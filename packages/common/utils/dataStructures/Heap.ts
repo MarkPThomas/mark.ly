@@ -1,5 +1,16 @@
-export abstract class Heap {
-  protected nodes: number[];
+export interface IHeap<T> {
+  poll(): T | null;
+  build(nums: T[]): void;
+  insert(val: T): void;
+  deleteRoot(): T | null;
+
+  size(): number;
+  toArray(): T[] | null;
+  // setComparisonCB(callback: (a: K, b: K) => boolean): void;
+}
+
+export abstract class Heap<T> implements IHeap<T> {
+  protected nodes: T[];
   protected maxSize: number | null;
 
   constructor(size: number | null = null) {
@@ -19,7 +30,7 @@ export abstract class Heap {
     return [...this.nodes];
   }
 
-  build(nums: number[]) {
+  build(nums: T[]) {
     this.nodes = [...nums];
     for (let i = Math.floor(this.nodes.length / 2) - 1; i >= 0; i--) {
       this.heapifyDown(i);
@@ -30,7 +41,7 @@ export abstract class Heap {
     }
   }
 
-  insert(val: number) {
+  insert(val: T) {
     const targetIndex = this.nodes.push(val) - 1;
     this.heapifyUp(targetIndex);
     if (this.maxSize && this.nodes.length > this.maxSize) {
