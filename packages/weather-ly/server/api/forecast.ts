@@ -17,7 +17,7 @@ class GridCache {
   static cache: Grid[] = [];
 
   static getGrid(coord: ICoordinate): IGrid | null {
-    let currentGrid = null;
+    let currentGrid: IGrid | null = null;
     GridCache.cache.forEach(grid => {
       if (grid.isInGrid(coord)) {
         console.log(`Getting Grid from cache`);
@@ -77,11 +77,11 @@ export class GridPoint {
     return result;
   }
 
-  static async getForecast(grid: IGrid, updateCache?: boolean): Promise<IForecastResponse> {
+  static async getForecast(grid: IGrid, updateCache?: boolean): Promise<IForecastResponse | undefined> {
     console.log('Fetching Grid URL for forecast:', GridPoint.getEndpoint(grid));
     let retries = 5;
     const delayMs = 250;
-    let result: IForecastResponse = undefined;
+    let result: IForecastResponse | undefined = undefined;
     updateCache = updateCache ?? GridCache.containsGrid({ grid });
 
     while (!result && retries) {
@@ -98,7 +98,7 @@ export class GridPoint {
     return result;
   }
 
-  private static async getForecastOnce(grid: IGrid, updateCache: boolean = false): Promise<IForecastResponse> {
+  private static async getForecastOnce(grid: IGrid, updateCache: boolean = false): Promise<IForecastResponse | undefined> {
     try {
       const result = await Requests.get<IForecastResponse>(`${GridPoint.getEndpoint(grid)}/forecast`);
       if (updateCache) {
@@ -133,7 +133,7 @@ export class Point {
     return GridPoint.getForecastGridData(grid.grid, grid.updateCache);
   }
 
-  static async getForecast(coord: ICoordinate, writeData = false): Promise<IForecastResponse> {
+  static async getForecast(coord: ICoordinate, writeData = false): Promise<IForecastResponse | undefined> {
     const grid = await Point.getGrid(coord);
     console.log('Getting forecast for coord: ', coord);
     const response = await GridPoint.getForecast(grid.grid, grid.updateCache);

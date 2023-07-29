@@ -9,7 +9,7 @@
     "test:u": "jest --config jest.config.json",
     "test:i": "jest --config jest.config.i.json --passWithNoTests",
     "test:a": "jest --config jest.config.a.json --passWithNoTests",
-    "test:all": "npm run test:u & npm run test:i & nom run test:a"
+    "test:all": "npm run test:u & npm run test:i & npm run test:a"
   },
   "author": "Mark P Thomas",
   "license": "ISC",
