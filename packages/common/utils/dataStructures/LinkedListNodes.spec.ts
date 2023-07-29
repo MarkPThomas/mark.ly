@@ -1,4 +1,4 @@
-import { Node, NodeDouble, NodeDoubleKeyVal } from './LinkedListNodes';
+import { Node, NodeDouble, NodeKeyVal, NodeDoubleKeyVal } from './LinkedListNodes';
 
 describe('##Node', () => {
   describe('#constructor', () => {
@@ -89,6 +89,33 @@ describe('##Node', () => {
       const equalsCB = (a: demo, b: demo) => a.name === b.name && a.age === b.age;
 
       expect(node.equals(valueObject2, equalsCB)).toBeFalsy();
+    });
+  });
+
+  describe('#toObject', () => {
+    it('should return a key:value object of select properties meant to represent the node', () => {
+      const node = new Node(5)
+
+      expect(node.toObject()).toEqual({ val: 5 });
+    })
+  });
+});
+
+describe('##NodeKeyVal', () => {
+  describe('#constructor', () => {
+    it('should have a key and value assigned at initialization and expected defaults', () => {
+      const node = new NodeKeyVal("A", 5);
+      expect(node.key).toEqual("A");
+      expect(node.val).toEqual(5);
+      expect(node.next).toBeNull();
+    });
+  });
+
+  describe('#toObject', () => {
+    it('should return a key:value object of select properties meant to represent the node', () => {
+      const node = new NodeDoubleKeyVal(3, 'A')
+
+      expect(node.toObject()).toEqual({ val: 'A', key: 3 });
     });
   });
 });
@@ -202,6 +229,14 @@ describe('##NodeDouble', () => {
       expect(nodePrev.next).toEqual(nodeNext);
     });
   });
+
+  describe('#toObject', () => {
+    it('should return a key:value object of select properties meant to represent the node', () => {
+      const node = new Node(5)
+
+      expect(node.toObject()).toEqual({ val: 5 });
+    })
+  });
 });
 
 describe('##NodeDoubleKeyVal', () => {
@@ -212,6 +247,14 @@ describe('##NodeDoubleKeyVal', () => {
       expect(node.val).toEqual(5);
       expect(node.next).toBeNull();
       expect(node.prev).toBeNull();
+    });
+  });
+
+  describe('#toObject', () => {
+    it('should return a key:value object of select properties meant to represent the node', () => {
+      const node = new NodeDoubleKeyVal(3, 'A')
+
+      expect(node.toObject()).toEqual({ val: 'A', key: 3 });
     });
   });
 });

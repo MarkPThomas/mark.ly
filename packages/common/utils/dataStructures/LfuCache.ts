@@ -1,19 +1,13 @@
-import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
+import { LinkedListDouble } from './LinkedListDouble';
+import { NodeDoubleKeyVal } from './LinkedListNodes';
 
-class NodeDoubleKeyVal<K> extends NodeDouble<K> {
-  val: any;
+export type LfuCacheOutput<K, V> = { useCount: number, items: { key: K, value: V }[] };
 
-  constructor(key: K, val: any) {
-    super(key);
-    this.val = val;
-  }
-}
-
-export class LfuCache<K> {
+export class LfuCache<K, V> {
   private capacity: number;
   private countMap: Map<K, number> = new Map<K, number>();
-  private valueMap: Map<K, NodeDoubleKeyVal<K>> = new Map<K, NodeDoubleKeyVal<K>>();
-  private countMapSorted: Map<number, LinkedListDouble<K>> = new Map<number, LinkedListDouble<K>>();
+  private valueMap: Map<K, NodeDoubleKeyVal<K, V>> = new Map<K, NodeDoubleKeyVal<K, V>>();
+  private countMapSorted: Map<number, LinkedListDouble<V>> = new Map<number, LinkedListDouble<V>>();
 
   constructor(capacity: number = 0) {
     this.capacity = capacity;
@@ -27,12 +21,13 @@ export class LfuCache<K> {
     return this.countMap.size;
   }
 
-  toArray(): [number, any][] {
-    const entries: [number, any][] = [];
+  toArray(): LfuCacheOutput<K, V>[] {
+    const entries: LfuCacheOutput<K, V>[] = [];
     this.countMapSorted.forEach((items, count) => {
-      entries.push([count, items.toArray()]);
+      entries.push({ useCount: count, items: items.toArray() });
     })
-    return entries;
+
+    return entries.sort((a: LfuCacheOutput<K, V>, b: LfuCacheOutput<K, V>) => a.useCount - b.useCount);
   }
 
   get(key: K) {
@@ -40,10 +35,10 @@ export class LfuCache<K> {
       return null;
     }
 
-    const nodeToUse: NodeDoubleKeyVal<K> = this.valueMap.get(key)!;
+    const nodeToUse: NodeDoubleKeyVal<K, V> = this.valueMap.get(key)!;
     const count: number = this.countMap.get(key)!;
 
-    this.countMapSorted.get(count)!.removeNode(nodeToUse);
+    this.countMapSorted.get(count)!.remove(nodeToUse);
     this.removeCountMapEntryListIfEmpty(count);
     this.countMap.delete(key);
 
@@ -55,16 +50,12 @@ export class LfuCache<K> {
   }
 
   put(key: K, val: any) {
-    if (this.capacity === 0) {
-      return;
-    }
-
     const node = new NodeDoubleKeyVal(key, val);
     if (this.valueMap.has(key)) {
-      const nodeToUse: NodeDoubleKeyVal<K> = this.valueMap.get(key)!;
+      const nodeToUse: NodeDoubleKeyVal<K, V> = this.valueMap.get(key)!;
       const count: number = this.countMap.get(key)!;
 
-      this.countMapSorted.get(count)!.removeNode(nodeToUse);
+      this.countMapSorted.get(count)!.remove(nodeToUse);
       this.removeCountMapEntryListIfEmpty(count);
       this.valueMap.delete(key);
       this.countMap.delete(key);
@@ -76,8 +67,8 @@ export class LfuCache<K> {
     } else {
       if (this.capacity > 0 && this.valueMap.size === this.capacity) {
         const lowestCountKey = [...this.countMapSorted.entries()].sort((a, b) => a[0] - b[0])[0][0];
-        const evictNode = this.countMapSorted.get(lowestCountKey)!.removeHead() as NodeDoubleKeyVal<K>;
-        const evictKey = evictNode.val;
+        const evictNode = this.countMapSorted.get(lowestCountKey)!.removeTail() as NodeDoubleKeyVal<K, V>;
+        const evictKey = evictNode.key;
         this.removeCountMapEntryListIfEmpty(lowestCountKey);
         this.countMap.delete(evictKey);
         this.valueMap.delete(evictKey);
@@ -88,12 +79,12 @@ export class LfuCache<K> {
     }
   }
 
-  private addToCountMapSorted(key: number, node: NodeDoubleKeyVal<K>) {
+  private addToCountMapSorted(key: number, node: NodeDoubleKeyVal<K, V>) {
     if (this.countMapSorted.has(key)) {
-      this.countMapSorted.get(key)!.appendNode(node);
+      this.countMapSorted.get(key)!.prepend(node);
     } else {
-      const linkedList = new LinkedListDouble<K>();
-      linkedList.appendNode(node);
+      const linkedList = new LinkedListDouble<V>();
+      linkedList.prepend(node);
       this.countMapSorted.set(key, linkedList);
     }
   }

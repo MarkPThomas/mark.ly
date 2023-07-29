@@ -130,6 +130,31 @@ describe('##MaxHeap', () => {
 
       expect(maxHeap.size()).toEqual(0);
     });
+
+    it('should create a heap of custom objects by the comparison callback provided', () => {
+      type Location = { distance: number, name: string }
+      const maxHeap = new MaxHeap<Location>();
+
+      const cb = (a: Location, b: Location) => a.distance - b.distance;
+      maxHeap.setComparisonCB(cb);
+
+      const locations: Location[] = [
+        { distance: 1, name: 'cerca' },
+        { distance: 5, name: 'foo' },
+        { distance: 2, name: 'bar' },
+        { distance: 32, name: 'far' },
+        { distance: 2.2, name: 'finisterre' }
+      ];
+
+      maxHeap.build(locations);
+      expect(maxHeap.toArray()).toEqual([
+        { distance: 32, name: 'far' },
+        { distance: 5, name: 'foo' },
+        { distance: 2, name: 'bar' },
+        { distance: 1, name: 'cerca' },
+        { distance: 2.2, name: 'finisterre' }
+      ]);
+    });
   });
 
   describe('#insert', () => {
@@ -192,6 +217,35 @@ describe('##MaxHeap', () => {
 
       expect(maxHeap.toArray()).toEqual([3, 2, 1])
     });
+
+    it(`should heapify custom objects by the comparison callback provided such that
+      the object ends up in the appropriate position`, () => {
+      type Location = { distance: number, name: string }
+      const maxHeap = new MaxHeap<Location>();
+
+      const cb = (a: Location, b: Location) => a.distance - b.distance;
+      maxHeap.setComparisonCB(cb);
+
+      const locations: Location[] = [
+        { distance: 1, name: 'cerca' },
+        { distance: 5, name: 'foo' },
+        { distance: 2, name: 'bar' },
+        { distance: 32, name: 'far' },
+        { distance: 2.2, name: 'finisterre' }
+      ];
+
+      maxHeap.build(locations);
+      maxHeap.insert({ distance: 6, name: 'swapper' });
+
+      expect(maxHeap.toArray()).toEqual([
+        { distance: 32, name: 'far' },
+        { distance: 5, name: 'foo' },
+        { distance: 6, name: 'swapper' },
+        { distance: 1, name: 'cerca' },
+        { distance: 2.2, name: 'finisterre' },
+        { distance: 2, name: 'bar' },
+      ]);
+    });
   });
 
   describe('#deleteRoot', () => {
@@ -233,6 +287,33 @@ describe('##MaxHeap', () => {
       maxHeap.deleteRoot();
 
       expect(maxHeap.poll()).toEqual(6);
+    });
+
+    it(`should heapify custom objects by the comparison callback provided after deletion`, () => {
+      type Location = { distance: number, name: string }
+      const maxHeap = new MaxHeap<Location>();
+
+      const cb = (a: Location, b: Location) => a.distance - b.distance;
+      maxHeap.setComparisonCB(cb);
+
+      const locations: Location[] = [
+        { distance: 1, name: 'cerca' },
+        { distance: 5, name: 'foo' },
+        { distance: 2, name: 'bar' },
+        { distance: 32, name: 'far' },
+        { distance: 2.2, name: 'finisterre' }
+      ];
+
+      maxHeap.build(locations);
+
+      maxHeap.deleteRoot();
+
+      expect(maxHeap.toArray()).toEqual([
+        { distance: 5, name: 'foo' },
+        { distance: 2.2, name: 'finisterre' },
+        { distance: 2, name: 'bar' },
+        { distance: 1, name: 'cerca' }
+      ]);
     });
   });
 })
