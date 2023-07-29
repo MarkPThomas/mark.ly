@@ -1,4 +1,4 @@
-import { IGraph, findShortestPath } from './dijkstra';
+import { IGraph, findShortestPath } from './dijkstra'
 
 describe('#findShortestPath', () => {
   it('should return the shortest distance and nodes that form the shortest path between two specified nodes', () => {
