@@ -42,9 +42,11 @@ export const findShortestPath = (graph: IGraph, startNode: string, endNode: stri
   }
   shortestPath.reverse();
 
+  const distance = distances[endNode] ? distances[endNode] : Infinity;
+
   return {
-    distance: distances[endNode],
-    path: shortestPath,
+    distance: distance,
+    path: distance === Infinity ? null : shortestPath,
   };
 }
 
@@ -73,12 +75,3 @@ interface INodeDistance {
 export interface IGraph {
   [key: string]: INodeDistance;
 }
-
-// let graph = {
-// 	start: { A: 5, B: 2 },
-// 	A: { start: 1, C: 4, D: 2 },
-// 	B: { A: 8, D: 7 },
-// 	C: { D: 6, finish: 3 },
-// 	D: { finish: 1 },
-// 	finish: {},
-// };
