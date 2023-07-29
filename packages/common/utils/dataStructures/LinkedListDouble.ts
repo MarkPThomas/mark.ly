@@ -1,5 +1,6 @@
-import { LinkedList as LinkedListBase, Node } from './LinkedList';
+import { LinkedList as LinkedListBase } from './LinkedList';
 import { NodeDouble } from './LinkedListNodes';
+import { LinkedList } from './LinkedListSingle';
 
 export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
   constructor(items: V[] | null = null) {
@@ -208,6 +209,17 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
       currNode = tempNode;
     }
     this.head = prevNode;
+  }
+
+  toLinkedListSingle() {
+    const linkedList = new LinkedList<V>();
+    let currNode = this.head;
+    while (currNode) {
+      linkedList.append(currNode.val);
+      currNode = currNode.next as NodeDouble<V>;
+    }
+
+    return linkedList;
   }
 
   protected getNodeDouble(valueOrNode: V | NodeDouble<V>) {

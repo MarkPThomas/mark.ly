@@ -1,3 +1,4 @@
+import { LinkedListDouble } from './LinkedListDouble';
 import { LinkedList, Node } from './LinkedListSingle';
 
 describe('##LinkedListSingle', () => {
@@ -182,6 +183,18 @@ describe('##LinkedListSingle', () => {
       linkedList.reverse();
 
       expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+  });
+
+  describe('#toLinkedListDouble', () => {
+    it('should convert the linked list to a doubly linked list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedList<number>(values);
+
+      const result = linkedList.toLinkedListDouble();
+      expect(result).toBeInstanceOf(LinkedListDouble);
+      expect(result.getHead()).toHaveProperty('prev');
+      expect(result.toArray()).toEqual([1, 2, 3, 4, 5]);
     });
   });
 

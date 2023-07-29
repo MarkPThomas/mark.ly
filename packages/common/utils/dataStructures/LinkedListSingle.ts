@@ -1,4 +1,5 @@
 import { LinkedList as LinkedListBase, Node } from './LinkedList';
+import { LinkedListDouble } from './LinkedListDouble';
 
 export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
   prepend(valueOrNode: V | Node<V>) {
@@ -166,6 +167,17 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
       currNode = tempNode;
     }
     this.head = prevNode;
+  }
+
+  toLinkedListDouble() {
+    const linkedList = new LinkedListDouble<V>();
+    let currNode = this.head;
+    while (currNode) {
+      linkedList.append(currNode.val);
+      currNode = currNode.next;
+    }
+
+    return linkedList;
   }
 }
 
