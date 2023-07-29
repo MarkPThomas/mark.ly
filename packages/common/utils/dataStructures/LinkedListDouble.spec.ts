@@ -706,6 +706,128 @@ describe('##LinkedListDoubleDouble', () => {
   });
 
 
+
+  describe('#prependMany', () => {
+    it('should do nothing for an empty array provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues: number[] = [];
+      linkedList.prependMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from an array for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.prependMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should prepend array values to an existing list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.prependMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
+    });
+
+    it('should do nothing for an empty list provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>();
+      linkedList.prependMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from a list for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.prependMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should prepend a list to an existing list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.prependMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
+    });
+  });
+
+  describe('#appendMany', () => {
+    it('should do nothing for an empty array provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues: number[] = [];
+      linkedList.appendMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from an array for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.appendMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should append array values to an existing vvvvvvvvlist', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.appendMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    });
+
+    it('should do nothing for an empty list provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>();
+      linkedList.appendMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from a list for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.appendMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should append a list to an existing list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.appendMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    });
+  });
+
+
   // ==== Head ====
   describe('#getHead', () => {
     it('should return null for an empty list', () => {

@@ -6,8 +6,9 @@ export interface ILinkedList<N extends Node<V>, V> {
   find(valueOrNode: V | N): N | null;
   remove(valueOrNode: V | N): N | null;
   move(valueOrNode: V | N, spaces: number): boolean;
-  // prependList
-  // appendList
+
+  prependMany(items: V[] | ILinkedList<N, V>): void;
+  appendMany(items: V[] | ILinkedList<N, V>): void;
 
   getHead(): N | null;
   removeHead(): N | null;
@@ -27,6 +28,7 @@ export interface ILinkedList<N extends Node<V>, V> {
 export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N, V> {
   protected length: number = 0;
   protected head: N | null = null;
+  protected tail: N | null = null;
   protected callBack: ((a: V, b: V) => boolean) | undefined = undefined;
 
   constructor(items: V[] | null = null) {
@@ -53,6 +55,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     return this.head ?? null;
   }
 
+  getTail() {
+    return this.tail ?? null;
+  }
+
   moveToHead(valueOrNode: V | N) {
     if (this.remove(valueOrNode) !== null) {
       this.prepend(valueOrNode);
@@ -67,6 +73,42 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       return true;
     }
     return false;
+  }
+
+  prependMany(items: V[] | LinkedList<N, V>) {
+    if (Array.isArray(items)) {
+      const itemsAsArray = items as V[];
+      for (let i = itemsAsArray.length - 1; 0 <= i; i--) {
+        this.prepend(itemsAsArray[i]);
+      }
+    } else {
+      const itemsAsList = items as LinkedList<N, V>;
+      if (!this.head) {
+        this.head = itemsAsList.head;
+        this.tail = itemsAsList.tail;
+      } else if (itemsAsList.tail) {
+        itemsAsList.tail.next = this.head;
+        this.head = itemsAsList.head;
+      }
+    }
+  }
+
+  appendMany(items: V[] | LinkedList<N, V>) {
+    if (Array.isArray(items)) {
+      const itemsAsArray = items as V[];
+      itemsAsArray.forEach((item) => {
+        this.append(item);
+      });
+    } else {
+      const itemsAsList = items as LinkedList<N, V>;
+      if (!this.tail) {
+        this.head = itemsAsList.head;
+        this.tail = itemsAsList.tail;
+      } else if (itemsAsList.tail) {
+        this.tail.next = itemsAsList.head;
+        this.tail = itemsAsList.tail;
+      }
+    }
   }
 
   size() {
@@ -117,8 +159,6 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   abstract prepend(valueOrNode: V | N): void;
   abstract append(valueOrNode: V | N): void;
-
-  abstract getTail(): N | null;
 
   abstract remove(valueOrNode: V | N): N | null;
   abstract removeHead(): N | null;

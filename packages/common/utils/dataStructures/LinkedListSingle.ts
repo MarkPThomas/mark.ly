@@ -1,18 +1,12 @@
 import { LinkedList as LinkedListBase, Node } from './LinkedList';
 
 export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
-  getTail() {
-    let node = this.head;
-    while (node && node.next) {
-      node = node.next;
-    }
-
-    return node ?? null;
-  }
-
   prepend(valueOrNode: V | Node<V>) {
     const node = this.getNode(valueOrNode);
     node.next = this.head;
+    if (node.next === null) {
+      this.tail = node;
+    }
     this.head = node;
     this.length++;
   }
@@ -28,6 +22,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
     } else {
       this.head = node;
     }
+    this.tail = node;
     this.length++;
   }
 
@@ -41,8 +36,14 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
       if (this.areEqual(valueOrNode, currNode, cb)) {
         if (prevNode) {
           prevNode.next = currNode.next;
+          if (!currNode.next) {
+            this.tail = prevNode;
+          }
         } else {
           this.head = currNode.next;
+          if (!this.head) {
+            this.tail = null;
+          }
         }
         this.length--;
 
@@ -59,6 +60,9 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
     const removedHead: Node<V> | null = this.head;
     if (removedHead) {
       let nextHead = removedHead.next;
+      if (!removedHead.next) {
+        this.tail = null;
+      }
       removedHead.next = null;
       this.head = nextHead;
       this.length--;
@@ -74,6 +78,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
 
     if (!node.next) {
       this.head = null;
+      this.tail = null;
       this.length--;
       return node;
     }
@@ -85,6 +90,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
     }
     if (prevNode) {
       prevNode.next = null;
+      this.tail = prevNode;
     }
     this.length--;
     return node;

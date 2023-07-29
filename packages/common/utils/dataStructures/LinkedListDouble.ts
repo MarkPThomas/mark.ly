@@ -2,8 +2,6 @@ import { LinkedList as LinkedListBase, Node } from './LinkedList';
 import { NodeDouble } from './LinkedListNodes';
 
 export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
-  protected tail: NodeDouble<V> | null = null;
-
   constructor(items: V[] | null = null) {
     super();
     if (items !== null) {
