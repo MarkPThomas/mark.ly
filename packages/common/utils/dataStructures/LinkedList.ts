@@ -22,7 +22,6 @@ export interface ILinkedList<N extends Node<V>, V> {
   toArray(): V[] | any[];
   setMatchCB(callBack: (a: V, b: V) => boolean): void;
   reverse(): void;
-  // sort
 }
 
 export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N, V> {
