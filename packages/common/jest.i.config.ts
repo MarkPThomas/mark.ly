@@ -29,7 +29,9 @@ export default {
     '!database/types.ts',
     '!database/migrations/*',
     '!database/models/*',
-    '!database/repositories-orm/**/*',
+    '!database/repositories-orm/**/*', ,
+    '!utils/axios.ts',
+    '!utils/terminateProcess.ts'
   ],
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
