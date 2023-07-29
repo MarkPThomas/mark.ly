@@ -93,51 +93,324 @@ describe('##LfuCache', () => {
         cache.put(index, value);
       })
 
-      expect(cache.toArray()).toEqual([[1, ['E', 'D', 'C', 'B', 'A']]]);
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'E' },
+            { key: 3, val: 'D' },
+            { key: 2, val: 'C' },
+            { key: 1, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
 
       cache.get(2);
 
-      expect(cache.toArray()).toEqual([[1, ['E', 'D', 'B', 'A']], [2, ['C']]]);
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'E' },
+            { key: 3, val: 'D' },
+            { key: 1, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        },
+        {
+          useCount: 2,
+          items: [
+            { key: 2, val: 'C' }
+          ]
+        }
+      ]);
     });
   });
 
   describe('#get', () => {
     it('should return null for an empty cache', () => {
+      const cache = new LfuCache<number, any>();
 
+      expect(cache.get(0)).toBeNull();
     });
 
     it('should return null if the item was never present in the cache', () => {
+      const cache = new LfuCache<number, any>();
+      cache.put(0, 'A');
+      cache.put(2, 'B');
+      cache.put(4, 'C');
 
+      expect(cache.get(1)).toBeNull();
     });
 
     it('should return the item if it is present & increment its use count', () => {
+      const cache = new LfuCache<number, string>();
+      cache.put(0, 'A');
+      cache.put(2, 'B');
+      cache.put(4, 'C');
 
-      // TODO: Add comparison of array output for validating use count
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 2, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+      expect(cache.get(2)).toEqual('B');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 0, val: 'A' }
+          ]
+        },
+        {
+          useCount: 2,
+          items: [
+            { key: 2, val: 'B' },
+          ]
+        }
+      ]);
     });
 
     it('should return null if the item was added & then later removed due to capacity constraints', () => {
+      const cache = new LfuCache<number, string>(3);
+      cache.put(0, 'A');
+      cache.put(2, 'B');
+      cache.put(4, 'C');
 
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 2, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+
+      expect(cache.get(2)).toEqual('B');
+      expect(cache.get(0)).toEqual('A');
+      expect(cache.get(4)).toEqual('C');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 2,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 0, val: 'A' },
+            { key: 2, val: 'B' }
+          ]
+        }
+      ]);
+
+      cache.put(1, 'D');
+
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 1, val: 'D' },
+          ]
+        },
+        {
+          useCount: 2,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+      expect(cache.get(2)).toBeNull();
     });
   });
 
   describe('#put', () => {
-    it('should add a new item to the cache & increment its use count', () => {
+    it('should add a new item to the cache & set its use count to 1', () => {
+      const cache = new LfuCache<number, string>();
 
-      // TODO: Add comparison of array output for validating use count
+      cache.put(0, 'A');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+
+      cache.put(2, 'B');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 2, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+
+      cache.put(4, 'C');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 2, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
     });
 
     it('should remove the least frequently used item if cache is full & adding a new item', () => {
+      const cache = new LfuCache<number, string>(3);
+      cache.put(0, 'A');
+      cache.put(6, 'B');
+      cache.put(4, 'C');
 
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 6, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+
+      cache.put(1, 'D');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 1, val: 'D' },
+            { key: 4, val: 'C' },
+            { key: 6, val: 'B' }
+          ]
+        }
+      ]);
     });
 
     it(`should remove the least recently used item of the least frequently used items in the
       event of a frequency tie, if cache is full & adding a new item`, () => {
+      const cache = new LfuCache<number, string>(3);
+      cache.put(0, 'A');
+      cache.put(2, 'B');
+      cache.put(4, 'C');
 
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 2, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+
+      cache.get(4);
+      cache.get(0);
+      cache.get(2);
+      cache.get(2);
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 2,
+          items: [
+            { key: 0, val: 'A' },
+            { key: 4, val: 'C' }
+          ]
+        },
+        {
+          useCount: 3,
+          items: [
+            { key: 2, val: 'B' }
+          ]
+        }
+      ]);
+
+      cache.put(1, 'D');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 1, val: 'D' },
+          ]
+        },
+        {
+          useCount: 2,
+          items: [
+            { key: 0, val: 'A' }
+          ]
+        },
+        {
+          useCount: 3,
+          items: [
+            { key: 2, val: 'B' }
+          ]
+        }
+      ]);
     });
 
-    it('should update an existing item to the cache & increment its use count', () => {
+    it(`should update an existing item to the cache,
+      increment its use count
+      & set it as the most recently used item of the new count`, () => {
+      const cache = new LfuCache<number, string>(3);
+      cache.put(0, 'A');
+      cache.put(2, 'B');
+      cache.put(4, 'C');
 
-      // TODO: Add comparison of array output for validating use count
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 2, val: 'B' },
+            { key: 0, val: 'A' }
+          ]
+        }
+      ]);
+
+      cache.get(2);
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 4, val: 'C' },
+            { key: 0, val: 'A' }
+          ]
+        },
+        {
+          useCount: 2,
+          items: [
+            { key: 2, val: 'B' }
+          ]
+        }
+      ]);
+
+      cache.put(4, 'Updated');
+      expect(cache.toArray()).toEqual([
+        {
+          useCount: 1,
+          items: [
+            { key: 0, val: 'A' }
+          ]
+        },
+        {
+          useCount: 2,
+          items: [
+            { key: 4, val: 'Updated' },
+            { key: 2, val: 'B' }
+          ]
+        }
+      ]);
     });
   });
 });

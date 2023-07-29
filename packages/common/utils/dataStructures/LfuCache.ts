@@ -1,5 +1,8 @@
 import { LinkedListDouble } from './LinkedListDouble';
 import { NodeDoubleKeyVal } from './LinkedListNodes';
+
+export type LfuCacheOutput<K, V> = { useCount: number, items: { key: K, value: V }[] };
+
 export class LfuCache<K, V> {
   private capacity: number;
   private countMap: Map<K, number> = new Map<K, number>();
@@ -18,12 +21,13 @@ export class LfuCache<K, V> {
     return this.countMap.size;
   }
 
-  toArray(): [number, any][] {
-    const entries: [number, any][] = [];
+  toArray(): LfuCacheOutput<K, V>[] {
+    const entries: LfuCacheOutput<K, V>[] = [];
     this.countMapSorted.forEach((items, count) => {
-      entries.push([count, items.toArray()]);
+      entries.push({ useCount: count, items: items.toArray() });
     })
-    return entries;
+
+    return entries.sort((a: LfuCacheOutput<K, V>, b: LfuCacheOutput<K, V>) => a.useCount - b.useCount);
   }
 
   get(key: K) {
@@ -63,7 +67,7 @@ export class LfuCache<K, V> {
     } else {
       if (this.capacity > 0 && this.valueMap.size === this.capacity) {
         const lowestCountKey = [...this.countMapSorted.entries()].sort((a, b) => a[0] - b[0])[0][0];
-        const evictNode = this.countMapSorted.get(lowestCountKey)!.removeHead() as NodeDoubleKeyVal<K, V>;
+        const evictNode = this.countMapSorted.get(lowestCountKey)!.removeTail() as NodeDoubleKeyVal<K, V>;
         const evictKey = evictNode.key;
         this.removeCountMapEntryListIfEmpty(lowestCountKey);
         this.countMap.delete(evictKey);

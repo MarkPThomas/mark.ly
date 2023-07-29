@@ -93,11 +93,23 @@ describe('##LruCache', () => {
         cache.put(index, value);
       })
 
-      expect(cache.toArray()).toEqual(['E', 'D', 'C', 'B', 'A']);
+      expect(cache.toArray()).toEqual([
+        { key: 4, val: 'E' },
+        { key: 3, val: 'D' },
+        { key: 2, val: 'C' },
+        { key: 1, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
 
       cache.get(2);
 
-      expect(cache.toArray()).toEqual(['C', 'E', 'D', 'B', 'A']);
+      expect(cache.toArray()).toEqual([
+        { key: 2, val: 'C' },
+        { key: 4, val: 'E' },
+        { key: 3, val: 'D' },
+        { key: 1, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
     });
   });
 
@@ -122,8 +134,17 @@ describe('##LruCache', () => {
       cache.put(2, 'B');
       cache.put(4, 'C');
 
+      expect(cache.toArray()).toEqual([
+        { key: 4, val: 'C' },
+        { key: 2, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
       expect(cache.get(2)).toEqual('B');
-      // TODO: Add comparison of array output for validating most recently used
+      expect(cache.toArray()).toEqual([
+        { key: 2, val: 'B' },
+        { key: 4, val: 'C' },
+        { key: 0, val: 'A' }
+      ]);
     });
 
     it('should return null if the item was added & then later removed due to capacity constraints', () => {
@@ -132,14 +153,28 @@ describe('##LruCache', () => {
       cache.put(2, 'B');
       cache.put(4, 'C');
 
-      // TODO: Add comparison of array output for validating most recently used
+      expect(cache.toArray()).toEqual([
+        { key: 4, val: 'C' },
+        { key: 2, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
+
       expect(cache.get(2)).toEqual('B');
       expect(cache.get(0)).toEqual('A');
       expect(cache.get(4)).toEqual('C');
+      expect(cache.toArray()).toEqual([
+        { key: 4, val: 'C' },
+        { key: 0, val: 'A' },
+        { key: 2, val: 'B' }
+      ]);
 
       cache.put(1, 'D');
 
-      // TODO: Add comparison of array output for validating most recently used
+      expect(cache.toArray()).toEqual([
+        { key: 1, val: 'D' },
+        { key: 4, val: 'C' },
+        { key: 0, val: 'A' }
+      ]);
       expect(cache.get(2)).toBeNull();
     });
   });
@@ -149,16 +184,22 @@ describe('##LruCache', () => {
       const cache = new LruCache<number, any>();
 
       cache.put(0, 'A');
-      // TODO: Replace with comparison of array output for validating most recently used
-      expect(cache.get(0)).toEqual('A');
+      expect(cache.toArray()).toEqual([
+        { key: 0, val: 'A' }
+      ]);
 
       cache.put(1, 'B');
-      // TODO: Replace with comparison of array output for validating most recently used
-      expect(cache.get(1)).toEqual('B');
+      expect(cache.toArray()).toEqual([
+        { key: 1, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
 
       cache.put(2, 'C');
-      // TODO: Replace with comparison of array output for validating most recently used
-      expect(cache.get(2)).toEqual('C');
+      expect(cache.toArray()).toEqual([
+        { key: 2, val: 'C' },
+        { key: 1, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
     });
 
     it('should remove the least recently used item if cache is full & adding a new item', () => {
@@ -166,10 +207,18 @@ describe('##LruCache', () => {
       cache.put(0, 'A');
       cache.put(1, 'B');
       cache.put(2, 'C');
-      // TODO: Add comparison of array output for validating state
+      expect(cache.toArray()).toEqual([
+        { key: 2, val: 'C' },
+        { key: 1, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
 
       cache.put(3, 'D');
-      // TODO: Add comparison of array output for validating state
+      expect(cache.toArray()).toEqual([
+        { key: 3, val: 'D' },
+        { key: 2, val: 'C' },
+        { key: 1, val: 'B' }
+      ]);
       expect(cache.get(0)).toBeNull();
     });
 
@@ -178,10 +227,18 @@ describe('##LruCache', () => {
       cache.put(0, 'A');
       cache.put(1, 'B');
       cache.put(2, 'C');
+      expect(cache.toArray()).toEqual([
+        { key: 2, val: 'C' },
+        { key: 1, val: 'B' },
+        { key: 0, val: 'A' }
+      ]);
 
       cache.put(1, 'Updated')
-      // TODO: Replace with comparison of array output for validating most recently used
-      expect(cache.get(1)).toEqual('Updated');
+      expect(cache.toArray()).toEqual([
+        { key: 1, val: 'Updated' },
+        { key: 2, val: 'C' },
+        { key: 0, val: 'A' }
+      ]);
     });
   });
 });

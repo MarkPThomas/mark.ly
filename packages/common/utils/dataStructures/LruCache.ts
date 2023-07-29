@@ -1,6 +1,7 @@
 import { LinkedListDouble } from './LinkedListDouble';
 import { NodeDoubleKeyVal } from './LinkedListNodes';
 
+export type LruCacheOutput<K, V> = { key: K, value: V }[];
 
 export class LruCache<K, V> {
   private capacity;
@@ -20,7 +21,7 @@ export class LruCache<K, V> {
     return this.count;
   }
 
-  toArray() {
+  toArray(): LruCacheOutput<K, V> {
     return this.list.toArray();
   }
 
