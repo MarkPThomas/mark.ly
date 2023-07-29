@@ -1,6 +1,3 @@
-// import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
-// import { LinkedList } from './LinkedListSingle';
-// import { NodeDoubleKeyVal } from './LinkedListNodes';
 import { LinkedList, LinkedListDouble, NodeDouble } from './LinkedListDouble';
 import { LinkedList as LinkedListSingle } from './LinkedListSingle';
 import { NodeDoubleKeyVal } from './LinkedListNodes';
