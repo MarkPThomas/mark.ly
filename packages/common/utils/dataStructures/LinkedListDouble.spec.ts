@@ -1,4 +1,9 @@
-import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
+// import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
+// import { LinkedList } from './LinkedListSingle';
+// import { NodeDoubleKeyVal } from './LinkedListNodes';
+import { LinkedList, LinkedListDouble, NodeDouble } from './LinkedListDouble';
+import { LinkedList as LinkedListSingle } from './LinkedListSingle';
+import { NodeDoubleKeyVal } from './LinkedListNodes';
 
 describe('##LinkedListDoubleDouble', () => {
   // ==== Auxilliary ====
@@ -182,6 +187,18 @@ describe('##LinkedListDoubleDouble', () => {
       linkedList.reverse();
 
       expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+  });
+
+  describe('#toLinkedListSingle', () => {
+    it('should convert the linked list to a doubly linked list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const result = linkedList.toLinkedListSingle();
+      expect(result).toBeInstanceOf(LinkedListSingle);
+      expect(result.getHead()).not.toHaveProperty('prev');
+      expect(result.toArray()).toEqual([1, 2, 3, 4, 5]);
     });
   });
 
@@ -705,6 +722,126 @@ describe('##LinkedListDoubleDouble', () => {
     });
   });
 
+  describe('#prependMany', () => {
+    it('should do nothing for an empty array provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues: number[] = [];
+      linkedList.prependMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from an array for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.prependMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should prepend array values to an existing list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.prependMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
+    });
+
+    it('should do nothing for an empty list provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>();
+      linkedList.prependMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from a list for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.prependMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should prepend a list to an existing list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.prependMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
+    });
+  });
+
+  describe('#appendMany', () => {
+    it('should do nothing for an empty array provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues: number[] = [];
+      linkedList.appendMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from an array for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.appendMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should append array values to an existing vvvvvvvvlist', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedValues = [6, 7, 8, 9, 10];
+      linkedList.appendMany(addedValues);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    });
+
+    it('should do nothing for an empty list provided', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>();
+      linkedList.appendMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should generate a new list from a list for an existing empty list', () => {
+      const linkedList = new LinkedListDouble<number>();
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.appendMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    it('should append a list to an existing list', () => {
+      const values = [1, 2, 3, 4, 5];
+      const linkedList = new LinkedListDouble<number>(values);
+
+      const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
+      linkedList.appendMany(addedList);
+
+      expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    });
+  });
+
 
   // ==== Head ====
   describe('#getHead', () => {
@@ -965,5 +1102,21 @@ describe('##LinkedListDoubleDouble', () => {
       expect(linkedList.getTail()?.val).toEqual(1);
       expect(linkedList.toArray()).toEqual([2, 3, 4, 5, 1]);
     });
+  });
+});
+
+describe('##LinkedList', () => {
+  it('should create a singly linked list of a derived node', () => {
+    const linkedList = new LinkedList<NodeDoubleKeyVal<number, string>, string>();
+    linkedList.append(new NodeDoubleKeyVal(0, 'A'));
+    linkedList.append(new NodeDoubleKeyVal(1, 'B'));
+    linkedList.append(new NodeDoubleKeyVal(2, 'C'));
+
+    expect(linkedList.toArray()).toEqual(
+      [
+        { key: 0, val: 'A' },
+        { key: 1, val: 'B' },
+        { key: 2, val: 'C' },
+      ]);
   });
 });

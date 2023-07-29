@@ -6,12 +6,13 @@ export interface IHeap<T> {
 
   size(): number;
   toArray(): T[] | null;
-  // setComparisonCB(callback: (a: K, b: K) => boolean): void;
+  setComparisonCB(callBack: (a: T, b: T) => number): void;
 }
 
 export abstract class Heap<T> implements IHeap<T> {
   protected nodes: T[];
   protected maxSize: number | null;
+  protected callBack: ((a: T, b: T) => number) | undefined = undefined;
 
   constructor(size: number | null = null) {
     this.nodes = [];
@@ -57,6 +58,10 @@ export abstract class Heap<T> implements IHeap<T> {
     return root ?? null;
   }
 
+  setComparisonCB(callBack: (a: T, b: T) => number): void {
+    this.callBack = callBack;
+  }
+
   protected heapifyUp(targetIndex: number) {
     let parentIndex = Math.floor((targetIndex - 1) / 2);
     if (parentIndex < 0 || !this.shouldSwap(parentIndex, targetIndex)) {
@@ -89,5 +94,13 @@ export abstract class Heap<T> implements IHeap<T> {
     const temp = this.nodes[index1];
     this.nodes[index1] = this.nodes[index2];
     this.nodes[index2] = temp;
+  }
+
+  protected isLessThan(a: T, b: T) {
+    return this.callBack ? this.callBack(a, b) < 0 : a < b;
+  }
+
+  protected isGreaterThan(a: T, b: T) {
+    return this.callBack ? this.callBack(a, b) > 0 : a > b;
   }
 }

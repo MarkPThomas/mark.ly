@@ -6,6 +6,6 @@ export class MinHeap<T> extends Heap<T> {
   }
 
   protected shouldSwap(swapIndex: number, targetIndex: number) {
-    return this.nodes[swapIndex] > this.nodes[targetIndex];
+    return this.isGreaterThan(this.nodes[swapIndex], this.nodes[targetIndex]);
   }
 }
