@@ -87,17 +87,17 @@ describe('##LruCache', () => {
     });
 
     it('should return an array items in the current order present in the cache', () => {
-      //   const cache = new LruCache<number, any>();
-      //   const values = ['A', 'B', 'C', 'D', 'E'];
-      //   values.forEach((value, index) => {
-      //     cache.put(index, value);
-      //   })
+      const cache = new LruCache<number, any>();
+      const values = ['A', 'B', 'C', 'D', 'E'];
+      values.forEach((value, index) => {
+        cache.put(index, value);
+      })
 
-      //   expect(cache.toArray()).toEqual(['A', 'B', 'C', 'D', 'E']);
+      expect(cache.toArray()).toEqual(['E', 'D', 'C', 'B', 'A']);
 
-      //   cache.get(2);
+      cache.get(2);
 
-      //   expect(cache.toArray()).toEqual(['C', 'A', 'B', 'D', 'E']);
+      expect(cache.toArray()).toEqual(['C', 'E', 'D', 'B', 'A']);
     });
   });
 
