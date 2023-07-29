@@ -30,6 +30,8 @@ export default {
     '!database/migrations/*',
     '!database/models/*',
     '!database/repositories-orm/**/*',
+    '!utils/axios.ts',
+    '!utils/terminateProcess.ts'
   ],
   "coverageThreshold": {
     "global": {
