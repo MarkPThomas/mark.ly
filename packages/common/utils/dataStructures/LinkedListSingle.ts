@@ -1,34 +1,34 @@
-import { LinkedList as LinkedListBase, Node } from './LinkedList';
+import { LinkedList as LinkedListBase, Node as NodeSingle } from './LinkedList';
 import { LinkedListDouble } from './LinkedListDouble';
 
-export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
-  prepend(valueOrNode: V | Node<V>) {
+export class LinkedList<N extends NodeSingle<V>, V> extends LinkedListBase<N, V> {
+  prepend(valueOrNode: V | N) {
     const node = this.getNode(valueOrNode);
     node.next = this.head;
     if (node.next === null) {
-      this.tail = node;
+      this.tail = node as N;
     }
-    this.head = node;
+    this.head = node as N;
     this.length++;
   }
 
-  append(valueOrNode: V | Node<V>) {
+  append(valueOrNode: V | N) {
     const node = this.getNode(valueOrNode);
     let currNode = this.head;
     while (currNode && currNode.next) {
-      currNode = currNode.next;
+      currNode = currNode.next as N;
     }
     if (currNode) {
       currNode.next = node;
     } else {
-      this.head = node;
+      this.head = node as N;
     }
-    this.tail = node;
+    this.tail = node as N;
     this.length++;
   }
 
   remove(
-    valueOrNode: V | Node<V>,
+    valueOrNode: V | N,
     cb: ((a: V, b: V) => boolean) | undefined | null = undefined
   ) {
     let currNode = this.head;
@@ -41,7 +41,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
             this.tail = prevNode;
           }
         } else {
-          this.head = currNode.next;
+          this.head = currNode.next as N;
           if (!this.head) {
             this.tail = null;
           }
@@ -51,24 +51,24 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
         return currNode;
       }
       prevNode = currNode;
-      currNode = currNode.next;
+      currNode = currNode.next as N;
     }
 
     return null;
   }
 
   removeHead() {
-    const removedHead: Node<V> | null = this.head;
+    const removedHead: N | null = this.head;
     if (removedHead) {
       let nextHead = removedHead.next;
       if (!removedHead.next) {
         this.tail = null;
       }
       removedHead.next = null;
-      this.head = nextHead;
+      this.head = nextHead as N;
       this.length--;
     }
-    return removedHead;
+    return removedHead as N;
   }
 
   removeTail() {
@@ -87,7 +87,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
     let prevNode = null;
     while (node.next) {
       prevNode = node;
-      node = node.next;
+      node = node.next as N;
     }
     if (prevNode) {
       prevNode.next = null;
@@ -98,7 +98,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
   }
 
   move(
-    valueOrNode: V | Node<V>,
+    valueOrNode: V | N,
     spaces: number,
     cb: ((a: V, b: V) => boolean) | undefined | null = undefined
   ): boolean {
@@ -119,12 +119,12 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
         if (prevNode) {
           prevNode.next = currNode.next;
         } else if (currNode.next) {
-          this.head = currNode.next;
+          this.head = currNode.next as N;
         }
 
         if (spaces > 0) {
           prevNode = currNode;
-          currNode = currNode.next;
+          currNode = currNode.next as N;
         } else {
           prevNode = null;
           currNode = this.head;
@@ -133,7 +133,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
 
         while (currNode && spaces) {
           prevNode = currNode;
-          currNode = currNode.next;
+          currNode = currNode.next as N;
           spaces--;
         }
 
@@ -148,7 +148,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
         return true;
       }
       prevNode = currNode;
-      currNode = currNode.next;
+      currNode = currNode.next as N;
       count++;
     }
 
@@ -164,7 +164,7 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
       currNode.next = prevNode;
 
       prevNode = currNode;
-      currNode = tempNode;
+      currNode = tempNode as N;
     }
     this.head = prevNode;
   }
@@ -174,11 +174,15 @@ export class LinkedList<V> extends LinkedListBase<Node<V>, V> {
     let currNode = this.head;
     while (currNode) {
       linkedList.append(currNode.val);
-      currNode = currNode.next;
+      currNode = currNode.next as N;
     }
 
     return linkedList;
   }
 }
 
-export { Node };
+export class LinkedListSingle<V> extends LinkedList<NodeSingle<V>, V> {
+
+}
+
+export { NodeSingle };

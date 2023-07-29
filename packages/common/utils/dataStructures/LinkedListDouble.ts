@@ -1,8 +1,8 @@
 import { LinkedList as LinkedListBase } from './LinkedList';
 import { NodeDouble } from './LinkedListNodes';
-import { LinkedList } from './LinkedListSingle';
+import { LinkedListSingle } from './LinkedListSingle';
 
-export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
+export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V> {
   constructor(items: V[] | null = null) {
     super();
     if (items !== null) {
@@ -14,34 +14,34 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
     return this.tail ?? null;
   }
 
-  prepend(valueOrNode: V | NodeDouble<V>) {
+  prepend(valueOrNode: V | N) {
     const node = this.getNodeDouble(valueOrNode);
 
     node.next = this.head;
     if (this.head) {
       this.head.prev = node;
     } else {
-      this.tail = node;
+      this.tail = node as N;
     }
-    this.head = node;
+    this.head = node as N;
     this.length++;
   }
 
-  append(valueOrNode: V | NodeDouble<V>) {
+  append(valueOrNode: V | N) {
     const node = this.getNodeDouble(valueOrNode);
 
     node.prev = this.tail;
     if (this.tail) {
       this.tail.next = node;
     } else {
-      this.head = node;
+      this.head = node as N;
     }
-    this.tail = node;
+    this.tail = node as N;
     this.length++;
   }
 
   remove(
-    valueOrNode: V | NodeDouble<V>,
+    valueOrNode: V | N,
     cb: ((a: V, b: V) => boolean) | undefined | null = undefined
   ) {
     const value = this.isNodeDouble(valueOrNode)
@@ -55,9 +55,9 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
       return this.removeTail();
     }
 
-    if (this.isNodeDouble(valueOrNode) && (valueOrNode as NodeDouble<V>).removeNode()) {
+    if (this.isNodeDouble(valueOrNode) && (valueOrNode as N).removeNode()) {
       this.length--;
-      return valueOrNode as NodeDouble<V>;
+      return valueOrNode as N;
     } else {
       let currNode = this.head;
       while (currNode) {
@@ -67,7 +67,7 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
 
           return currNode;
         }
-        currNode = currNode.next as NodeDouble<V>;
+        currNode = currNode.next as N;
       }
     }
 
@@ -75,12 +75,12 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
   }
 
   removeHead() {
-    const removedHead: NodeDouble<V> | null = this.head;
+    const removedHead: N | null = this.head;
     if (removedHead) {
-      const nextHead = removedHead.next as NodeDouble<V>;
+      const nextHead = removedHead.next as N;
       removedHead.next = null;
       if (nextHead) {
-        (nextHead as NodeDouble<V>).prev = null;
+        (nextHead as N).prev = null;
       }
       this.head = nextHead;
       if (this.head === null) {
@@ -92,14 +92,14 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
   }
 
   removeTail() {
-    const removedTail: NodeDouble<V> | null = this.tail;
+    const removedTail: N | null = this.tail;
     if (removedTail) {
       const previousTail = removedTail.prev;
       removedTail.prev = null;
       if (previousTail) {
         previousTail.next = null;
       }
-      this.tail = previousTail;
+      this.tail = previousTail as N;
       if (this.tail === null) {
         this.head = null;
       }
@@ -109,7 +109,7 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
   }
 
   move(
-    valueOrNode: V | NodeDouble<V>,
+    valueOrNode: V | N,
     spaces: number,
     cb: ((a: V, b: V) => boolean) | undefined | null = undefined
   ): boolean {
@@ -118,7 +118,7 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
     }
 
     // Find matching node
-    let currNode = this.head as NodeDouble<V>;
+    let currNode = this.head as N;
     let prevNode = null;
     while (currNode) {
       if (this.areEqual(valueOrNode, currNode, cb)) {
@@ -135,14 +135,14 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
         if (!prevNode) {
           if (currNode.next) {
             // head of multi-node
-            this.head = currNode.next as NodeDouble<V>;
+            this.head = currNode.next as N;
             this.head.prev = null;
           }
         } else {
           prevNode.next = currNode.next;
           if (currNode.next) {
             // mid of multi-node
-            (currNode.next as NodeDouble<V>).prev = prevNode as NodeDouble<V>;
+            (currNode.next as N).prev = prevNode as N;
           } else {
             // tail of multi-node
             this.tail = prevNode;
@@ -152,17 +152,17 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
 
         if (spaces > 0 && currNode.next) {
           // Moving node forward
-          currNode = currNode.next as NodeDouble<V>;
+          currNode = currNode.next as N
           while (currNode && spaces) {
             prevNode = currNode;
-            currNode = currNode.next as NodeDouble<V>;
+            currNode = currNode.next as N;
             spaces--;
           }
         } else if (spaces < 0 && prevNode) {
           // Moving node backward
-          currNode = currNode.next as NodeDouble<V>;
+          currNode = currNode.next as N;
           while (prevNode && spaces) {
-            currNode = prevNode;
+            currNode = prevNode as N;
             prevNode = prevNode.prev;
             spaces++;
           }
@@ -188,7 +188,7 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
         return true;
       }
       prevNode = currNode;
-      currNode = currNode.next as NodeDouble<V>;
+      currNode = currNode.next as N;
     }
 
     return false;
@@ -199,7 +199,7 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
     let currNode = this.head;
 
     while (currNode) {
-      const tempNode = currNode.next as NodeDouble<V>;
+      const tempNode = currNode.next as N;
       currNode.next = prevNode;
       if (prevNode) {
         prevNode.prev = currNode;
@@ -212,25 +212,29 @@ export class LinkedListDouble<V> extends LinkedListBase<NodeDouble<V>, V> {
   }
 
   toLinkedListSingle() {
-    const linkedList = new LinkedList<V>();
+    const linkedList = new LinkedListSingle<V>();
     let currNode = this.head;
     while (currNode) {
       linkedList.append(currNode.val);
-      currNode = currNode.next as NodeDouble<V>;
+      currNode = currNode.next as N;
     }
 
     return linkedList;
   }
 
-  protected getNodeDouble(valueOrNode: V | NodeDouble<V>) {
+  protected getNodeDouble(valueOrNode: V | N) {
     return (this.isNodeDouble(valueOrNode))
-      ? valueOrNode as NodeDouble<V>
+      ? valueOrNode as N
       : new NodeDouble(valueOrNode as V);
   }
 
-  protected isNodeDouble(valueOrNode: V | NodeDouble<V>) {
+  protected isNodeDouble(valueOrNode: V | N) {
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeDouble);
   }
+}
+
+export class LinkedListDouble<V> extends LinkedList<NodeDouble<V>, V> {
+
 }
 
 export { NodeDouble };

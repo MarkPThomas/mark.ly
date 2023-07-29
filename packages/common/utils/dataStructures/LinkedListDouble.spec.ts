@@ -1,5 +1,9 @@
-import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
-import { LinkedList } from './LinkedListSingle';
+// import { LinkedListDouble, NodeDouble } from './LinkedListDouble';
+// import { LinkedList } from './LinkedListSingle';
+// import { NodeDoubleKeyVal } from './LinkedListNodes';
+import { LinkedList, LinkedListDouble, NodeDouble } from './LinkedListDouble';
+import { LinkedList as LinkedListSingle } from './LinkedListSingle';
+import { NodeDoubleKeyVal } from './LinkedListNodes';
 
 describe('##LinkedListDoubleDouble', () => {
   // ==== Auxilliary ====
@@ -192,7 +196,7 @@ describe('##LinkedListDoubleDouble', () => {
       const linkedList = new LinkedListDouble<number>(values);
 
       const result = linkedList.toLinkedListSingle();
-      expect(result).toBeInstanceOf(LinkedList);
+      expect(result).toBeInstanceOf(LinkedListSingle);
       expect(result.getHead()).not.toHaveProperty('prev');
       expect(result.toArray()).toEqual([1, 2, 3, 4, 5]);
     });
@@ -1098,5 +1102,21 @@ describe('##LinkedListDoubleDouble', () => {
       expect(linkedList.getTail()?.val).toEqual(1);
       expect(linkedList.toArray()).toEqual([2, 3, 4, 5, 1]);
     });
+  });
+});
+
+describe('##LinkedList', () => {
+  it('should create a singly linked list of a derived node', () => {
+    const linkedList = new LinkedList<NodeDoubleKeyVal<number, string>, string>();
+    linkedList.append(new NodeDoubleKeyVal(0, 'A'));
+    linkedList.append(new NodeDoubleKeyVal(1, 'B'));
+    linkedList.append(new NodeDoubleKeyVal(2, 'C'));
+
+    expect(linkedList.toArray()).toEqual(
+      [
+        { key: 0, val: 'A' },
+        { key: 1, val: 'B' },
+        { key: 2, val: 'C' },
+      ]);
   });
 });

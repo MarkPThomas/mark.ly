@@ -19,7 +19,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   moveToTail(valueOrNode: V | N): boolean;
 
   size(): number;
-  toArray(): V[];
+  toArray(): V[] | any[];
   setMatchCB(callBack: (a: V, b: V) => boolean): void;
   reverse(): void;
   // sort
@@ -119,7 +119,13 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     const output = [];
     let node = this.head;
     while (node) {
-      output.push(node.val);
+      const propsVals = node.toObject();
+      if (Object.keys(propsVals).length === 1 && propsVals.hasOwnProperty('val')) {
+        output.push(propsVals.val);
+      } else {
+        output.push(propsVals);
+      }
+
       node = node.next as N;
     }
 
