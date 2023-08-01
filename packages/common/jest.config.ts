@@ -33,7 +33,7 @@ export default {
     '!utils/axios.ts',
     '!utils/terminateProcess.ts'
   ],
-  "coverageThreshold": {
+  coverageThreshold: {
     "global": {
       "branches": 20,
       "functions": 30,
