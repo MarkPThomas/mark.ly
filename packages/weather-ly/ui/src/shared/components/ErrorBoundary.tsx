@@ -6,7 +6,7 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  errorInfo?: ErrorInfo;
+  errorInfo?: ErrorInfo | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {

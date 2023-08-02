@@ -24,7 +24,7 @@ export const DropList = (props: props) => {
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     event.preventDefault();
     setSelectedValue(event.currentTarget.value);
-    props.onChange(event);
+    props.onChange && props.onChange(event);
   }
 
   let key = 0;

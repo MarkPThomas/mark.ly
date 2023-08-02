@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 // import { Point } from '../../../../server/api/forecast'
 
-export const ForecastHourly = (props) => {
+export const ForecastHourly = () => {
   const [forecast, setForecast] = useState({});
 
   // useEffect(() => {

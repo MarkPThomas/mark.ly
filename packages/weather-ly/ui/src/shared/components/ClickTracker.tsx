@@ -6,27 +6,35 @@ interface Props {
   moduleName: string;
 }
 
+type ClickData = {
+  module: string,
+  element: EventTarget | null,
+  elementId: string,
+  elementClass: string,
+  timeStamp: number
+}
+
 class ClickTracker extends React.Component<Props> {
   private _isTracking: boolean;
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this._isTracking = process.env.CLICK_TRACKER_ON === undefined ? true : !!process.env.CLICK_TRACKER_ON;
   }
 
-  static sessionData = [];
+  static sessionData: ClickData[] = [];
 
-  handleEvent = e => {
+  handleEvent = (e: Event) => {
     if (!this._isTracking) {
       return;
     }
     const element = e.currentTarget;
 
-    const clickData = {
+    const clickData: ClickData = {
       module: this.props.moduleName,
       element,
-      elementId: element.id,
-      elementClass: element.className,
+      elementId: element?.id,
+      elementClass: element?.className,
       timeStamp: Date.now()
     };
 
@@ -38,7 +46,7 @@ class ClickTracker extends React.Component<Props> {
     }
   };
 
-  handleChildMounted = (element, child) => {
+  handleChildMounted = (element: any, child: any) => {
     const DOMNode = ReactDOM.findDOMNode(element);
     if (DOMNode) {
       if (!this._isTracking) {
@@ -53,7 +61,7 @@ class ClickTracker extends React.Component<Props> {
     }
   };
 
-  wrapWithClass = functionalComponent => (
+  wrapWithClass = (functionalComponent: any) => (
     class extends React.Component {
       render() {
         return functionalComponent;
@@ -61,10 +69,10 @@ class ClickTracker extends React.Component<Props> {
     }
   );
 
-  remapChildren(children) {
-    return React.Children.map(children, child => {
+  remapChildren(children: any) {
+    return React.Children.map(children, (child: any): any => {
       // forwarding ref: https://reactjs.org/docs/forwarding-refs.html
-      const ref = element => this.handleChildMounted(element, child);
+      const ref = (element: any) => this.handleChildMounted(element, child);
 
       if (typeof child.type === "string") {
         // Is DOM element, e.g. <button />

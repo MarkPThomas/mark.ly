@@ -53,7 +53,7 @@ export const ForecastTiles = (props: Prop) => {
         forecast.properties?.periods &&
         forecast.properties.periods.map((period: IForecastPeriod) =>
           <ForecastTile
-            key={`${props.coordinate.latitude}-${props.coordinate.longitude}-${currentKey++}`}
+            key={`${props.coordinate!.latitude}-${props.coordinate!.longitude}-${currentKey++}`}
             title={period.name}
             url={period.icon}
             snippet={period.shortForecast}

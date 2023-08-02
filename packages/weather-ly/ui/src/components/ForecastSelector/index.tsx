@@ -6,7 +6,7 @@ import {
 
 type propsType = {
   pointGroups: IGroupResponse[];
-  forecastGroupSelectionHandler: (e) => void;
+  forecastGroupSelectionHandler: (id: string) => void;
 }
 
 export const ForeCastSelector = (props: propsType) => {
@@ -16,7 +16,7 @@ export const ForeCastSelector = (props: propsType) => {
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
-    const id = event.currentTarget.parentElement.id;
+    const id = event.currentTarget.parentElement!.id;
     props.forecastGroupSelectionHandler(id);
     navigate('/weekly');
   }
