@@ -3,6 +3,7 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 
 import config from './config';
+import router from './router';
 
 const app: Express = express();
 
@@ -24,6 +25,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Enable pre-flight CORS request for all/specified routes
 app.options('*', cors())
 // app.use('/home', homeRouter);
+app.use(router);
+
+// app.on('error', (error) => Logger.log('Express error', error.toString()));
 
 
 // == Page Render ==

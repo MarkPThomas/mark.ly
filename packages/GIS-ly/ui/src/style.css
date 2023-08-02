@@ -7,7 +7,14 @@ html {
   margin: 0;
   padding: .5em;
   background-color: #ddd;
-  color: red;
   background-image: linear-gradient(to bottom, #eee, #999);
   background-repeat: no-repeat;
+}
+
+#map-container {
+  height: 1000px;
+}
+
+.leaflet-container {
+  height: inherit;
 }

@@ -1,16 +1,20 @@
-import React from 'react';
-import { Loading } from './components/Loading/Loading';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { LatLngTuple } from 'leaflet';
 
-export class App extends React.Component {
-  constructor(props) {
-    super(props);
+import { Map } from './components/Leaflet/Map';
+import { BaseLayers } from './components/Leaflet/Layers/BaseLayers';
+
+export const App = (props) => {
+  const initialLayers = BaseLayers();
+  const initialPosition = {
+    point: [37.7749, -122.4194] as LatLngTuple,
+    zoom: 13
   }
 
-  render() {
-    return (
-      <>
-        <Loading />
-      </>
-    );
-  }
+  return (
+    <>
+      <Map initialPosition={initialPosition} initialLayers={initialLayers} />
+    </>
+  );
 }
