@@ -11,29 +11,23 @@ import {
   Position,
   GeoJSON
 } from 'geojson';
-import { LatLngBoundsExpression, LatLngExpression } from 'leaflet';
+import { LatLng, LatLngBoundsExpression, LatLngExpression, LatLngLiteral } from 'leaflet';
 
 export type GeoJSONFeatureCollection = FeatureCollection<Geometry, { [name: string]: any; }>;
 
-export type Coordinate = {
-  latitude: number,
-  longitude: number,
-  elevationMeters?: number
-  timeStamp?: string,
-  properties?: {
-    coord: number,
-    segment?: number,
-    polygon?: number,
-  }
+type CoordinateIndex = {
+  coordIndex: number,
+  segmentIndex?: number,
+  polygonIndex?: number,
+};
+
+export class Coordinate extends LatLng {
+  timeStamp?: string
+  indices?: CoordinateIndex
 }
 
 export type Coordinates = Coordinate | Coordinate[] | Coordinate[][] | Coordinate[][][];
-
-type CoordinateIndex = {
-  coord: number,
-  segment?: number,
-  polygon?: number
-};
+export type LatLngLiterals = LatLngLiteral | LatLngLiteral[] | LatLngLiteral[][] | LatLngLiteral[][][];
 
 type CoordinateProperties = {
   position: Position,
@@ -42,21 +36,14 @@ type CoordinateProperties = {
 }
 
 function getCoordinate({ position, indices, timeStamp }: CoordinateProperties) {
-  const coordinate: Coordinate = {
-    latitude: position[1],
-    longitude: position[0]
-  };
-
-  if (position.length === 3) {
-    coordinate.elevationMeters = position[2];
-  }
+  const coordinate = new Coordinate(position[1], position[0], position[2]);
 
   if (timeStamp) {
     coordinate.timeStamp = timeStamp;
   }
 
   if (indices) {
-    coordinate.properties = indices;
+    coordinate.indices = indices;
   }
 
   return coordinate;
@@ -81,14 +68,14 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
       case 'LineString':
         coordinatesPosition = (geoJson.features[0].geometry as MultiPoint).coordinates;
         const coordinates: Coordinate[] = [];
-        for (let coord = 0; coord < coordinatesPosition.length; coord++) {
+        for (let coordIndex = 0; coordIndex < coordinatesPosition.length; coordIndex++) {
           const coordinate = getCoordinate(
             {
-              position: coordinatesPosition[coord],
+              position: coordinatesPosition[coordIndex],
               indices: {
-                coord
+                coordIndex
               },
-              timeStamp: geoJson.features[0].properties?.coordinateProperties?.times[coord]
+              timeStamp: geoJson.features[0].properties?.coordinateProperties?.times[coordIndex]
             }
           );
 
@@ -99,18 +86,18 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
       case 'Polygon':
         coordinatesPosition = (geoJson.features[0].geometry as MultiLineString).coordinates;
         const segments: Coordinate[][] = [];
-        for (let segment = 0; segment < coordinatesPosition.length; segment++) {
+        for (let segmentIndex = 0; segmentIndex < coordinatesPosition.length; segmentIndex++) {
           const coordinates: Coordinate[] = [];
-          for (let coord = 0; coord < coordinatesPosition[segment].length; coord++) {
+          for (let coordIndex = 0; coordIndex < coordinatesPosition[segmentIndex].length; coordIndex++) {
             const coordinate = getCoordinate(
               {
-                position: coordinatesPosition[segment][coord],
+                position: coordinatesPosition[segmentIndex][coordIndex],
                 indices: {
-                  coord,
-                  segment
+                  coordIndex,
+                  segmentIndex
                 },
                 timeStamp: geometryType === "MultiLineString"
-                  ? geoJson.features[0].properties?.coordinateProperties?.times[segment][coord]
+                  ? geoJson.features[0].properties?.coordinateProperties?.times[segmentIndex][coordIndex]
                   : null
               }
             );
@@ -123,18 +110,18 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
       case 'MultiPolygon':
         coordinatesPosition = (geoJson.features[0].geometry as MultiPolygon).coordinates;
         const polygons: Coordinate[][][] = [];
-        for (let polygon = 0; polygon < coordinatesPosition.length; polygon++) {
+        for (let polygonIndex = 0; polygonIndex < coordinatesPosition.length; polygonIndex++) {
           const segments: Coordinate[][] = [];
-          for (let segment = 0; segment < coordinatesPosition[polygon].length; segment++) {
+          for (let segmentIndex = 0; segmentIndex < coordinatesPosition[polygonIndex].length; segmentIndex++) {
             const coordinates: Coordinate[] = [];
-            for (let coord = 0; coord < coordinatesPosition[polygon][segment].length; coord++) {
+            for (let coordIndex = 0; coordIndex < coordinatesPosition[polygonIndex][segmentIndex].length; coordIndex++) {
               const coordinate = getCoordinate(
                 {
-                  position: coordinatesPosition[polygon][segment][coord],
+                  position: coordinatesPosition[polygonIndex][segmentIndex][coordIndex],
                   indices: {
-                    coord,
-                    segment,
-                    polygon
+                    coordIndex,
+                    segmentIndex,
+                    polygonIndex
                   }
                 }
               );
@@ -150,24 +137,24 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
   }
 }
 
-export function getBoundingBox(coords: Coordinates): LatLngBoundsExpression | LatLngExpression {
+export function getBoundingBox(coords: LatLngLiterals | Coordinates): LatLngBoundsExpression | LatLngExpression {
   let minLat = Infinity;
   let minLong = Infinity;
   let maxLat = -Infinity;
   let maxLong = -Infinity;
 
-  function setBounds(coord: Coordinate) {
-    minLat = Math.min(minLat, coord.latitude);
-    minLong = Math.min(minLong, coord.longitude);
+  function setBounds(coord: LatLngLiteral) {
+    minLat = Math.min(minLat, coord.lat);
+    minLong = Math.min(minLong, coord.lng);
 
-    maxLat = Math.max(maxLat, coord.latitude);
-    maxLong = Math.max(maxLong, coord.longitude);
+    maxLat = Math.max(maxLat, coord.lat);
+    maxLong = Math.max(maxLong, coord.lng);
   }
 
-  if ((coords as Coordinate[]).length) {
-    if ((coords as Coordinate[][])[0].length) {
-      if ((coords as Coordinate[][][])[0][0].length) {
-        coords = coords as Coordinate[][][];
+  if ((coords as any[]).length) {
+    if ((coords as any[][])[0].length) {
+      if ((coords as any[][][])[0][0].length) {
+        coords = coords as LatLngLiteral[][][];
         for (let polygon = 0; polygon < coords.length; polygon++) {
           for (let segment = 0; segment < coords[polygon].length; segment++) {
             for (let coord = 0; coord < coords[polygon][segment].length; coord++) {
@@ -176,7 +163,7 @@ export function getBoundingBox(coords: Coordinates): LatLngBoundsExpression | La
           }
         }
       } else {
-        coords = coords as Coordinate[][];
+        coords = coords as LatLngLiteral[][];
         for (let segment = 0; segment < coords.length; segment++) {
           for (let coord = 0; coord < coords[segment].length; coord++) {
             setBounds(coords[segment][coord]);
@@ -184,14 +171,14 @@ export function getBoundingBox(coords: Coordinates): LatLngBoundsExpression | La
         }
       }
     } else {
-      coords = coords as Coordinate[];
+      coords = coords as LatLngLiteral[];
       for (let coord = 0; coord < coords.length; coord++) {
         setBounds(coords[coord]);
       }
     }
   } else {
-    coords = coords as Coordinate;
-    return [coords.latitude, coords.longitude];
+    coords = coords as LatLngLiteral;
+    return [coords.lat, coords.lng];
   }
 
   return [[minLat, minLong], [maxLat, maxLong]];
@@ -219,44 +206,50 @@ export function mergeTackSegments(geoJson: GeoJSONFeatureCollection) {
   return geoJson;
 }
 
-// export function clipTrackSegmentsBySize(geoJson: FeatureCollection<Geometry, { [name: string]: any; }>) {
-//   // determine triggering distance
-//   // search over nodes and check distances
-//   // if distance > allowed, note node pair
-//   // for all node pairs > allowed distance, keep single largest node count
-//   //    alternate: return each set as a segment for the user to choose what to keep
-// }
+export function clipTrackSegmentsBySize(geoJson: GeoJSONFeatureCollection) {
+  // determine triggering distance
+  // search over nodes and check distances
+  // if distance > allowed, note node pair
+  // for all node pairs > allowed distance, keep single largest node count
+  //    alternate: return each set as a segment for the user to choose what to keep
 
-// export function clipTrackSegmentBeforeCoord(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
-//   coord: Coordinate
-// ) {
 
-// }
+}
 
-// export function clipTrackSegmentAfterCoord(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
-//   coord: Coordinate
-// ) {
+export function clipTrackSegmentBeforeCoord(
+  geoJson: GeoJSONFeatureCollection,
+  coord: Coordinate
+) {
+  // Iterate over coordinates until matching coordinate found
+  // split coords array at point
+  // Return/replace w/ 2nd part of array
+}
 
-// }
+export function clipTrackSegmentAfterCoord(
+  geoJson: GeoJSONFeatureCollection,
+  coord: Coordinate
+) {
+  // Iterate over coordinates until matching coordinate found
+  // split coords array at point
+  // Return/replace w/ 2nd part of array
+}
 
 // export function splitTrackSegmentByCoord(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
+//   geoJson: GeoJSONFeatureCollection,
 //   coord: Coordinate
 // ) {
 
 // }
 
 // export function splitTrackSegmentBySpeed(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
+//   geoJson: GeoJSONFeatureCollection,
 //   maxSpeed: number
 // ) {
 
 // }
 
 // export function smoothTrackSegmentBetweenCoords(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
+//   geoJson: GeoJSONFeatureCollection,
 //   coordStart: Coordinate,
 //   coordEnd: Coordinate
 // ) {
@@ -264,14 +257,14 @@ export function mergeTackSegments(geoJson: GeoJSONFeatureCollection) {
 // }
 
 // export function smoothTrackSegmentBySpeed(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
+//   geoJson: GeoJSONFeatureCollection,
 //   maxSpeed: number
 // ) {
 
 // }
 
 // export function smoothTrackSegmentByVelocity(
-//   geoJson: FeatureCollection<Geometry, { [name: string]: any; }>,
+//   geoJson: GeoJSONFeatureCollection,
 //   degreeChange: number,
 //   timeChange: number
 // ) {

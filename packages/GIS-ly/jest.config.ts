@@ -46,7 +46,7 @@ export default {
   preset: 'ts-jest',
   roots: ['<rootDir>'],
   // setupFiles: ['./setup-test-matchers.ts'],
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   testMatch: [
     '**/**/?(*.)+(specs|spec).ts'
   ],
