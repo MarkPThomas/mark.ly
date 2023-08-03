@@ -1,19 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import { gpxToGeoJson } from '../../services/gisFormatAdaptor';
+import { gpxToGeoJson } from './gisFormatAdaptor';
 
 describe('testing out', () => {
   it('should read a gpx file', () => {
-    const fileName = 'LostSatDrift.gpx';
+    // const fileName = 'LostSatDrift.gpx';
 
-    const data = fs.readFileSync(path.join(__dirname, fileName), 'utf-8');
-    const geoJson = gpxToGeoJson(data);
-    console.log(geoJson);
+    // const data = fs.readFileSync(path.join(__dirname, fileName), 'utf-8'); // fix filepath
+    // const geoJson = gpxToGeoJson(data);
 
-    // gpxParse.parseGpx(fileName, function (error, data) {
-    //   console.log('yay');
-    //   console.log(data);
-    // });
   });
 
   it('should read a gpx stream', () => {

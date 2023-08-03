@@ -24,6 +24,7 @@
     "test:updateSnapshot": "cross-env NODE_ENV=test && jest --updateSnapshot --coverage --testResultsProcessor=jest-sonar-reporter",
     "test:watch": "cross-env NODE_ENV=test && jest --watchAll --coverage --testResultsProcessor=jest-sonar-reporter",
     "test:results": "open-cli ./testResults/coverage/lcov-report/index.html",
+    "test:u": "cross-env NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config jest.config.ts --runInBand --forceExit",
     "posttest": "echo posttest script is running... && npm-run-all clear test:results",
     "sync:watch": "browser-sync start -p localhost:3000 -w -f ./dist",
     "clear": "rimraf dist"

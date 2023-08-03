@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { LatLngTuple } from 'leaflet';
+import { LatLngBoundsExpression, LatLngExpression, LatLngTuple } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
+import { FeatureCollection, GeoJSON, Geometry } from 'geojson';
 
 import { toGeoJson } from '../../model/Files';
-import { getBoundingBox, getCoords, mergeTackSegments } from '../../model/Leaflet';
+import { Coordinate, Coordinates, GeoJSONFeatureCollection, getBoundingBox, getCoords, mergeTackSegments } from '../../model/Leaflet';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
@@ -19,12 +20,11 @@ export type MapProps = {
   initialLayers?: LayersControlProps
 };
 
-
 export const Map = ({ initialPosition, initialLayers }: MapProps) => {
-  const [layer, setLayer] = useState(null);
-  const [coords, setCoords] = useState(null);
+  const [layer, setLayer] = useState<GeoJSON>(null);
+  const [coords, setCoords] = useState<Coordinates | null>(null);
   const [layersProps, setLayersProps] = useState(initialLayers)
-  const [bounds, setBounds] = useState(null);
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | LatLngExpression | null>(null);
   const [position, setPosition] = useState(initialPosition);
 
   const handleFileSelection = async (event) => {
@@ -54,12 +54,14 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleMergeTrackSegments = () => {
     console.log('handleMergeTrackSegments')
-    const geoJson = mergeTackSegments(layer);
-    console.log('geoJson: ', geoJson)
-    setLayer(geoJson);
-    const newCoords = getCoords(geoJson);
-    setCoords(newCoords);
-    setLayersProps(updatedLayersProps(geoJson, newCoords));
+    if (layer as GeoJSONFeatureCollection) {
+      const geoJson = mergeTackSegments(layer as GeoJSONFeatureCollection);
+      console.log('geoJson: ', geoJson)
+      setLayer(geoJson);
+      const newCoords = getCoords(geoJson);
+      setCoords(newCoords);
+      setLayersProps(updatedLayersProps(geoJson, newCoords));
+    }
   }
 
   const updatedLayersProps = (layer, coords): LayersControlProps =>

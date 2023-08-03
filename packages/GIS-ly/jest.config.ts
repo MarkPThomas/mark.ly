@@ -3,7 +3,7 @@ export default {
   collectCoverage: true,
   collectCoverageFrom: [
     '!coverage/**/*',
-    'database/**/*',
+    'ui/src/model/**/*',
     'database/**/*',
     'errors/**/*',
     '!enums/**/*',
