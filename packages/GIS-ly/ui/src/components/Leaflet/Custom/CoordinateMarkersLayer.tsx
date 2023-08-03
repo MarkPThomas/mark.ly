@@ -20,20 +20,22 @@ export type CoordinateMarkersLayerProps = {
 
 export function CoordinateMarkersLayer({ coords }: CoordinateMarkersLayerProps) {
   return (
-    <LayerGroup key={hashString(JSON.stringify(coords))}>
-      {
-        (coords as Coordinate[][]).map((trkSegsOrCoord) => {
-          console.log('coords: ', (coords as Coordinate[][]));
-          console.log('trkSegsOrCoord: ', trkSegsOrCoord);
-          if (trkSegsOrCoord.length) {
-            const trkSegs = trkSegsOrCoord;
-            return trkSegs.map((coord) => <CoordinateMarker key={hashString(JSON.stringify(coord))} coord={coord} />);
-          } else {
-            const coord = trkSegsOrCoord as unknown as Coordinate;
-            return <CoordinateMarker key={hashString(JSON.stringify(coord))} coord={coord} />
-          }
-        })
-      }
-    </LayerGroup>
+    (coords as Coordinate[][])
+      ?
+      <LayerGroup key={hashString(JSON.stringify(coords))}>
+        {
+          (coords as Coordinate[][]).map((trkSegsOrCoord) => {
+            if (trkSegsOrCoord.length) {
+              const trkSegs = trkSegsOrCoord;
+              return trkSegs.map((coord) =>
+                <CoordinateMarker key={hashString(JSON.stringify(coord))} coord={coord} />);
+            } else {
+              const coord = trkSegsOrCoord as unknown as Coordinate;
+              return <CoordinateMarker key={hashString(JSON.stringify(coord))} coord={coord} />
+            }
+          })
+        }
+      </LayerGroup>
+      : null
   )
 }

@@ -1,20 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { LatLngTuple } from 'leaflet';
-import {
-  MapContainer,
-  GeoJSON,
-} from 'react-leaflet';
+import { MapContainer } from 'react-leaflet';
 
 import { toGeoJson } from '../../model/Files';
-import { getBoundingBox, getCoords, Coordinate, metersToFeet } from '../../model/Leaflet';
+import { getBoundingBox, getCoords, mergeTackSegments } from '../../model/Leaflet';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
-import { CoordinateMarkersLayer } from './Custom/CoordinateMarkersLayer';
 
-import { hashString } from '../../../../../common/utils'; //'common/utils';
 
 export type MapProps = {
   initialPosition: {
@@ -28,6 +23,7 @@ export type MapProps = {
 export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const [layer, setLayer] = useState(null);
   const [coords, setCoords] = useState(null);
+  const [layersProps, setLayersProps] = useState(initialLayers)
   const [bounds, setBounds] = useState(null);
   const [position, setPosition] = useState(initialPosition);
 
@@ -42,6 +38,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
         const newCoords = getCoords(layer);
         console.log('newCoords: ', newCoords);
         setCoords(newCoords);
+        setLayersProps(updatedLayersProps(layer, newCoords));
 
         const newBounds = getBoundingBox(newCoords);
         console.log('newBounds: ', newBounds);
@@ -55,16 +52,27 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     animateRef.current = !animateRef.current;
   }
 
-  const layersProps = layer ? {
-    ...initialLayers,
-    overlays: [{
-      name: 'Track',
-      geoJSON: layer,
-      items: [
-        coords
-      ]
-    }]
-  } : { ...initialLayers };
+  const handleMergeTrackSegments = () => {
+    console.log('handleMergeTrackSegments')
+    const geoJson = mergeTackSegments(layer);
+    console.log('geoJson: ', geoJson)
+    setLayer(geoJson);
+    const newCoords = getCoords(geoJson);
+    setCoords(newCoords);
+    setLayersProps(updatedLayersProps(geoJson, newCoords));
+  }
+
+  const updatedLayersProps = (layer, coords): LayersControlProps =>
+    layer ? {
+      ...initialLayers,
+      overlays: [{
+        name: 'Track',
+        geoJSON: layer,
+        items: [
+          coords
+        ]
+      }]
+    } : layersProps;
 
   console.log('layersProps:', layersProps)
 
@@ -80,23 +88,18 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
         {initialLayers.baseLayers[0].item}
         <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
         {
-          (layersProps.baseLayers.length > 1 || layersProps.overlays.length)
+          (layersProps.baseLayers?.length > 1 || layersProps.overlays?.length)
             ?
             <LayersControl {...layersProps} />
             : null
         }
-        {/* {coords ?
-          <CoordinateMarkersLayer coords={coords} /> : null
-        }
-        {layer ?
-          <GeoJSON key={hashString(JSON.stringify(layer))} data={layer} /> : null
-        } */}
         <SetViewOnClick animateRef={animateRef} />
         <SetViewOnTrackLoad bounds={bounds} />
       </MapContainer>
       <input type="file" onChange={handleFileSelection} />
       <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
       <label htmlFor="animatePan">Set View On Click</label>
+      <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" />
     </div>
     // :
     // <>'Data is loading...'</>
