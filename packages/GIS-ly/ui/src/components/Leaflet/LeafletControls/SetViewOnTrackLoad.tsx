@@ -1,9 +1,9 @@
-import { LatLngExpression, LatLngBoundsExpression, LatLng, LatLngTuple } from 'leaflet';
-import { useMap, useMapEvent } from 'react-leaflet';
+import { LatLngExpression, LatLngBoundsExpression } from 'leaflet';
+import { useMap } from 'react-leaflet';
 
-type Props = { bounds: any };
+export type SetViewOnTrackLoadProps = { bounds: LatLngBoundsExpression | LatLngExpression };
 
-export function SetViewOnTrackLoad({ bounds }: Props) {
+export function SetViewOnTrackLoad({ bounds }: SetViewOnTrackLoadProps) {
   if (bounds === null) {
     return null;
   }
@@ -14,11 +14,5 @@ export function SetViewOnTrackLoad({ bounds }: Props) {
     map.flyTo((bounds as LatLngExpression));
   }
 
-  // const map = useMapEvent('click', (e) => {
-  //   map.setView(e.latlng, map.getZoom(), {
-  //     animate: animateRef.current || false,
-  //   });
-  // })
-
-  return null
+  return null;
 }

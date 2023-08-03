@@ -4,7 +4,6 @@ export default {
   collectCoverageFrom: [
     '!coverage/**/*',
     'database/**/*',
-    'database/**/*',
     'errors/**/*',
     '!enums/**/*',
     '!interfaces/**/*',
