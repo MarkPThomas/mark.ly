@@ -58,8 +58,10 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                     key={hashString(JSON.stringify(overlay.items[0]))}
                     data={overlay.geoJSON}
                   >
-                    {overlay.items.map((item) =>
-                      <CoordinateMarkersLayer key={hashString(JSON.stringify(item))} coords={item} />
+                    {overlay.items.map((item) => {
+                      console.log('Re-rendering layers');
+                      return <CoordinateMarkersLayer key={hashString(JSON.stringify(item))} coords={item} />
+                    }
                     )}
                   </GeoJSON>
                   :
