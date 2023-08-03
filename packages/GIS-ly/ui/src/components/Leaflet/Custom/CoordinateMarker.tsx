@@ -15,22 +15,22 @@ import { metersToFeetRound } from '../../../model/Leaflet/Conversion';
 import { hashString } from '../../../../../../common/utils'; //'common/utils';
 
 export type CoordinateMarkerProps = {
-  coord
+  coord: Coordinate
 }
 
 export function CoordinateMarker({ coord }: CoordinateMarkerProps) {
   return <Circle
     key={hashString(JSON.stringify(coord))}
-    center={[coord.latitude, coord.longitude]}
+    center={[coord.lat, coord.lng]}
     pathOptions={{ fillColor: 'red', color: 'black', weight: 1 }}
     radius={10}
   >
     <Popup>
       <span>
-        <div><b>Latitude:</b> {coord.latitude}</div>
-        <div><b>Longitude:</b> {coord.longitude}</div>
-        {coord.elevationMeters &&
-          <div><b>Elevation:</b> {coord.elevationMeters} m / {metersToFeetRound(coord.elevationMeters)} ft</div>}
+        <div><b>Latitude:</b> {coord.lat}</div>
+        <div><b>Longitude:</b> {coord.lng}</div>
+        {coord.alt &&
+          <div><b>Elevation:</b> {coord.alt} m / {metersToFeetRound(coord.alt)} ft</div>}
         {coord.timeStamp &&
           <div><b>Timestamp:</b> {coord.timeStamp}</div>}
       </span>

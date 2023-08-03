@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { LatLngBoundsExpression, LatLngExpression, LatLngTuple } from 'leaflet';
+import { LatLng, LatLngBoundsExpression, LatLngExpression, LatLngTuple } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
 import { FeatureCollection, GeoJSON, Geometry } from 'geojson';
 
@@ -64,7 +64,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     }
   }
 
-  const updatedLayersProps = (layer, coords): LayersControlProps =>
+  const updatedLayersProps = (layer: GeoJSONFeatureCollection, coords): LayersControlProps =>
     layer ? {
       ...initialLayers,
       overlays: [{

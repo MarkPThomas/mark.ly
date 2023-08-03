@@ -255,11 +255,9 @@ describe('##GeoJSON', () => {
     it('should return coordinates from a Point', () => {
       const geoJson: GeoJSONFeatureCollection = testData.GeoJson.Point as GeoJSONFeatureCollection;
 
-      const coordinate = getCoords(geoJson);
-      expect(coordinate).toEqual({
-        latitude: 0.0,
-        longitude: 100.0
-      });
+      const coordinate = getCoords(geoJson) as Coordinate;
+      expect(coordinate.lat).toEqual(0.0);
+      expect(coordinate.lng).toEqual(100.0);
     });
 
     it('should return coordinates including timestamps from a Point with associated timestamps', () => {
@@ -277,14 +275,10 @@ describe('##GeoJSON', () => {
       const coordinates = getCoords(geoJson) as Coordinate[];
       expect(coordinates.length).toEqual(5);
 
-      const coordinate = coordinates[2];
-      expect(coordinate).toEqual({
-        latitude: 1.0,
-        longitude: 101.0,
-        properties: {
-          coord: 2,
-        }
-      });
+      const coordinate = coordinates[2] as Coordinate;
+      expect(coordinate.lat).toEqual(1.0);
+      expect(coordinate.lng).toEqual(101.0);
+      expect(coordinate.indices).toEqual({ coordIndex: 2 });
     });
 
     it('should return coordinates including timestamps from a MultiPoint with associated timestamps', () => {
@@ -304,14 +298,10 @@ describe('##GeoJSON', () => {
       const coordinates = getCoords(geoJson) as Coordinate[];
       expect(coordinates.length).toEqual(4);
 
-      const coordinate = coordinates[2];
-      expect(coordinate).toEqual({
-        latitude: 2.0,
-        longitude: 102.0,
-        properties: {
-          coord: 2
-        }
-      });
+      const coordinate = coordinates[2] as Coordinate;
+      expect(coordinate.lat).toEqual(2.0);
+      expect(coordinate.lng).toEqual(102.0);
+      expect(coordinate.indices).toEqual({ coordIndex: 2 });
     });
 
     it('should return coordinates including timestamps from a LineString with associated timestamps', () => {
@@ -334,14 +324,12 @@ describe('##GeoJSON', () => {
       const coordinates = segments[1];
       expect(coordinates.length).toEqual(2);
 
-      const coordinate = coordinates[0];
-      expect(coordinate).toEqual({
-        latitude: 2.0,
-        longitude: 102.0,
-        properties: {
-          coord: 0,
-          segment: 1
-        }
+      const coordinate = coordinates[0] as Coordinate;
+      expect(coordinate.lat).toEqual(2.0);
+      expect(coordinate.lng).toEqual(102.0);
+      expect(coordinate.indices).toEqual({
+        coordIndex: 0,
+        segmentIndex: 1
       });
     });
 
@@ -369,14 +357,12 @@ describe('##GeoJSON', () => {
       const coordinates = segments[0];
       expect(coordinates.length).toEqual(5);
 
-      const coordinate = coordinates[2];
-      expect(coordinate).toEqual({
-        latitude: 1.0,
-        longitude: 101.0,
-        properties: {
-          coord: 2,
-          segment: 0
-        }
+      const coordinate = coordinates[2] as Coordinate;
+      expect(coordinate.lat).toEqual(1.0);
+      expect(coordinate.lng).toEqual(101.0);
+      expect(coordinate.indices).toEqual({
+        coordIndex: 2,
+        segmentIndex: 0
       });
     });
 
@@ -392,15 +378,13 @@ describe('##GeoJSON', () => {
       const coordinates = segments[0];
       expect(coordinates.length).toEqual(5);
 
-      const coordinate = coordinates[2];
-      expect(coordinate).toEqual({
-        latitude: 1.0,
-        longitude: 101.0,
-        properties: {
-          coord: 2,
-          segment: 0,
-          polygon: 1
-        }
+      const coordinate = coordinates[2] as Coordinate;
+      expect(coordinate.lat).toEqual(1.0);
+      expect(coordinate.lng).toEqual(101.0);
+      expect(coordinate.indices).toEqual({
+        coordIndex: 2,
+        segmentIndex: 0,
+        polygonIndex: 1
       });
     });
 
@@ -410,18 +394,15 @@ describe('##GeoJSON', () => {
       const coordinates = getCoords(geoJson) as Coordinate[];
       expect(coordinates.length).toEqual(4);
 
-      const coordinate = coordinates[2];
-      expect(coordinate).toHaveProperty('elevationMeters');
-      expect(coordinate.elevationMeters).toEqual(300);
+      const coordinate: Coordinate = coordinates[2] as Coordinate;;
+      expect(coordinate).toHaveProperty('alt');
+      expect(coordinate.alt).toEqual(300);
     });
   });
 
   describe('#getBoundingBox', () => {
     it('should return a single set of latitude & longitude for a single coordinate', () => {
-      const coordinate = {
-        latitude: 35.2,
-        longitude: 100.0
-      }
+      const coordinate = new Coordinate(35.2, 100.0);
 
       const boundingBox = getBoundingBox(coordinate);
 
@@ -431,17 +412,17 @@ describe('##GeoJSON', () => {
     it('should return a bounding box of 2 coordinates from a set of multiple coordinates in a LineString', () => {
       const coordinates = [
         {
-          latitude: 35.2,
-          longitude: 100.0
+          lat: 35.2,
+          lng: 100.0
         }, {
-          latitude: 20,
-          longitude: -20.0
+          lat: 20,
+          lng: -20.0
         }, {
-          latitude: 25,
-          longitude: 120.0
+          lat: 25,
+          lng: 120.0
         }, {
-          latitude: 35.2,
-          longitude: 100.0
+          lat: 35.2,
+          lng: 100.0
         }
       ];
 
@@ -454,20 +435,20 @@ describe('##GeoJSON', () => {
       const coordinates = [
         [
           {
-            latitude: 35.2,
-            longitude: 100.0
+            lat: 35.2,
+            lng: 100.0
           }, {
-            latitude: 20,
-            longitude: -20.0
+            lat: 20,
+            lng: -20.0
           }
         ],
         [
           {
-            latitude: 25,
-            longitude: 120.0
+            lat: 25,
+            lng: 120.0
           }, {
-            latitude: 35.2,
-            longitude: 100.0
+            lat: 35.2,
+            lng: 100.0
           }
         ]
       ];
@@ -482,25 +463,25 @@ describe('##GeoJSON', () => {
         [
           [
             {
-              latitude: 35.2,
-              longitude: 100.0
+              lat: 35.2,
+              lng: 100.0
             }, {
-              latitude: 20,
-              longitude: -20.0
+              lat: 20,
+              lng: -20.0
             }
           ]
         ],
         [
           [
             {
-              latitude: 25,
-              longitude: 120.0
+              lat: 25,
+              lng: 120.0
             }
           ],
           [
             {
-              latitude: 35.2,
-              longitude: 100.0
+              lat: 35.2,
+              lng: 100.0
             }
           ]
         ]
