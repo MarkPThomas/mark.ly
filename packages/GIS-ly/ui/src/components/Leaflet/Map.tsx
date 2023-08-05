@@ -3,8 +3,19 @@ import { LatLng, LatLngBoundsExpression, LatLngExpression, LatLngTuple } from 'l
 import { MapContainer } from 'react-leaflet';
 import { FeatureCollection, GeoJSON, Geometry } from 'geojson';
 
-import { toGeoJson } from '../../model/Files';
-import { Coordinate, Coordinates, GeoJSONFeatureCollection, clipTrackSegmentByCruft, getBoundingBox, getCoords, mergeTackSegments, splitTrackSegmentByCruft } from '../../model/Leaflet';
+import {
+  toGeoJson, toGpxFile, toKmlFile
+} from '../../model/Files';
+import {
+  Coordinate,
+  Coordinates,
+  GeoJSONFeatureCollection,
+  clipTrackSegmentByCruft,
+  getBoundingBox,
+  getCoords,
+  mergeTackSegments,
+  splitTrackSegmentByCruft
+} from '../../model/Leaflet';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
@@ -45,6 +56,14 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
         setBounds(newBounds);
       }]); // save converted geojson to hook state
   };
+
+  const handleGPXSaveFile = () => {
+    toGpxFile(layer);
+  }
+
+  const handleKMLSaveFile = () => {
+    toKmlFile(layer);
+  }
 
   const animateRef = useRef(true);
   const handleSetViewOnClick = () => {
@@ -129,6 +148,8 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" />
       <input type="button" onClick={handleSplitCruft} value="Split Cruft" />
       <input type="button" onClick={handleClipCruft} value="Clip Cruft" />
+      <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
+      <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
     </div>
     // :
     // <>'Data is loading...'</>

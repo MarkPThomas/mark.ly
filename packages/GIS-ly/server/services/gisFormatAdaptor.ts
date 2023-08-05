@@ -1,7 +1,8 @@
 import { kml as fromKml, gpx as fromGpx } from '@tmcw/togeojson';
 import rewind from '@mapbox/geojson-rewind';
-import { togpx } from 'togpx';
-import { FeatureCollection, Geometry } from 'geojson';
+import togpx from 'togpx';
+import tokml from 'geojson-to-kml';
+import { GeoJSON } from 'geojson';
 
 import { parseXML } from '../../../common/utils';//'common/utils';
 
@@ -34,15 +35,15 @@ export const kmlToGeoJson = (kml: string) => {
   return converted;
 }
 
-export const prepareGeoJson = (rawGeoJson: FeatureCollection<Geometry, { [name: string]: any; }>) => {
+export const prepareGeoJson = (rawGeoJson: GeoJSON) => {
   rewind(rawGeoJson, false); // correct right hand rule
   return rawGeoJson;
 }
 
-export const geoJsonToGpx = (geoJson: string): string => {
+export const geoJsonToGpx = (geoJson: GeoJSON): string => {
   return togpx(geoJson);
 }
 
-export const geoJsonToKml = (geoJson: string): string => {
-  return '';
+export const geoJsonToKml = (geoJson: GeoJSON): string => {
+  return tokml(geoJson);
 }
