@@ -4,7 +4,7 @@ import { MapContainer } from 'react-leaflet';
 import { FeatureCollection, GeoJSON, Geometry } from 'geojson';
 
 import { toGeoJson } from '../../model/Files';
-import { Coordinate, Coordinates, GeoJSONFeatureCollection, getBoundingBox, getCoords, mergeTackSegments } from '../../model/Leaflet';
+import { Coordinate, Coordinates, GeoJSONFeatureCollection, clipTrackSegmentByCruft, getBoundingBox, getCoords, mergeTackSegments, splitTrackSegmentByCruft } from '../../model/Leaflet';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
@@ -64,6 +64,31 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     }
   }
 
+  const handleSplitCruft = () => {
+    console.log('handleSplitCruft')
+    if (layer as GeoJSONFeatureCollection) {
+      const geoJsonLayers = splitTrackSegmentByCruft(layer as GeoJSONFeatureCollection);
+      console.log('geoJson: ', geoJsonLayers)
+      // TODO: Add ability for multiple GeoJson layers, programmatic styling
+      // setLayer(geoJson);
+      // const newCoords = getCoords(geoJson);
+      // setCoords(newCoords);
+      // setLayersProps(updatedLayersProps(geoJson, newCoords));
+    }
+  }
+
+  const handleClipCruft = () => {
+    console.log('handleClipCruft')
+    if (layer as GeoJSONFeatureCollection) {
+      const geoJson = clipTrackSegmentByCruft(layer as GeoJSONFeatureCollection);
+      console.log('geoJson: ', geoJson)
+      setLayer(geoJson);
+      const newCoords = getCoords(geoJson);
+      setCoords(newCoords);
+      setLayersProps(updatedLayersProps(geoJson, newCoords));
+    }
+  }
+
   const updatedLayersProps = (layer: GeoJSONFeatureCollection, coords): LayersControlProps =>
     layer ? {
       ...initialLayers,
@@ -102,6 +127,8 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
       <label htmlFor="animatePan">Set View On Click</label>
       <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" />
+      <input type="button" onClick={handleSplitCruft} value="Split Cruft" />
+      <input type="button" onClick={handleClipCruft} value="Clip Cruft" />
     </div>
     // :
     // <>'Data is loading...'</>
