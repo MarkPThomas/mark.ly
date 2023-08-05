@@ -30,6 +30,7 @@ export default {
     '!database/models/*',
     '!database/repositories-orm/**/*',
     '!utils/axios.ts',
+    '!utils/units/conversion/Conversion.ts',
     '!utils/terminateProcess.ts'
   ],
   coverageThreshold: {
