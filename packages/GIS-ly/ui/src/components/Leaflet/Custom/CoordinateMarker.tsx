@@ -1,18 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import {
-  MapContainer,
-  TileLayer, TileLayerProps,
-  LayerGroup,
-  Marker, Popup,
-  Circle,
-  GeoJSON,
-  useMap,
+  Popup,
+  Circle
 } from 'react-leaflet';
 
-import { getBoundingBox, getCoords, Coordinate } from '../../../model/Leaflet';
-import { metersToFeetRound } from '../../../model/Leaflet/Conversion';
-
 import { hashString } from '../../../../../../common/utils'; //'common/utils';
+import { Conversion } from '../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+
+import { Coordinate } from '../../../model/GIS/Coordinate';
+
 
 export type CoordinateMarkerProps = {
   coord: Coordinate
@@ -30,7 +26,7 @@ export function CoordinateMarker({ coord }: CoordinateMarkerProps) {
         <div><b>Latitude:</b> {coord.lat}</div>
         <div><b>Longitude:</b> {coord.lng}</div>
         {coord.alt &&
-          <div><b>Elevation:</b> {coord.alt} m / {metersToFeetRound(coord.alt)} ft</div>}
+          <div><b>Elevation:</b> {coord.alt} m / {Math.round(Conversion.Length.Meters.toFeet(coord.alt))} ft</div>}
         {coord.timeStamp &&
           <div><b>Timestamp:</b> {coord.timeStamp}</div>}
       </span>

@@ -1,15 +1,14 @@
 import {
-  Feature,
   FeatureCollection,
   Geometry,
   Point,
   MultiPoint,
   LineString,
   MultiLineString,
-  Polygon,
   MultiPolygon,
   Position
 } from 'geojson';
+
 import {
   LatLng,
   LatLngBoundsExpression,
@@ -18,41 +17,11 @@ import {
   GeoJSON
 } from 'leaflet';
 
+import { Coordinates, Coordinate } from './Coordinate';
+
 export type GeoJSONFeatureCollection = FeatureCollection<Geometry, { [name: string]: any; }>;
 
-type CoordinateIndex = {
-  coordIndex: number,
-  segmentIndex?: number,
-  polygonIndex?: number,
-};
-
-export class Coordinate extends LatLng {
-  timeStamp?: string
-  indices?: CoordinateIndex
-}
-
-export type Coordinates = Coordinate | Coordinate[] | Coordinate[][] | Coordinate[][][];
 export type LatLngLiterals = LatLngLiteral | LatLngLiteral[] | LatLngLiteral[][] | LatLngLiteral[][][];
-
-type CoordinateProperties = {
-  position: Position,
-  indices?: CoordinateIndex,
-  timeStamp?: string
-}
-
-function getCoordinate({ position, indices, timeStamp }: CoordinateProperties) {
-  const coordinate = new Coordinate(position[1], position[0], position[2]);
-
-  if (timeStamp) {
-    coordinate.timeStamp = timeStamp;
-  }
-
-  if (indices) {
-    coordinate.indices = indices;
-  }
-
-  return coordinate;
-}
 
 export function getCoords(geoJson: GeoJSONFeatureCollection) {
   if (geoJson.features[0].geometry) {
@@ -61,7 +30,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
     switch (geometryType) {
       case 'Point':
         coordinatesPosition = (geoJson.features[0].geometry as Point).coordinates;
-        const coordinate = getCoordinate(
+        const coordinate = Coordinate.getCoordinate(
           {
             position: coordinatesPosition,
             timeStamp: geoJson.features[0].properties?.coordinateProperties?.times
@@ -74,7 +43,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
         coordinatesPosition = (geoJson.features[0].geometry as MultiPoint).coordinates;
         const coordinates: Coordinate[] = [];
         for (let coordIndex = 0; coordIndex < coordinatesPosition.length; coordIndex++) {
-          const coordinate = getCoordinate(
+          const coordinate = Coordinate.getCoordinate(
             {
               position: coordinatesPosition[coordIndex],
               indices: {
@@ -94,7 +63,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
         for (let segmentIndex = 0; segmentIndex < coordinatesPosition.length; segmentIndex++) {
           const coordinates: Coordinate[] = [];
           for (let coordIndex = 0; coordIndex < coordinatesPosition[segmentIndex].length; coordIndex++) {
-            const coordinate = getCoordinate(
+            const coordinate = Coordinate.getCoordinate(
               {
                 position: coordinatesPosition[segmentIndex][coordIndex],
                 indices: {
@@ -120,7 +89,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
           for (let segmentIndex = 0; segmentIndex < coordinatesPosition[polygonIndex].length; segmentIndex++) {
             const coordinates: Coordinate[] = [];
             for (let coordIndex = 0; coordIndex < coordinatesPosition[polygonIndex][segmentIndex].length; coordIndex++) {
-              const coordinate = getCoordinate(
+              const coordinate = Coordinate.getCoordinate(
                 {
                   position: coordinatesPosition[polygonIndex][segmentIndex][coordIndex],
                   indices: {
@@ -222,7 +191,6 @@ export function coordinatesIndexAt(coord: LatLng, coordinates: LatLng[] | Positi
   }
 }
 
-
 // === Get Functions
 export function getTrackSegmentBeforeCoord(
   geoJson: GeoJSONFeatureCollection,
@@ -307,7 +275,7 @@ export function getTrackSegmentsSplitByCoords(
   return { coordinatesSegments, timeStampsSegments };
 }
 
-export type Segment = {
+export type SegmentLimits = {
   startCoord: Coordinate,
   endCoord: Coordinate | null
 };
@@ -321,14 +289,14 @@ export function getTrackSegmentsByCruft(
 
   let maxSize = 0;
 
-  const segments: Segment[] = [];
-  let segmentKeep: Segment;
-  let segment: Segment = {
+  const segments: SegmentLimits[] = [];
+  let segmentKeep: SegmentLimits;
+  let segment: SegmentLimits = {
     startCoord: coordinates[0],
     endCoord: null
   };
 
-  const updateSegmentKeep = (segmentCheck: Segment) => {
+  const updateSegmentKeep = (segmentCheck: SegmentLimits) => {
     segments.push(segmentCheck);
 
     const priorSegmentSize = segmentCheck.endCoord.indices.coordIndex - segmentCheck.startCoord.indices.coordIndex + 1;
@@ -378,7 +346,7 @@ export function splitTrackSegmentByCoords(
 // Tracks assumed to be in order along track
 export function splitTrackSegmentBySegments(
   geoJson: GeoJSONFeatureCollection,
-  segments: Segment[]
+  segments: SegmentLimits[]
 ): GeoJSONFeatureCollection[] {
   const tracks: GeoJSONFeatureCollection[] = [];
 
@@ -443,7 +411,7 @@ export function splitTrackSegmentBySegments(
 
 export function splitTrackSegment(
   geoJson: GeoJSONFeatureCollection,
-  segment: Segment
+  segment: SegmentLimits
 ): GeoJSONFeatureCollection {
   const splitTracks = splitTrackSegmentByCoords(geoJson, [segment.startCoord, segment.endCoord]);
   if (splitTracks.length === 1) {

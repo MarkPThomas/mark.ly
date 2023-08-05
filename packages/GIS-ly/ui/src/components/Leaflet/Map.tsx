@@ -6,16 +6,20 @@ import { FeatureCollection, GeoJSON, Geometry } from 'geojson';
 import {
   toGeoJson, toGpxFile, toKmlFile
 } from '../../model/Files';
+
 import {
-  Coordinate,
-  Coordinates,
   GeoJSONFeatureCollection,
   clipTrackSegmentByCruft,
   getBoundingBox,
   getCoords,
   mergeTackSegments,
   splitTrackSegmentByCruft
-} from '../../model/Leaflet';
+} from '../../model/GIS';
+
+import {
+  Coordinate,
+  Coordinates
+} from '../../model/GIS/Coordinate';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';

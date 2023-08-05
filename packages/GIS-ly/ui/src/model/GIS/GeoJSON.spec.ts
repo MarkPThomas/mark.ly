@@ -11,7 +11,6 @@ import {
   getCoords,
   getBoundingBox,
   mergeTackSegments,
-  Coordinate,
   GeoJSONFeatureCollection,
   coordinatesIndexAt,
   getTrackSegmentBeforeCoord,
@@ -25,11 +24,12 @@ import {
   clipTrackSegmentByCruft,
   getTrackSegmentsByCruft,
   splitTrackSegmentByCruft,
-  Segment,
+  SegmentLimits,
   splitTrackSegmentBySegments,
   splitTrackSegment
 } from './GeoJSON';
 import { LatLng } from 'leaflet';
+import { Coordinate } from './Coordinate';
 
 const testData = {
   GeoJson: {
@@ -1091,7 +1091,7 @@ describe('##GeoJSON', () => {
 
   describe('#splitTrackSegmentBySegments', () => {
     it('should return two track segments split by a single segment found in a GeoJSON object', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(2.0, 102.0),
         endCoord: new Coordinate(3.0, 103.0),
       }
@@ -1152,12 +1152,12 @@ describe('##GeoJSON', () => {
         ],
       }
 
-      const segment1: Segment = {
+      const segment1: SegmentLimits = {
         startCoord: new Coordinate(2.0, 102.0),
         endCoord: new Coordinate(3.0, 103.0),
       }
 
-      const segment2: Segment = {
+      const segment2: SegmentLimits = {
         startCoord: new Coordinate(6.0, 106.0),
         endCoord: new Coordinate(7.0, 107.0),
       }
@@ -1195,11 +1195,11 @@ describe('##GeoJSON', () => {
     });
 
     it('should return two track segments split by 1 segment found in a GeoJSON object with 2 segment provided', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(2.0, 102.0),
         endCoord: new Coordinate(3.0, 103.0),
       }
-      const segmentInvalid: Segment = {
+      const segmentInvalid: SegmentLimits = {
         startCoord: new Coordinate(4.1, 104.0),
         endCoord: new Coordinate(5.0, 105.1),
       }
@@ -1229,7 +1229,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return the track segment unchanged when the segment is not found in a GeoJSON object', () => {
-      const segmentInvalid: Segment = {
+      const segmentInvalid: SegmentLimits = {
         startCoord: new Coordinate(4.1, 104.0),
         endCoord: new Coordinate(5.0, 105.1),
       }
@@ -1241,7 +1241,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return only the remaining track when a segment matches the first track segment', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(0.0, 100.0),
         endCoord: new Coordinate(1.0, 101.0),
       }
@@ -1264,7 +1264,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return only the remaining track when a segment matches the second track segment', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(1.0, 101.0),
         endCoord: new Coordinate(2.0, 102.0),
       }
@@ -1286,7 +1286,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return only the initial track when a segment matches the last track segment', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(4.0, 104.0),
         endCoord: new Coordinate(5.0, 105.0),
       }
@@ -1309,7 +1309,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return only the initial track when a segment matches the second-to-last track segment', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(3.0, 103.0),
         endCoord: new Coordinate(4.0, 104.0),
       }
@@ -1333,7 +1333,7 @@ describe('##GeoJSON', () => {
 
   describe('#splitTrackSegment', () => {
     it('should return the specified segment at the start of the track', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(0.0, 100.0),
         endCoord: new Coordinate(1.0, 101.0),
       }
@@ -1352,7 +1352,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return the specified segment at the end of the track', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(4.0, 104.0),
         endCoord: new Coordinate(5.0, 105.0),
       }
@@ -1371,7 +1371,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return the specified segment at the middle of the track', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(2.0, 102.0),
         endCoord: new Coordinate(3.0, 103.0),
       }
@@ -1390,7 +1390,7 @@ describe('##GeoJSON', () => {
     });
 
     it('should return nothing if the specified segment is not found', () => {
-      const segment: Segment = {
+      const segment: SegmentLimits = {
         startCoord: new Coordinate(2.1, 102.0),
         endCoord: new Coordinate(3.1, 103.0),
       }
