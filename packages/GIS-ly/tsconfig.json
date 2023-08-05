@@ -16,7 +16,7 @@
     "esModuleInterop": true,
     "paths": {
       "common/*": [
-        "../../../common/*"
+        "../common/*"
       ]
     },
     "preserveSymlinks": true,
