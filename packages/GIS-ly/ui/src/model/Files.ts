@@ -1,7 +1,6 @@
 import { geoJsonToGpx, geoJsonToKml, toGeoJsonByType } from '../../../server/services/gisFormatAdaptor';
 import { GeoJSON } from 'geojson';
 import { getFileExtension } from '../../../../common/utils';//'common/utils';
-import { GeoJSONFeatureCollection } from './Leaflet/GeoJSON';
 
 export const toGeoJson = async (file: File, hookCBs = undefined) => {
   const ext = getFileExtension(file);
@@ -50,12 +49,10 @@ function saveBlobAs(blob: Blob, fileName: string) {
 
 export const toGpxFile = async (geoJson: GeoJSON) => {
   const gpx = geoJsonToGpx(geoJson);
-  console.log('gpx: ', gpx);
   writeToFile(gpx, 'SampleFile.gpx');
 }
 
 export const toKmlFile = async (geoJson: GeoJSON) => {
   const kml = geoJsonToKml(geoJson);
-  console.log('kml: ', kml);
   writeToFile(kml, 'SampleFile.kml');
 }
