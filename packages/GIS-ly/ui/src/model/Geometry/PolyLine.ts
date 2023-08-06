@@ -33,6 +33,13 @@ export class PolyLine<V extends Coordinate> {
     this.buildSegments();
   }
 
+  size() {
+    return {
+      coords: this.coords.size(),
+      segments: this.segments.size()
+    }
+  }
+
   protected buildSegments() {
     if (this.coords.size() === 0) {
       return;
