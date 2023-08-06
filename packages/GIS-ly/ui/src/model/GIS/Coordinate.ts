@@ -15,6 +15,10 @@ type CoordinateIndex = {
 export class Coordinate extends LatLng {
   timeStamp?: string;
   speedAvg?: number;
+  path?: {
+    rotation: number;
+    angularSpeed: number;
+  }
   indices?: CoordinateIndex;
   // pathProperties?: {
   //   segmentProperties: {
