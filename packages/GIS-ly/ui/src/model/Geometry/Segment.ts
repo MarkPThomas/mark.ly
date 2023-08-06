@@ -23,6 +23,7 @@ export interface ISegment {
     lat: string;
     lng: string;
   };
+  duration?: number;
   /**
    * Speed in m/s
    *
@@ -39,5 +40,6 @@ export class Segment implements ISegment {
     lat: string;
     lng: string;
   };
-  speed: number;
+  duration?: number;
+  speed?: number;
 }

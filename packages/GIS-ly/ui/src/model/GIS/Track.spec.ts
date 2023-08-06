@@ -1,4 +1,4 @@
-import { Segment } from '../Geometry/Segment';
+import { ISegment, Segment } from '../Geometry/Segment';
 import { Coordinate } from './Coordinate';
 import { Track } from './Track';
 
@@ -26,7 +26,7 @@ describe('##Track', () => {
     it('should return null for two points at the same location', () => {
       const coord = new Coordinate(45, 110);
 
-      const angle = Track.calcSegmentAngleRads(coord, coord);
+      const angle = Track.calcSegmentAngleRad(coord, coord);
 
       expect(angle).toBeNull();
     });
@@ -37,13 +37,13 @@ describe('##Track', () => {
       const coord1Pos = new Coordinate(5, 10);
       const coord2Pos = new Coordinate(5, 20);
 
-      const angleNegNeg = Track.calcSegmentAngleRads(coord1Neg, coord2Neg);
+      const angleNegNeg = Track.calcSegmentAngleRad(coord1Neg, coord2Neg);
       expect(angleNegNeg - 0).toBeLessThanOrEqual(0.001);
 
-      const angleNegPos = Track.calcSegmentAngleRads(coord2Neg, coord1Pos);
+      const angleNegPos = Track.calcSegmentAngleRad(coord2Neg, coord1Pos);
       expect(angleNegPos - 0).toBeLessThanOrEqual(0.001);
 
-      const anglePosPos = Track.calcSegmentAngleRads(coord1Pos, coord2Pos);
+      const anglePosPos = Track.calcSegmentAngleRad(coord1Pos, coord2Pos);
       expect(anglePosPos - 0).toBeLessThanOrEqual(0.001);
     });
 
@@ -53,13 +53,13 @@ describe('##Track', () => {
       const coord1Pos = new Coordinate(5, 10);
       const coord2Pos = new Coordinate(5, 20);
 
-      const angleNegNeg = Track.calcSegmentAngleRads(coord2Neg, coord1Neg);
+      const angleNegNeg = Track.calcSegmentAngleRad(coord2Neg, coord1Neg);
       expect(angleNegNeg - Math.PI).toBeLessThanOrEqual(0.001);
 
-      const angleNegPos = Track.calcSegmentAngleRads(coord1Pos, coord2Neg);
+      const angleNegPos = Track.calcSegmentAngleRad(coord1Pos, coord2Neg);
       expect(angleNegPos - Math.PI).toBeLessThanOrEqual(0.001);
 
-      const anglePosPos = Track.calcSegmentAngleRads(coord2Pos, coord1Pos);
+      const anglePosPos = Track.calcSegmentAngleRad(coord2Pos, coord1Pos);
       expect(anglePosPos - Math.PI).toBeLessThanOrEqual(0.001);
     });
 
@@ -69,13 +69,13 @@ describe('##Track', () => {
       const coord1Pos = new Coordinate(10, 5);
       const coord2Pos = new Coordinate(20, 5);
 
-      const angleNegNeg = Track.calcSegmentAngleRads(coord1Neg, coord2Neg);
+      const angleNegNeg = Track.calcSegmentAngleRad(coord1Neg, coord2Neg);
       expect(angleNegNeg - 0.5 * Math.PI).toBeLessThanOrEqual(0.001);
 
-      const angleNegPos = Track.calcSegmentAngleRads(coord2Neg, coord1Pos);
+      const angleNegPos = Track.calcSegmentAngleRad(coord2Neg, coord1Pos);
       expect(angleNegPos - 0.5 * Math.PI).toBeLessThanOrEqual(0.001);
 
-      const anglePosPos = Track.calcSegmentAngleRads(coord1Pos, coord2Pos);
+      const anglePosPos = Track.calcSegmentAngleRad(coord1Pos, coord2Pos);
       expect(anglePosPos - 0.5 * Math.PI).toBeLessThanOrEqual(0.001);
     });
 
@@ -85,13 +85,13 @@ describe('##Track', () => {
       const coord1Pos = new Coordinate(10, 5);
       const coord2Pos = new Coordinate(20, 5);
 
-      const angleNegNeg = Track.calcSegmentAngleRads(coord2Neg, coord1Neg);
+      const angleNegNeg = Track.calcSegmentAngleRad(coord2Neg, coord1Neg);
       expect(angleNegNeg - 1.5 * Math.PI).toBeLessThanOrEqual(0.001);
 
-      const angleNegPos = Track.calcSegmentAngleRads(coord1Pos, coord2Neg);
+      const angleNegPos = Track.calcSegmentAngleRad(coord1Pos, coord2Neg);
       expect(angleNegPos - 1.5 * Math.PI).toBeLessThanOrEqual(0.001);
 
-      const anglePosPos = Track.calcSegmentAngleRads(coord2Pos, coord1Pos);
+      const anglePosPos = Track.calcSegmentAngleRad(coord2Pos, coord1Pos);
       expect(anglePosPos - 1.5 * Math.PI).toBeLessThanOrEqual(0.001);
     });
 
@@ -101,16 +101,16 @@ describe('##Track', () => {
       const coordBottomRight = new Coordinate(5, 10);
       const coordBottomLeft = new Coordinate(5, 5);
 
-      const angleQuad1 = Track.calcSegmentAngleRads(coordBottomLeft, coordTopRight);
+      const angleQuad1 = Track.calcSegmentAngleRad(coordBottomLeft, coordTopRight);
       expect(angleQuad1 - 0.787).toBeLessThanOrEqual(0.001);
 
-      const angleQuad2 = Track.calcSegmentAngleRads(coordBottomRight, coordTopLeft);
+      const angleQuad2 = Track.calcSegmentAngleRad(coordBottomRight, coordTopLeft);
       expect(angleQuad2 - 2.354).toBeLessThanOrEqual(0.001);
 
-      const angleQuad3 = Track.calcSegmentAngleRads(coordTopRight, coordBottomLeft);
+      const angleQuad3 = Track.calcSegmentAngleRad(coordTopRight, coordBottomLeft);
       expect(angleQuad3 + 2.349).toBeLessThanOrEqual(0.001);
 
-      const angleQuad4 = Track.calcSegmentAngleRads(coordTopLeft, coordBottomRight);
+      const angleQuad4 = Track.calcSegmentAngleRad(coordTopLeft, coordBottomRight);
       expect(angleQuad4 + 0.793).toBeLessThanOrEqual(0.001);
     });
 
@@ -120,16 +120,16 @@ describe('##Track', () => {
       const coordBottomRight = new Coordinate(5, 20);
       const coordBottomLeft = new Coordinate(5, 5);
 
-      const angleQuad1 = Track.calcSegmentAngleRads(coordBottomLeft, coordTopRight);
+      const angleQuad1 = Track.calcSegmentAngleRad(coordBottomLeft, coordTopRight);
       expect(angleQuad1 - 0.323).toBeLessThanOrEqual(0.001);
 
-      const angleQuad2 = Track.calcSegmentAngleRads(coordBottomRight, coordTopLeft);
+      const angleQuad2 = Track.calcSegmentAngleRad(coordBottomRight, coordTopLeft);
       expect(angleQuad2 - 2.819).toBeLessThanOrEqual(0.001);
 
-      const angleQuad3 = Track.calcSegmentAngleRads(coordTopRight, coordBottomLeft);
+      const angleQuad3 = Track.calcSegmentAngleRad(coordTopRight, coordBottomLeft);
       expect(angleQuad3 + 2.815).toBeLessThanOrEqual(0.001);
 
-      const angleQuad4 = Track.calcSegmentAngleRads(coordTopLeft, coordBottomRight);
+      const angleQuad4 = Track.calcSegmentAngleRad(coordTopLeft, coordBottomRight);
       expect(angleQuad4 + 0.326).toBeLessThanOrEqual(0.001);
     });
   });
@@ -400,7 +400,154 @@ describe('##Track', () => {
     });
   });
 
+  describe('#calcPathRotationRads', () => {
+    it('should return null if either angle is not set', () => {
+      const segment: ISegment = {
+        length: null,
+        angle: 0.785
+      };
 
+      const segAngleUnset: ISegment = new Segment();
+
+      const interval = Track.calcPathRotationRad(segment, segAngleUnset);
+
+      expect(interval).toBeNull();
+    });
+
+    it('should return the angle of rotation from the first segment to the second segment', () => {
+      const segIQuad1: ISegment = {
+        length: null,
+        angle: 0.25 * Math.PI
+      };
+      const segJQuad1: ISegment = {
+        length: null,
+        angle: 0.25 * Math.PI + 0.1 * Math.PI
+      };
+
+
+      const segIQuad2: ISegment = {
+        length: null,
+        angle: 0.75 * Math.PI
+      };
+      const segJQuad2: ISegment = {
+        length: null,
+        angle: 0.75 * Math.PI + 0.1 * Math.PI
+      };
+
+      const segIQuad3: ISegment = {
+        length: null,
+        angle: -0.75 * Math.PI
+      };
+      const segJQuad3: ISegment = {
+        length: null,
+        angle: -0.75 * Math.PI + 0.1 * Math.PI
+      };
+
+      const segIQuad4: ISegment = {
+        length: null,
+        angle: -0.25 * Math.PI
+      };
+      const segJQuad4: ISegment = {
+        length: null,
+        angle: -0.25 * Math.PI + 0.1 * Math.PI
+      };
+
+      // Check each small rotation within the same quadrant
+      const rotationQuad1Quad1 = Track.calcPathRotationRad(segIQuad1, segJQuad1);
+      expect(rotationQuad1Quad1 - 0.314).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad2Quad2 = Track.calcPathRotationRad(segIQuad2, segJQuad2);
+      expect(rotationQuad2Quad2 - 0.314).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad3Quad3 = Track.calcPathRotationRad(segIQuad3, segJQuad3);
+      expect(rotationQuad3Quad3 - 0.314).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad4Quad4 = Track.calcPathRotationRad(segIQuad4, segJQuad4);
+      expect(rotationQuad4Quad4 - 0.314).toBeLessThanOrEqual(0.001);
+
+      // Check each small rotation in the opposite direction within the same quadrant
+      const rotationQuad1Quad1Reverse = Track.calcPathRotationRad(segJQuad1, segIQuad1);
+      expect(rotationQuad1Quad1Reverse + 0.314).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad2Quad2Reverse = Track.calcPathRotationRad(segJQuad2, segIQuad2);
+      expect(rotationQuad2Quad2Reverse + 0.314).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad3Quad3Reverse = Track.calcPathRotationRad(segJQuad3, segIQuad3);
+      expect(rotationQuad3Quad3Reverse + 0.314).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad4Quad4Reverse = Track.calcPathRotationRad(segJQuad4, segIQuad4);
+      expect(rotationQuad4Quad4Reverse + 0.314).toBeLessThanOrEqual(0.001);
+
+
+      // Check each larger rotation between quadrants
+      const rotationQuad1Quad2 = Track.calcPathRotationRad(segIQuad1, segIQuad2);
+      expect(rotationQuad1Quad2 - 1.571).toBeLessThanOrEqual(0.001);
+
+      const rotationQuad2Quad3 = Track.calcPathRotationRad(segIQuad1, segIQuad3);
+      expect(rotationQuad2Quad3 + 3.142).toBeLessThanOrEqual(0.001); // + 1.571
+
+      const rotationQuad3Quad4 = Track.calcPathRotationRad(segIQuad1, segIQuad4);
+      expect(rotationQuad3Quad4 + 1.571).toBeLessThanOrEqual(0.001);  // + 3.142
+    });
+  });
+
+  describe('#calcPathAngularSpeedRadPerSec', () => {
+    it('should return null if either segment lacks duration properties', () => {
+      const segment: ISegment = {
+        length: null,
+        angle: null,
+        duration: 5
+      };
+
+      const segNoDuration: ISegment = {
+        length: null,
+        angle: null,
+      };
+
+      const angularSpeed1 = Track.calcPathAngularSpeedRadPerSec(segment, segNoDuration);
+      expect(angularSpeed1).toBeNull();
+
+      const angularSpeed2 = Track.calcPathAngularSpeedRadPerSec(segNoDuration, segment);
+      expect(angularSpeed2).toBeNull();
+    });
+
+    it('should return null if either segment has an unset angle', () => {
+      const segment: ISegment = {
+        length: null,
+        angle: Math.PI,
+        duration: 5
+      };
+
+      const segAngleUnset: ISegment = {
+        length: null,
+        angle: null,
+        duration: 10
+      };
+
+      const angularSpeed1 = Track.calcPathAngularSpeedRadPerSec(segment, segAngleUnset);
+      expect(angularSpeed1).toBeNull();
+
+      const angularSpeed2 = Track.calcPathAngularSpeedRadPerSec(segAngleUnset, segment);
+      expect(angularSpeed2).toBeNull();
+    });
+
+    it('should return the path rotation in radians per second between two segments', () => {
+      const segI: ISegment = {
+        length: null,
+        angle: 0.25 * Math.PI,
+        duration: 5
+      };
+
+      const segJ: ISegment = {
+        length: null,
+        angle: 0.75 * Math.PI,
+        duration: 10
+      };
+
+      const angularSpeed = Track.calcPathAngularSpeedRadPerSec(segI, segJ);
+      expect(angularSpeed - (0.5 * Math.PI / 15)).toBeLessThanOrEqual(0.001);
+    });
+  });
 
   describe('#addProperties', () => {
     let coordinates: Coordinate[];
@@ -411,8 +558,10 @@ describe('##Track', () => {
       // speed 2.3 mph
       // heading 48.3
       // avgSpeed = 1.245 m/s = 2.785
+      // segment1 length = 24.9 m
+      // segment1 duration = 20 sec
       // segment1 speed = 1.245 m/s = 2.78 mph
-      // segment1 angle =
+      // segment1 angle = 1.339 rad = 76.7 deg
       // segment1 direction = N, E
 
       const coord2 = new Coordinate(-8.957069, -77.777400);
@@ -420,8 +569,12 @@ describe('##Track', () => {
       // speed 2.8 mph
       // heading 13.3
       // avgSpeed = 1.301 m/s = 2.91 mph
+      // rotation =
+      // angularSpeed = 0.09121 rad/s = 5.23 deg/sec
+      // segment2 length = 14.9 m
+      // segment2 duration = 11 sec
       // segment2 speed = 1.358 m/s = 3.04 mph
-      // segment2 angle = 1.0363 rad = 59.4 deg
+      // segment2 angle = 1.431 rad = 82.0 deg
       // segment2 direction = N, E
 
       const coord3 = new Coordinate(-8.956936, -77.777381);
@@ -429,8 +582,10 @@ describe('##Track', () => {
       // speed 3.0 mph
       // heading 8.2
       // avgSpeed = 1.297 m/s = 2.90 mph
+      // segment3 length = 27.2 m
+      // segment3 duration = 22 sec
       // segment3 speed = 1.237 m/s = 2.77 mph
-      // segment3 angle =
+      // segment3 angle = 0.815 rad = 46.7 deg
       // segment3 direction = N, E
 
       const coord4 = new Coordinate(-8.956758, -77.777211);
@@ -455,6 +610,7 @@ describe('##Track', () => {
       const segments = track.segments();
 
       expect(segments[1].length - 14.935).toBeLessThanOrEqual(0.001);
+      expect(segments[1].duration - 11).toBeLessThanOrEqual(0.001);
       expect(segments[1].speed - 1.358).toBeLessThanOrEqual(0.001);
       expect(segments[1].angle - 1.431).toBeLessThanOrEqual(0.001);
       expect(segments[1].direction).toEqual({ lat: 'N', lng: 'E' });
@@ -469,12 +625,18 @@ describe('##Track', () => {
 
       // Check middle node
       expect(coords[1].speedAvg - 1.301).toBeLessThanOrEqual(0.001);
+      expect(coords[1].path.rotation - 0.092).toBeLessThanOrEqual(0.001);
+      expect(coords[1].path.angularSpeed - 0.09121).toBeLessThanOrEqual(0.00001);
 
       // Check start node
       expect(coords[0].speedAvg - 1.245).toBeLessThanOrEqual(0.001);
+      expect(coords[0].path?.rotation).toBeNull();
+      expect(coords[0].path?.angularSpeed).toBeNull();
 
       // Check end node
       expect(coords[coords.length - 1].speedAvg - 1.237).toBeLessThanOrEqual(0.001);
+      expect(coords[coords.length - 1].path?.rotation).toBeNull();
+      expect(coords[coords.length - 1].path?.angularSpeed).toBeNull();
     });
   });
 });

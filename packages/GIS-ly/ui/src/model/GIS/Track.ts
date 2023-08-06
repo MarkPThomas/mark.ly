@@ -1,5 +1,5 @@
 import { Coordinate } from './Coordinate';
-import { Segment } from '../Geometry/Segment';
+import { ISegment, Segment } from '../Geometry/Segment';
 import { CoordinateNode, PolyLine } from '../Geometry/PolyLine';
 
 export class Track extends PolyLine<Coordinate, Segment> {
@@ -25,6 +25,10 @@ export class Track extends PolyLine<Coordinate, Segment> {
 
   protected addNodeProperties(coord: CoordinateNode<Coordinate, Segment>) {
     coord.val.speedAvg = Track.calcCoordAvgSpeedMPS(coord.prevSeg?.val, coord.nextSeg?.val);
+    coord.val.path = {
+      rotation: Track.calcPathRotationRad(coord.prevSeg?.val, coord.nextSeg?.val),
+      angularSpeed: Track.calcPathAngularSpeedRadPerSec(coord.prevSeg?.val, coord.nextSeg?.val)
+    }
   }
 
   protected addPropertiesToSegments() {
@@ -41,9 +45,10 @@ export class Track extends PolyLine<Coordinate, Segment> {
     const segment = new Segment();
 
     segment.length = Track.calcSegmentDistanceMeters(coordI.val, coordJ.val);
-    segment.angle = Track.calcSegmentAngleRads(coordI.val, coordJ.val);
-    segment.speed = Track.calcSegmentSpeedMPS(coordI.val, coordJ.val);
+    segment.angle = Track.calcSegmentAngleRad(coordI.val, coordJ.val);
     segment.direction = Track.calcSegmentDirection(coordI.val, coordJ.val);
+    segment.duration = Track.calcIntervalSec(coordI.val.timeStamp, coordJ.val.timeStamp)
+    segment.speed = Track.calcSegmentSpeedMPS(coordI.val, coordJ.val);
 
     coordI.nextSeg.val = segment;
   }
@@ -61,7 +66,7 @@ export class Track extends PolyLine<Coordinate, Segment> {
     return ptI.distanceTo(ptJ);
   }
 
-  static calcSegmentAngleRads(ptI: Coordinate, ptJ: Coordinate) {
+  static calcSegmentAngleRad(ptI: Coordinate, ptJ: Coordinate) {
     const latLength = ptI.distanceTo(new Coordinate(ptJ.lat, ptI.lng)) * ((ptJ.lat > ptI.lat) ? 1 : -1);
     const lngLength = ptI.distanceTo(new Coordinate(ptI.lat, ptJ.lng)) * ((ptJ.lng > ptI.lng) ? 1 : -1);
 
@@ -148,7 +153,7 @@ export class Track extends PolyLine<Coordinate, Segment> {
    * @return {*}
    * @memberof Track
    */
-  static calcCoordAvgSpeedMPS(segI: Segment, segJ: Segment) {
+  static calcCoordAvgSpeedMPS(segI: ISegment, segJ: ISegment) {
     const speedI = segI?.speed;
     const speedJ = segJ?.speed;
 
@@ -157,5 +162,26 @@ export class Track extends PolyLine<Coordinate, Segment> {
       : speedI ? speedI
         : speedJ ? speedJ
           : undefined;
+  }
+
+
+  static calcPathRotationRad(segI: ISegment, segJ: ISegment) {
+    return (segJ?.angle === undefined || segJ.angle === null
+      || segI?.angle === undefined || segI.angle === null
+      || isNaN(segJ.angle - segI.angle)
+    )
+      ? null
+      : segJ.angle - segI.angle;
+  }
+
+  static calcPathAngularSpeedRadPerSec(segI: ISegment, segJ: ISegment) {
+    const pathRotationRad = this.calcPathRotationRad(segI, segJ);
+    const pathDurationSec = (segI?.duration === undefined || segJ?.duration === undefined)
+      ? null
+      : segI.duration + segJ.duration;
+
+    return (pathRotationRad === null || pathDurationSec === null)
+      ? null
+      : pathRotationRad / pathDurationSec;
   }
 }
