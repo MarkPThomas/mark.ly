@@ -1,18 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import {
-  MapContainer,
-  TileLayer, TileLayerProps,
-  LayerGroup,
-  Marker, Popup,
-  Circle,
-  GeoJSON,
-  useMap,
+  LayerGroup
 } from 'react-leaflet';
 
-import { getBoundingBox, getCoords, Coordinate, metersToFeet } from '../../../model/Leaflet';
+import { hashString } from '../../../../../../common/utils';
+
+import { Coordinate } from '../../../model/GIS/Coordinate';
 
 import { CoordinateMarker } from './CoordinateMarker';
-import { hashString } from '../../../../../../common/utils';
 
 export type CoordinateMarkersLayerProps = {
   coords
