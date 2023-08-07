@@ -53,6 +53,85 @@ export class Track extends PolyLine<Coordinate, Segment> {
     coordI.nextSeg.val = segment;
   }
 
+
+  /**
+   * Removes coordinates that exceed the specified speed.
+   *
+   * @param {number} speedLimitMS Speed in meters/second.
+   * @param {boolean} [iterate] If true, smoothing operation is repeated until no additional coordinates are removed.
+   * @memberof Track
+   */
+  public smoothBySpeed(speedLimitMS: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth(speedLimitMS, this.isExceedingSpeedLimit, iterate);
+    return nodesSmoothed.length;
+  }
+
+  protected isExceedingSpeedLimit(limit: number, coord: CoordinateNode<Coordinate, Segment>) {
+    return coord.val?.speedAvg && coord.val.speedAvg > limit;
+  }
+
+  /**
+   *
+   *
+   * @protected
+   * @param {number} target
+   * @param {(target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean} evaluator
+   * @param {boolean} [iterate=false] If true, smoothing operation is repeated until no additional coordinates are removed.
+   * @return {*}
+   * @memberof Track
+   */
+  protected smooth(
+    target: number,
+    evaluator: (target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean,
+    iterate: boolean = false
+  ) {
+    let smoothCoordsCurrent;
+    let smoothCoords = [];
+    do {
+      smoothCoordsCurrent = this.getCoords(target, evaluator);
+      smoothCoords.push(...smoothCoordsCurrent);
+      console.log('smoothCoordsCurrent: ', smoothCoordsCurrent.length);
+      this.removeCoords(smoothCoordsCurrent);
+    } while (iterate && smoothCoordsCurrent.length)
+
+    return smoothCoords;
+  }
+
+  protected getCoords(
+    target: number,
+    evaluator: (target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean
+  ) {
+    const coords: CoordinateNode<Coordinate, Segment>[] = [];
+
+    let coord = this._coords.getHead() as CoordinateNode<Coordinate, Segment>;
+    while (coord) {
+      if (evaluator(target, coord)) {
+        coords.push(coord);
+      }
+
+      coord = coord.next as CoordinateNode<Coordinate, Segment>;
+    }
+
+    return coords;
+  }
+
+  protected removeCoords(coords: CoordinateNode<Coordinate, Segment>[]) {
+    // remove all coords
+    coords.forEach((coord) => {
+      this._coords.remove(coord);
+    })
+
+    // regenerate all segments
+    this.buildSegments();
+    //    optimize: replace segment
+    //     // coord.prevSeg
+    //     // coord.nextSeg
+
+    // update segment properties
+    this.addProperties();
+    //    optimize: update new segment properties and adjacent node properties
+  }
+
   /**
   * Returns the distance between two lat/long points in meters.
   *

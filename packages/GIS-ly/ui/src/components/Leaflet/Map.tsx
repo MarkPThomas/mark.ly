@@ -13,7 +13,9 @@ import {
   getBoundingBox,
   getCoords,
   mergeTackSegments,
-  splitTrackSegmentByCruft
+  splitTrackSegmentByCruft,
+  updateGeoJsonTrackByCoords,
+  Track
 } from '../../model/GIS';
 
 import {
@@ -25,6 +27,7 @@ import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/Mini
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
+import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
 
 
 export type MapProps = {
@@ -109,6 +112,40 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const newCoords = getCoords(geoJson);
       setCoords(newCoords);
       setLayersProps(updatedLayersProps(geoJson, newCoords));
+      const newBounds = getBoundingBox(newCoords);
+      console.log('newBounds: ', newBounds);
+      setBounds(newBounds);
+    }
+  }
+
+  const handleSmoothBySpeed = () => {
+    console.log('handleSmoothBySpeed')
+    if (layer as GeoJSONFeatureCollection) {
+      const track = new Track(coords as Coordinate[]);
+      track.addProperties();
+      const speedLimitKph = Conversion.Speed.mphToKph(4);
+      console.log('speedLimitKph: ', speedLimitKph);
+      const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
+      console.log('speedLimitMpS: ', speedLimitMpS);
+
+      // let numberNodesRemoved;
+      // do {
+      let numberNodesRemoved = track.smoothBySpeed(speedLimitMpS, true);
+      console.log('numberNodesRemoved: ', numberNodesRemoved);
+      // } while (numberNodesRemoved)
+
+      console.log('Track: ', track);
+
+      const newCoords = track.coords();
+      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
+      console.log('geoJson: ', geoJson);
+
+      setLayer(geoJson);
+      setCoords(newCoords);
+      setLayersProps(updatedLayersProps(geoJson, newCoords));
+      const newBounds = getBoundingBox(newCoords);
+      console.log('newBounds: ', newBounds);
+      setBounds(newBounds);
     }
   }
 
@@ -152,6 +189,8 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" />
       <input type="button" onClick={handleSplitCruft} value="Split Cruft" />
       <input type="button" onClick={handleClipCruft} value="Clip Cruft" />
+      <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
+
       <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
       <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
     </div>

@@ -41,6 +41,15 @@ export class Coordinate extends LatLng {
 
     return coordinate;
   }
+
+  toPosition(): Position {
+    const position = [this.lng, this.lat];
+    if (this.alt) {
+      position.push(this.alt);
+    }
+
+    return position;
+  }
 }
 
 // TODO: rename to: PositionProperties
