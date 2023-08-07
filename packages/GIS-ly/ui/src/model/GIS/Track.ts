@@ -71,6 +71,23 @@ export class Track extends PolyLine<Coordinate, Segment> {
   }
 
   /**
+   * Removes coordinates that have adjacent segments that rotate beyond the specified rotation rate.
+   *
+   * @param {number} speedLimitRadS Rotation rate limit  in radians/second
+   * @param {boolean} [iterate] If true, smoothing operation is repeated until no additional coordinates are removed.
+   * @return {*}
+   * @memberof Track
+   */
+  public smoothByAngularSpeed(speedLimitRadS: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth(speedLimitRadS, this.isExceedingAngularSpeedLimit, iterate);
+    return nodesSmoothed.length;
+  }
+
+  protected isExceedingAngularSpeedLimit(limit: number, coord: CoordinateNode<Coordinate, Segment>) {
+    return coord.val?.path && Math.abs(coord.val.path.angularSpeed) > limit;
+  }
+
+  /**
    *
    *
    * @protected
@@ -90,7 +107,7 @@ export class Track extends PolyLine<Coordinate, Segment> {
     do {
       smoothCoordsCurrent = this.getCoords(target, evaluator);
       smoothCoords.push(...smoothCoordsCurrent);
-      console.log('smoothCoordsCurrent: ', smoothCoordsCurrent.length);
+      // console.log('smoothCoordsCurrent: ', smoothCoordsCurrent.length);
       this.removeCoords(smoothCoordsCurrent);
     } while (iterate && smoothCoordsCurrent.length)
 
@@ -152,7 +169,6 @@ export class Track extends PolyLine<Coordinate, Segment> {
 
     return lngLength
       ? Math.atan2(latLength, lngLength)
-      // ? Math.atan(latLength / lngLength)
       : latLength > 0 ? Math.PI / 2
         : latLength < 0 ? 3 * Math.PI / 2
           : null;
