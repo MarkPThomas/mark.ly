@@ -457,15 +457,21 @@ export function splitTrackSegmentByCruft(
   return tracks.length ? tracks : [geoJson];
 }
 
-// export function splitTrackSegmentBySpeed(
-//   geoJson: GeoJSONFeatureCollection,
-//   maxSpeed: number
-// ) {
+export function updateGeoJsonTrackByCoords(
+  geoJson: GeoJSONFeatureCollection,
+  coordinates: Coordinate[]
+): GeoJSONFeatureCollection {
 
-// }
+  const coordinatesSegment: Position[] = [];
+  const timeStampsSegment: string[] = [];
+  coordinates.forEach((coord) => {
+    coordinatesSegment.push(coord.toPosition());
+    timeStampsSegment.push(coord.timeStamp);
+  });
 
+  return updateGeoJsonTrack(geoJson, coordinatesSegment, timeStampsSegment);
+}
 
-// === Clip Functions
 function updateGeoJsonTrack(
   geoJson: GeoJSONFeatureCollection,
   coordinatesSegment: Position[],

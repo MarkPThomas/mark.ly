@@ -29,6 +29,8 @@ export function CoordinateMarker({ coord }: CoordinateMarkerProps) {
           <div><b>Elevation:</b> {coord.alt} m / {Math.round(Conversion.Length.Meters.toFeet(coord.alt))} ft</div>}
         {coord.timeStamp &&
           <div><b>Timestamp:</b> {coord.timeStamp}</div>}
+        {coord.speedAvg &&
+          <div><b>Speed (average):</b> {Conversion.Speed.kphToMph(Conversion.Speed.metersPerSecondToKph(coord.speedAvg)).toFixed(1)} mph</div>}
       </span>
     </Popup>
   </Circle>

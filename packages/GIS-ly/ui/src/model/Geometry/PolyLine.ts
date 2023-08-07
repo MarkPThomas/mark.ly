@@ -58,14 +58,19 @@ export class PolyLine<V extends Coordinate, S extends Segment> {
     let coord = this._coords.getHead()?.next as CoordinateNode<V, S>;
     while (coord) {
       const prevCoord = coord.prev as CoordinateNode<V, S>;
-      const segmentNode = new SegmentNode<V, S>(prevCoord, coord);
-      this._segments.append(segmentNode);
 
-      prevCoord.nextSeg = segmentNode;
-      coord.prevSeg = segmentNode;
+      this.buildSegment(prevCoord, coord);
 
       coord = coord.next as CoordinateNode<V, S>;
     }
+  }
+
+  protected buildSegment(coordI: CoordinateNode<V, S>, coordJ: CoordinateNode<V, S>) {
+    const segmentNode = new SegmentNode<V, S>(coordI, coordJ);
+    this._segments.append(segmentNode);
+
+    coordI.nextSeg = segmentNode;
+    coordJ.prevSeg = segmentNode;
   }
 
   // addProperties() {
