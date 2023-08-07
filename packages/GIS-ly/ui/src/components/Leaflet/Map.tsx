@@ -149,6 +149,33 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     }
   }
 
+  const handleSmoothByAngularSpeed = () => {
+    console.log('handleSmoothByAngularSpeed')
+    if (layer as GeoJSONFeatureCollection) {
+      const track = new Track(coords as Coordinate[]);
+      track.addProperties();
+
+      //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
+      const angularSpeedLimitRadS = 1.0472;
+
+      let numberNodesRemoved = track.smoothByAngularSpeed(angularSpeedLimitRadS, true);
+      console.log('numberNodesRemoved: ', numberNodesRemoved);
+
+      console.log('Track: ', track);
+
+      const newCoords = track.coords();
+      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
+      console.log('geoJson: ', geoJson);
+
+      setLayer(geoJson);
+      setCoords(newCoords);
+      setLayersProps(updatedLayersProps(geoJson, newCoords));
+      const newBounds = getBoundingBox(newCoords);
+      console.log('newBounds: ', newBounds);
+      setBounds(newBounds);
+    }
+  }
+
   const updatedLayersProps = (layer: GeoJSONFeatureCollection, coords): LayersControlProps =>
     layer ? {
       ...initialLayers,
@@ -187,8 +214,11 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
       <label htmlFor="animatePan">Set View On Click</label>
       <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" />
+
       <input type="button" onClick={handleSplitCruft} value="Split Cruft" />
       <input type="button" onClick={handleClipCruft} value="Clip Cruft" />
+
+      <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
       <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
 
       <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
