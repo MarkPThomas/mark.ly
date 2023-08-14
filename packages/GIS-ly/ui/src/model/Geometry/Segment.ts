@@ -31,6 +31,8 @@ export interface ISegment {
    * @memberof ISegment
    */
   speed?: number;
+  elevationChange?: number;
+  elevationRate?: number;
 }
 
 export class Segment implements ISegment {
@@ -42,4 +44,6 @@ export class Segment implements ISegment {
   };
   duration?: number;
   speed?: number;
+  elevationChange?: number;
+  elevationRate?: number;
 }
