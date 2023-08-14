@@ -20,12 +20,8 @@ export class LinearCurve extends Curve implements
   ICurvePositionCartesian, ICurvePositionPolar,
   IPerpendicularProjections {
 
-  public override get Tolerance() {
-    return this.Tolerance;
-  }
-
   public set Tolerance(value: number) {
-    this.Tolerance = value;
+    this._tolerance = value;
     this.setTolerances(value);
   }
 

@@ -27,8 +27,9 @@ export class LineToLineIntersection {
     shapeBoundary: CartesianCoordinate[],
     tolerance: number = GeometryLibrary.ZeroTolerance
   ): number {
-    if (shapeBoundary[0] != shapeBoundary[shapeBoundary.length - 1])
+    if (!(shapeBoundary[0].equals(shapeBoundary[shapeBoundary.length - 1]))) {
       throw new ArgumentException("Shape boundary describes a shape. Closure to the shape boundary is needed.");
+    }
 
     // 1. Check horizontal line projection from a pt. n to the right
     // 2. Count # of intersections of the line with shape edges
