@@ -7,7 +7,13 @@ import { CoordinateNode, PolyLine } from '../Geometry/PolyLine';
 import { BoundingBox } from './BoundingBox';
 import { LatLngLiteral } from 'leaflet';
 
+
+type EvaluatorArgs = { [name: string]: number };
+
+
 export class Track extends PolyLine<Coordinate, Segment> {
+  // Shortest GPS signal interval is ~30 sec
+  protected static GPS_INTERVAL_MIN_SEC = 30;
 
   constructor(coords: Coordinate[]) {
     super(coords);
@@ -120,15 +126,43 @@ export class Track extends PolyLine<Coordinate, Segment> {
   }
 
 
+  public smoothNoiseCloud(minSpeedMS: number, minRadiusM: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth({ minSpeedMS, minRadiusM }, this.isExceedingSpeedLimit, iterate);
+    return nodesSmoothed.length;
+  }
+
+  protected isInCloud({ minSpeedMS, minRadiusM }: EvaluatorArgs, coord: CoordinateNode<Coordinate, Segment>) {
+    let numNodesInWindow = Math.floor(minRadiusM / (minSpeedMS * Track.GPS_INTERVAL_MIN_SEC));
+
+    let startCoord = coord;
+    while (startCoord && numNodesInWindow) {
+      numNodesInWindow--;
+      startCoord = startCoord.prev as CoordinateNode<Coordinate, Segment>;
+    }
+
+    const radius = startCoord.val.distanceTo(coord.val);
+    return radius < minRadiusM;
+  }
+
+
+  public smoothStationary(minSpeedMS: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth(minSpeedMS, this.isStationary, iterate);
+    return nodesSmoothed.length;
+  }
+
+  protected isStationary(limit: number, coord: CoordinateNode<Coordinate, Segment>) {
+    return coord.val?.speedAvg && coord.val.speedAvg < limit;
+  }
+
   /**
    * Removes coordinates that exceed the specified speed.
    *
-   * @param {number} speedLimitMS Speed in meters/second.
+   * @param {number} maxSpeedMS Speed in meters/second.
    * @param {boolean} [iterate] If true, smoothing operation is repeated until no additional coordinates are removed.
    * @memberof Track
    */
-  public smoothBySpeed(speedLimitMS: number, iterate?: boolean) {
-    const nodesSmoothed = this.smooth(speedLimitMS, this.isExceedingSpeedLimit, iterate);
+  public smoothBySpeed(maxSpeedMS: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth(maxSpeedMS, this.isExceedingSpeedLimit, iterate);
     return nodesSmoothed.length;
   }
 
@@ -139,13 +173,13 @@ export class Track extends PolyLine<Coordinate, Segment> {
   /**
    * Removes coordinates that have adjacent segments that rotate beyond the specified rotation rate.
    *
-   * @param {number} speedLimitRadS Rotation rate limit in radians/second.
+   * @param {number} maxAngSpeedRadS Rotation rate limit in radians/second.
    * @param {boolean} [iterate] If true, smoothing operation is repeated until no additional coordinates are removed.
    * @return {*}
    * @memberof Track
    */
-  public smoothByAngularSpeed(speedLimitRadS: number, iterate?: boolean) {
-    const nodesSmoothed = this.smooth(speedLimitRadS, this.isExceedingAngularSpeedLimit, iterate);
+  public smoothByAngularSpeed(maxAngSpeedRadS: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth(maxAngSpeedRadS, this.isExceedingAngularSpeedLimit, iterate);
     return nodesSmoothed.length;
   }
 
@@ -157,13 +191,13 @@ export class Track extends PolyLine<Coordinate, Segment> {
    * Removes coordinates that have adjacent segments that gain/lose elevation beyond the specified rate.
    *
    * @protected
-   * @param {number} elevationLimitMS Elevation change rate limit in meters/second.
+   * @param {number} maxElevationChangeMS Elevation change rate limit in meters/second.
    * @param {boolean} [iterate] If true, smoothing operation is repeated until no additional coordinates are removed.
    * @return {*}
    * @memberof Track
    */
-  public smoothByElevationChange(elevationLimitMS: number, iterate?: boolean) {
-    const nodesSmoothed = this.smooth(elevationLimitMS, this.isExceedingSpeedLimit, iterate);
+  public smoothByElevationChange(maxElevationChangeMS: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth(maxElevationChangeMS, this.isExceedingSpeedLimit, iterate);
     return nodesSmoothed.length;
   }
 
@@ -172,18 +206,18 @@ export class Track extends PolyLine<Coordinate, Segment> {
   }
 
   /**
-   *
-   *
-   * @protected
-   * @param {number} target
-   * @param {(target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean} evaluator
-   * @param {boolean} [iterate=false] If true, smoothing operation is repeated until no additional coordinates are removed.
-   * @return {*}
-   * @memberof Track
-   */
+     * Removes nodes based on the target criteria & evaluator function.
+     *
+     * @protected
+     * @param {number} target
+     * @param {(target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean} evaluator
+     * @param {boolean} [iterate=false] If true, smoothing operation is repeated until no additional coordinates are removed.
+     * @return {*}
+     * @memberof Track
+     */
   protected smooth(
-    target: number,
-    evaluator: (target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean,
+    target: number | EvaluatorArgs,
+    evaluator: (target: number | EvaluatorArgs, coord: CoordinateNode<Coordinate, Segment>) => boolean,
     iterate: boolean = false
   ) {
     let smoothCoordsCurrent;
@@ -198,9 +232,10 @@ export class Track extends PolyLine<Coordinate, Segment> {
     return smoothCoords;
   }
 
+
   protected getCoords(
-    target: number,
-    evaluator: (target: number, coord: CoordinateNode<Coordinate, Segment>) => boolean
+    target: number | EvaluatorArgs,
+    evaluator: (target: number | EvaluatorArgs, coord: CoordinateNode<Coordinate, Segment>) => boolean
   ) {
     const coords: CoordinateNode<Coordinate, Segment>[] = [];
 
@@ -215,6 +250,7 @@ export class Track extends PolyLine<Coordinate, Segment> {
 
     return coords;
   }
+
 
   protected removeCoords(coords: CoordinateNode<Coordinate, Segment>[]) {
     // remove all coords

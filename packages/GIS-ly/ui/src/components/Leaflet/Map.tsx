@@ -118,6 +118,33 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     }
   }
 
+  const handleSmoothStationary = () => {
+    console.log('handleSmoothStationary')
+    if (layer as GeoJSONFeatureCollection) {
+      const track = new Track(coords as Coordinate[]);
+      track.addProperties();
+
+      // 0.11176 meters/sec = 0.25 mph is essentially stationary
+      const minSpeedMS = 0.11176;
+
+      let numberNodesRemoved = track.smoothStationary(minSpeedMS, true);
+      console.log('numberNodesRemoved: ', numberNodesRemoved);
+
+      console.log('Track: ', track);
+
+      const newCoords = track.coords();
+      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
+      console.log('geoJson: ', geoJson);
+
+      setLayer(geoJson);
+      setCoords(newCoords);
+      setLayersProps(updatedLayersProps(geoJson, newCoords));
+      const newBounds = BoundingBox.getBoundingBox(newCoords);
+      console.log('newBounds: ', newBounds);
+      setBounds(newBounds);
+    }
+  }
+
   const handleSmoothBySpeed = () => {
     console.log('handleSmoothBySpeed')
     if (layer as GeoJSONFeatureCollection) {
@@ -159,6 +186,36 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const angularSpeedLimitRadS = 1.0472;
 
       let numberNodesRemoved = track.smoothByAngularSpeed(angularSpeedLimitRadS, true);
+      console.log('numberNodesRemoved: ', numberNodesRemoved);
+
+      console.log('Track: ', track);
+
+      const newCoords = track.coords();
+      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
+      console.log('geoJson: ', geoJson);
+
+      setLayer(geoJson);
+      setCoords(newCoords);
+      setLayersProps(updatedLayersProps(geoJson, newCoords));
+      const newBounds = BoundingBox.getBoundingBox(newCoords);
+      console.log('newBounds: ', newBounds);
+      setBounds(newBounds);
+    }
+  }
+
+  const handleSmoothNoiseCloud = () => {
+    console.log('handleSmoothNoiseCloud')
+    if (layer as GeoJSONFeatureCollection) {
+      const track = new Track(coords as Coordinate[]);
+      track.addProperties();
+
+      // 30.48 meters = 100 ft
+      const minRadiusM = 30.48;
+
+      // 0.11176 meters/sec = 0.25 mph is essentially stationary
+      const minSpeedMS = 0.11176;
+
+      let numberNodesRemoved = track.smoothNoiseCloud(minSpeedMS, minRadiusM, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
       console.log('Track: ', track);
@@ -266,8 +323,10 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="button" onClick={handleSplitCruft} value="Split Cruft" />
       <input type="button" onClick={handleClipCruft} value="Clip Cruft" />
 
-      <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
+      <input type="button" onClick={handleSmoothStationary} value="Smooth Stationary" />
       <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
+      <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
+      <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
 
       <input type="button" onClick={handleGetElevation} value="Get Elevation Data" />
       <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" />
