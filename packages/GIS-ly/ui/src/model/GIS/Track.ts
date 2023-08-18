@@ -126,24 +126,92 @@ export class Track extends PolyLine<Coordinate, Segment> {
   }
 
 
-  public smoothNoiseCloud(minSpeedMS: number, minRadiusM: number, iterate?: boolean) {
-    const nodesSmoothed = this.smooth({ minSpeedMS, minRadiusM }, this.isExceedingSpeedLimit, iterate);
-    return nodesSmoothed.length;
-  }
+  public smoothNoiseClouds(minSpeedMS: number, iterate?: boolean) {
+    const minRadiusMeters = minSpeedMS * Track.GPS_INTERVAL_MIN_SEC;
 
-  protected isInCloud({ minSpeedMS, minRadiusM }: EvaluatorArgs, coord: CoordinateNode<Coordinate, Segment>) {
-    let numNodesInWindow = Math.floor(minRadiusM / (minSpeedMS * Track.GPS_INTERVAL_MIN_SEC));
+    const totalRemovedNodes: CoordinateNode<Coordinate, Segment>[][] = [];
+    let startCoordNode = this._coords.getHead();
+    let nextCoordNode = startCoordNode?.next as CoordinateNode<Coordinate, Segment>;
+    while (startCoordNode && nextCoordNode) {
+      if (this.isInCloud(startCoordNode, nextCoordNode, minRadiusMeters)) {
+        const smoothingResults = this.smoothNextNoiseCloud(startCoordNode, nextCoordNode, minRadiusMeters);
+        totalRemovedNodes.push(smoothingResults.removedNodes);
 
-    let startCoord = coord;
-    while (startCoord && numNodesInWindow) {
-      numNodesInWindow--;
-      startCoord = startCoord.prev as CoordinateNode<Coordinate, Segment>;
+        if (iterate) {
+          startCoordNode = smoothingResults.nextNode as CoordinateNode<Coordinate, Segment>;
+          nextCoordNode = startCoordNode?.next as CoordinateNode<Coordinate, Segment>;
+        } else {
+          break;
+        }
+      } else {
+        startCoordNode = startCoordNode.next as CoordinateNode<Coordinate, Segment>;
+        nextCoordNode = nextCoordNode?.next as CoordinateNode<Coordinate, Segment>;
+      }
     }
 
-    const radius = startCoord.val.distanceTo(coord.val);
-    return radius < minRadiusM;
+    return { nodes: totalRemovedNodes.flat().length, clouds: totalRemovedNodes.length };
   }
 
+  protected smoothNextNoiseCloud(
+    startCoordNode: CoordinateNode<Coordinate, Segment>,
+    nextCoordNode: CoordinateNode<Coordinate, Segment>,
+    minRadiusMeters: number) {
+    const presumedPauseNode = startCoordNode;
+
+    const removedNodes = [presumedPauseNode];
+    let totalLat = presumedPauseNode.val.lat;
+    let totalLng = presumedPauseNode.val.lng;
+    let prevCoordNode: CoordinateNode<Coordinate, Segment>;
+    while (nextCoordNode && this.isInCloud(presumedPauseNode, nextCoordNode, minRadiusMeters)) {
+      totalLat += nextCoordNode.val.lat;
+      totalLng += nextCoordNode.val.lng;
+      removedNodes.push(nextCoordNode);
+      prevCoordNode = nextCoordNode;
+      nextCoordNode = nextCoordNode.next as CoordinateNode<Coordinate, Segment>;
+    }
+
+    const presumedResumeNode = prevCoordNode;
+    const averageCoord = new Coordinate(totalLat / removedNodes.length, totalLng / removedNodes.length);
+
+    // Generate new nodes
+    const smoothedPauseCoord = averageCoord.clone() as Coordinate;
+    (smoothedPauseCoord as Coordinate).timeStamp = presumedPauseNode.val.timeStamp;
+    const smoothedPauseNode = new CoordinateNode<Coordinate, Segment>(smoothedPauseCoord);
+
+    const smoothedResumeCoord = averageCoord.clone() as Coordinate;
+    (smoothedResumeCoord as Coordinate).timeStamp = presumedResumeNode.val.timeStamp;
+    const smoothedResumeNode = new CoordinateNode<Coordinate, Segment>(smoothedResumeCoord);
+
+    // Remove cloud nodes
+    const tempHeadNode = removedNodes[0].prev;
+    const tempTailNode = removedNodes[removedNodes.length - 1].next;
+
+    this.removeCoords(removedNodes);
+
+    // Connect new nodes
+    if (tempHeadNode && tempTailNode) {
+      this._coords.insertAfter(tempHeadNode as CoordinateNode<Coordinate, Segment>, smoothedPauseNode);
+      this._coords.insertAfter(smoothedPauseNode, smoothedResumeNode);
+    } else if (tempHeadNode) {
+      // End of track
+      this._coords.insertAfter(tempHeadNode as CoordinateNode<Coordinate, Segment>, smoothedPauseNode);
+    } else if (tempTailNode) {
+      // Start of track
+      this._coords.insertBefore(tempTailNode as CoordinateNode<Coordinate, Segment>, smoothedResumeNode);
+    } else {
+      throw new Error('No head or tail nodes within which to insert replacement cloud nodes!')
+    }
+
+    return { removedNodes, nextNode: tempTailNode };
+  }
+
+  protected isInCloud(
+    startCoord: CoordinateNode<Coordinate, Segment>,
+    nextCoord: CoordinateNode<Coordinate, Segment>,
+    minRadiusM: number
+  ) {
+    return startCoord.val.distanceTo(nextCoord.val) < minRadiusM;
+  }
 
   public smoothStationary(minSpeedMS: number, iterate?: boolean) {
     const nodesSmoothed = this.smooth(minSpeedMS, this.isStationary, iterate);

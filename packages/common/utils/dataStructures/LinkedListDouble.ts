@@ -40,6 +40,40 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
     this.length++;
   }
 
+  insertBefore(existingNode: N, valueOrNode: V | N) {
+    const node = this.getNodeDouble(valueOrNode);
+    const priorExistingNode = existingNode.prev;
+
+    if (priorExistingNode) {
+      priorExistingNode.next = node;
+      node.prev = priorExistingNode;
+
+      existingNode.prev = node;
+      node.next = existingNode;
+
+      this.length++;
+    } else {
+      this.prepend(valueOrNode);
+    }
+  }
+
+  insertAfter(existingNode: N, valueOrNode: V | N) {
+    const node = this.getNodeDouble(valueOrNode);
+    const nextExistingNode = existingNode.next;
+
+    if (nextExistingNode) {
+      (nextExistingNode as NodeDouble<V>).prev = node;
+      node.next = nextExistingNode;
+
+      existingNode.next = node;
+      node.prev = existingNode;
+
+      this.length++;
+    } else {
+      this.append(valueOrNode);
+    }
+  }
+
   remove(
     valueOrNode: V | N,
     cb: ((a: V, b: V) => boolean) | undefined | null = undefined

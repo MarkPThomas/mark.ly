@@ -73,7 +73,7 @@ export class AlgebraLibrary {
     const tSqrt = Numbers.Squared(B) + (4 / 27) * Numbers.Cubed(A);
 
     if (Numbers.IsNegativeSign(B) || Numbers.IsNegativeSign(tSqrt)) {
-      return Numbers.Min(this.cubicCurveRootsNormalized(a0, a1, a2, true));
+      return Numbers.Min(...this.cubicCurveRootsNormalized(a0, a1, a2, true));
     }
     const t = Numbers.CubeRoot(0.5 * (-B + Numbers.Sqrt(tSqrt)));
 

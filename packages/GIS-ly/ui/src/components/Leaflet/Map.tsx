@@ -84,6 +84,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const geoJson = mergeTackSegments(layer as GeoJSONFeatureCollection);
       console.log('geoJson: ', geoJson)
       setLayer(geoJson);
+
       const newCoords = getCoords(geoJson);
       setCoords(newCoords);
       setLayersProps(updatedLayersProps(geoJson, newCoords));
@@ -96,6 +97,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const geoJsonLayers = splitTrackSegmentByCruft(layer as GeoJSONFeatureCollection);
       console.log('geoJson: ', geoJsonLayers)
       // TODO: Add ability for multiple GeoJson layers, programmatic styling
+
       // setLayer(geoJson);
       // const newCoords = getCoords(geoJson);
       // setCoords(newCoords);
@@ -109,6 +111,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const geoJson = clipTrackSegmentByCruft(layer as GeoJSONFeatureCollection);
       console.log('geoJson: ', geoJson)
       setLayer(geoJson);
+
       const newCoords = getCoords(geoJson);
       setCoords(newCoords);
       setLayersProps(updatedLayersProps(geoJson, newCoords));
@@ -209,13 +212,10 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const track = new Track(coords as Coordinate[]);
       track.addProperties();
 
-      // 30.48 meters = 100 ft
-      const minRadiusM = 30.48;
-
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
       const minSpeedMS = 0.11176;
 
-      let numberNodesRemoved = track.smoothNoiseCloud(minSpeedMS, minRadiusM, true);
+      let numberNodesRemoved = track.smoothNoiseClouds(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
       console.log('Track: ', track);
@@ -223,7 +223,6 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const newCoords = track.coords();
       const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
       console.log('geoJson: ', geoJson);
-
       setLayer(geoJson);
       setCoords(newCoords);
       setLayersProps(updatedLayersProps(geoJson, newCoords));
