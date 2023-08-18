@@ -322,13 +322,33 @@ export class Numbers {
    * @memberof Numbers
    */
   public static DecimalPlaces(value: number, limitForRounding: boolean = true): number {
-    const decimalPortion = value.toString().split('.')[1];
+    const ePortions = Math.abs(value).toString().split('e');
+    const numberPortions = ePortions[0].toString().split('.');
 
-    if (!decimalPortion) {
+    let ePortion = parseInt(ePortions[1]);
+    if (isNaN(ePortion) || !ePortion) {
+      ePortion = 0;
+    }
+
+    let wholeNumber = numberPortions[0];
+    // Remove leading zeros
+    wholeNumber = this.trimStart(wholeNumber, '0');
+
+    let wholeNumberLength = wholeNumber.length;
+    wholeNumberLength = Math.max(0, wholeNumberLength + ePortion);
+
+    let decimalPortionLength = numberPortions[1] ? numberPortions[1].length : 0;
+    decimalPortionLength = Math.max(0, decimalPortionLength - ePortion);
+
+    if (decimalPortionLength === 0) {
       return 0;
     }
 
-    return limitForRounding ? this.Limit(decimalPortion.length, 0, 15) : decimalPortion.length;
+    const fullLength = wholeNumberLength + decimalPortionLength;
+
+    return limitForRounding && fullLength > 15
+      ? decimalPortionLength - (fullLength - 15)
+      : decimalPortionLength;
   }
 
   /**
@@ -346,9 +366,16 @@ export class Numbers {
    * @memberof Numbers
    */
   public static SignificantFigures(value: number, decimalDigitsTolerance: number = Number.MAX_VALUE): number {
-    const numberPortions = value.toString().split('.');
-    let wholeNumber = numberPortions[0];
+    const ePortions = Math.abs(value).toString().split('e');
+    const numberPortions = ePortions[0].toString().split('.');
 
+    // TODO: Handle Scientific Notation
+    let ePortion = parseInt(ePortions[1]);
+    if (isNaN(ePortion) || !ePortion) {
+      ePortion = 0;
+    }
+
+    let wholeNumber = numberPortions[0];
     // Remove leading zeros
     wholeNumber = this.trimStart(wholeNumber, '0');
 
@@ -361,7 +388,7 @@ export class Numbers {
     if (decimalDigitsTolerance !== Number.MAX_VALUE
       && 0 < decimalDigitsTolerance
       && decimalDigitsTolerance < decimalNumber.length) {
-      decimalNumber = decimalNumber.slice(decimalDigitsTolerance);
+      decimalNumber = decimalNumber.slice(0, decimalDigitsTolerance);
     }
 
     if (wholeNumber.length === 0) {
@@ -379,11 +406,11 @@ export class Numbers {
   }
 
   protected static trimStart(value: string, char: string) {
-    return value.replace(/^a+/, char);
+    return value.replace(new RegExp(`^${char}+`), '');
   }
 
   protected static trimEnd(value: string, char: string) {
-    return value.replace(/a+$/, char);
+    return value.replace(new RegExp(`${char}+$`), '');
   }
 
   /// <summary>
@@ -404,7 +431,7 @@ export class Numbers {
   /// <returns>System.Double.</returns>
   /// <exception cref="ArgumentException">Argument cannot be null.</exception>
   /// <exception cref="ArgumentException">Array has not been dimensioned.</exception>
-  public static Min(items: number[]): number {
+  public static Min(...items: number[]): number {
     return Math.min(...items);
   }
 
@@ -586,6 +613,7 @@ export class Numbers {
   }
 
   /**
+   * // TODO: Fix. This is completely broken.
    * Rounds to decimal places.
    *
    * See: https://stackoverflow.com/questions/36369239/how-can-i-round-to-an-arbitrary-number-of-significant-digits-with-javascript
@@ -601,6 +629,7 @@ export class Numbers {
     value: number,
     decimalPlaces: number
   ): number {
+    // RoundToPrecision does not work for this in this way!
     return this.RoundToPrecision(value, decimalPlaces * 0.1);
   }
 

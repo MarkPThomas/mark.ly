@@ -415,8 +415,8 @@ export function updateGeoJsonTrackByCoords(
 
   const coordinatesSegment: Position[] = [];
   const timeStampsSegment: string[] = [];
-  coordinates.forEach((coord) => {
-    coordinatesSegment.push(coord.toPosition());
+  coordinates.forEach((coord, index) => {
+    coordinatesSegment.push(Coordinate.toPosition(coord));
     timeStampsSegment.push(coord.timeStamp);
   });
 
@@ -481,28 +481,7 @@ export function clipTrackSegmentByCruft(
   return segments.length === 1 ? geoJson : splitTrackSegment(geoJson, segmentKeep);
 }
 
-// export function smoothTrackSegmentBetweenCoords(
-//   geoJson: GeoJSONFeatureCollection,
-//   coordStart: Coordinate,
-//   coordEnd: Coordinate
-// ) {
 
-// }
-
-// export function smoothTrackSegmentBySpeed(
-//   geoJson: GeoJSONFeatureCollection,
-//   maxSpeed: number
-// ) {
-
-// }
-
-// export function smoothTrackSegmentByVelocity(
-//   geoJson: GeoJSONFeatureCollection,
-//   degreeChange: number,
-//   timeChange: number
-// ) {
-
-// }
 
 // // from FeatureCollection<Geometry, {[name: string]: any;}>
 // type MyFeatureCollection = {

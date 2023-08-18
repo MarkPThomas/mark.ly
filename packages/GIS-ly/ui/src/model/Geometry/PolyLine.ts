@@ -58,10 +58,12 @@ export class PolyLine<V extends Coordinate, S extends Segment> {
     let coord = this._coords.getHead()?.next as CoordinateNode<V, S>;
     while (coord) {
       const prevCoord = coord.prev as CoordinateNode<V, S>;
-
       this.buildSegment(prevCoord, coord);
 
       coord = coord.next as CoordinateNode<V, S>;
+    }
+    if (this._coords.size() !== this._segments.size() + 1) {
+      throw new Error(`Polyline of ${this._coords.size()} vertices generated ${this._segments.size()} segments`);
     }
   }
 

@@ -12,6 +12,12 @@ export type CoordinateIndex = {
 };
 
 export class Coordinate extends LatLng {
+  constructor(lat: number, lng: number, altitude?: number, timeStamp?: string) {
+    super(lat, lng, altitude);
+    if (timeStamp) {
+      this.timeStamp = timeStamp;
+    }
+  }
   timeStamp?: string;
   /**
    * Altitude [meters] obtained from an external source for the location, such as DEM/LIDAR data.
@@ -67,10 +73,10 @@ export class Coordinate extends LatLng {
     return coordinate;
   }
 
-  toPosition(): Position {
-    const position = [this.lng, this.lat];
-    if (this.alt) {
-      position.push(this.alt);
+  static toPosition(coord: LatLng): Position {
+    const position = [coord.lng, coord.lat];
+    if (coord.alt) {
+      position.push(coord.alt);
     }
 
     return position;
