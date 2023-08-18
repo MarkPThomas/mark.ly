@@ -45,6 +45,26 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const [bounds, setBounds] = useState<LatLngBoundsExpression | LatLngExpression | null>(null);
   const [position, setPosition] = useState(initialPosition);
 
+
+  const updateFromGeoJson = (geoJson: GeoJSONFeatureCollection, newCoords: Coordinate[]) => {
+    setLayer(geoJson);
+    setCoords(newCoords);
+    setLayersProps(updatedLayersProps(geoJson, newCoords));
+    const newBounds = BoundingBox.getBoundingBox(newCoords);
+    console.log('newBounds: ', newBounds);
+    setBounds(newBounds);
+  }
+
+  const updateFromTrack = (track: Track) => {
+    console.log('Track: ', track);
+
+    const newCoords = track.coords();
+    const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
+    console.log('geoJson: ', geoJson);
+
+    updateFromGeoJson(geoJson, newCoords);
+  }
+
   const handleFileSelection = async (event) => {
     const file = event.target.files[0];
     console.log('Read file: ', file);
@@ -82,12 +102,8 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     console.log('handleMergeTrackSegments')
     if (layer as GeoJSONFeatureCollection) {
       const geoJson = mergeTackSegments(layer as GeoJSONFeatureCollection);
-      console.log('geoJson: ', geoJson)
-      setLayer(geoJson);
-
       const newCoords = getCoords(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
+      updateFromGeoJson(geoJson, newCoords as Coordinate[]);
     }
   }
 
@@ -109,15 +125,8 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     console.log('handleClipCruft')
     if (layer as GeoJSONFeatureCollection) {
       const geoJson = clipTrackSegmentByCruft(layer as GeoJSONFeatureCollection);
-      console.log('geoJson: ', geoJson)
-      setLayer(geoJson);
-
       const newCoords = getCoords(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromGeoJson(geoJson, newCoords as Coordinate[]);
     }
   }
 
@@ -133,18 +142,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       let numberNodesRemoved = track.smoothStationary(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      console.log('Track: ', track);
-
-      const newCoords = track.coords();
-      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-      console.log('geoJson: ', geoJson);
-
-      setLayer(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromTrack(track);
     }
   }
 
@@ -154,28 +152,12 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const track = new Track(coords as Coordinate[]);
       track.addProperties();
       const speedLimitKph = Conversion.Speed.mphToKph(4);
-      console.log('speedLimitKph: ', speedLimitKph);
       const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
-      console.log('speedLimitMpS: ', speedLimitMpS);
 
-      // let numberNodesRemoved;
-      // do {
       let numberNodesRemoved = track.smoothBySpeed(speedLimitMpS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
-      // } while (numberNodesRemoved)
 
-      console.log('Track: ', track);
-
-      const newCoords = track.coords();
-      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-      console.log('geoJson: ', geoJson);
-
-      setLayer(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromTrack(track);
     }
   }
 
@@ -191,18 +173,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       let numberNodesRemoved = track.smoothByAngularSpeed(angularSpeedLimitRadS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      console.log('Track: ', track);
-
-      const newCoords = track.coords();
-      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-      console.log('geoJson: ', geoJson);
-
-      setLayer(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromTrack(track);
     }
   }
 
@@ -218,17 +189,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       let numberNodesRemoved = track.smoothNoiseClouds(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      console.log('Track: ', track);
-
-      const newCoords = track.coords();
-      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-      console.log('geoJson: ', geoJson);
-      setLayer(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromTrack(track);
     }
   }
 
@@ -238,18 +199,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       const track = new Track(coords as Coordinate[]);
       track.addElevations();
 
-      console.log('Track: ', track);
-
-      const newCoords = track.coords();
-      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-      console.log('geoJson: ', geoJson);
-
-      setLayer(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromTrack(track);
     }
   }
 
@@ -265,18 +215,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       let numberNodesRemoved = track.smoothByElevationChange(elevationSpeedLimitRadS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      console.log('Track: ', track);
-
-      const newCoords = track.coords();
-      const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-      console.log('geoJson: ', geoJson);
-
-      setLayer(geoJson);
-      setCoords(newCoords);
-      setLayersProps(updatedLayersProps(geoJson, newCoords));
-      const newBounds = BoundingBox.getBoundingBox(newCoords);
-      console.log('newBounds: ', newBounds);
-      setBounds(newBounds);
+      updateFromTrack(track);
     }
   }
 
@@ -295,7 +234,6 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   console.log('layersProps:', layersProps)
 
   return (
-    // props.incidents ?
     <div id="map-container">
       <MapContainer
         center={position.point}
@@ -323,9 +261,10 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="button" onClick={handleClipCruft} value="Clip Cruft" />
 
       <input type="button" onClick={handleSmoothStationary} value="Smooth Stationary" />
+      <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
+
       <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
       <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
-      <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
 
       <input type="button" onClick={handleGetElevation} value="Get Elevation Data" />
       <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" />
@@ -333,7 +272,5 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
       <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
       <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
     </div>
-    // :
-    // <>'Data is loading...'</>
   )
 }
