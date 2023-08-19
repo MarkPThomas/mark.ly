@@ -6,19 +6,20 @@
  */
 export interface ISegment {
   /**
-   * Length in meters
+   * Length in meters projected onto a 2D plane.
    *
    * @type {number}
    * @memberof ISegment
    */
   length: number;
   /**
-   * Angle in radians, measured from due East
+   * Angle in radians, measured the Cartesian/Polar origin, or from due East, projected onto a 2D plane.
    *
    * @type {number}
    * @memberof ISegment
    */
   angle: number;
+  // TODO: Separate segment geometry from GIS, w/ GIS deriving and having the following...
   direction?: {
     lat: string;
     lng: string;
@@ -31,8 +32,8 @@ export interface ISegment {
    * @memberof ISegment
    */
   speed?: number;
-  elevationChange?: number;
-  elevationRate?: number;
+  height?: number;
+  heightRate?: number;
 }
 
 export class Segment implements ISegment {
@@ -44,6 +45,6 @@ export class Segment implements ISegment {
   };
   duration?: number;
   speed?: number;
-  elevationChange?: number;
-  elevationRate?: number;
+  height?: number;
+  heightRate?: number;
 }

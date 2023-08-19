@@ -5,7 +5,7 @@ import { Coordinate } from './Coordinate';
 import { ISegment, Segment } from '../Geometry/Segment';
 import { CoordinateNode, PolyLine } from '../Geometry/PolyLine';
 import { BoundingBox } from './BoundingBox';
-import { LatLngLiteral } from 'leaflet';
+import { Numbers } from '../../../../../common/utils/math/Numbers';
 
 
 type EvaluatorArgs = { [name: string]: number };
@@ -24,7 +24,6 @@ export class Track extends PolyLine<Coordinate, Segment> {
   }
 
   protected addPropertiesToNodes() {
-    // this.addElevationsToNodes();
     this.addPropertiesToSegments();
 
     let coord = this._coords.getHead() as CoordinateNode<Coordinate, Segment>;
@@ -35,66 +34,121 @@ export class Track extends PolyLine<Coordinate, Segment> {
     }
   }
 
-  public addElevations() {
-    this.addElevationsToNodes();
+
+  /**
+   * Adds elevation data to the track for matching lat/long points.
+   *
+   * @param {Map<string, number>} elevations Elevations accessed by a lat/long string key of the `LatLngLiteral`
+   * form { lat: number, lng: number } as a JSON string.
+   * @memberof Track
+   */
+  public addElevations(elevations: Map<string, number>) {
+    this.addNodeElevations(elevations);
+    this.addSegmentElevationDataFromNodes();
+    this.addNodeElevationSpeedsFromSegments();
   }
 
-  protected addElevationsToNodes() {
+  public addElevationProperties() {
+    this.addSegmentElevationDataFromNodes();
+    this.addNodeElevationSpeedsFromSegments();
+  }
+
+  /**
+   * Queries an API to add mapped elevation data to the track.
+   *
+   * @memberof Track
+   */
+  public addElevationsFromApi() {
     const coords = this._coords.toArray();
     const boundingBox = new BoundingBox(coords);
-    const elevationsApi = new ElevationRequestApi();
-
-    // TODO: How does this work with requests 100 at a time?
     console.log(`Getting elevations for ${coords.length} coords`);
+
+    const elevationsApi = new ElevationRequestApi();
     elevationsApi.getElevations(coords, boundingBox)
+      // TODO: How does this work with requests 100 at a time?
       .then((result) => {
         if (result.elevations) {
           console.log(`Received elevations for ${result.elevations.size} coords`);
           console.log('Result: ', result);
 
-          console.log('Adding elevations to points...')
-          let coord = this._coords.getHead() as CoordinateNode<Coordinate, Segment>;
-          while (coord) {
-            const elevation = result.elevations.get((coord.val as LatLngLiteral));
-            if (elevation) {
-              coord.val.altExt = elevation;
-            }
-
-            coord = coord.next as CoordinateNode<Coordinate, Segment>;
-          }
-
-          console.log('Deriving elevation data for segments...')
-          coord = this._coords.getHead()?.next as CoordinateNode<Coordinate, Segment>;
-          while (coord) {
-            const prevCoord = coord.prev as CoordinateNode<Coordinate, Segment>;
-            const prevSegment = prevCoord.nextSeg;
-
-            prevSegment.val.elevationChange = Track.calcSegmentElevationChange(prevCoord.val, coord.val);
-            prevSegment.val.elevationRate = Track.calcSegmentElevationRateMPS(prevSegment.val.elevationChange, prevSegment.val.duration);
-
-            coord = coord.next as CoordinateNode<Coordinate, Segment>;
-          }
-
-          console.log('Deriving elevation data for points...')
-          coord = this._coords.getHead() as CoordinateNode<Coordinate, Segment>;
-          while (coord) {
-            if (coord.val.path) {
-              coord.val.path.elevationRate = Track.calcPathElevationRateMPS(coord.prevSeg.val, coord.nextSeg.val);
-            }
-
-            coord = coord.next as CoordinateNode<Coordinate, Segment>;
-          }
+          this.addElevations(result.elevations);
         } else {
           console.log('No elevations received');
         }
       });
   }
 
+  protected addNodeElevations(elevations: Map<string, number>) {
+    console.log('Adding elevations to points...')
+    let coord = this._coords.getHead() as CoordinateNode<Coordinate, Segment>;
+    while (coord) {
+      const elevation = elevations.get(JSON.stringify({ lat: coord.val.lat, lng: coord.val.lng }));
+      if (elevation) {
+        coord.val.elevation = elevation;
+      }
+
+      coord = coord.next as CoordinateNode<Coordinate, Segment>;
+    }
+  }
+
+  protected addSegmentElevationDataFromNodes() {
+    console.log('Deriving elevation data for segments...')
+    let coord = this._coords.getHead()?.next as CoordinateNode<Coordinate, Segment>;
+    while (coord) {
+      const prevCoord = coord.prev as CoordinateNode<Coordinate, Segment>;
+      const prevSegment = prevCoord.nextSeg;
+
+      const elevationChange = Track.calcSegmentMappedElevationChange(prevCoord.val, coord.val);
+      if (elevationChange !== undefined) {
+        prevSegment.val.height = elevationChange;
+        const elevationSpeed = Track.calcSegmentMappedElevationSpeedMPS(prevSegment.val.height, prevSegment.val.duration);
+        prevSegment.val.heightRate = elevationSpeed;
+      }
+
+      coord = coord.next as CoordinateNode<Coordinate, Segment>;
+    }
+  }
+
+  protected addNodeElevationSpeedsFromSegments() {
+    console.log('Deriving elevation data for points...')
+    let coord = this._coords.getHead() as CoordinateNode<Coordinate, Segment>;
+    while (coord) {
+      if (coord.val.path) {
+        if (this.pointIsMaximaMinima(coord.prevSeg?.val, coord.nextSeg?.val)) {
+          if (coord.prevSeg?.val?.heightRate > 0) {
+            coord.val.path.ascentRate = coord.prevSeg.val.heightRate
+            coord.val.path.descentRate = Math.abs(coord.nextSeg.val.heightRate);
+          } else {
+            coord.val.path.ascentRate = coord.nextSeg.val.heightRate
+            coord.val.path.descentRate = Math.abs(coord.prevSeg.val.heightRate);
+          }
+        } else {
+          const elevationSpeed = Track.calcCoordAvgElevationSpeedMPS(coord.prevSeg?.val, coord.nextSeg?.val);
+          if (elevationSpeed !== undefined && elevationSpeed > 0) {
+            coord.val.path.ascentRate = elevationSpeed;
+          } else if (elevationSpeed !== undefined && elevationSpeed < 0) {
+            coord.val.path.descentRate = Math.abs(elevationSpeed);
+          }
+        }
+      }
+
+      coord = coord.next as CoordinateNode<Coordinate, Segment>;
+    }
+  }
+
+  protected pointIsMaximaMinima(segI: ISegment, segJ: ISegment): boolean {
+    return segI?.heightRate && segJ?.heightRate
+      ? Numbers.Sign(segI.heightRate) !== Numbers.Sign(segJ.heightRate)
+      : false;
+  }
+
   protected addNodePropertiesFromPath(coord: CoordinateNode<Coordinate, Segment>) {
     coord.val.speedAvg = Track.calcCoordAvgSpeedMPS(coord.prevSeg?.val, coord.nextSeg?.val);
     coord.val.path = {
       rotation: Track.calcPathRotationRad(coord.prevSeg?.val, coord.nextSeg?.val),
-      angularSpeed: Track.calcPathAngularSpeedRadPerSec(coord.prevSeg?.val, coord.nextSeg?.val)
+      rotationRate: Track.calcPathAngularSpeedRadPerSec(coord.prevSeg?.val, coord.nextSeg?.val),
+      ascentRate: 0,
+      descentRate: 0
     }
   }
 
@@ -252,25 +306,35 @@ export class Track extends PolyLine<Coordinate, Segment> {
   }
 
   protected isExceedingAngularSpeedLimit(limit: number, coord: CoordinateNode<Coordinate, Segment>) {
-    return coord.val?.path && Math.abs(coord.val.path.angularSpeed) > limit;
+    return coord.val?.path && Math.abs(coord.val.path.rotationRate) > limit;
   }
 
   /**
    * Removes coordinates that have adjacent segments that gain/lose elevation beyond the specified rate.
    *
    * @protected
-   * @param {number} maxElevationChangeMS Elevation change rate limit in meters/second.
+   * @param {number} maxAscentRateMPS Elevation gain rate limit in meters/second.
+   * @param {number} [maxDescentRateMPS] Elevation loss rate limit in meters/second. If not provided, the gain rate limit will be applied.
    * @param {boolean} [iterate] If true, smoothing operation is repeated until no additional coordinates are removed.
    * @return {*}
    * @memberof Track
    */
-  public smoothByElevationChange(maxElevationChangeMS: number, iterate?: boolean) {
-    const nodesSmoothed = this.smooth(maxElevationChangeMS, this.isExceedingSpeedLimit, iterate);
+  public smoothByElevationSpeed(maxAscentRateMPS: number, maxDescentRateMPS?: number, iterate?: boolean) {
+    const nodesSmoothed = this.smooth({ maxAscentRateMPS, maxDescentRateMPS }, this.isExceedingElevationSpeedLimit, iterate);
     return nodesSmoothed.length;
   }
 
-  protected isExceedingElevationChangeLimit(limit: number, coord: CoordinateNode<Coordinate, Segment>) {
-    return coord.val?.path?.elevationRate > limit;
+  protected isExceedingElevationSpeedLimit(
+    { maxAscentRateMPS, maxDescentRateMPS }: EvaluatorArgs,
+    coord: CoordinateNode<Coordinate, Segment>
+  ): boolean {
+    maxDescentRateMPS = maxDescentRateMPS ?? maxAscentRateMPS;
+    if (coord.val?.path) {
+      return coord.val.path.ascentRate > maxAscentRateMPS
+        || coord.val.path.descentRate > maxDescentRateMPS;
+    }
+
+    return false;
   }
 
   /**
@@ -293,7 +357,6 @@ export class Track extends PolyLine<Coordinate, Segment> {
     do {
       smoothCoordsCurrent = this.getCoords(target, evaluator);
       smoothCoords.push(...smoothCoordsCurrent);
-      // console.log('smoothCoordsCurrent: ', smoothCoordsCurrent.length);
       this.removeCoords(smoothCoordsCurrent);
     } while (iterate && smoothCoordsCurrent.length)
 
@@ -379,12 +442,12 @@ export class Track extends PolyLine<Coordinate, Segment> {
     return { lat, lng };
   }
 
-  static calcSegmentElevationChange(ptI: Coordinate, ptJ: Coordinate) {
-    return ptJ.altExt - ptI.altExt;
+  static calcSegmentMappedElevationChange(ptI: Coordinate, ptJ: Coordinate) {
+    return ptJ.elevation && ptI.elevation ? ptJ.elevation - ptI.elevation : undefined;
   }
 
-  static calcSegmentElevationRateMPS(elevationChange: number, duration: number) {
-    return elevationChange / duration;
+  static calcSegmentMappedElevationSpeedMPS(elevationChange: number, duration: number) {
+    return duration ? elevationChange / duration : Infinity;
   }
 
   /**
@@ -476,11 +539,11 @@ export class Track extends PolyLine<Coordinate, Segment> {
       : pathRotationRad / pathDurationSec;
   }
 
-  static calcPathElevationRateMPS(segI: ISegment, segJ: ISegment) {
-    const speedI = segI?.elevationRate;
-    const speedJ = segJ?.elevationRate;
+  static calcCoordAvgElevationSpeedMPS(segI: ISegment, segJ: ISegment) {
+    const speedI = segI?.heightRate;
+    const speedJ = segJ?.heightRate;
 
-    return (speedI && speedJ)
+    return (speedI !== undefined && speedJ !== undefined)
       ? (speedI + speedJ) / 2
       : speedI ? speedI
         : speedJ ? speedJ
