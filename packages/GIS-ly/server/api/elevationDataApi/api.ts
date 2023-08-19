@@ -5,14 +5,14 @@ import { getElevationRequest } from './model/Elevation';
 
 export class ElevationRequestApi {
   private _pointElevationRequest = new ElevationRequest(config.api);
-  private _cache: Map<ICoordinate, number> = new Map();
+  private _cache: Map<string, number> = new Map();
 
   async getElevations(coords: ICoordinate[], boundingBox: IBoundingBox) {
     const coordsCache: ICoordinate[] = [];
     const coordsRequest: ICoordinate[] = [];
 
     coords.forEach((coord) => {
-      if (this._cache.has(coord)) {
+      if (this._cache.has(JSON.stringify(coord))) {
         coordsCache.push(coord);
       } else {
         coordsRequest.push(coord);
@@ -25,8 +25,8 @@ export class ElevationRequestApi {
 
     if (results) {
       results.forEach((result) => {
-        this._cache.set(result.location, result.elevation);
-      })
+        this._cache.set(JSON.stringify(result.location), result.elevation);
+      });
     }
 
     return { elevations: { ...this._cache }, messages };

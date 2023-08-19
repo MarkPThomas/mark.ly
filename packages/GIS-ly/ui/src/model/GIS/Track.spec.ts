@@ -1,3 +1,4 @@
+import { ICoordinate } from '../../../../server/api/elevationDataApi/model';
 import { ISegment, Segment } from '../Geometry/Segment';
 import { Coordinate } from './Coordinate';
 import { Track } from './Track';
@@ -333,6 +334,126 @@ describe('##Track', () => {
     });
   });
 
+  describe('#calcSegmentMappedElevationChange', () => {
+    it('should return undefined if either or both of the nodes provided lack mapped elevations', () => {
+      const coordNoElev = new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:00Z');
+      const coordMappedElev = new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:00:00Z');
+      coordMappedElev.elevation = 1000;
+
+      expect(Track.calcSegmentMappedElevationChange(coordNoElev, coordMappedElev)).toBeUndefined();
+      expect(Track.calcSegmentMappedElevationChange(coordMappedElev, coordNoElev)).toBeUndefined();
+      expect(Track.calcSegmentMappedElevationChange(coordNoElev, coordNoElev)).toBeUndefined();
+    });
+
+    it('should return the difference in elevation between two nodes that have mapped elevations', () => {
+      const coord1 = new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:00Z');
+      coord1.elevation = 1000;
+      const coord2 = new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:00:00Z');
+      coord2.elevation = 2000;
+
+      expect(Track.calcSegmentMappedElevationChange(coord1, coord2)).toEqual(1000); // Uphill slope
+      expect(Track.calcSegmentMappedElevationChange(coord2, coord1)).toEqual(-1000);  // Downhill slope
+    });
+  });
+
+  describe('#calcSegmentMappedElevationSpeedMPS', () => {
+    it('should return infinity if the duration is 0', () => {
+      const elevationChange = 1000;
+      const duration = 0;
+
+      const elevationSpeed = Track.calcSegmentMappedElevationSpeedMPS(elevationChange, duration);
+      expect(elevationSpeed).toEqual(Infinity);
+    });
+
+    it('should return the rate of elevation change', () => {
+      const elevationChange = 1000;
+      const duration = 2000;
+
+      const elevationSpeed = Track.calcSegmentMappedElevationSpeedMPS(elevationChange, duration);
+      expect(elevationSpeed).toEqual(0.5);
+    });
+  });
+
+  describe('#calcCoordAvgElevationSpeedMPS', () => {
+    it('should return undefined if both segments are missing elevation speed properties', () => {
+      const prevSegment = new Segment();
+      const nextSegment = new Segment();
+
+      const elevationSpeed = Track.calcCoordAvgElevationSpeedMPS(prevSegment, nextSegment);
+
+      expect(elevationSpeed).toBeUndefined();
+    });
+
+    it('should return moving segment elevation speed if one segment is missing elevation speed properties', () => {
+      const segment = new Segment();
+      segment.heightRate = 5;
+
+      const segmentMissingProps = new Segment();
+
+      const elevationSpeed1 = Track.calcCoordAvgElevationSpeedMPS(segmentMissingProps, segment);
+      expect(elevationSpeed1).toEqual(5);
+
+      const elevationSpeed2 = Track.calcCoordAvgElevationSpeedMPS(segment, segmentMissingProps);
+      expect(elevationSpeed2).toEqual(5);
+    });
+
+    it('should return 0 if both segments have 0 elevation speed', () => {
+      const prevSegment = new Segment();
+      prevSegment.heightRate = 0;
+
+      const nextSegment = new Segment();
+      nextSegment.heightRate = 0;
+
+      const elevationSpeed = Track.calcCoordAvgElevationSpeedMPS(prevSegment, nextSegment);
+
+      expect(elevationSpeed).toEqual(0);
+    });
+
+    it('should return average segment elevation speed if one segment has 0 elevation speed', () => {
+      const segment = new Segment();
+      segment.heightRate = 5;
+
+      const segmentStationary = new Segment();
+      segmentStationary.heightRate = 0;
+
+      const elevationSpeed1 = Track.calcCoordAvgElevationSpeedMPS(segmentStationary, segment);
+      expect(elevationSpeed1).toEqual(2.5);
+
+      const elevationSpeed2 = Track.calcCoordAvgElevationSpeedMPS(segment, segmentStationary);
+      expect(elevationSpeed2).toEqual(2.5);
+    });
+
+    it('should return the first segment elevation speed for the first coordinate in a track', () => {
+      const nextSegment = new Segment();
+      nextSegment.heightRate = 5;
+
+      const elevationSpeed = Track.calcCoordAvgElevationSpeedMPS(null, nextSegment);
+
+      expect(elevationSpeed).toEqual(5);
+    });
+
+    it('should return the last segment elevation speed for the last coordinate in a track', () => {
+      const prevSegment = new Segment();
+      prevSegment.heightRate = 5;
+
+      const elevationSpeed = Track.calcCoordAvgElevationSpeedMPS(prevSegment, null);
+
+      expect(elevationSpeed).toEqual(5);
+    });
+
+    it('should return the average elevation speed of two segments that meet at the same coordinate', () => {
+      const prevSegment = new Segment();
+      prevSegment.heightRate = 5;
+
+      const nextSegment = new Segment();
+      nextSegment.heightRate = 10;
+
+      const elevationSpeed = Track.calcCoordAvgElevationSpeedMPS(prevSegment, nextSegment);
+
+      expect(elevationSpeed).toEqual(7.5);
+    });
+  });
+
   describe('#calcCoordAvgSpeedMPS', () => {
     it('should return undefined if both segments are missing speed properties', () => {
       const prevSegment = new Segment();
@@ -626,17 +747,136 @@ describe('##Track', () => {
       // Check middle node
       expect(coords[1].speedAvg - 1.301).toBeLessThanOrEqual(0.001);
       expect(coords[1].path.rotation - 0.092).toBeLessThanOrEqual(0.001);
-      expect(coords[1].path.angularSpeed - 0.09121).toBeLessThanOrEqual(0.00001);
+      expect(coords[1].path.rotationRate - 0.09121).toBeLessThanOrEqual(0.00001);
 
       // Check start node
       expect(coords[0].speedAvg - 1.245).toBeLessThanOrEqual(0.001);
       expect(coords[0].path?.rotation).toBeNull();
-      expect(coords[0].path?.angularSpeed).toBeNull();
+      expect(coords[0].path?.rotationRate).toBeNull();
 
       // Check end node
       expect(coords[coords.length - 1].speedAvg - 1.237).toBeLessThanOrEqual(0.001);
       expect(coords[coords.length - 1].path?.rotation).toBeNull();
-      expect(coords[coords.length - 1].path?.angularSpeed).toBeNull();
+      expect(coords[coords.length - 1].path?.rotationRate).toBeNull();
+    });
+  });
+
+  describe('#addElevations', () => {
+    it('should do nothing for elevations of non-matching lat/long', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:07:20Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:07:30Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:07:40Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:15:00Z')
+      ];
+
+      const track = new Track(coords);
+      track.addProperties();
+
+      const elevations: Map<string, number> = new Map();
+      elevations.set(JSON.stringify({ lat: 1, lng: 2 }), 1000);
+      elevations.set(JSON.stringify({ lat: 3, lng: 4 }), 2000);
+      elevations.set(JSON.stringify({ lat: 5, lng: 6 }), 1500);
+      elevations.set(JSON.stringify({ lat: 7, lng: 8 }), 4000);
+      elevations.set(JSON.stringify({ lat: 9, lng: 10 }), 5000);
+
+      track.addElevations(elevations);
+
+      const trackCoords = track.coords();
+
+      expect(trackCoords.length).toEqual(5);
+
+      expect(trackCoords[0]).not.toHaveProperty('elevation');
+      expect(trackCoords[1]).not.toHaveProperty('elevation');
+      expect(trackCoords[2]).not.toHaveProperty('elevation');
+      expect(trackCoords[3]).not.toHaveProperty('elevation');
+      expect(trackCoords[4]).not.toHaveProperty('elevation');
+    });
+
+    it('should add elevation properties and derived data for matching lat/long', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:20Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:00:40Z'), // Intentional mismatch
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:00:50Z'),
+        new Coordinate(39.739914418342, -104.99174913377, 0, '2023-07-04T20:01:10Z')
+      ];
+
+      const track = new Track(coords);
+      track.addProperties();
+
+      const elevations: Map<string, number> = new Map();
+      elevations.set(JSON.stringify({ lat: 39.74007868370209, lng: -105.0076261841355 }), 1000);
+      elevations.set(JSON.stringify({ lat: 39.74005097339472, lng: -104.9998123858178 }), 2000);
+      elevations.set(JSON.stringify({ lat: 39.73055300708892, lng: -104.9990802128465 }), 1500);
+      elevations.set(JSON.stringify({ lat: 7, lng: 8 }), 4000);                                         // Intentional mismatch
+      elevations.set(JSON.stringify({ lat: 39.73991441833991, lng: -104.9917491337653 }), 5000);
+      elevations.set(JSON.stringify({ lat: 39.739914418342, lng: -104.99174913377 }), 4000);
+
+      track.addElevations(elevations);
+
+      const trackCoords = track.coords();
+      const trackSegs = track.segments();
+
+      expect(trackCoords.length).toEqual(6);
+      expect(trackSegs.length).toEqual(5);
+
+      expect(trackCoords[0]).toHaveProperty('elevation');
+      expect(trackCoords[0].elevation).toEqual(1000);
+      expect(trackCoords[0]).toHaveProperty('path');
+      expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
+      expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
+
+      expect(trackSegs[0]).toHaveProperty('height');
+      expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
+      expect(trackSegs[0]).toHaveProperty('heightRate');
+      expect(trackSegs[0].heightRate - 50).toBeLessThanOrEqual(0.1);
+
+      expect(trackCoords[1]).toHaveProperty('elevation');
+      expect(trackCoords[1].elevation).toEqual(2000);
+      expect(trackCoords[1]).toHaveProperty('path');
+      expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
+      expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+
+      expect(trackSegs[1]).toHaveProperty('height');
+      expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
+      expect(trackSegs[1]).toHaveProperty('heightRate');
+      expect(trackSegs[1].heightRate + 50).toBeLessThanOrEqual(0.1);
+
+      expect(trackCoords[2]).toHaveProperty('elevation');
+      expect(trackCoords[2].elevation).toEqual(1500);
+      expect(trackCoords[2]).toHaveProperty('path');
+      expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
+      expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+
+      expect(trackSegs[2]).not.toHaveProperty('height');
+      expect(trackSegs[2]).not.toHaveProperty('heightRate');
+
+      expect(trackCoords[3]).not.toHaveProperty('elevation');
+      expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
+      expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
+
+      expect(trackSegs[3]).not.toHaveProperty('height');
+      expect(trackSegs[3]).not.toHaveProperty('heightRate');
+
+      expect(trackCoords[4]).toHaveProperty('elevation');
+      expect(trackCoords[4].elevation).toEqual(5000);
+      expect(trackCoords[4]).toHaveProperty('path');
+      expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
+      expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+
+      expect(trackSegs[4]).toHaveProperty('height');
+      expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
+      expect(trackSegs[4]).toHaveProperty('heightRate');
+      expect(trackSegs[4].heightRate + 50).toBeLessThanOrEqual(0.1);
+
+      expect(trackCoords[5]).toHaveProperty('elevation');
+      expect(trackCoords[5].elevation).toEqual(4000);
+      expect(trackCoords[5]).toHaveProperty('path');
+      expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
+      expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
     });
   });
 
@@ -885,7 +1125,6 @@ describe('##Track', () => {
     });
   });
 
-
   describe('#smoothNoiseCloud', () => {
     it('should do nothing to a path with no noise clouds', () => {
       // Points are stationary by timestamps, but fall outside of the radius to be 'stationary' in a location based on min timestamp intervals
@@ -1083,5 +1322,250 @@ describe('##Track', () => {
       expect(resultCoords[4].lng).toEqual(resultCoords[3].lng);
       expect(resultCoords[4].timeStamp).toEqual('2023-07-04T20:02:20Z');
     });
-  })
+  });
+
+  describe('#smoothByElevationSpeed', () => {
+    it('should do nothing for coordinates with no DEM elevation', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:07:20Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:07:30Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:07:40Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:15:00Z')
+      ];
+
+      const track = new Track(coords);
+      track.addProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS);
+
+      expect(smoothResults).toEqual(0);
+      expect(track.coords().length).toEqual(5);
+    });
+
+    it('should do nothing for coordinates with elevation changes below the specified limit', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1000; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[1].elevation = 1005; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[2].elevation = 1010;  // 0 m/s // TODO: separate concerns of loss/gain? This is actually 5m up, 5m down over 30 sec ~ 5m/15sec = 0.3 m/s
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[3].elevation = 1005; // -0.16667 m/s
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[4].elevation = 1000; // -0.16667 m/s
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS);
+
+      expect(smoothResults).toEqual(0);
+      expect(track.coords().length).toEqual(5);
+    });
+
+    it('should remove points that have an elevation gain speed above the specified limit', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1000; // 0.3333 m/s // Remove
+      // Seg: 10m/30sec = 0.3333m/s
+      coords[1].elevation = 1010; // 0.25 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[2].elevation = 1015; // 0.0 m/s     // TODO: Fix
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[3].elevation = 1010; // 0.16667 m/s
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[4].elevation = 1005; // 0.16667 m/s
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS);
+
+      expect(smoothResults).toEqual(1);
+      expect(track.coords().length).toEqual(4);
+    });
+
+    it(`should remove points that have an elevation loss speed above the general specified
+      limit if no loss limit is specified`, () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1005; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[1].elevation = 1010; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[2].elevation = 1015; // 0.0 m/s    // TODO: Fix
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[3].elevation = 1010; // -0.25 m/s
+      // Seg: -10m/30sec = -0.3333/s
+      coords[4].elevation = 1000; // -0.3333 m/s  // Remove
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS);
+
+      expect(smoothResults).toEqual(1);
+      expect(track.coords().length).toEqual(4);
+    });
+
+    it('should remove points that have an elevation loss speed above the specified limit for loss', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1015; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[1].elevation = 1020; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[2].elevation = 1025; // 0.0 m/s    // TODO: Fix
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[3].elevation = 1020; // -0.4167 m/s
+      // Seg: -20m/30sec = -0.6667/s
+      coords[4].elevation = 1000; // -0.6667 m/s  // Remove
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+      const maxDescentRateMPS = 0.508;  // x2 = 6000 ft/hr loss
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS, maxDescentRateMPS);
+
+      expect(smoothResults).toEqual(1);
+      expect(track.coords().length).toEqual(4);
+    });
+
+    it('should remove maxima/minima where one adjacent segment has an elevation gain speed above the specified limit', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1015; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[1].elevation = 1020; // 0.25 m/s
+      // Seg: 10m/30sec = 0.3333m/s             // Triggers removal of following node
+      coords[2].elevation = 1030;
+      // Seg: -10m/30sec = -0.33333m/s
+      coords[3].elevation = 1020; // -0.25 m/s
+      // Seg: -5m/30sec = -0.16667m/s
+      coords[4].elevation = 1015; // -0.16667 m/s
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+      const maxDescentRateMPS = 0.508;  // x2 = 6000 ft/hr loss
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS, maxDescentRateMPS);
+
+      expect(smoothResults).toEqual(1);
+      expect(track.coords().length).toEqual(4);
+    });
+
+    it('should remove maxima/minima where one adjacent segment has an elevation loss speed above the specified limit', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1020; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[1].elevation = 1025; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[2].elevation = 1030;
+      // Seg: -20m/30sec = -0.66667m/s          // Triggers removal of prior node
+      coords[3].elevation = 1010; // -0.4167 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[4].elevation = 1000; // 0.16667 m/s
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+      const maxDescentRateMPS = 0.508;  // x2 = 6000 ft/hr loss
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS, maxDescentRateMPS);
+
+      expect(smoothResults).toEqual(1);
+      expect(track.coords().length).toEqual(4);
+    });
+
+    it('should remove maxima/minima where each adjacent segment has an elevation speed above the corresponding specified limit', () => {
+      const coords = [
+        new Coordinate(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+        new Coordinate(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
+        new Coordinate(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:01:00Z'),
+        new Coordinate(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:01:30Z'),
+        new Coordinate(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:02:00Z')
+      ];
+      coords[0].elevation = 1015; // 0.16667 m/s
+      // Seg: 5m/30sec = 0.16667m/s
+      coords[1].elevation = 1020; // 0.25 m/s
+      // Seg: 10m/30sec = 0.3333m/s             // Triggers removal of following node
+      coords[2].elevation = 1030;
+      // Seg: -20m/30sec = -0.66667m/s          // Triggers removal of prior node
+      coords[3].elevation = 1010; // -0.4167 m/s
+      // Seg: -5m/30sec = 0.16667m/s
+      coords[4].elevation = 1000; // 0.16667 m/s
+
+      const track = new Track(coords);
+      track.addProperties();
+      track.addElevationProperties();
+
+      // 0.254 meters/sec = 3000 feet/hour
+      const maxAscentRateMPS = 0.254;
+      const maxDescentRateMPS = 0.508;  // x2 = 6000 ft/hr loss
+
+      const smoothResults = track.smoothByElevationSpeed(maxAscentRateMPS, maxDescentRateMPS);
+
+      expect(smoothResults).toEqual(1);
+      expect(track.coords().length).toEqual(4);
+    });
+  });
 });

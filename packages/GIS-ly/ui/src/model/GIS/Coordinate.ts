@@ -20,12 +20,12 @@ export class Coordinate extends LatLng {
   }
   timeStamp?: string;
   /**
-   * Altitude [meters] obtained from an external source for the location, such as DEM/LIDAR data.
+   * Elevation [meters] obtained from an external source for the location, such as DEM/LIDAR data.
    *
    * @type {number}
    * @memberof Coordinate
    */
-  altExt?: number;
+  elevation?: number;
   /**
    * Average speed [m/s] at the node based on the speed of the segments before and after.
    * If one segment is missing or has no speed, this is the speed of the other segment.
@@ -46,8 +46,9 @@ export class Coordinate extends LatLng {
    */
   path?: {
     rotation: number;
-    angularSpeed: number;
-    elevationRate?: number;
+    rotationRate: number;
+    ascentRate: number;
+    descentRate: number;
   }
 
   /**

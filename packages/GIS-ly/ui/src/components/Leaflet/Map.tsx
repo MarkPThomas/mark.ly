@@ -195,28 +195,28 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleGetElevation = () => {
     console.log('handleGetElevation')
-    if (layer as GeoJSONFeatureCollection) {
-      const track = new Track(coords as Coordinate[]);
-      track.addElevations();
+    // if (layer as GeoJSONFeatureCollection) {
+    // const track = new Track(coords as Coordinate[]);
+    // track.addElevations();
 
-      updateFromTrack(track);
-    }
+    // updateFromTrack(track);
+    // }s
   }
 
   const handleSmoothByElevation = () => {
     console.log('handleSmoothByElevation')
-    if (layer as GeoJSONFeatureCollection) {
-      const track = new Track(coords as Coordinate[]);
-      track.addProperties();
+    // if (layer as GeoJSONFeatureCollection) {
+    //   const track = new Track(coords as Coordinate[]);
+    //   track.addProperties();
 
-      //0.254; // 3000 ft / hr
-      const elevationSpeedLimitRadS = 0.254;
+    // //0.254 meters/second = 3000 ft / hr
+    // const elevationSpeedLimitMPS = 0.254;
 
-      let numberNodesRemoved = track.smoothByElevationChange(elevationSpeedLimitRadS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+    // let numberNodesRemoved = track.smoothByElevationSpeed(elevationSpeedLimitMPS, true);
+    // console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(track);
-    }
+    // updateFromTrack(track);maxDescentRateMPS
+    // }
   }
 
   const updatedLayersProps = (layer: GeoJSONFeatureCollection, coords): LayersControlProps =>
