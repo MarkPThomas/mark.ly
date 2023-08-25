@@ -5,7 +5,7 @@ import { LatLngBoundsExpression, LatLngExpression, LatLngLiteral } from "leaflet
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { Coordinates } from "../Coordinate";
-import { LatLngLiterals } from "./GeoJSON";
+import { LatLngLiterals } from "./GeoJSON_Refactor";
 import { IPoint, Point, PointProperties } from "./Geometries/Point";
 import { Position } from "./types";
 

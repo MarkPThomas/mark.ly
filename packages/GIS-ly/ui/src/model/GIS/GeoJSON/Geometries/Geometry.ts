@@ -4,7 +4,7 @@ import {
 } from "geojson";
 
 import { BoundingBox } from "../BoundingBox";
-import { IGeoJSON, GeoJSON, GeoJsonProperties } from "../IGeoJSON";
+import { IGeoJson, GeoJson, GeoJsonProperties } from "../GeoJson";
 import { GeoJsonTypes } from "../enums";
 import { GeometryCollection } from "./GeometryCollection";
 import { CoordinateContainer } from "./CoordinateContainer";
@@ -20,7 +20,7 @@ export type GeometryType = Geometry<GeoJsonProperties, SerialGeometry>;
  * @template TJson
  */
 export interface IGeometry<TProperties extends GeoJsonProperties, TSerial extends SerialGeometry>
-  extends IGeoJSON<TProperties, TSerial> {
+  extends IGeoJson<TProperties, TSerial> {
 
 }
 
@@ -34,7 +34,7 @@ export interface IGeometry<TProperties extends GeoJsonProperties, TSerial extend
  * @template TJson
  */
 export abstract class Geometry<TProperties extends GeoJsonProperties, TSerial extends SerialGeometry>
-  extends GeoJSON
+  extends GeoJson
   implements IGeometry<TProperties, TSerial>
 {
   abstract equals(item: TProperties): boolean;

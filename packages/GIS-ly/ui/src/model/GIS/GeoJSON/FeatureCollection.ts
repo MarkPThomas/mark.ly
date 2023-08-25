@@ -6,7 +6,7 @@ import {
 import { BoundingBox } from "./BoundingBox";
 import { GeoCollection, GeoCollectionMethods } from "./GeoCollection";
 import { Feature } from "./Feature";
-import { GeoJSON, GeoJsonProperties } from "./IGeoJSON";
+import { GeoJson, GeoJsonProperties } from "./GeoJson";
 import { GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
 import { Geometry } from './Geometries';
 
@@ -78,7 +78,7 @@ An example of a Feature Collections given below:
  * @implements {IGeoJSON}
  */
 export class FeatureCollection
-  extends GeoJSON
+  extends GeoJson
   implements IFeatureCollection {
 
   protected _collection: FeatureCollectionDelegate;

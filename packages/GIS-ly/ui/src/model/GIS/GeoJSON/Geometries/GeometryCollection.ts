@@ -6,7 +6,7 @@ import {
 import { BoundingBox } from "../BoundingBox";
 import { Geometry, GeometryType } from "./Geometry";
 import { GeoJsonGeometryTypes, GeoJsonTypes } from "../enums";
-import { GeoJsonProperties } from '../IGeoJSON';
+import { GeoJsonProperties } from '../GeoJson';
 import { GeoCollection, GeoCollectionMethods } from "../GeoCollection";
 import { InvalidGeometryException } from '../exceptions';
 

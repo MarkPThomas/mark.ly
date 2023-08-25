@@ -3,7 +3,7 @@ import { Geometry as SerialGeometry } from 'geojson';
 import { BoundingBox } from "../BoundingBox";
 import { Geometry, IGeometry } from "./Geometry";
 import { Point, PointProperties } from "./Point";
-import { GeoJsonProperties } from '../IGeoJSON';
+import { GeoJsonProperties } from '../GeoJson';
 import { GeoJsonTypes } from '../enums';
 import { LineString } from './LineString';
 import { MultiPoint } from './MultiPoint';

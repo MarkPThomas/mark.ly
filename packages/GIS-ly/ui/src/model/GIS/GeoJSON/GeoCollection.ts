@@ -1,14 +1,14 @@
 import { GeoJsonObject as SerialGeoJsonObject } from "geojson";
 
 import { BoundingBox } from "./BoundingBox";
-import { IGeoJSON, GeoJSON, GeoJsonBaseProperties, IGeoJsonBase, GeoJsonProperties } from "./IGeoJSON";
+import { IGeoJson, GeoJson, GeoJsonBaseProperties, IGeoJsonBase, GeoJsonProperties } from "./GeoJson";
 
-export interface GeoCollectionProperties<TItem extends GeoJSON> extends GeoJsonBaseProperties {
+export interface GeoCollectionProperties<TItem extends GeoJson> extends GeoJsonBaseProperties {
   length: number;
   items: TItem[];
 }
 
-export interface GeoCollectionMethods<TItem extends GeoJSON> {
+export interface GeoCollectionMethods<TItem extends GeoJson> {
   getByIndex(index: number): TItem;
   indexOf(item: TItem): number;
   add(item: TItem, updateBBox: boolean): number;
@@ -17,7 +17,7 @@ export interface GeoCollectionMethods<TItem extends GeoJSON> {
   removeByIndex(index: number, updateBBox: boolean): TItem | null;
 }
 
-export interface IGeoCollection<TItem extends GeoJSON, TSerial extends SerialGeoJsonObject>
+export interface IGeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
   extends
   GeoCollectionProperties<TItem>,
   GeoCollectionMethods<TItem>,
@@ -33,7 +33,7 @@ export interface IGeoCollection<TItem extends GeoJSON, TSerial extends SerialGeo
   toJson(includeBoundingBox: boolean): TSerial[];
 }
 
-export abstract class GeoCollection<TItem extends GeoJSON, TSerial extends SerialGeoJsonObject>
+export abstract class GeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
   implements IGeoCollection<TItem, TSerial>
 {
   protected _length: number = 0;

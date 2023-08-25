@@ -8,7 +8,7 @@ import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { BoundingBox } from "./BoundingBox";
 import { Geometry, IGeometry } from "./Geometries/Geometry";
-import { GeoJSON, GeoJsonProperties } from "./IGeoJSON";
+import { GeoJson, GeoJsonProperties } from "./GeoJson";
 import { GeoJsonTypes } from "./enums";
 
 export type FeatureOptions = {
@@ -111,7 +111,7 @@ An example of a serialized feature is given below:
  * @implements {IGeoJSON}
  */
 export class Feature
-  extends GeoJSON
+  extends GeoJson
   implements IFeature {
 
   readonly type = GeoJsonTypes.Feature;
