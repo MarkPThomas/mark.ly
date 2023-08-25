@@ -156,7 +156,7 @@ export class CurveLimit implements ICloneable<CurveLimit> {
   /// Clones the limit.
   /// </summary>
   /// <returns>LinearCurve.</returns>
-  public Clone(): CurveLimit {
+  public clone(): CurveLimit {
     const curveLimit = new CurveLimit(this._curve);
     curveLimit._limit = this._limit;
     return curveLimit;

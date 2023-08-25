@@ -38,7 +38,7 @@ export abstract class PathSegment<T extends Curve> implements IPathSegment, IPat
 
   protected _curve: T;
   get Curve(): T {
-    return this._curve.Clone() as T;
+    return this._curve.clone() as T;
   }
 
   protected _extents: PointExtents;
