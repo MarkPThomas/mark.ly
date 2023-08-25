@@ -1,3 +1,3 @@
-export * from './GeoJSON';
+export * from './GeoJSON/GeoJSON';
 export * from './Track';
-export * from './BoundingBox';
+export * from './GeoJSON/BoundingBox';

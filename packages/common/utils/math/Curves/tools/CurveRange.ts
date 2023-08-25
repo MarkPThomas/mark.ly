@@ -150,10 +150,10 @@ export class CurveRange implements ICloneable<CurveRange> {
     }
   }
 
-  public Clone(): CurveRange {
+  public clone(): CurveRange {
     const curveRange: CurveRange = new CurveRange();
-    curveRange._limitStart = this._limitStart.Clone();
-    curveRange._limitEnd = this._limitEnd.Clone();
+    curveRange._limitStart = this._limitStart.clone();
+    curveRange._limitEnd = this._limitEnd.clone();
     return curveRange;
   }
 }

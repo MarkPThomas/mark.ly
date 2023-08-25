@@ -335,7 +335,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>LinearCurve.</returns>
   public Chord(): LinearCurve {
-    return this.Clone();
+    return this.clone();
   }
 
   /// <summary>
@@ -818,10 +818,10 @@ export class LinearCurve extends Curve implements
     return referenceLine.IntersectionCoordinate(offsetCurve);
   }
 
-  public Clone(): LinearCurve {
+  public clone(): LinearCurve {
     const curve = new LinearCurve(this.ControlPointI, this.ControlPointJ);
     curve.Tolerance = this.Tolerance;
-    curve._range = this.Range.Clone();
+    curve._range = this.Range.clone();
     return curve;
   }
 }

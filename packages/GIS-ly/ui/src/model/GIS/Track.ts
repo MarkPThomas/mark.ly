@@ -2,9 +2,9 @@
 import { ElevationRequestApi } from '../../../../server/api/elevationDataApi';
 
 import { Coordinate } from './Coordinate';
-import { ISegment, Segment } from '../Geometry/Segment';
+import { ISegment, Segment } from './Segment';
 import { CoordinateNode, PolyLine } from '../Geometry/PolyLine';
-import { BoundingBox } from './BoundingBox';
+import { BoundingBox } from './GeoJSON/BoundingBox';
 import { Numbers } from '../../../../../common/utils/math/Numbers';
 
 
@@ -60,7 +60,7 @@ export class Track extends PolyLine<Coordinate, Segment> {
    */
   public addElevationsFromApi() {
     const coords = this._coords.toArray();
-    const boundingBox = new BoundingBox(coords);
+    const boundingBox = BoundingBox.fromPoints(coords);
     console.log(`Getting elevations for ${coords.length} coords`);
 
     const elevationsApi = new ElevationRequestApi();

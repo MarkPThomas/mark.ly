@@ -138,5 +138,5 @@ export abstract class Curve implements ICurve, ICloneable<Curve> {
    */
   protected abstract createParametricEquation(): CartesianParametricEquationXY;
 
-  public abstract Clone(): Curve;
+  public abstract clone(): Curve;
 }

@@ -1,3 +1,3 @@
 export interface ICloneable<T> {
-  Clone(): T
+  clone(): T
 }

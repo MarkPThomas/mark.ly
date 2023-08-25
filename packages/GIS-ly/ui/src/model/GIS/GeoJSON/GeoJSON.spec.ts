@@ -26,7 +26,7 @@ import {
   splitTrackSegment
 } from './GeoJSON';
 import { LatLng } from 'leaflet';
-import { Coordinate } from './Coordinate';
+import { Coordinate } from '../Coordinate';
 
 const testData = {
   GeoJson: {

@@ -48,7 +48,7 @@ export class CartesianParametricEquationXY
       /// </summary>
       /// <returns>HyperbolicParametric.</returns>
       public Differentiate(): CartesianParametricEquationXY {
-            const differential = this.Clone();
+            const differential = this.clone();
             differential._x = this._x.Differentiate(this._differentiationIndex) as DoubleParametricComponents;
             differential._y = this._y.Differentiate(this._differentiationIndex) as DoubleParametricComponents;
             differential._differentiationIndex++;
@@ -61,7 +61,7 @@ export class CartesianParametricEquationXY
       /// <param name="index">The index to differentiate to, which must be greater than 0.</param>
       /// <returns>HyperbolicParametric.</returns>
       public DifferentiateBy(index: number): CartesianParametricEquationXY {
-            const differential = this.Clone();
+            const differential = this.clone();
             differential._x = this._x.DifferentiateBy(index) as DoubleParametricComponents;
             differential._y = this._y.DifferentiateBy(index) as DoubleParametricComponents;
             differential._differentiationIndex = index;
@@ -100,7 +100,7 @@ export class CartesianParametricEquationXY
       /// <param name="b">The b.</param>
       /// <returns>The result of the operator.</returns>
       public multiplyBy(multiplier: number): CartesianParametricEquationXY {
-            const parametric = this.Clone();
+            const parametric = this.clone();
             parametric._x.multiplyBy(multiplier);
             parametric._y.multiplyBy(multiplier);
             return parametric;
@@ -115,13 +115,13 @@ export class CartesianParametricEquationXY
       public divideBy(denominator: number): CartesianParametricEquationXY {
             if (denominator === 0) { throw new DivideByZeroException(); }
 
-            const parametric = this.Clone();
+            const parametric = this.clone();
             parametric._x.divideBy(denominator);
             parametric._y.divideBy(denominator);
             return parametric;
       }
 
-      public Clone(): CartesianParametricEquationXY {
+      public clone(): CartesianParametricEquationXY {
             const parametric = new CartesianParametricEquationXY();
             parametric._x = this._x;
             parametric._y = this._y;

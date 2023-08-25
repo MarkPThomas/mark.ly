@@ -12,14 +12,17 @@ import {
 import {
   LatLng,
   LatLngLiteral,
-  GeoJSON
+  GeoJSON as GeoJSONLeaflet
 } from 'leaflet';
 
-import { Coordinates, Coordinate } from './Coordinate';
+import { Coordinate } from '../Coordinate';
+
+
 
 export type GeoJSONFeatureCollection = FeatureCollection<Geometry, { [name: string]: any; }>;
 
 export type LatLngLiterals = LatLngLiteral | LatLngLiteral[] | LatLngLiteral[][] | LatLngLiteral[][][];
+
 
 export function getCoords(geoJson: GeoJSONFeatureCollection) {
   if (geoJson.features[0].geometry) {
@@ -133,7 +136,7 @@ export function mergeTackSegments(geoJson: GeoJSONFeatureCollection) {
 
 export function coordinatesIndexAt(coord: LatLng, coordinates: LatLng[] | Position[]) {
   if (!('lat' in coordinates[0])) {
-    coordinates = GeoJSON.coordsToLatLngs(coordinates as Position[]) as LatLng[];
+    coordinates = GeoJSONLeaflet.coordsToLatLngs(coordinates as Position[]) as LatLng[];
   }
   for (let i = 0; i < coordinates.length; i++) {
     if ((coordinates[i] as LatLng).equals(coord)) {
