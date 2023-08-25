@@ -1,9 +1,3 @@
-/**
- *
- *
- * @export
- * @interface ISegment
- */
 export interface ISegment {
   /**
    * Length in meters projected onto a 2D plane.
