@@ -13,22 +13,22 @@ export class Geometry implements IGeometry {
   isIn(boundingBox: IBoundingBox, region: Position[]): boolean {
     const shape = Geometry.shapeConversion(region);
 
-    const swCoord = new CartesianCoordinate(boundingBox.lngLeft, boundingBox.latBottom);
+    const swCoord = new CartesianCoordinate(boundingBox.west, boundingBox.south);
     if (!PointIntersection.IsWithinShape(swCoord, shape)) {
       return false;
     }
 
-    const seCoord = new CartesianCoordinate(boundingBox.lngRight, boundingBox.latBottom);
+    const seCoord = new CartesianCoordinate(boundingBox.east, boundingBox.south);
     if (!PointIntersection.IsWithinShape(seCoord, shape)) {
       return false;
     }
 
-    const neCoord = new CartesianCoordinate(boundingBox.lngRight, boundingBox.latTop);
+    const neCoord = new CartesianCoordinate(boundingBox.east, boundingBox.north);
     if (!PointIntersection.IsWithinShape(neCoord, shape)) {
       return false;
     }
 
-    const nwCoord = new CartesianCoordinate(boundingBox.lngLeft, boundingBox.latTop);
+    const nwCoord = new CartesianCoordinate(boundingBox.west, boundingBox.north);
     return PointIntersection.IsWithinShape(nwCoord, shape);
   }
 
