@@ -1,49 +1,61 @@
-import { BBox as SerialBBox, MultiPoint as SerialMultiPoint } from 'geojson';
+import { BBox as SerialBBox, MultiLineString as SerialMultiLineString } from 'geojson';
 
 import { Position } from '../types';
 import { GeoJsonGeometryTypes } from '../enums';
 
 import { Point } from './Point';
-import { MultiPoint } from './MultiPoint';
+import { MultiLineString } from './MultiLineString';
 
-describe('##MultiPoint', () => {
+describe('##MultiLineString', () => {
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object with no altitude', () => {
-        const position: Position[] = [[1, 2], [3, 4]];
-        const json: SerialMultiPoint = {
-          type: 'MultiPoint',
+        const position: Position[][] = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]],
+        ];
+        const points: Point[][] = [
+          [
+            Point.fromPosition(position[0][0]),
+            Point.fromPosition(position[0][1])
+          ],
+          [
+            Point.fromPosition(position[1][0]),
+            Point.fromPosition(position[1][1])
+          ],
+        ];
+
+        const json: SerialMultiLineString = {
+          type: 'MultiLineString',
           coordinates: position
         };
 
-        const points: Point[] = [
-          Point.fromPosition(position[0]),
-          Point.fromPosition(position[1])
-        ];
+        const multiLineString = MultiLineString.fromJson(json);
 
-        const multiPoint = MultiPoint.fromJson(json);
-
-        expect(multiPoint.type).toEqual(GeoJsonGeometryTypes.MultiPoint);
-        expect(multiPoint.toPositions()).toEqual(position);
-        expect(multiPoint.points).toEqual(points);
+        expect(multiLineString.type).toEqual(GeoJsonGeometryTypes.MultiLineString);
+        expect(multiLineString.toPositions()).toEqual(position);
+        expect(multiLineString.points).toEqual(points);
 
         // Optional properties & Defaults
-        expect(multiPoint.hasBBox()).toBeFalsy();
+        expect(multiLineString.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        const position: Position[] = [[1, 2], [3, 4]];
+        const position: Position[][] = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]],
+        ];
         const bbox: SerialBBox = [1, 2, 3, 4];
 
-        const json: SerialMultiPoint = {
-          type: 'MultiPoint',
+        const json: SerialMultiLineString = {
+          type: 'MultiLineString',
           bbox: bbox,
           coordinates: position
         };
 
-        const multiPoint = MultiPoint.fromJson(json);
+        const multiLineString = MultiLineString.fromJson(json);
 
-        expect(multiPoint.hasBBox()).toBeTruthy();
+        expect(multiLineString.hasBBox()).toBeTruthy();
       });
     });
 

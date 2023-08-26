@@ -8,10 +8,13 @@ import { GeometryCollection } from "./GeometryCollection";
 import { CoordinateContainerBuilder } from "./CoordinateContainerBuilder";
 
 export class GeometryBuilder {
+  /* istanbul ignore next */
+  private constructor() { };
+
   static fromJson(json: SerialGeometry): IGeometry<GeoJsonProperties, SerialGeometry> {
     switch (json.type) {
       case GeoJsonTypes.GeometryCollection:
-        return GeometryCollection.fromJson(json);
+        return GeometryCollection.fromJson(json.geometries, json.bbox);
       default:
         return CoordinateContainerBuilder.fromJson(json);
     }

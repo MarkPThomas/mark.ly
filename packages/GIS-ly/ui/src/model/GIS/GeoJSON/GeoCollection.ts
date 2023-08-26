@@ -49,7 +49,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     return this._bbox;
   }
   hasBBox(): boolean {
-    return this._bbox !== undefined;
+    return !!(this._bbox);
   }
 
   protected updateBBox(updateCache: boolean = false) {
@@ -146,7 +146,9 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
   abstract clone(): IGeoJsonBase<GeoCollectionProperties<TItem>, TSerial>;
 
   constructor(bbox?: BoundingBox) {
-    this._bbox = bbox;
+    if (bbox) {
+      this._bbox = bbox;
+    }
   }
 
   toJson(includeBoundingBox: boolean): TSerial[] {

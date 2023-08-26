@@ -1,18 +1,21 @@
-import { BBox as SerialBBox, MultiPoint as SerialMultiPoint } from 'geojson';
+import {
+  BBox as SerialBBox,
+  LineString as SerialLineString
+} from 'geojson';
 
 import { Position } from '../types';
 import { GeoJsonGeometryTypes } from '../enums';
 
 import { Point } from './Point';
-import { MultiPoint } from './MultiPoint';
+import { LineString } from './LineString';
 
-describe('##MultiPoint', () => {
+describe('##LineString', () => {
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object with no altitude', () => {
         const position: Position[] = [[1, 2], [3, 4]];
-        const json: SerialMultiPoint = {
-          type: 'MultiPoint',
+        const json: SerialLineString = {
+          type: 'LineString',
           coordinates: position
         };
 
@@ -21,29 +24,29 @@ describe('##MultiPoint', () => {
           Point.fromPosition(position[1])
         ];
 
-        const multiPoint = MultiPoint.fromJson(json);
+        const lineString = LineString.fromJson(json);
 
-        expect(multiPoint.type).toEqual(GeoJsonGeometryTypes.MultiPoint);
-        expect(multiPoint.toPositions()).toEqual(position);
-        expect(multiPoint.points).toEqual(points);
+        expect(lineString.type).toEqual(GeoJsonGeometryTypes.LineString);
+        expect(lineString.toPositions()).toEqual(position);
+        expect(lineString.points).toEqual(points);
 
         // Optional properties & Defaults
-        expect(multiPoint.hasBBox()).toBeFalsy();
+        expect(lineString.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
         const position: Position[] = [[1, 2], [3, 4]];
         const bbox: SerialBBox = [1, 2, 3, 4];
 
-        const json: SerialMultiPoint = {
-          type: 'MultiPoint',
+        const json: SerialLineString = {
+          type: 'LineString',
           bbox: bbox,
           coordinates: position
         };
 
-        const multiPoint = MultiPoint.fromJson(json);
+        const lineString = LineString.fromJson(json);
 
-        expect(multiPoint.hasBBox()).toBeTruthy();
+        expect(lineString.hasBBox()).toBeTruthy();
       });
     });
 

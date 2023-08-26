@@ -1,7 +1,15 @@
-import { Coordinate } from '../Coordinate';
 import {
-  BoundingBox
-} from './BoundingBox';
+  BBox as SerialBBox,
+  LineString as SerialLineString,
+  GeoJsonProperties as SerialGeoJsonProperties,
+  Feature as SerialFeature,
+} from 'geojson';
+
+import { GeoJsonTypes } from './enums';
+import { Position } from './types';
+
+import { Coordinate } from '../Coordinate';
+import { BoundingBox } from './BoundingBox';
 
 describe('##BoundingBox', () => {
   describe('#getBoundingBox', () => {
@@ -94,6 +102,196 @@ describe('##BoundingBox', () => {
       const boundingBox = BoundingBox.getBoundingBox(coordinates);
 
       expect(boundingBox).toEqual([[20, -20], [35.2, 120]]);
+    });
+  });
+
+  describe('Static Factory Methods', () => {
+    describe('#fromJson', () => {
+      it('should make an object from the associated GeoJSON object with no altitude', () => {
+        const bbox: SerialBBox = [1, 2, 3, 4];
+        const boundingBox = BoundingBox.fromJson(bbox);
+
+        expect(boundingBox.west).toEqual(1);
+        expect(boundingBox.south).toEqual(2);
+        expect(boundingBox.east).toEqual(3);
+        expect(boundingBox.north).toEqual(4);
+
+        // Optional properties & Defaults
+        expect(boundingBox.hasAltitude()).toBeFalsy();
+        expect(boundingBox.southwestAltitude).toBeUndefined();
+        expect(boundingBox.northeastAltitude).toBeUndefined();
+      });
+
+      it('should make an object from the associated GeoJSON object with an altitude specified', () => {
+        const bbox: SerialBBox = [1, 2, 3, 4, 5, 6];
+        const boundingBox = BoundingBox.fromJson(bbox);
+
+        expect(boundingBox.west).toEqual(1);
+        expect(boundingBox.south).toEqual(2);
+        expect(boundingBox.east).toEqual(4);
+        expect(boundingBox.north).toEqual(5);
+
+        // Optional properties & Defaults
+        expect(boundingBox.hasAltitude()).toBeTruthy();
+        expect(boundingBox.southwestAltitude).toEqual(3);
+        expect(boundingBox.northeastAltitude).toEqual(6);
+      });
+    });
+
+    describe('#fromLngLats', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#fromPosition', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#fromCornerPositions', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#fromPositions', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#fromPoint', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#fromCornerPoints', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#fromPoints', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+  });
+
+
+  describe('Main Interface Tests', () => {
+    describe('#clone', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#equals', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+  });
+
+
+  describe('Instance Tests', () => {
+    describe('#toJson', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#toCornerPositions', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#toCornerPoints', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#hasAltitude', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#northeast', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#southwest', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
     });
   });
 })

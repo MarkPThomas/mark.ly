@@ -81,7 +81,7 @@ export class FeatureCollection
   extends GeoJson
   implements IFeatureCollection {
 
-  protected _collection: FeatureCollectionDelegate;
+  protected _collection: FeatureCollectionDelegate = new FeatureCollectionDelegate();
 
   readonly type = GeoJsonTypes.FeatureCollection;
 
@@ -158,12 +158,11 @@ export class FeatureCollection
   static fromJson(json: SerialFeatureCollection): FeatureCollection {
     const featureCollection = new FeatureCollection();
 
+    const features = json.features.map((feature) => Feature.fromJson(feature));
+    featureCollection._collection.addItems(features);
     if (json.bbox) {
       featureCollection._collection = new FeatureCollectionDelegate(BoundingBox.fromJson(json.bbox));
     }
-
-    const features = json.features.map((feature) => Feature.fromJson(feature));
-    featureCollection._collection.addItems(features);
 
     return featureCollection;
   }

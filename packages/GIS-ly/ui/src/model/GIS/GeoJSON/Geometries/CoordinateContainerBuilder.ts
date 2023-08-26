@@ -13,8 +13,11 @@ import { Polygon } from './Polygon';
 import { MultiPolygon } from './MultiPolygon';
 
 export class CoordinateContainerBuilder {
+  /* istanbul ignore next */
+  private constructor() { };
+
   static fromJson(json: SerialGeometry): IGeometry<GeoJsonProperties, SerialGeometry> {
-    switch (json.type) {
+    switch (json?.type) {
       case GeoJsonTypes.Point:
         return Point.fromJson(json);
       case GeoJsonTypes.MultiPoint:
@@ -28,7 +31,10 @@ export class CoordinateContainerBuilder {
       case GeoJsonTypes.MultiPolygon:
         return MultiPolygon.fromJson(json);
       default:
-        throw new InvalidGeometryException(`${InvalidGeometryException.DEFAULT_MESSAGE} \n ${json}`);
+        throw new InvalidGeometryException(
+          `${InvalidGeometryException.DEFAULT_MESSAGE}
+          \n Type: ${json?.type}
+          \n ${JSON.stringify(json)}`);
     }
   }
 }

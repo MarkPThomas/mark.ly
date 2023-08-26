@@ -1,49 +1,66 @@
-import { BBox as SerialBBox, MultiPoint as SerialMultiPoint } from 'geojson';
+import { BBox as SerialBBox, MultiPolygon as SerialMultiPolygon } from 'geojson';
 
 import { Position } from '../types';
 import { GeoJsonGeometryTypes } from '../enums';
 
 import { Point } from './Point';
-import { MultiPoint } from './MultiPoint';
+import { MultiPolygon } from './MultiPolygon';
 
-describe('##MultiPoint', () => {
+describe('##MultiPolygon', () => {
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object with no altitude', () => {
-        const position: Position[] = [[1, 2], [3, 4]];
-        const json: SerialMultiPoint = {
-          type: 'MultiPoint',
+        const position: Position[][][] = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
+        ];
+        const points: Point[][][] = [
+          [[
+            Point.fromPosition(position[0][0][0]),
+            Point.fromPosition(position[0][0][1]),
+            Point.fromPosition(position[0][0][2]),
+            Point.fromPosition(position[0][0][3]),
+            Point.fromPosition(position[0][0][4]),
+          ]], [[
+            Point.fromPosition(position[1][0][0]),
+            Point.fromPosition(position[1][0][1]),
+            Point.fromPosition(position[1][0][2]),
+            Point.fromPosition(position[1][0][3]),
+            Point.fromPosition(position[1][0][4]),
+          ]],
+        ];
+
+        const json: SerialMultiPolygon = {
+          type: 'MultiPolygon',
           coordinates: position
         };
 
-        const points: Point[] = [
-          Point.fromPosition(position[0]),
-          Point.fromPosition(position[1])
-        ];
+        const multiPolygon = MultiPolygon.fromJson(json);
 
-        const multiPoint = MultiPoint.fromJson(json);
-
-        expect(multiPoint.type).toEqual(GeoJsonGeometryTypes.MultiPoint);
-        expect(multiPoint.toPositions()).toEqual(position);
-        expect(multiPoint.points).toEqual(points);
+        expect(multiPolygon.type).toEqual(GeoJsonGeometryTypes.MultiPolygon);
+        expect(multiPolygon.toPositions()).toEqual(position);
+        expect(multiPolygon.points).toEqual(points);
 
         // Optional properties & Defaults
-        expect(multiPoint.hasBBox()).toBeFalsy();
+        expect(multiPolygon.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        const position: Position[] = [[1, 2], [3, 4]];
+        const position: Position[][][] = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
+        ];
         const bbox: SerialBBox = [1, 2, 3, 4];
 
-        const json: SerialMultiPoint = {
-          type: 'MultiPoint',
+        const json: SerialMultiPolygon = {
+          type: 'MultiPolygon',
           bbox: bbox,
           coordinates: position
         };
 
-        const multiPoint = MultiPoint.fromJson(json);
+        const multiPolygon = MultiPolygon.fromJson(json);
 
-        expect(multiPoint.hasBBox()).toBeTruthy();
+        expect(multiPolygon.hasBBox()).toBeTruthy();
       });
     });
 

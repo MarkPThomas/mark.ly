@@ -17,6 +17,8 @@ export type FeatureOptions = {
   id?: string
 }
 
+export type FeaturePropertyProperties = { [name: string]: any; }
+
 /**
  * Properties of features in GeoJSON files have not specified shape.
  *
@@ -27,31 +29,32 @@ export type FeatureOptions = {
  * @extends {IEquatable<IFeatureProperty>}
  * @extends {ICloneable<IFeatureProperty>}
  */
-export interface IFeatureProperty extends IEquatable<IFeatureProperty>, ICloneable<IFeatureProperty> {
+export interface IFeatureProperty
+  extends
+  FeaturePropertyProperties,
+  IEquatable<FeaturePropertyProperties>, ICloneable<FeatureProperty> {
 }
 
-class FeatureProperty implements IFeatureProperty {
-  protected constructor() {
+export class FeatureProperty implements IFeatureProperty {
+  protected constructor() { }
 
-  }
-
-  equals(item: IFeatureProperty): boolean {
+  equals(item: FeaturePropertyProperties): boolean {
     const keys = Object.keys(this);
     const itemKeys = Object.keys(item);
     if (keys.length !== itemKeys.length) {
       return false;
     }
 
-    keys.forEach((key) => {
-      if (item[key] !== this[key]) {
+    for (let i = 0; i < keys.length; i++) {
+      if (item[keys[i]] !== this[keys[i]]) {
         return false;
       }
-    });
+    }
 
     return true;
   }
 
-  clone(): IFeatureProperty {
+  clone(): FeatureProperty {
     const featureProperty = new FeatureProperty();
 
     const keys = Object.keys(this);
@@ -193,7 +196,7 @@ export class Feature
   static fromJson(json: SerialFeature): Feature {
     const feature = new Feature();
     if (json.id) {
-      feature._id;
+      feature._id = json.id.toString();
     }
 
     if (json.bbox && !json.geometry.bbox) {
