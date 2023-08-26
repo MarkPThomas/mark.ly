@@ -1,13 +1,14 @@
 import { Polygon as SerialPolygon } from 'geojson';
 
-import { BoundingBox } from "../BoundingBox";
-import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
-import { Position } from "../types";
-import { LineString } from "./LineString";
-import { MultiLineString } from "./MultiLineString";
-import { Point } from "./Point";
 import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
+import { Position } from "../types";
+
+import { BoundingBox } from "../BoundingBox";
+
+import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
+import { Point } from "./Point";
+import { LineString } from "./LineString";
 
 export type PolygonOptions = {
   /**
@@ -77,17 +78,16 @@ export class Polygon
 
   readonly type = GeoJsonTypes.Polygon;
 
-  get positions(): Position[][] {
-    return this._points.map(
-      (lineString) => lineString.map(
-        (point) => point.positions
-      ));
-  }
-
   get points(): Point[][] {
     return this._points.map(
+      (lineString) => [...lineString]
+    );
+  }
+
+  toPositions(): Position[][] {
+    return this._points.map(
       (lineString) => lineString.map(
-        (point) => point.clone()
+        (point) => point.toPositions()
       ));
   }
 
