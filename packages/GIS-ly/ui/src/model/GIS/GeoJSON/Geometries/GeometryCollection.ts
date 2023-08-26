@@ -3,12 +3,15 @@ import {
   GeometryCollection as SerialGeometryCollection
 } from 'geojson';
 
-import { BoundingBox } from "../BoundingBox";
-import { Geometry, GeometryType } from "./Geometry";
 import { GeoJsonGeometryTypes, GeoJsonTypes } from "../enums";
-import { GeoJsonProperties } from '../GeoJson';
-import { GeoCollection, GeoCollectionMethods } from "../GeoCollection";
 import { InvalidGeometryException } from '../exceptions';
+
+import { GeoJsonProperties } from '../GeoJson';
+import { BoundingBox } from "../BoundingBox";
+import { GeoCollection, GeoCollectionMethods } from "../GeoCollection";
+
+import { Geometry, GeometryType } from "./Geometry";
+import { CoordinateContainerBuilder } from './CoordinateContainerBuilder';
 
 
 class GeometryCollectionDelegate extends GeoCollection<GeometryType, SerialGeometry> {
@@ -93,8 +96,11 @@ export class GeometryCollection
 
   readonly type = GeoJsonTypes.GeometryCollection;
 
-  get bbox(): BoundingBox {
-    return this._collection.bbox;
+  bbox(): BoundingBox {
+    return this._collection.bbox();
+  }
+  hasBBox(): boolean {
+    return this._collection.hasBBox();
   }
 
   get geometries(): GeometryType[] {
@@ -179,7 +185,7 @@ export class GeometryCollection
     }
 
     const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
-    const geometryTypes = geometries.map((geometry) => Geometry.fromJson(geometry)) as GeometryType[];
+    const geometryTypes = geometries.map((geometry) => CoordinateContainerBuilder.fromJson(geometry)) as GeometryType[];
 
     const multiPolygon = GeometryCollection.fromGeometries(geometryTypes, bbox);
 

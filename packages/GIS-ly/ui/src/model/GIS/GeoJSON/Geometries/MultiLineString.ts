@@ -2,13 +2,15 @@ import { MultiLineString as SerialMultiLineString } from 'geojson';
 
 import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
 
-import { BoundingBox } from "../BoundingBox";
-import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
-import { Position } from "../types";
-import { LineString } from "./LineString";
-import { Point } from "./Point";
 import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
+import { Position } from "../types";
+
+import { BoundingBox } from "../BoundingBox";
+
+import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
+import { Point } from "./Point";
+import { LineString } from "./LineString";
 
 export interface MultiLineStringProperties extends ICoordinateContainer<Position[][], Point[][], SerialMultiLineString> {
 }
@@ -73,17 +75,16 @@ export class MultiLineString
 
   readonly type = GeoJsonTypes.MultiLineString;
 
-  get positions(): Position[][] {
-    return this._points.map(
-      (lineString) => lineString.map(
-        (point) => point.positions
-      ));
-  }
-
   get points(): Point[][] {
     return this._points.map(
+      (lineString) => [...lineString]
+    );
+  }
+
+  toPositions(): Position[][] {
+    return this._points.map(
       (lineString) => lineString.map(
-        (point) => point.clone()
+        (point) => point.toPositions()
       ));
   }
 
@@ -115,7 +116,7 @@ export class MultiLineString
     const jsonBase = super.toJsonBase(includeBoundingBox);
     const json = {
       ...jsonBase,
-      coordinates: this.positions
+      coordinates: this.toPositions()
     } as SerialMultiLineString;
 
     return json;

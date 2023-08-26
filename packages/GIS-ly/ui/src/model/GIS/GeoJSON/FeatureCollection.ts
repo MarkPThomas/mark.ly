@@ -85,8 +85,11 @@ export class FeatureCollection
 
   readonly type = GeoJsonTypes.FeatureCollection;
 
-  get bbox(): BoundingBox {
-    return this._collection.bbox;
+  bbox(): BoundingBox {
+    return this._collection.bbox();
+  }
+  hasBBox(): boolean {
+    return this._collection.hasBBox();
   }
 
   get features(): Feature[] {
@@ -145,7 +148,7 @@ export class FeatureCollection
   }
 
   clone(): FeatureCollection {
-    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this.bbox);
+    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this.bbox());
   }
 
   protected constructor() {

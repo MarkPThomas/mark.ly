@@ -1,4 +1,5 @@
 export { GeometryType as Geometry } from './Geometry';
+export * from './GeometryBuilder';
 export * from './GeometryCollection';
 export * from './LineString';
 export * from './MultiLineString';

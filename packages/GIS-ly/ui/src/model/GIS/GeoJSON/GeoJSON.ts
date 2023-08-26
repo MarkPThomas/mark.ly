@@ -11,10 +11,11 @@ export interface GeoJsonBaseProperties {
   /**
    * A GeoJson object MAY have a member named "bbox" to include information on the coordinate range for its `Geometries`, `Features`, or `FeatureCollections`.
    *
-   * @type {(BoundingBox | undefined)}
+   * @type {BoundingBox}
    * @memberof GeoJsonBaseProperties
    */
-  bbox?: BoundingBox | undefined
+  bbox(): BoundingBox;
+  hasBBox(): boolean;
 }
 
 export interface IGeoJsonBase<TProperties extends GeoJsonBaseProperties, TSerial extends SerialGeoJsonObject>
@@ -57,8 +58,10 @@ export interface IGeoJson<TProperties extends GeoJsonProperties, TSerial extends
 }
 
 export abstract class GeoJson implements IGeoJson<GeoJsonProperties, SerialGeoJsonObject> {
-  abstract get bbox(): BoundingBox;
   abstract readonly type: SerialGeoJsonTypes;
+
+  abstract bbox(): BoundingBox;
+  abstract hasBBox(): boolean;
 
   abstract equals(item: GeoJsonProperties): boolean;
   abstract clone(): IGeoJson<GeoJsonProperties, SerialGeoJsonObject>;
@@ -72,7 +75,7 @@ export abstract class GeoJson implements IGeoJson<GeoJsonProperties, SerialGeoJs
     if (includeBoundingBox) {
       json = {
         ...json,
-        bbox: this.bbox.toJson()
+        bbox: this.bbox().toJson()
       }
     }
 

@@ -42,11 +42,14 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
   }
 
   protected _bbox: BoundingBox;
-  get bbox(): BoundingBox {
+  bbox(): BoundingBox {
     if (!this._bbox) {
       this._bbox = this.createBBox();
     }
     return this._bbox;
+  }
+  hasBBox(): boolean {
+    return this._bbox !== undefined;
   }
 
   protected updateBBox(updateCache: boolean = false) {
@@ -60,7 +63,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
   protected createBBox(): BoundingBox {
     const bboxes = [];
     this._items.forEach((item) => {
-      bboxes.push(item.bbox.toCornerPoints());
+      bboxes.push(item.bbox().toCornerPoints());
     });
 
     return BoundingBox.fromPoints(bboxes.flat(Infinity));

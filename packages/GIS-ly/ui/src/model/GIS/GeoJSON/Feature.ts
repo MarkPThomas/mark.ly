@@ -7,9 +7,10 @@ import {
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { BoundingBox } from "./BoundingBox";
-import { Geometry, IGeometry } from "./Geometries/Geometry";
+import { IGeometry } from "./Geometries/Geometry";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
 import { GeoJsonTypes } from "./enums";
+import { GeometryBuilder } from './Geometries';
 
 export type FeatureOptions = {
   properties?: IFeatureProperty,
@@ -116,8 +117,11 @@ export class Feature
 
   readonly type = GeoJsonTypes.Feature;
 
-  get bbox(): BoundingBox {
-    return this._geometry.bbox;
+  bbox(): BoundingBox {
+    return this._geometry.bbox();
+  }
+  hasBBox(): boolean {
+    return this._geometry.hasBBox();
   }
 
   toJson(includeBoundingBox: boolean = false): SerialFeature {
@@ -196,7 +200,7 @@ export class Feature
       // Both bboxes should be the same. Assume geometry is more up to date, but if it is not present, use feature bbox.
       json.geometry.bbox = json.bbox;
     }
-    feature._geometry = Geometry.fromJson(json.geometry);
+    feature._geometry = GeometryBuilder.fromJson(json.geometry);
 
     feature._properties = FeatureProperty.fromJson(json.properties);
 
