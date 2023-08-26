@@ -2,7 +2,7 @@ import { MultiLineString as SerialMultiLineString } from 'geojson';
 
 import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
 
-import { GeoJsonTypes } from "../enums";
+import { BBoxState, GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
 import { Position } from "../types";
 
@@ -112,8 +112,8 @@ export class MultiLineString
     return LineString.fromPoints(this._points[lineStringIndex]);
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialMultiLineString {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialMultiLineString {
+    const jsonBase = super.toJsonBase(includeBBox);
     const json = {
       ...jsonBase,
       coordinates: this.toPositions()

@@ -4,7 +4,6 @@ import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException, LngLatOutOfRangeException } from '../exceptions';
 import { GeoJsonConstants } from '../GeoJsonConstants';
 import { Position } from "../types";
-
 import { BoundingBox } from "../BoundingBox";
 
 import {
@@ -93,7 +92,7 @@ export class Point
   }
 
   get points(): Point {
-    return this; //Point.fromLngLat(this.longitude, this.latitude, this.altitude);
+    return this;
   }
 
   get latitude(): number {

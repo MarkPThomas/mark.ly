@@ -5,6 +5,7 @@ import {
 
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
+import { BBoxState } from "./enums";
 import { BoundingBox } from "./BoundingBox";
 
 export interface GeoJsonBaseProperties {
@@ -18,11 +19,25 @@ export interface GeoJsonBaseProperties {
   hasBBox(): boolean;
 }
 
-export interface IGeoJsonBase<TProperties extends GeoJsonBaseProperties, TSerial extends SerialGeoJsonObject>
+export interface IJson<TSerial extends SerialGeoJsonObject | SerialGeoJsonObject[]> {
+  /**
+   * This takes the currently defined/desired values found inside the GeoJson instance and converts it to a GeoJson string.
+   *
+   * @param {BBoxState} includeBBox Specifies the default behavior of including this optional property.
+   *
+   * Recommended default is {@link BBoxState.IncludeIfPresent} as a tradeoff between maintaining I/O document consistency
+   * and avoiding expensive operations of calculating new Bounding Boxes.
+   * @return {*}  {TSerial[]}
+   * @memberof IJson
+   */
+  toJson(includeBBox: BBoxState): TSerial;
+}
+
+export interface IGeoJsonBase<TProperties extends GeoJsonBaseProperties>
   extends
   GeoJsonBaseProperties,
   IEquatable<TProperties>,
-  ICloneable<IGeoJsonBase<TProperties, TSerial>> {
+  ICloneable<IGeoJsonBase<TProperties>> {
 
 }
 
@@ -46,15 +61,9 @@ export interface GeoJsonProperties extends GeoJsonBaseProperties {
  */
 export interface IGeoJson<TProperties extends GeoJsonProperties, TSerial extends SerialGeoJsonObject>
   extends
-  IGeoJsonBase<TProperties, TSerial>,
-  GeoJsonProperties {
-  /**
-   * This takes the currently defined values found inside the GeoJson instance and converts it to a GeoJson string.
-   *
-   * @return {*}  {string}
-   * @memberof IGeoJSON
-   */
-  toJson(includeBoundingBox: boolean): TSerial
+  IGeoJsonBase<TProperties>,
+  GeoJsonProperties,
+  IJson<TSerial> {
 }
 
 export abstract class GeoJson implements IGeoJson<GeoJsonProperties, SerialGeoJsonObject> {
@@ -66,13 +75,14 @@ export abstract class GeoJson implements IGeoJson<GeoJsonProperties, SerialGeoJs
   abstract equals(item: GeoJsonProperties): boolean;
   abstract clone(): IGeoJson<GeoJsonProperties, SerialGeoJsonObject>;
 
-  abstract toJson(includeBoundingBox: boolean): SerialGeoJsonObject;
-  protected toJsonBase(includeBoundingBox: boolean = false): SerialGeoJsonObject {
+  abstract toJson(includeBBox: BBoxState): SerialGeoJsonObject;
+  protected toJsonBase(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialGeoJsonObject {
     let json: SerialGeoJsonObject = {
       type: this.type
     };
 
-    if (includeBoundingBox) {
+    if (includeBBox === BBoxState.Include
+      || (includeBBox === BBoxState.IncludeIfPresent && this.hasBBox())) {
       json = {
         ...json,
         bbox: this.bbox().toJson()

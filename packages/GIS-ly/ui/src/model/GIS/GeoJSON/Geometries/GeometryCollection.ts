@@ -4,7 +4,7 @@ import {
   GeometryCollection as SerialGeometryCollection
 } from 'geojson';
 
-import { GeoJsonGeometryTypes, GeoJsonTypes } from "../enums";
+import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
 
 import { GeoJsonProperties } from '../GeoJson';
@@ -112,11 +112,11 @@ export class GeometryCollection
     return this._collection.getGeometriesByType(type);
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialGeometryCollection {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialGeometryCollection {
+    const jsonBase = super.toJsonBase(includeBBox);
     const json = {
       ...jsonBase,
-      geometries: this.geometries.map((geometry) => geometry.toJson(includeBoundingBox))
+      geometries: this.geometries.map((geometry) => geometry.toJson(includeBBox))
     } as SerialGeometryCollection
 
     return json;

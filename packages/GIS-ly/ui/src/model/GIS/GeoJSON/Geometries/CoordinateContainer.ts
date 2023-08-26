@@ -5,6 +5,7 @@ import { BoundingBox } from "../BoundingBox";
 
 import { Geometry, IGeometry } from "./Geometry";
 import { PointProperties } from "./Point";
+import { BBoxState } from '../enums';
 
 export interface CoordinateContainerProperties<TPosition, TPoint> extends GeoJsonProperties {
   // TODO: Consider removing generic types
@@ -86,8 +87,8 @@ export abstract class CoordinateContainer<TPosition, TPoint, TSerial extends Ser
   protected _points: TPoint;
   abstract get points(): TPoint;
 
-  toJson(includeBoundingBox: boolean = false): TSerial {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): TSerial {
+    const jsonBase = super.toJsonBase(includeBBox);
     const json = {
       ...jsonBase,
       coordinates: this.toPositions()

@@ -4,7 +4,7 @@ import {
 } from 'geojson';
 
 import { Position } from '../types';
-import { GeoJsonGeometryTypes } from '../enums';
+import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
 import { Point } from './Point';
 import { LineString } from './LineString';
@@ -12,7 +12,7 @@ import { LineString } from './LineString';
 describe('##LineString', () => {
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
-      it('should make an object from the associated GeoJSON object with no altitude', () => {
+      it('should make an object from the associated GeoJSON object', () => {
         const position: Position[] = [[1, 2], [3, 4]];
         const json: SerialLineString = {
           type: 'LineString',
@@ -97,15 +97,71 @@ describe('##LineString', () => {
 
   describe('Instance Tests', () => {
     describe('#toJson', () => {
-      it('should', () => {
+      it('should make a GeoJSON object', () => {
+        const position: Position[] = [[1, 2], [3, 4]];
+        const lineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: position
+        };
+        const lineString = LineString.fromJson(lineStringJson);
 
+        const result = lineString.toJson();
+
+        expect(result).toEqual(lineStringJson);
       });
 
-      it('should', () => {
+      it('should make a GeoJSON object with a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const position: Position[] = [[1, 2], [3, 4]];
+        const lineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: position,
+          bbox: bboxJson
+        };
+        const lineString = LineString.fromJson(lineStringJson);
 
+        const result = lineString.toJson();
+
+        expect(result).toEqual(lineStringJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box created', () => {
+        const position: Position[] = [[1, 2], [3, 4]];
+        const lineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: position
+        };
+        const lineString = LineString.fromJson(lineStringJson);
+
+        const result = lineString.toJson(BBoxState.Include);
+
+        expect(result).not.toEqual(lineStringJson);
+
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        lineStringJson.bbox = bboxJson;
+
+        expect(result).toEqual(lineStringJson);
+      });
+
+      it('should make a GeoJSON object without a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const position: Position[] = [[1, 2], [3, 4]];
+        const lineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: position,
+          bbox: bboxJson
+        };
+        const lineString = LineString.fromJson(lineStringJson);
+
+        const result = lineString.toJson(BBoxState.Exclude);
+
+        expect(result).not.toEqual(lineStringJson);
+
+        delete lineStringJson.bbox;
+
+        expect(result).toEqual(lineStringJson);
       });
     });
-
 
     describe('#points', () => {
       it('should', () => {

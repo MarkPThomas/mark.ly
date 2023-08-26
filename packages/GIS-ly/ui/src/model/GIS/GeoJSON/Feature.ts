@@ -9,7 +9,7 @@ import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 import { BoundingBox } from "./BoundingBox";
 import { IGeometry } from "./Geometries/Geometry";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
-import { GeoJsonTypes } from "./enums";
+import { BBoxState, GeoJsonTypes } from "./enums";
 import { GeometryBuilder } from './Geometries';
 
 export type FeatureOptions = {
@@ -127,14 +127,18 @@ export class Feature
     return this._geometry.hasBBox();
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialFeature {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeature {
+    const jsonBase = super.toJsonBase(includeBBox);
 
     let json = {
       ...jsonBase,
-      geometry: this.geometry.toJson(includeBoundingBox),
+      geometry: this.geometry.toJson(includeBBox),
       properties: this.properties as SerialGeoJsonProperties
     } as SerialFeature
+
+    if (this._id) {
+      json.id = this._id;
+    }
 
     return json;
   }

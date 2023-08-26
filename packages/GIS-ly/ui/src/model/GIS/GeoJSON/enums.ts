@@ -19,3 +19,9 @@ export enum GeoJsonGeometryTypes {
   MultiPolygon = 'MultiPolygon',
   GeometryCollection = 'GeometryCollection'
 }
+
+export enum BBoxState {
+  Include,
+  IncludeIfPresent,
+  Exclude
+}

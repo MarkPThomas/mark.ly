@@ -1,7 +1,10 @@
-import { BBox as SerialBBox, MultiPolygon as SerialMultiPolygon } from 'geojson';
+import {
+  BBox as SerialBBox,
+  MultiPolygon as SerialMultiPolygon
+} from 'geojson';
 
 import { Position } from '../types';
-import { GeoJsonGeometryTypes } from '../enums';
+import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
 import { Point } from './Point';
 import { MultiPolygon } from './MultiPolygon';
@@ -9,7 +12,7 @@ import { MultiPolygon } from './MultiPolygon';
 describe('##MultiPolygon', () => {
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
-      it('should make an object from the associated GeoJSON object with no altitude', () => {
+      it('should make an object from the associated GeoJSON object', () => {
         const position: Position[][][] = [
           [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
           [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
@@ -111,15 +114,83 @@ describe('##MultiPolygon', () => {
 
   describe('Instance Tests', () => {
     describe('#toJson', () => {
-      it('should', () => {
+      it('should make a GeoJSON object', () => {
+        const position: Position[][][] = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
+        ];
+        const multiPolygonJson: SerialMultiPolygon = {
+          type: 'MultiPolygon',
+          coordinates: position
+        };
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
+        const result = multiPolygon.toJson();
+
+        expect(result).toEqual(multiPolygonJson);
       });
 
-      it('should', () => {
+      it('should make a GeoJSON object with a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const position: Position[][][] = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
+        ];
+        const multiPolygonJson: SerialMultiPolygon = {
+          type: 'MultiPolygon',
+          coordinates: position,
+          bbox: bboxJson
+        };
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
+        const result = multiPolygon.toJson();
+
+        expect(result).toEqual(multiPolygonJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box created', () => {
+        const position: Position[][][] = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
+        ];
+        const multiPolygonJson: SerialMultiPolygon = {
+          type: 'MultiPolygon',
+          coordinates: position
+        };
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
+
+        const result = multiPolygon.toJson(BBoxState.Include);
+
+        expect(result).not.toEqual(multiPolygonJson);
+
+        const bboxJson: SerialBBox = [-1, -1, 6, 6];
+        multiPolygonJson.bbox = bboxJson;
+
+        expect(result).toEqual(multiPolygonJson);
+      });
+
+      it('should make a GeoJSON object without a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const position: Position[][][] = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
+        ];
+        const multiPolygonJson: SerialMultiPolygon = {
+          type: 'MultiPolygon',
+          coordinates: position,
+          bbox: bboxJson
+        };
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
+
+        const result = multiPolygon.toJson(BBoxState.Exclude);
+
+        expect(result).not.toEqual(multiPolygonJson);
+
+        delete multiPolygonJson.bbox;
+
+        expect(result).toEqual(multiPolygonJson);
       });
     });
-
 
     describe('#points', () => {
       it('should', () => {

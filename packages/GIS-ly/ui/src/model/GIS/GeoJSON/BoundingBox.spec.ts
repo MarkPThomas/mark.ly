@@ -235,12 +235,22 @@ describe('##BoundingBox', () => {
 
   describe('Instance Tests', () => {
     describe('#toJson', () => {
-      it('should', () => {
+      it('should make a GeoJSON object with no altitude', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const boundingBox = BoundingBox.fromJson(bboxJson);
 
+        const result = boundingBox.toJson();
+
+        expect(result).toEqual(bboxJson);
       });
 
-      it('should', () => {
+      it('should make a GeoJSON object with an altitude specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4, 5, 6];
+        const boundingBox = BoundingBox.fromJson(bboxJson);
 
+        const result = boundingBox.toJson();
+
+        expect(result).toEqual(bboxJson);
       });
     });
 

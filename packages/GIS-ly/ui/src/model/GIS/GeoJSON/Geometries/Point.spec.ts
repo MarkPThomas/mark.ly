@@ -1,7 +1,10 @@
-import { BBox as SerialBBox, Point as SerialPoint } from 'geojson';
+import {
+  BBox as SerialBBox,
+  Point as SerialPoint
+} from 'geojson';
 
 import { Position } from '../types';
-import { GeoJsonGeometryTypes } from '../enums';
+import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
 import { Point, PointProperties, PointOptions } from './Point';
 
@@ -10,7 +13,6 @@ describe('##Point', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object with no altitude', () => {
         const position: Position = [1, 2];
-
         const json: SerialPoint = {
           type: 'Point',
           coordinates: position
@@ -33,7 +35,6 @@ describe('##Point', () => {
 
       it('should make an object from the associated GeoJSON object with an altitude specified', () => {
         const position: Position = [1, 2, 3];
-
         const json: SerialPoint = {
           type: 'Point',
           coordinates: position
@@ -57,7 +58,6 @@ describe('##Point', () => {
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
         const position: Position = [1, 2];
         const bbox: SerialBBox = [1, 2, 3, 4];
-
         const json: SerialPoint = {
           type: 'Point',
           bbox: bbox,
@@ -127,12 +127,87 @@ describe('##Point', () => {
 
   describe('Instance Tests', () => {
     describe('#toJson', () => {
-      it('should', () => {
+      it('should make a GeoJSON object with no altitude', () => {
+        const position: Position = [1, 2];
+        const pointJson: SerialPoint = {
+          type: 'Point',
+          coordinates: position
+        };
+        const point = Point.fromJson(pointJson);
 
+        const result = point.toJson();
+
+        expect(result).toEqual(pointJson);
       });
 
-      it('should', () => {
+      it('should make a GeoJSON object with an altitude specified', () => {
+        const position: Position = [1, 2, 3];
+        const pointJson: SerialPoint = {
+          type: 'Point',
+          coordinates: position
+        };
+        const point = Point.fromJson(pointJson);
 
+        const result = point.toJson();
+
+        expect(result).toEqual(pointJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box specified', () => {
+        const position: Position = [1, 2];
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const pointJson: SerialPoint = {
+          type: 'Point',
+          bbox: bboxJson,
+          coordinates: position
+        };
+        const point = Point.fromJson(pointJson);
+
+        const result = point.toJson();
+
+        expect(result).toEqual(pointJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box created', () => {
+        const position: Position = [1, 2];
+        const pointJson: SerialPoint = {
+          type: 'Point',
+          coordinates: position
+        };
+        const point = Point.fromJson(pointJson);
+
+        const result = point.toJson(BBoxState.Include);
+
+        expect(result).not.toEqual(pointJson);
+
+        const bboxJson: SerialBBox = [
+          1 - Point.DEFAULT_BUFFER,
+          2 - Point.DEFAULT_BUFFER,
+          3 + Point.DEFAULT_BUFFER,
+          4 + Point.DEFAULT_BUFFER
+        ];
+        pointJson.bbox = bboxJson;
+
+        expect(result).not.toEqual(pointJson);
+      });
+
+      it('should make a GeoJSON object without a bounding box specified', () => {
+        const position: Position = [1, 2];
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const pointJson: SerialPoint = {
+          type: 'Point',
+          bbox: bboxJson,
+          coordinates: position
+        };
+        const point = Point.fromJson(pointJson);
+
+        const result = point.toJson(BBoxState.Exclude);
+
+        expect(result).not.toEqual(pointJson);
+
+        delete pointJson.bbox;
+
+        expect(result).toEqual(pointJson);
       });
     });
 

@@ -101,8 +101,8 @@ export class BoundingBox implements IBoundingBox {
 
   toJson(): SerialBBox {
     return this.hasAltitude()
-      ? [this.north, this.south, this.southwestAltitude, this.west, this.east, this.northeastAltitude]
-      : [this.north, this.south, this.west, this.east];
+      ? [this.west, this.south, this.southwestAltitude, this.east, this.north, this.northeastAltitude]
+      : [this.west, this.south, this.east, this.north];
   }
 
   toCornerPositions(): [Position, Position] {

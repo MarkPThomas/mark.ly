@@ -7,7 +7,7 @@ import { BoundingBox } from "./BoundingBox";
 import { GeoCollection, GeoCollectionMethods } from "./GeoCollection";
 import { Feature } from "./Feature";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
-import { GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
+import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
 import { Geometry } from './Geometries';
 
 class FeatureCollectionDelegate extends GeoCollection<Feature, SerialFeature> {
@@ -104,12 +104,12 @@ export class FeatureCollection
     return this._collection.getGeometriesByType(type);
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialFeatureCollection {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeatureCollection {
+    const jsonBase = super.toJsonBase(includeBBox);
 
     let json = {
       ...jsonBase,
-      features: this.features.map((feature) => feature.toJson(includeBoundingBox))
+      features: this.features.map((feature) => feature.toJson())
     } as SerialFeatureCollection
 
     return json;

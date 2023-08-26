@@ -5,7 +5,7 @@ import {
   Feature as SerialFeature,
 } from 'geojson';
 
-import { GeoJsonTypes } from './enums';
+import { BBoxState, GeoJsonTypes } from './enums';
 import { Position } from './types';
 
 import { Feature, FeatureProperty, FeaturePropertyProperties } from './Feature';
@@ -101,23 +101,23 @@ describe('##FeatureProperty', () => {
 });
 
 describe('##Feature', () => {
+  let featureJson: SerialFeature;
+  beforeEach(() => {
+    const lineStringPosition: Position[] = [[1, 2], [3, 4]];
+    const lineStringJson: SerialLineString = {
+      type: 'LineString',
+      coordinates: lineStringPosition
+    };
+
+    featureJson = {
+      type: 'Feature',
+      geometry: lineStringJson,
+      properties: {}
+    };
+  });
+
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
-      let featureJson: SerialFeature;
-      beforeEach(() => {
-        const lineStringPosition: Position[] = [[1, 2], [3, 4]];
-        const lineStringJson: SerialLineString = {
-          type: 'LineString',
-          coordinates: lineStringPosition
-        };
-
-        featureJson = {
-          type: 'Feature',
-          geometry: lineStringJson,
-          properties: {}
-        };
-      })
-
       it('should make an object from the associated GeoJSON object', () => {
         const feature = Feature.fromJson(featureJson);
 
@@ -149,7 +149,7 @@ describe('##Feature', () => {
         expect(feature.properties).toEqual(properties);
       });
 
-      it('should make an object with an id from the associated GeoJSON object', () => {
+      it('should make an object with an ID from the associated GeoJSON object', () => {
         featureJson.id = 1;
 
         const feature = Feature.fromJson(featureJson);
@@ -187,8 +187,8 @@ describe('##Feature', () => {
         expect(feature.hasBBox()).toBeTruthy();
       });
 
-      it(`should make an object from the associated GeoJSON object with a bounding box specified
-          in the contained Geometry object governing over one specified at the Feature level`, () => {
+      it(`should make an object from the associated GeoJSON object with multiple bounding boxes specified
+          with the contained Geometry object governing over one specified at the Feature level`, () => {
 
         const bboxFeature: SerialBBox = [1, 2, 3, 4];
         featureJson.bbox = bboxFeature;
@@ -277,23 +277,74 @@ describe('##Feature', () => {
 
 
   describe('Instance Tests', () => {
-    describe('#hasAltitude', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
     describe('#toJson', () => {
-      it('should', () => {
+      it('should make a GeoJSON object', () => {
+        const feature = Feature.fromJson(featureJson);
 
+        const result = feature.toJson();
+
+        expect(result).toEqual(featureJson);
       });
 
-      it('should', () => {
+      it('should make a GeoJSON object with an ID', () => {
+        featureJson.id = '1';
+        const feature = Feature.fromJson(featureJson);
 
+        const result = feature.toJson();
+
+        expect(result).toEqual(featureJson);
+      });
+
+      it('should make a GeoJSON object with properties', () => {
+        const propertiesJson: SerialGeoJsonProperties = {
+          foo: 'bar',
+          moo: 2
+        };
+        featureJson.properties = propertiesJson;
+        const feature = Feature.fromJson(featureJson);
+
+        const result = feature.toJson();
+
+        expect(result).toEqual(featureJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        featureJson.bbox = bboxJson;
+        const feature = Feature.fromJson(featureJson);
+
+        const result = feature.toJson();
+
+        expect(result).toEqual(featureJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box created', () => {
+        const feature = Feature.fromJson(featureJson);
+
+        const result = feature.toJson(BBoxState.Include);
+
+        expect(result).not.toEqual(featureJson);
+
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        featureJson.bbox = bboxJson;
+        featureJson.geometry.bbox = bboxJson;
+
+        expect(result).toEqual(featureJson);
+      });
+
+      it('should make a GeoJSON object without a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        featureJson.bbox = bboxJson;
+        const feature = Feature.fromJson(featureJson);
+
+        const result = feature.toJson(BBoxState.Exclude);
+
+        expect(result).not.toEqual(featureJson);
+
+        delete featureJson.bbox;
+        delete featureJson.geometry.bbox;
+
+        expect(result).toEqual(featureJson);
       });
     });
   });

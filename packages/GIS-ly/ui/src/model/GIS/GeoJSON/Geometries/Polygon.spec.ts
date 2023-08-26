@@ -1,7 +1,7 @@
 import { BBox as SerialBBox, Polygon as SerialPolygon } from 'geojson';
 
 import { Position } from '../types';
-import { GeoJsonGeometryTypes } from '../enums';
+import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
 import { Point } from './Point';
 import { Polygon } from './Polygon';
@@ -9,7 +9,7 @@ import { Polygon } from './Polygon';
 describe('##Polygon', () => {
   describe('Static Factory Methods', () => {
     describe('#fromJson', () => {
-      it('should make an object from the associated GeoJSON object with no altitude', () => {
+      it('should make an object from the associated GeoJSON object', () => {
         const position: Position[][] = [
           [[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]
         ];
@@ -103,15 +103,83 @@ describe('##Polygon', () => {
 
   describe('Instance Tests', () => {
     describe('#toJson', () => {
-      it('should', () => {
+      it('should make a GeoJSON object', () => {
+        const position: Position[][] = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]],
+        ];
+        const polygonJson: SerialPolygon = {
+          type: 'Polygon',
+          coordinates: position
+        };
+        const polygon = Polygon.fromJson(polygonJson);
 
+        const result = polygon.toJson();
+
+        expect(result).toEqual(polygonJson);
       });
 
-      it('should', () => {
+      it('should make a GeoJSON object with a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const position: Position[][] = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]],
+        ];
+        const polygonJson: SerialPolygon = {
+          type: 'Polygon',
+          coordinates: position,
+          bbox: bboxJson
+        };
+        const polygon = Polygon.fromJson(polygonJson);
 
+        const result = polygon.toJson();
+
+        expect(result).toEqual(polygonJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box created', () => {
+        const position: Position[][] = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]],
+        ];
+        const polygonJson: SerialPolygon = {
+          type: 'Polygon',
+          coordinates: position
+        };
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.toJson(BBoxState.Include);
+
+        expect(result).not.toEqual(polygonJson);
+
+        const bboxJson: SerialBBox = [1, 2, 7, 8];
+        polygonJson.bbox = bboxJson;
+
+        expect(result).toEqual(polygonJson);
+      });
+
+      it('should make a GeoJSON object without a bounding box specified', () => {
+        const bboxJson: SerialBBox = [1, 2, 3, 4];
+        const position: Position[][] = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [7, 8]],
+        ];
+        const polygonJson: SerialPolygon = {
+          type: 'Polygon',
+          coordinates: position,
+          bbox: bboxJson
+        };
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.toJson(BBoxState.Exclude);
+
+        expect(result).not.toEqual(polygonJson);
+
+        delete polygonJson.bbox;
+
+        expect(result).toEqual(polygonJson);
       });
     });
-
 
     describe('#points', () => {
       it('should', () => {

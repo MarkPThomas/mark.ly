@@ -5,6 +5,7 @@ import {
 
 import { IGeoJson, GeoJson, GeoJsonProperties } from "../GeoJson";
 import { BoundingBox } from "../BoundingBox";
+import { BBoxState } from "../enums";
 
 export type GeometryType = Geometry<GeoJsonProperties, SerialGeometry>;
 
@@ -48,7 +49,7 @@ export abstract class Geometry<TProperties extends GeoJsonProperties, TSerial ex
    */
   abstract readonly type: SerialGeoJsonGeometryTypes;
 
-  abstract toJson(includeBoundingBox: boolean): TSerial;
+  abstract toJson(includeBBox: BBoxState): TSerial;
 
   //       geometry: {
   //         type: string, // 'MultiLineString',
