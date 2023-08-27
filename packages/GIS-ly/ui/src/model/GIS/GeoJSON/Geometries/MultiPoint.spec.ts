@@ -11,14 +11,16 @@ import { Point } from './Point';
 import { MultiPoint } from './MultiPoint';
 
 describe('##MultiPoint', () => {
-  let multiPointBBoxJson: SerialBBox;
+  let multiPointBBoxJsonProvided: SerialBBox;
+  let multiPointBBoxJsonActual: SerialBBox;
   let multiPointJson: SerialMultiPoint;
   let multiPointPoints: Point[];
   let multiPointPositions: Position[];
   let multiPointBBox: BoundingBox;
 
   beforeEach(() => {
-    multiPointBBoxJson = [1, 2, 3, 4];
+    multiPointBBoxJsonProvided = [2, 3, 4, 5];
+    multiPointBBoxJsonActual = [1, 2, 3, 4];
     multiPointPositions = [[1, 2], [3, 4]];
     multiPointJson = {
       type: 'MultiPoint',
@@ -47,7 +49,7 @@ describe('##MultiPoint', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        multiPointJson.bbox = multiPointBBoxJson;
+        multiPointJson.bbox = multiPointBBoxJsonProvided;
         const multiPoint = MultiPoint.fromJson(multiPointJson);
 
         expect(multiPoint.hasBBox()).toBeTruthy();
@@ -104,7 +106,7 @@ describe('##MultiPoint', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        multiPointJson.bbox = multiPointBBoxJson;
+        multiPointJson.bbox = multiPointBBoxJsonProvided;
         const multiPoint = MultiPoint.fromJson(multiPointJson);
 
         const result = multiPoint.toJson();
@@ -126,7 +128,7 @@ describe('##MultiPoint', () => {
       });
 
       it('should make a GeoJSON object without a bounding box specified', () => {
-        multiPointJson.bbox = multiPointBBoxJson;
+        multiPointJson.bbox = multiPointBBoxJsonProvided;
         const multiPoint = MultiPoint.fromJson(multiPointJson);
 
         const result = multiPoint.toJson(BBoxState.Exclude);
@@ -194,22 +196,49 @@ describe('##MultiPoint', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
 
+        const result = multiPoint.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        multiPointJson.bbox = multiPointBBoxJsonProvided;
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
 
+        const result = multiPoint.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(multiPointBBoxJsonProvided);
 
+        multiPointJson.bbox = multiPointBBoxJsonProvided;
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+
+        expect(multiPoint.hasBBox()).toBeTruthy();
+
+        const result = multiPoint.bbox();
+        expect(multiPoint.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(multiPointBBoxJsonActual);
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
 
+        expect(multiPoint.hasBBox()).toBeFalsy();
+
+        const result = multiPoint.bbox();
+        expect(multiPoint.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
   });

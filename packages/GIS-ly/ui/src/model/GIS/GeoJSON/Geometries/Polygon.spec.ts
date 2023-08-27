@@ -12,7 +12,8 @@ import { LineString } from './LineString';
 import { Polygon } from './Polygon';
 
 describe('##Polygon', () => {
-  let polygonBBoxJson: SerialBBox;
+  let polygonBBoxJsonProvided: SerialBBox;
+  let polygonBBoxJsonActual: SerialBBox;
   let polygonJson: SerialPolygon;
   let polygonOuterPoints: Point[][];
   let polygonOuterPositions: Position[][];
@@ -20,7 +21,8 @@ describe('##Polygon', () => {
   let polygonBBox: BoundingBox;
 
   beforeEach(() => {
-    polygonBBoxJson = [1, 2, 3, 4];
+    polygonBBoxJsonProvided = [1, 2, 3, 4];
+    polygonBBoxJsonActual = [-3, -4, 3, 4];
     polygonOuterPositions = [
       [[3, 4], [-3, 3], [-3, -4], [3, -3], [3, 4]]
     ];
@@ -60,7 +62,7 @@ describe('##Polygon', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        polygonJson.bbox = polygonBBoxJson;
+        polygonJson.bbox = polygonBBoxJsonProvided;
         const polygon = Polygon.fromJson(polygonJson);
 
         expect(polygon.hasBBox()).toBeTruthy();
@@ -182,7 +184,7 @@ describe('##Polygon', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        polygonJson.bbox = polygonBBoxJson;
+        polygonJson.bbox = polygonBBoxJsonProvided;
         const polygon = Polygon.fromJson(polygonJson);
 
         const result = polygon.toJson();
@@ -204,7 +206,7 @@ describe('##Polygon', () => {
       });
 
       it('should make a GeoJSON object without a bounding box specified', () => {
-        polygonJson.bbox = polygonBBoxJson;
+        polygonJson.bbox = polygonBBoxJsonProvided;
         const polygon = Polygon.fromJson(polygonJson);
 
         const result = polygon.toJson(BBoxState.Exclude);
@@ -302,22 +304,49 @@ describe('##Polygon', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const polygon = Polygon.fromJson(polygonJson);
 
+        const result = polygon.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        polygonJson.bbox = polygonBBoxJsonProvided;
+        const polygon = Polygon.fromJson(polygonJson);
 
+        const result = polygon.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(polygonBBoxJsonProvided);
 
+        polygonJson.bbox = polygonBBoxJsonProvided;
+        const polygon = Polygon.fromJson(polygonJson);
+
+        expect(polygon.hasBBox()).toBeTruthy();
+
+        const result = polygon.bbox();
+        expect(polygon.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(polygonBBoxJsonActual);
+        const polygon = Polygon.fromJson(polygonJson);
 
+        expect(polygon.hasBBox()).toBeFalsy();
+
+        const result = polygon.bbox();
+        expect(polygon.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
   });

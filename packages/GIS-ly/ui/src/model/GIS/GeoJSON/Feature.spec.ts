@@ -102,7 +102,8 @@ describe('##FeatureProperty', () => {
 });
 
 describe('##Feature', () => {
-  let lineStringBBoxJson: SerialBBox;
+  let lineStringBBoxJsonProvided: SerialBBox;
+  let lineStringBBoxJsonActual: SerialBBox;
   let lineStringJson: SerialLineString;
   let lineStringPoints: Point[];
   let lineStringPositions: Position[];
@@ -111,7 +112,8 @@ describe('##Feature', () => {
   let featureBBox: BoundingBox;
 
   beforeEach(() => {
-    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringBBoxJsonProvided = [2, 3, 4, 5];
+    lineStringBBoxJsonActual = [1, 2, 3, 4];
     lineStringPositions = [[1, 2], [3, 4]];
     lineStringJson = {
       type: 'LineString',
@@ -426,22 +428,49 @@ describe('##Feature', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const feature = Feature.fromJson(featureJson);
 
+        const result = feature.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        featureJson.bbox = lineStringBBoxJsonProvided;
+        const feature = Feature.fromJson(featureJson);
 
+        const result = feature.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(lineStringBBoxJsonProvided);
 
+        featureJson.bbox = lineStringBBoxJsonProvided;
+        const feature = Feature.fromJson(featureJson);
+
+        expect(feature.hasBBox()).toBeTruthy();
+
+        const result = feature.bbox();
+        expect(feature.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(lineStringBBoxJsonActual);
+        const feature = Feature.fromJson(featureJson);
 
+        expect(feature.hasBBox()).toBeFalsy();
+
+        const result = feature.bbox();
+        expect(feature.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
 

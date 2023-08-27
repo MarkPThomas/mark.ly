@@ -12,14 +12,16 @@ import { LineString } from './LineString';
 import { MultiLineString } from './MultiLineString';
 
 describe('##MultiLineString', () => {
-  let multiLineStringBBoxJson: SerialBBox;
+  let multiLineStringBBoxJsonProvided: SerialBBox;
+  let multiLineStringBBoxJsonActual: SerialBBox;
   let multiLineStringJson: SerialMultiLineString;
   let multiLineStringPoints: Point[][];
   let multiLineStringPositions: Position[][];
   let multiLineStringBBox: BoundingBox;
 
   beforeEach(() => {
-    multiLineStringBBoxJson = [1, 2, 3, 4];
+    multiLineStringBBoxJsonProvided = [1, 2, 3, 4];
+    multiLineStringBBoxJsonActual = [1, 2, 7, 8];
     multiLineStringPositions = [
       [[1, 2], [3, 4]],
       [[5, 6], [7, 8]],
@@ -57,7 +59,7 @@ describe('##MultiLineString', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        multiLineStringJson.bbox = multiLineStringBBoxJson;
+        multiLineStringJson.bbox = multiLineStringBBoxJsonProvided;
         const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
         expect(multiLineString.hasBBox()).toBeTruthy();
@@ -141,7 +143,7 @@ describe('##MultiLineString', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        multiLineStringJson.bbox = multiLineStringBBoxJson;
+        multiLineStringJson.bbox = multiLineStringBBoxJsonProvided;
         const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
         const result = multiLineString.toJson();
@@ -163,7 +165,7 @@ describe('##MultiLineString', () => {
       });
 
       it('should make a GeoJSON object without a bounding box specified', () => {
-        multiLineStringJson.bbox = multiLineStringBBoxJson;
+        multiLineStringJson.bbox = multiLineStringBBoxJsonProvided;
         const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
         const result = multiLineString.toJson(BBoxState.Exclude);
@@ -248,22 +250,49 @@ describe('##MultiLineString', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
+        const result = multiLineString.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        multiLineStringJson.bbox = multiLineStringBBoxJsonProvided;
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
+        const result = multiLineString.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(multiLineStringBBoxJsonProvided);
 
+        multiLineStringJson.bbox = multiLineStringBBoxJsonProvided;
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+
+        expect(multiLineString.hasBBox()).toBeTruthy();
+
+        const result = multiLineString.bbox();
+        expect(multiLineString.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(multiLineStringBBoxJsonActual);
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
+        expect(multiLineString.hasBBox()).toBeFalsy();
+
+        const result = multiLineString.bbox();
+        expect(multiLineString.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
   });

@@ -26,7 +26,8 @@ describe('##FeatureCollection', () => {
   let lineStringPositions: Position[];
   let featureLineStringJson: SerialFeature;
 
-  let featureCollectionBBoxJson: SerialBBox;
+  let featureCollectionBBoxJsonProvided: SerialBBox;
+  let featureCollectionBBoxJsonActual: SerialBBox;
   // let featureCollectionBBox: SerialBBox;
   let featureCollectionJson: SerialFeatureCollection;
   // let featureCollectionPoints: Point[];
@@ -62,13 +63,14 @@ describe('##FeatureCollection', () => {
     //   Point.fromPosition(lineStringPositions[0]),
     //   Point.fromPosition(lineStringPositions[1])
     // ];
-    featureCollectionBBoxJson = [1, 2, 3, 4];
+    featureCollectionBBoxJsonProvided = [1, 2, 3, 4];
+    featureCollectionBBoxJsonActual = [-1, -2, 3, 4];
     featureCollectionJson = {
       type: 'FeatureCollection',
       features: [featurePointJson, featureLineStringJson]
     }
 
-    featureBBox = BoundingBox.fromJson(featureCollectionBBoxJson);
+    featureBBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
   });
 
   describe('Creation', () => {
@@ -88,7 +90,7 @@ describe('##FeatureCollection', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        featureCollectionJson.bbox = featureCollectionBBoxJson;
+        featureCollectionJson.bbox = featureCollectionBBoxJsonProvided;
 
         const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
@@ -114,7 +116,7 @@ describe('##FeatureCollection', () => {
       });
 
       it('should make an object from the associated Features with a bounding box specified', () => {
-        featureCollectionJson.bbox = featureCollectionBBoxJson;
+        featureCollectionJson.bbox = featureCollectionBBoxJsonProvided;
         const expectedFeatureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
         const featureCollection = FeatureCollection.fromFeatures(features, featureBBox);
@@ -223,22 +225,49 @@ describe('##FeatureCollection', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
+        const result = featureCollection.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        featureCollectionJson.bbox = featureCollectionBBoxJsonProvided;
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
+        const result = featureCollection.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
 
+        featureCollectionJson.bbox = featureCollectionBBoxJsonProvided;
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        const result = featureCollection.bbox();
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(featureCollectionBBoxJsonActual);
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
+        expect(featureCollection.hasBBox()).toBeFalsy();
+
+        const result = featureCollection.bbox();
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
 

@@ -8,18 +8,20 @@ import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 import { BoundingBox } from '../BoundingBox';
 
 import { Point } from './Point';
-import { MultiPolygon } from './MultiPolygon';
 import { Polygon } from './Polygon';
+import { MultiPolygon } from './MultiPolygon';
 
 describe('##MultiPolygon', () => {
-  let multiPolygonBBoxJson: SerialBBox;
+  let multiPolygonBBoxJsonProvided: SerialBBox;
+  let multiPolygonBBoxJsonActual: SerialBBox;
   let multiPolygonJson: SerialMultiPolygon;
   let multiPolygonPoints: Point[][][];
   let multiPolygonPositions: Position[][][];
   let multiPolygonBBox: BoundingBox;
 
   beforeEach(() => {
-    multiPolygonBBoxJson = [1, 2, 3, 4];
+    multiPolygonBBoxJsonProvided = [1, 2, 3, 4];
+    multiPolygonBBoxJsonActual = [-1, -1, 6, 6];
     multiPolygonPositions = [
       [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
       [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
@@ -62,7 +64,7 @@ describe('##MultiPolygon', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        multiPolygonJson.bbox = multiPolygonBBoxJson;
+        multiPolygonJson.bbox = multiPolygonBBoxJsonProvided;
         const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
         expect(multiPolygon.hasBBox()).toBeTruthy();
@@ -146,7 +148,7 @@ describe('##MultiPolygon', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        multiPolygonJson.bbox = multiPolygonBBoxJson;
+        multiPolygonJson.bbox = multiPolygonBBoxJsonProvided;
         const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
         const result = multiPolygon.toJson();
@@ -168,7 +170,7 @@ describe('##MultiPolygon', () => {
       });
 
       it('should make a GeoJSON object without a bounding box specified', () => {
-        multiPolygonJson.bbox = multiPolygonBBoxJson;
+        multiPolygonJson.bbox = multiPolygonBBoxJsonProvided;
         const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
         const result = multiPolygon.toJson(BBoxState.Exclude);
@@ -253,22 +255,49 @@ describe('##MultiPolygon', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
+        const result = multiPolygon.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        multiPolygonJson.bbox = multiPolygonBBoxJsonProvided;
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
+        const result = multiPolygon.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(multiPolygonBBoxJsonProvided);
 
+        multiPolygonJson.bbox = multiPolygonBBoxJsonProvided;
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
+
+        expect(multiPolygon.hasBBox()).toBeTruthy();
+
+        const result = multiPolygon.bbox();
+        expect(multiPolygon.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(multiPolygonBBoxJsonActual);
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
+        expect(multiPolygon.hasBBox()).toBeFalsy();
+
+        const result = multiPolygon.bbox();
+        expect(multiPolygon.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
   });
