@@ -10,12 +10,19 @@ import { Point, PointOptions } from './Point';
 import { BoundingBox } from '../BoundingBox';
 
 describe('##Point', () => {
-  let pointBBoxJson: SerialBBox;
+  let pointBBoxJsonProvided: SerialBBox;
+  let pointBBoxJsonActual: SerialBBox;
   let pointJson: SerialPoint;
   let pointPosition: Position;
 
   beforeEach(() => {
-    pointBBoxJson = [1, 2, 3, 4];
+    pointBBoxJsonActual = [
+      1 - Point.DEFAULT_BUFFER,
+      2 - Point.DEFAULT_BUFFER,
+      1 + Point.DEFAULT_BUFFER,
+      2 + Point.DEFAULT_BUFFER,
+    ];
+    pointBBoxJsonProvided = [1, 2, 3, 4];
     pointPosition = [1, 2];
     pointJson = {
       type: 'Point',
@@ -61,12 +68,17 @@ describe('##Point', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        pointJson.bbox = pointBBoxJson;
+        pointJson.bbox = pointBBoxJsonProvided;
 
         const point = Point.fromJson(pointJson);
 
         expect(point.hasBBox()).toBeTruthy();
       });
+
+      it('should throw an InvalidGeometryException if coordinates are missing from the GeoJSON object', () => {
+        pointJson.coordinates = [1];
+        expect(() => Point.fromJson(pointJson)).toThrowError();
+      })
     });
 
     describe('#fromPosition', () => {
@@ -252,7 +264,7 @@ describe('##Point', () => {
         const options: PointOptions = {
           longitude: 1,
           latitude: 2,
-          bBox: BoundingBox.fromJson(pointBBoxJson)
+          bBox: BoundingBox.fromJson(pointBBoxJsonProvided)
         };
         const point = Point.fromOptions(options);
 
@@ -292,7 +304,7 @@ describe('##Point', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        pointJson.bbox = pointBBoxJson;
+        pointJson.bbox = pointBBoxJsonProvided;
         const point = Point.fromJson(pointJson);
 
         const result = point.toJson();
@@ -319,7 +331,7 @@ describe('##Point', () => {
       });
 
       it('should make a GeoJSON object without a specified bounding box', () => {
-        pointJson.bbox = pointBBoxJson;
+        pointJson.bbox = pointBBoxJsonProvided;
         const point = Point.fromJson(pointJson);
 
         const result = point.toJson(BBoxState.Exclude);
@@ -387,22 +399,48 @@ describe('##Point', () => {
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const point = Point.fromJson(pointJson);
 
+        const result = point.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        pointJson.bbox = pointBBoxJsonProvided;
+        const point = Point.fromJson(pointJson);
 
+        const result = point.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(pointBBoxJsonProvided);
+        pointJson.bbox = pointBBoxJsonProvided;
+        const point = Point.fromJson(pointJson);
 
+        expect(point.hasBBox()).toBeTruthy();
+
+        const result = point.bbox();
+        expect(point.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(pointBBoxJsonActual);
+        const point = Point.fromJson(pointJson);
 
+        expect(point.hasBBox()).toBeFalsy();
+
+        const result = point.bbox();
+        expect(point.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
     });
 
