@@ -1,84 +1,207 @@
-import { BBox as SerialBBox, Polygon as SerialPolygon } from 'geojson';
+import {
+  BBox as SerialBBox,
+  Polygon as SerialPolygon
+} from 'geojson';
 
 import { Position } from '../types';
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
+import { BoundingBox } from '../BoundingBox';
 
 import { Point } from './Point';
 import { Polygon } from './Polygon';
 
 describe('##Polygon', () => {
-  describe('Static Factory Methods', () => {
+  let polygonBBoxJson: SerialBBox;
+  let polygonJson: SerialPolygon;
+  let polygonPoints: Point[][];
+  let polygonPositions: Position[][];
+  let polygonBBox: BoundingBox;
+
+  beforeEach(() => {
+    polygonBBoxJson = [1, 2, 3, 4];
+    polygonPositions = [
+      [[1, 2], [-1, 1], [-1, -2], [1, -1], [1, 2]]
+    ];
+    polygonJson = {
+      type: 'Polygon',
+      coordinates: polygonPositions
+    };
+
+    polygonPoints = [
+      [
+        Point.fromPosition(polygonPositions[0][0]),
+        Point.fromPosition(polygonPositions[0][1]),
+        Point.fromPosition(polygonPositions[0][2]),
+        Point.fromPosition(polygonPositions[0][3]),
+        Point.fromPosition(polygonPositions[0][4]),
+      ],
+    ];
+
+    polygonBBox = BoundingBox.fromPositions(polygonPositions.flat(1));
+  });
+
+  describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object', () => {
-        const position: Position[][] = [
-          [[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]
-        ];
-        const points: Point[][] = [
-          [
-            Point.fromPosition(position[0][0]),
-            Point.fromPosition(position[0][1]),
-            Point.fromPosition(position[0][2]),
-            Point.fromPosition(position[0][3]),
-            Point.fromPosition(position[0][4]),
-          ],
-        ];
-
-        const json: SerialPolygon = {
-          type: 'Polygon',
-          coordinates: position
-        };
-
-        const polygon = Polygon.fromJson(json);
+        const polygon = Polygon.fromJson(polygonJson);
 
         expect(polygon.type).toEqual(GeoJsonGeometryTypes.Polygon);
-        expect(polygon.toPositions()).toEqual(position);
-        expect(polygon.points).toEqual(points);
+        expect(polygon.toPositions()).toEqual(polygonPositions);
+        expect(polygon.points).toEqual(polygonPoints);
 
         // Optional properties & Defaults
         expect(polygon.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        const position: Position[][] = [
-          [[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]
-        ];
-        const bbox: SerialBBox = [1, 2, 3, 4];
-
-        const json: SerialPolygon = {
-          type: 'Polygon',
-          bbox: bbox,
-          coordinates: position
-        };
-
-        const polygon = Polygon.fromJson(json);
+        polygonJson.bbox = polygonBBoxJson;
+        const polygon = Polygon.fromJson(polygonJson);
 
         expect(polygon.hasBBox()).toBeTruthy();
       });
     });
 
     describe('#fromPositions', () => {
-      it('should', () => {
+      it('should make an object from the associated Positions', () => {
+        const polygon = Polygon.fromPositions(polygonPositions);
 
+        expect(polygon.type).toEqual(GeoJsonGeometryTypes.Polygon);
+        expect(polygon.toPositions()).toEqual(polygonPositions);
+        expect(polygon.points).toEqual(polygonPoints);
+
+        // Optional properties & Defaults
+        expect(polygon.hasBBox()).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should make an object from the associated Positions with a bounding box specified', () => {
+        const polygon = Polygon.fromPositions(polygonPositions, polygonBBox);
 
+        expect(polygon.hasBBox()).toBeTruthy();
       });
     });
 
     describe('#fromPoints', () => {
-      it('should', () => {
+      it('should make an object from the associated Points', () => {
+        const polygon = Polygon.fromPoints(polygonPoints);
+
+        expect(polygon.type).toEqual(GeoJsonGeometryTypes.Polygon);
+        expect(polygon.toPositions()).toEqual(polygonPositions);
+        expect(polygon.points).toEqual(polygonPoints);
+
+        // Optional properties & Defaults
+        expect(polygon.hasBBox()).toBeFalsy();
+      });
+
+      it('should make an object from the associated Points with a bounding box specified', () => {
+        const polygon = Polygon.fromPoints(polygonPoints, polygonBBox);
+
+        expect(polygon.hasBBox()).toBeTruthy();
+      });
+    });
+
+    describe('#fromOuterInner', () => {
+      it('should make an object from the associated outer LineString', () => {
 
       });
 
-      it('should', () => {
+      it('should make an object from the associated outer LineString with an inner LineString', () => {
+
+      });
+
+      it('should make an object from the associated outer LineString with a bounding box specified', () => {
 
       });
     });
   });
 
+  describe('Exporting', () => {
+    describe('#toJson', () => {
+      it('should make a GeoJSON object', () => {
+        const polygon = Polygon.fromJson(polygonJson);
 
-  describe('Main Interface Tests', () => {
+        const result = polygon.toJson();
+
+        expect(result).toEqual(polygonJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box specified', () => {
+        polygonJson.bbox = polygonBBoxJson;
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.toJson();
+
+        expect(result).toEqual(polygonJson);
+      });
+
+      it('should make a GeoJSON object with a bounding box created', () => {
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.toJson(BBoxState.Include);
+
+        expect(result).not.toEqual(polygonJson);
+
+        const bboxJson: SerialBBox = [-1, -2, 1, 2];
+        polygonJson.bbox = bboxJson;
+
+        expect(result).toEqual(polygonJson);
+      });
+
+      it('should make a GeoJSON object without a bounding box specified', () => {
+        polygonJson.bbox = polygonBBoxJson;
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.toJson(BBoxState.Exclude);
+
+        expect(result).not.toEqual(polygonJson);
+
+        delete polygonJson.bbox;
+
+        expect(result).toEqual(polygonJson);
+      });
+    });
+
+    describe('#toPositions', () => {
+      it('should return a Positions array representing the Points forming the Geometry', () => {
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.toPositions();
+
+        expect(result).toEqual(polygonPositions);
+      });
+    });
+
+    describe('#points', () => {
+      it('should return a Points array representing the Points forming the Geometry', () => {
+        const polygon = Polygon.fromJson(polygonJson);
+
+        const result = polygon.points;
+
+        expect(result).toEqual(polygonPoints);
+      });
+    });
+
+    describe('#outer', () => {
+      it('should return a Points array representing the Points forming the Geometry', () => {
+        // const polygon = Polygon.fromJson(polygonJson);
+
+        // const result = polygon.outer;
+
+        // expect(result).toEqual(polygonOuterLineString);
+      });
+    });
+
+    describe('#inner', () => {
+      it('should return a Points array representing the Points forming the Geometry', () => {
+        // const polygon = Polygon.fromJson(polygonJson);
+
+        // const result = polygon.inner;
+
+        // expect(result).toEqual(polygonInnerLineStrings);
+      });
+    });
+  });
+
+  describe('Common Interfaces', () => {
     describe('#clone', () => {
       it('should', () => {
 
@@ -100,88 +223,8 @@ describe('##Polygon', () => {
     });
   });
 
-
-  describe('Instance Tests', () => {
-    describe('#toJson', () => {
-      it('should make a GeoJSON object', () => {
-        const position: Position[][] = [
-          [[1, 2], [3, 4]],
-          [[5, 6], [7, 8]],
-        ];
-        const polygonJson: SerialPolygon = {
-          type: 'Polygon',
-          coordinates: position
-        };
-        const polygon = Polygon.fromJson(polygonJson);
-
-        const result = polygon.toJson();
-
-        expect(result).toEqual(polygonJson);
-      });
-
-      it('should make a GeoJSON object with a bounding box specified', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        const position: Position[][] = [
-          [[1, 2], [3, 4]],
-          [[5, 6], [7, 8]],
-        ];
-        const polygonJson: SerialPolygon = {
-          type: 'Polygon',
-          coordinates: position,
-          bbox: bboxJson
-        };
-        const polygon = Polygon.fromJson(polygonJson);
-
-        const result = polygon.toJson();
-
-        expect(result).toEqual(polygonJson);
-      });
-
-      it('should make a GeoJSON object with a bounding box created', () => {
-        const position: Position[][] = [
-          [[1, 2], [3, 4]],
-          [[5, 6], [7, 8]],
-        ];
-        const polygonJson: SerialPolygon = {
-          type: 'Polygon',
-          coordinates: position
-        };
-        const polygon = Polygon.fromJson(polygonJson);
-
-        const result = polygon.toJson(BBoxState.Include);
-
-        expect(result).not.toEqual(polygonJson);
-
-        const bboxJson: SerialBBox = [1, 2, 7, 8];
-        polygonJson.bbox = bboxJson;
-
-        expect(result).toEqual(polygonJson);
-      });
-
-      it('should make a GeoJSON object without a bounding box specified', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        const position: Position[][] = [
-          [[1, 2], [3, 4]],
-          [[5, 6], [7, 8]],
-        ];
-        const polygonJson: SerialPolygon = {
-          type: 'Polygon',
-          coordinates: position,
-          bbox: bboxJson
-        };
-        const polygon = Polygon.fromJson(polygonJson);
-
-        const result = polygon.toJson(BBoxState.Exclude);
-
-        expect(result).not.toEqual(polygonJson);
-
-        delete polygonJson.bbox;
-
-        expect(result).toEqual(polygonJson);
-      });
-    });
-
-    describe('#points', () => {
+  describe('Methods', () => {
+    describe('#hasBBox', () => {
       it('should', () => {
 
       });
@@ -191,8 +234,7 @@ describe('##Polygon', () => {
       });
     });
 
-
-    describe('#positions', () => {
+    describe('#bbox', () => {
       it('should', () => {
 
       });

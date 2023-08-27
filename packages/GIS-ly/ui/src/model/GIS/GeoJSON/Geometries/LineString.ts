@@ -18,7 +18,7 @@ export interface LineStringProperties extends ICoordinateContainer<Position[], P
 export interface ILineString
   extends LineStringProperties {
   pointAtIndex(index: number): Point;
-  toPolyline(precision: number): string;
+  // toPolyline(precision: number): string;
 }
 
 /**
@@ -69,10 +69,10 @@ export class LineString
     return this._points[pointIndex].clone();
   }
 
-  toPolyline(precision: number): string {
-    // TODO: Implement
-    throw new Error("Method not implemented.");
-  }
+  // toPolyline(precision: number): string {
+  //   // TODO: Implement
+  //   throw new Error("Method not implemented.");
+  // }
 
   equals(item: LineStringProperties): boolean {
     // TODO: Handle Interfaces/types. Currently using only Class to avoid unnecessary cloning.
