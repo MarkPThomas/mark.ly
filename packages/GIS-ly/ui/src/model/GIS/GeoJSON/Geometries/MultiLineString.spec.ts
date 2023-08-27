@@ -191,22 +191,35 @@ describe('##MultiLineString', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should return a copy of the values object', () => {
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
-      });
+        const multiLineStringClone = multiLineString.clone();
 
-      it('should', () => {
-
+        expect(multiLineStringClone).toEqual(multiLineString);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+        const multiLineStringSame = MultiLineString.fromJson(multiLineStringJson);
 
+        const result = multiLineString.equals(multiLineStringSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
+        multiLineStringJson.coordinates = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [9, 10]],
+        ];
+        const multiLineStringDiff = MultiLineString.fromJson(multiLineStringJson);
+
+        const result = multiLineString.equals(multiLineStringDiff);
+        expect(result).toBeFalsy();
       });
     });
   });

@@ -5,10 +5,10 @@ import {
 
 import { Position } from '../types';
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
+import { BoundingBox } from '../BoundingBox';
 
 import { Point } from './Point';
 import { MultiPoint } from './MultiPoint';
-import { BoundingBox } from '../BoundingBox';
 
 describe('##MultiPoint', () => {
   let multiPointBBoxJson: SerialBBox;
@@ -162,22 +162,32 @@ describe('##MultiPoint', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should return a copy of the values object', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
 
-      });
+        const pointClone = multiPoint.clone();
 
-      it('should', () => {
-
+        expect(pointClone).toEqual(multiPoint);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+        const multiPointSame = MultiPoint.fromJson(multiPointJson);
 
+        const result = multiPoint.equals(multiPointSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
 
+        multiPointJson.coordinates = [[1, 2], [5, 6]];
+        const multiPointDiff = MultiPoint.fromJson(multiPointJson);
+
+        const result = multiPoint.equals(multiPointDiff);
+        expect(result).toBeFalsy();
       });
     });
   });

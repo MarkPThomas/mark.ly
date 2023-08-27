@@ -203,22 +203,35 @@ describe('##Polygon', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should return a copy of the values object', () => {
+        const polygonString = Polygon.fromJson(polygonJson);
 
-      });
+        const polygonStringClone = polygonString.clone();
 
-      it('should', () => {
-
+        expect(polygonStringClone).toEqual(polygonString);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const polygonString = Polygon.fromJson(polygonJson);
+        const polygonStringSame = Polygon.fromJson(polygonJson);
 
+        const result = polygonString.equals(polygonStringSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const polygonString = Polygon.fromJson(polygonJson);
 
+        polygonJson.coordinates = [
+          [[1, 2], [3, 4]],
+          [[5, 6], [9, 10]],
+        ];
+        const polygonStringDiff = Polygon.fromJson(polygonJson);
+
+        const result = polygonString.equals(polygonStringDiff);
+        expect(result).toBeFalsy();
       });
     });
   });

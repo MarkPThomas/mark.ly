@@ -196,22 +196,35 @@ describe('##MultiPolygon', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should return a copy of the values object', () => {
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
-      });
+        const multiPolygonClone = multiPolygon.clone();
 
-      it('should', () => {
-
+        expect(multiPolygonClone).toEqual(multiPolygon);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
+        const multiPolygonSame = MultiPolygon.fromJson(multiPolygonJson);
 
+        const result = multiPolygon.equals(multiPolygonSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
+        multiPolygonJson.coordinates = [
+          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
+          [[[6, 6], [5, 6], [5, 5], [6, 5], [7, 8]]],
+        ];
+        const multiPolygonDiff = MultiPolygon.fromJson(multiPolygonJson);
+
+        const result = multiPolygon.equals(multiPolygonDiff);
+        expect(result).toBeFalsy();
       });
     });
   });

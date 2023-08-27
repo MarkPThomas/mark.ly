@@ -7,10 +7,47 @@ import {
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 import { Position } from '../types';
 
+import { Point } from './Point';
 import { GeometryCollection } from './GeometryCollection';
 
 describe('##GeometryCollection', () => {
-  describe('Static Factory Methods', () => {
+  let pointBBoxJson: SerialBBox;
+  let pointJson: SerialPoint;
+  let pointPosition: Position;
+
+  let lineStringBBoxJson: SerialBBox;
+  let lineStringJson: SerialLineString;
+  let lineStringPoints: Point[];
+  let lineStringPositions: Position[];
+
+  // let geometryCollectionBBox: SerialBBox;
+  let geometryCollectionJson: SerialMultiPoint;
+  // let geometryCollectionPoints: Point[];
+  // let geometryCollectionPositions: Position[];
+
+  beforeEach(() => {
+    pointBBoxJson = [1, 2, 3, 4];
+    pointPosition = [1, 2];
+    pointJson = {
+      type: 'Point',
+      coordinates: pointPosition
+    };
+
+    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringPositions = [[1, 2], [3, 4]];
+    lineStringJson = {
+      type: 'LineString',
+      coordinates: lineStringPositions
+    };
+
+    lineStringPoints = [
+      Point.fromPosition(lineStringPositions[0]),
+      Point.fromPosition(lineStringPositions[1])
+    ];
+
+  });
+
+  describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make a collection of a Point object and LineString object from the associated GeoJSON object', () => {
         const pointPosition: Position = [1, 2];
@@ -109,31 +146,7 @@ describe('##GeometryCollection', () => {
     });
   });
 
-
-  describe('Main Interface Tests', () => {
-    describe('#clone', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#equals', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-  });
-
-
-  describe('Instance Tests', () => {
+  describe('Exporting', () => {
     describe('#toJson', () => {
       it('should make a GeoJSON object', () => {
         const pointPosition: Position = [1, 2];
@@ -218,5 +231,152 @@ describe('##GeometryCollection', () => {
       });
     });
 
+    describe('#toPositions', () => {
+      it('should return a Positions array representing the Points forming the Geometry', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+
+        const result = multiPoint.toPositions();
+
+        expect(result).toEqual(multiPointPositions);
+      });
+    });
+
+    describe('#points', () => {
+      it('should return a Points array representing the Points forming the Geometry', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+
+        const result = multiPoint.points;
+
+        expect(result).toEqual(multiPointPoints);
+      });
+    });
+  });
+
+  describe('Common Interfaces', () => {
+    describe('#clone', () => {
+      it('should return a copy of the values object', () => {
+        const point = Point.fromJson(pointJson);
+
+        const pointClone = point.clone();
+
+        expect(pointClone).toEqual(point);
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const point = Point.fromJson(pointJson);
+        const pointSame = Point.fromJson(pointJson);
+
+        const result = point.equals(pointSame);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return False for objects that are not equal by certain properties', () => {
+        const point = Point.fromJson(pointJson);
+
+        pointJson.coordinates = [3, 4];
+        const pointDiff = Point.fromJson(pointJson);
+
+        const result = point.equals(pointDiff);
+        expect(result).toBeFalsy();
+      });
+    });
+  });
+
+  describe('Methods', () => {
+    describe('#hasBBox', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#bbox', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+
+  });
+
+  describe('Collection Methods', () => {
+    describe('#add', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#addItems', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#indexOf', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#remove', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#removeByIndex', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#getItems', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#getByIndex', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
   });
 });

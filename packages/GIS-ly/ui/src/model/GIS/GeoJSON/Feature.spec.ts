@@ -8,11 +8,12 @@ import {
 import { BBoxState, GeoJsonTypes } from './enums';
 import { Position } from './types';
 
-import { Feature, FeatureProperty, FeaturePropertyProperties } from './Feature';
+import { Point } from './Geometries';
 import { BoundingBox } from './BoundingBox';
+import { Feature, FeatureProperty, FeaturePropertyProperties } from './Feature';
 
 describe('##FeatureProperty', () => {
-  describe('Static Factory Methods', () => {
+  describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object', () => {
         const propertiesJson: SerialGeoJsonProperties = {
@@ -28,7 +29,7 @@ describe('##FeatureProperty', () => {
     });
   });
 
-  describe('Main Interface Tests', () => {
+  describe('Common Interfaces', () => {
     describe('#clone', () => {
       it('should return a copy of the values object', () => {
         const propertiesJson: SerialGeoJsonProperties = {
@@ -101,13 +102,25 @@ describe('##FeatureProperty', () => {
 });
 
 describe('##Feature', () => {
+  let lineStringBBoxJson: SerialBBox;
+  let lineStringJson: SerialLineString;
+  let lineStringPoints: Point[];
+  let lineStringPositions: Position[];
+
   let featureJson: SerialFeature;
+
   beforeEach(() => {
-    const lineStringPosition: Position[] = [[1, 2], [3, 4]];
-    const lineStringJson: SerialLineString = {
+    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringPositions = [[1, 2], [3, 4]];
+    lineStringJson = {
       type: 'LineString',
-      coordinates: lineStringPosition
+      coordinates: lineStringPositions
     };
+
+    lineStringPoints = [
+      Point.fromPosition(lineStringPositions[0]),
+      Point.fromPosition(lineStringPositions[1])
+    ];
 
     featureJson = {
       type: 'Feature',
@@ -116,7 +129,7 @@ describe('##Feature', () => {
     };
   });
 
-  describe('Static Factory Methods', () => {
+  describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object', () => {
         const feature = Feature.fromJson(featureJson);
@@ -211,37 +224,7 @@ describe('##Feature', () => {
       });
     });
 
-    describe('#fromLngLat', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#fromPosition', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#fromOptions', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#fromJson', () => {
+    describe('#fromGeometry', () => {
       it('should', () => {
 
       });
@@ -252,31 +235,7 @@ describe('##Feature', () => {
     });
   });
 
-
-  describe('Main Interface Tests', () => {
-    describe('#clone', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#equals', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-  });
-
-
-  describe('Instance Tests', () => {
+  describe('Exporting', () => {
     describe('#toJson', () => {
       it('should make a GeoJSON object', () => {
         const feature = Feature.fromJson(featureJson);
@@ -347,5 +306,103 @@ describe('##Feature', () => {
         expect(result).toEqual(featureJson);
       });
     });
+
+    describe('#geometry', () => {
+      it('should return a Geometry object representing the Feature', () => {
+        // const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+
+        // const result = multiLineString.lineStrings;
+
+        // expect(result).toEqual(multiLineStringLineStrings);
+      });
+    });
   });
+
+  describe('Common Interfaces', () => {
+    describe('#clone', () => {
+      it('should return a copy of the values object', () => {
+        const feature = Feature.fromJson(featureJson);
+
+        const featureClone = feature.clone();
+
+        expect(featureClone).toEqual(feature);
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const feature = Feature.fromJson(featureJson);
+        const featureSame = Feature.fromJson(featureJson);
+
+        const result = feature.equals(featureSame);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return False for objects that are not equal by geometry', () => {
+        const feature = Feature.fromJson(featureJson);
+
+        lineStringJson.coordinates = [[1, 2], [5, 6]];
+        featureJson.geometry = lineStringJson;
+        const featureDiff = Feature.fromJson(featureJson);
+
+        const result = feature.equals(featureDiff);
+        expect(result).toBeFalsy();
+      });
+
+      it('should return False for objects that are not equal by properties', () => {
+        featureJson.properties = { foo: 'bar' };
+        const feature = Feature.fromJson(featureJson);
+
+        featureJson.properties = { bar: 'foo' };
+        const featureDiff = Feature.fromJson(featureJson);
+
+        const result = feature.equals(featureDiff);
+        expect(result).toBeFalsy();
+      });
+
+      it('should return False for objects that are not equal by id', () => {
+        featureJson.id = '1';
+        const feature = Feature.fromJson(featureJson);
+
+        featureJson.id = '2';
+        const featureDiff = Feature.fromJson(featureJson);
+
+        const result = feature.equals(featureDiff);
+        expect(result).toBeFalsy();
+      });
+    });
+  });
+
+  describe('Methods', () => {
+    describe('#hasBBox', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#bbox', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#setGeometry', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+  });
+
 });

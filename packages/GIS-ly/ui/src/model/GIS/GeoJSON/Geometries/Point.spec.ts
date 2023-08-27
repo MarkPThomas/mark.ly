@@ -225,22 +225,32 @@ describe('##Point', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should create a copy of the object', () => {
+      it('should return a copy of the values object', () => {
+        const point = Point.fromJson(pointJson);
 
-      });
+        const pointClone = point.clone();
 
-      it('should', () => {
-
+        expect(pointClone).toEqual(point);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const point = Point.fromJson(pointJson);
+        const pointSame = Point.fromJson(pointJson);
 
+        const result = point.equals(pointSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const point = Point.fromJson(pointJson);
 
+        pointJson.coordinates = [3, 4];
+        const pointDiff = Point.fromJson(pointJson);
+
+        const result = point.equals(pointDiff);
+        expect(result).toBeFalsy();
       });
     });
   });

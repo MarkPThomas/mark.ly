@@ -172,22 +172,32 @@ describe('##LineString', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should return a copy of the values object', () => {
+        const lineString = LineString.fromJson(lineStringJson);
 
-      });
+        const lineStringClone = lineString.clone();
 
-      it('should', () => {
-
+        expect(lineStringClone).toEqual(lineString);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const lineString = LineString.fromJson(lineStringJson);
+        const lineStringSame = LineString.fromJson(lineStringJson);
 
+        const result = lineString.equals(lineStringSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const lineString = LineString.fromJson(lineStringJson);
 
+        lineStringJson.coordinates = [[1, 2], [5, 6]];
+        const lineStringDiff = LineString.fromJson(lineStringJson);
+
+        const result = lineString.equals(lineStringDiff);
+        expect(result).toBeFalsy();
       });
     });
   });

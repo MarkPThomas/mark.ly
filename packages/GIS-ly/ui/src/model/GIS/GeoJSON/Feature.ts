@@ -178,7 +178,7 @@ export class Feature
       return false;
     }
 
-    return this._geometry.equals(item._geometry);
+    return this._id === item._id && this._geometry.equals(item._geometry);
   }
 
   clone(): Feature {
@@ -213,29 +213,6 @@ export class Feature
 
     return feature;
   }
-
-  //     {
-  //       type: string, // Feature
-  //       // bbox?: BBox[] // of n x n dimensions for lower-left-bottom & upper-right-top corners
-  //       geometry: {
-  //         type: string, // 'MultiLineString',
-  //         // array of track segments, each as an array of coord properties
-  //         //    each of which is an array of 3 indices:
-  //         //      0 = longitude
-  //         //      1 = latitude
-  //         //      2 = elevation (m)
-  //         coordinates: string[][][]
-  //       },
-  //       properties: {
-  //         _gpxType: string, //trk
-  //         name: string,
-  //         time: string, //timestamp
-  //         coordinateProperties: {
-  //           // array of track segments, each as an array of timestamps for each coord
-  //           times: string[][]
-  //         }
-  //       },
-  //     }
 
   static fromGeometry(geometry: IGeometry<GeoJsonProperties, SerialGeometry>, { properties, id }: FeatureOptions): Feature {
     const feature = new Feature();
