@@ -6,7 +6,7 @@ import {
 import { Position } from '../types';
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
-import { Point, PointProperties, PointOptions } from './Point';
+import { Point, PointOptions } from './Point';
 import { BoundingBox } from '../BoundingBox';
 
 describe('##Point', () => {
