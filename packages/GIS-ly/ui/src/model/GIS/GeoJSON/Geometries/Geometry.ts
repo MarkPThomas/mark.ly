@@ -3,11 +3,9 @@ import {
   GeoJsonGeometryTypes as SerialGeoJsonGeometryTypes
 } from "geojson";
 
+import { IGeoJson, GeoJson, GeoJsonProperties } from "../GeoJson";
 import { BoundingBox } from "../BoundingBox";
-import { IGeoJSON, GeoJSON, GeoJsonProperties } from "../IGeoJSON";
-import { GeoJsonTypes } from "../enums";
-import { GeometryCollection } from "./GeometryCollection";
-import { CoordinateContainer } from "./CoordinateContainer";
+import { BBoxState } from "../enums";
 
 export type GeometryType = Geometry<GeoJsonProperties, SerialGeometry>;
 
@@ -20,7 +18,7 @@ export type GeometryType = Geometry<GeoJsonProperties, SerialGeometry>;
  * @template TJson
  */
 export interface IGeometry<TProperties extends GeoJsonProperties, TSerial extends SerialGeometry>
-  extends IGeoJSON<TProperties, TSerial> {
+  extends IGeoJson<TProperties, TSerial> {
 
 }
 
@@ -34,7 +32,7 @@ export interface IGeometry<TProperties extends GeoJsonProperties, TSerial extend
  * @template TJson
  */
 export abstract class Geometry<TProperties extends GeoJsonProperties, TSerial extends SerialGeometry>
-  extends GeoJSON
+  extends GeoJson
   implements IGeometry<TProperties, TSerial>
 {
   abstract equals(item: TProperties): boolean;
@@ -51,16 +49,8 @@ export abstract class Geometry<TProperties extends GeoJsonProperties, TSerial ex
    */
   abstract readonly type: SerialGeoJsonGeometryTypes;
 
-  abstract toJson(includeBoundingBox: boolean): TSerial;
+  abstract toJson(includeBBox: BBoxState): TSerial;
 
-  static fromJson(json: SerialGeometry): IGeometry<GeoJsonProperties, SerialGeometry> {
-    switch (json.type) {
-      case GeoJsonTypes.GeometryCollection:
-        return GeometryCollection.fromJson(json);
-      default:
-        return CoordinateContainer.fromJson(json);
-    }
-  }
   //       geometry: {
   //         type: string, // 'MultiLineString',
   //         // array of track segments, each as an array of coord properties

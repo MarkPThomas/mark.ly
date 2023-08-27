@@ -2,14 +2,16 @@ import { MultiPolygon as SerialMultiPolygon } from 'geojson';
 
 import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
 
-import { BoundingBox } from "../BoundingBox";
-import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
-import { Position } from "../types";
-import { Point } from "./Point";
-import { Polygon } from "./Polygon";
-import { GeoJsonTypes } from "../enums";
-import { LineString } from "./LineString";
+import { BBoxState, GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
+import { Position } from "../types";
+
+import { BoundingBox } from "../BoundingBox";
+
+import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
+import { Point } from "./Point";
+import { LineString } from "./LineString";
+import { Polygon } from "./Polygon";
 
 export interface MultiPolygonProperties extends ICoordinateContainer<Position[][][], Point[][][], SerialMultiPolygon> {
 }
@@ -84,19 +86,18 @@ export class MultiPolygon
 
   readonly type = GeoJsonTypes.MultiPolygon;
 
-  get positions(): Position[][][] {
-    return this._points.map(
-      (polygon) => polygon.map(
-        (lineString) => lineString.map(
-          (point) => point.positions
-        )));
-  }
-
   get points(): Point[][][] {
     return this._points.map(
       (polygon) => polygon.map(
+        (lineString) => [...lineString]
+      ));
+  }
+
+  toPositions(): Position[][][] {
+    return this._points.map(
+      (polygon) => polygon.map(
         (lineString) => lineString.map(
-          (point) => point.clone()
+          (point) => point.toPositions()
         )));
   }
 
@@ -149,11 +150,11 @@ export class MultiPolygon
     return Polygon.fromPoints(this._points[polygonIndex]);
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialMultiPolygon {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialMultiPolygon {
+    const jsonBase = super.toJsonBase(includeBBox);
     const json = {
       ...jsonBase,
-      coordinates: this.positions
+      coordinates: this.toPositions()
     } as SerialMultiPolygon;
 
     return json;

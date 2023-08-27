@@ -2,13 +2,15 @@ import { LineString as SerialLineString } from 'geojson';
 
 import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
 
-import { BoundingBox } from "../BoundingBox";
-import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
-import { Position } from "../types";
-import { IMultiPoint, MultiPoint } from "./MultiPoint";
-import { IPoint, Point } from "./Point";
 import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
+import { Position } from "../types";
+
+import { BoundingBox } from "../BoundingBox";
+
+import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
+import { IMultiPoint } from "./MultiPoint";
+import { Point } from "./Point";
 
 export interface LineStringProperties extends ICoordinateContainer<Position[], Point[], SerialLineString> {
 }
@@ -16,7 +18,7 @@ export interface LineStringProperties extends ICoordinateContainer<Position[], P
 export interface ILineString
   extends LineStringProperties {
   pointAtIndex(index: number): Point;
-  toPolyline(precision: number): string;
+  // toPolyline(precision: number): string;
 }
 
 /**
@@ -52,12 +54,12 @@ export class LineString
 
   readonly type = GeoJsonTypes.LineString;
 
-  get positions(): Position[] {
-    return this._points.map((point) => point.positions);
-  }
-
   get points(): Point[] {
     return [...this._points];
+  }
+
+  toPositions(): Position[] {
+    return this._points.map((point) => point.toPositions());
   }
 
   pointAtIndex(pointIndex: number): Point {
@@ -67,10 +69,10 @@ export class LineString
     return this._points[pointIndex].clone();
   }
 
-  toPolyline(precision: number): string {
-    // TODO: Implement
-    throw new Error("Method not implemented.");
-  }
+  // toPolyline(precision: number): string {
+  //   // TODO: Implement
+  //   throw new Error("Method not implemented.");
+  // }
 
   equals(item: LineStringProperties): boolean {
     // TODO: Handle Interfaces/types. Currently using only Class to avoid unnecessary cloning.
@@ -141,7 +143,9 @@ export class LineString
     const lineString = new LineString();
 
     lineString._points = [...multiPoint.points];
-    lineString._bbox = bbox ?? multiPoint.bbox;
+    if (bbox) {
+      lineString._bbox = bbox;
+    }
 
     return lineString;
   }

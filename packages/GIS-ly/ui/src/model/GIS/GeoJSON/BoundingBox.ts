@@ -5,9 +5,11 @@ import { LatLngBoundsExpression, LatLngExpression, LatLngLiteral } from "leaflet
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { Coordinates } from "../Coordinate";
-import { LatLngLiterals } from "./GeoJSON";
-import { IPoint, Point, PointProperties } from "./Geometries/Point";
+
+import { LatLngLiterals } from "./GeoJSON_Refactor";
 import { Position } from "./types";
+
+import { IPoint, Point, PointProperties } from "./Geometries/Point";
 
 export type TBoundingBox = [number, number, number, number];
 
@@ -99,8 +101,8 @@ export class BoundingBox implements IBoundingBox {
 
   toJson(): SerialBBox {
     return this.hasAltitude()
-      ? [this.north, this.south, this.southwestAltitude, this.west, this.east, this.northeastAltitude]
-      : [this.north, this.south, this.west, this.east];
+      ? [this.west, this.south, this.southwestAltitude, this.east, this.north, this.northeastAltitude]
+      : [this.west, this.south, this.east, this.north];
   }
 
   toCornerPositions(): [Position, Position] {

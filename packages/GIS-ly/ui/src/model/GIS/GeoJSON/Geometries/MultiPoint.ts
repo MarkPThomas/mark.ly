@@ -2,12 +2,14 @@ import { MultiPoint as SerialMultiPoint } from 'geojson';
 
 import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
 
-import { BoundingBox } from "../BoundingBox";
-import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
-import { Position } from "../types";
-import { Point } from "./Point";
 import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
+import { Position } from "../types";
+
+import { BoundingBox } from "../BoundingBox";
+
+import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
+import { Point } from "./Point";
 
 export interface MultiPointProperties extends ICoordinateContainer<Position[], Point[], SerialMultiPoint> {
 }
@@ -44,12 +46,12 @@ export class MultiPoint
 
   readonly type = GeoJsonTypes.MultiPoint;
 
-  get positions(): Position[] {
-    return this._points.map((point) => point.positions);
-  }
-
   get points(): Point[] {
     return [...this._points];
+  }
+
+  toPositions(): Position[] {
+    return this._points.map((point) => point.toPositions());
   }
 
   pointAtIndex(pointIndex: number): Point {

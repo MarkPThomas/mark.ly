@@ -24,7 +24,7 @@ import {
   SegmentLimits,
   splitTrackSegmentBySegments,
   splitTrackSegment
-} from './GeoJSON';
+} from './GeoJSON_Refactor';
 import { LatLng } from 'leaflet';
 import { Coordinate } from '../Coordinate';
 

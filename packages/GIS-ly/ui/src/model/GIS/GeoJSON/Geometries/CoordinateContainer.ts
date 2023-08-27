@@ -1,28 +1,14 @@
 import { Geometry as SerialGeometry } from 'geojson';
 
+import { GeoJsonProperties } from '../GeoJson';
 import { BoundingBox } from "../BoundingBox";
+
 import { Geometry, IGeometry } from "./Geometry";
-import { Point, PointProperties } from "./Point";
-import { GeoJsonProperties } from '../IGeoJSON';
-import { GeoJsonTypes } from '../enums';
-import { LineString } from './LineString';
-import { MultiPoint } from './MultiPoint';
-import { MultiPolygon } from './MultiPolygon';
-import { MultiLineString } from './MultiLineString';
-import { Polygon } from './Polygon';
-import { InvalidGeometryException } from '../exceptions';
+import { PointProperties } from "./Point";
+import { BBoxState } from '../enums';
 
 export interface CoordinateContainerProperties<TPosition, TPoint> extends GeoJsonProperties {
-  /**
-  * The coordinates which define the geometry.
-  *
-  * Typically a list of points but for some geometry such as polygon this can be a list of a list of points,
-  * thus the return is generic here.
-  *
-  * @return {*}  {T} The `Point`s which make up the coordinates defining the geometry.
-  * @memberof ICoordinateContainer
-  */
-  positions: TPosition
+  // TODO: Consider removing generic types
   points: TPoint
 }
 
@@ -42,6 +28,16 @@ export interface ICoordinateContainer<TPosition, TPoint, TSerial extends SerialG
   IGeometry<CoordinateContainerProperties<TPosition, TPoint>, TSerial>,
   CoordinateContainerProperties<TPosition, TPoint> {
 
+  /**
+  * The coordinates which define the geometry.
+  *
+  * Typically a list of points but for some geometry such as polygon this can be a list of a list of points,
+  * thus the return is generic here.
+  *
+  * @return {*}  {T} The `Point`s which make up the coordinates defining the geometry.
+  * @memberof ICoordinateContainer
+  */
+  toPositions(): TPosition
 }
 
 /**
@@ -69,49 +65,35 @@ export abstract class CoordinateContainer<TPosition, TPoint, TSerial extends Ser
    * @memberof CoordinateContainer
    */
   protected _buffer: number = 0;
-  get bbox(): BoundingBox {
+  bbox(): BoundingBox {
     if (!this._bbox) {
       if (Array.isArray(this._points)) {
         const points = this._points.flat(Infinity);
         this._bbox = BoundingBox.fromPoints(points);
+      } else if (this._points) {
+        this._bbox = BoundingBox.fromPoint(this._points as unknown as PointProperties, this._buffer);
       } else {
-        this._bbox = BoundingBox.fromPoint(this._points as PointProperties, this._buffer);
+        this._bbox = BoundingBox.fromPoint(this as unknown as PointProperties, this._buffer);
       }
     }
     return this._bbox;
   }
+  hasBBox(): boolean {
+    return this._bbox !== undefined;
+  }
 
-  abstract get positions(): TPosition;
+  abstract toPositions(): TPosition;
 
   protected _points: TPoint;
   abstract get points(): TPoint;
 
-  toJson(includeBoundingBox: boolean = false): TSerial {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): TSerial {
+    const jsonBase = super.toJsonBase(includeBBox);
     const json = {
       ...jsonBase,
-      coordinates: this.positions as TPosition
+      coordinates: this.toPositions()
     };
 
     return json as unknown as TSerial;
-  }
-
-  static fromJson(json: SerialGeometry): IGeometry<GeoJsonProperties, SerialGeometry> {
-    switch (json.type) {
-      case GeoJsonTypes.Point:
-        return Point.fromJson(json);
-      case GeoJsonTypes.MultiPoint:
-        return MultiPoint.fromJson(json);
-      case GeoJsonTypes.LineString:
-        return LineString.fromJson(json);
-      case GeoJsonTypes.MultiLineString:
-        return MultiLineString.fromJson(json);
-      case GeoJsonTypes.Polygon:
-        return Polygon.fromJson(json);
-      case GeoJsonTypes.MultiPolygon:
-        return MultiPolygon.fromJson(json);
-      default:
-        throw new InvalidGeometryException(`${InvalidGeometryException.DEFAULT_MESSAGE} \n ${json}`);
-    }
   }
 }

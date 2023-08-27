@@ -1,14 +1,18 @@
 import {
+  BBox as SerialBBox,
   Geometry as SerialGeometry,
   GeometryCollection as SerialGeometryCollection
 } from 'geojson';
 
-import { BoundingBox } from "../BoundingBox";
-import { Geometry, GeometryType } from "./Geometry";
-import { GeoJsonGeometryTypes, GeoJsonTypes } from "../enums";
-import { GeoJsonProperties } from '../IGeoJSON';
-import { GeoCollection, GeoCollectionMethods } from "../GeoCollection";
+import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
+
+import { GeoJsonProperties } from '../GeoJson';
+import { BoundingBox } from "../BoundingBox";
+import { GeoCollection, GeoCollectionMethods } from "../GeoCollection";
+
+import { Geometry, GeometryType } from "./Geometry";
+import { CoordinateContainerBuilder } from './CoordinateContainerBuilder';
 
 
 class GeometryCollectionDelegate extends GeoCollection<GeometryType, SerialGeometry> {
@@ -93,8 +97,11 @@ export class GeometryCollection
 
   readonly type = GeoJsonTypes.GeometryCollection;
 
-  get bbox(): BoundingBox {
-    return this._collection.bbox;
+  bbox(): BoundingBox {
+    return this._collection.bbox();
+  }
+  hasBBox(): boolean {
+    return this._collection.hasBBox();
   }
 
   get geometries(): GeometryType[] {
@@ -105,11 +112,11 @@ export class GeometryCollection
     return this._collection.getGeometriesByType(type);
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialGeometryCollection {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialGeometryCollection {
+    const jsonBase = super.toJsonBase(includeBBox);
     const json = {
       ...jsonBase,
-      geometries: this.geometries.map((geometry) => geometry.toJson(includeBoundingBox))
+      geometries: this.geometries.map((geometry) => geometry.toJson(includeBBox))
     } as SerialGeometryCollection
 
     return json;
@@ -168,18 +175,16 @@ export class GeometryCollection
     super();
   }
 
-  static fromJson(json: SerialGeometryCollection): GeometryCollection {
-    const geometries = json.geometries as SerialGeometry[];
-
-    if (!geometries) {
+  static fromJson(json: SerialGeometry[], bboxJSon?: SerialBBox): GeometryCollection {
+    if (!json) {
       throw new InvalidGeometryException(
         `Invalid Geometries for "${GeoJsonTypes.GeometryCollection}". Must an array of GeoJSON "Geometry" objects.
         \n See: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.8
-        \n ${json.geometries}`);
+        \n ${JSON.stringify(json)}`);
     }
 
-    const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
-    const geometryTypes = geometries.map((geometry) => Geometry.fromJson(geometry)) as GeometryType[];
+    const bbox = bboxJSon ? BoundingBox.fromJson(bboxJSon) : undefined
+    const geometryTypes = json.map((geometry) => CoordinateContainerBuilder.fromJson(geometry)) as GeometryType[];
 
     const multiPolygon = GeometryCollection.fromGeometries(geometryTypes, bbox);
 

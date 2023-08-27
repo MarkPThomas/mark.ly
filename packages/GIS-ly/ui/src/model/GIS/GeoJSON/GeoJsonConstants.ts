@@ -1,4 +1,7 @@
 export class GeoJsonConstants {
+  /* istanbul ignore next */
+  private constructor() { };
+
   /**
    * A Mercator project has a finite longitude values, this constant represents the lowest value available to represent a geolocation.
    *

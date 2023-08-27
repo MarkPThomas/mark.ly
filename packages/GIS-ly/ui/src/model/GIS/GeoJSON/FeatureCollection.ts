@@ -6,8 +6,8 @@ import {
 import { BoundingBox } from "./BoundingBox";
 import { GeoCollection, GeoCollectionMethods } from "./GeoCollection";
 import { Feature } from "./Feature";
-import { GeoJSON, GeoJsonProperties } from "./IGeoJSON";
-import { GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
+import { GeoJson, GeoJsonProperties } from "./GeoJson";
+import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
 import { Geometry } from './Geometries';
 
 class FeatureCollectionDelegate extends GeoCollection<Feature, SerialFeature> {
@@ -78,15 +78,18 @@ An example of a Feature Collections given below:
  * @implements {IGeoJSON}
  */
 export class FeatureCollection
-  extends GeoJSON
+  extends GeoJson
   implements IFeatureCollection {
 
-  protected _collection: FeatureCollectionDelegate;
+  protected _collection: FeatureCollectionDelegate = new FeatureCollectionDelegate();
 
   readonly type = GeoJsonTypes.FeatureCollection;
 
-  get bbox(): BoundingBox {
-    return this._collection.bbox;
+  bbox(): BoundingBox {
+    return this._collection.bbox();
+  }
+  hasBBox(): boolean {
+    return this._collection.hasBBox();
   }
 
   get features(): Feature[] {
@@ -101,12 +104,12 @@ export class FeatureCollection
     return this._collection.getGeometriesByType(type);
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialFeatureCollection {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeatureCollection {
+    const jsonBase = super.toJsonBase(includeBBox);
 
     let json = {
       ...jsonBase,
-      features: this.features.map((feature) => feature.toJson(includeBoundingBox))
+      features: this.features.map((feature) => feature.toJson())
     } as SerialFeatureCollection
 
     return json;
@@ -145,7 +148,7 @@ export class FeatureCollection
   }
 
   clone(): FeatureCollection {
-    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this.bbox);
+    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this.bbox());
   }
 
   protected constructor() {
@@ -155,12 +158,11 @@ export class FeatureCollection
   static fromJson(json: SerialFeatureCollection): FeatureCollection {
     const featureCollection = new FeatureCollection();
 
+    const features = json.features.map((feature) => Feature.fromJson(feature));
+    featureCollection._collection.addItems(features);
     if (json.bbox) {
       featureCollection._collection = new FeatureCollectionDelegate(BoundingBox.fromJson(json.bbox));
     }
-
-    const features = json.features.map((feature) => Feature.fromJson(feature));
-    featureCollection._collection.addItems(features);
 
     return featureCollection;
   }

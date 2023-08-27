@@ -7,14 +7,17 @@ import {
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { BoundingBox } from "./BoundingBox";
-import { Geometry, IGeometry } from "./Geometries/Geometry";
-import { GeoJSON, GeoJsonProperties } from "./IGeoJSON";
-import { GeoJsonTypes } from "./enums";
+import { IGeometry } from "./Geometries/Geometry";
+import { GeoJson, GeoJsonProperties } from "./GeoJson";
+import { BBoxState, GeoJsonTypes } from "./enums";
+import { GeometryBuilder } from './Geometries';
 
 export type FeatureOptions = {
   properties?: IFeatureProperty,
   id?: string
 }
+
+export type FeaturePropertyProperties = { [name: string]: any; }
 
 /**
  * Properties of features in GeoJSON files have not specified shape.
@@ -26,31 +29,32 @@ export type FeatureOptions = {
  * @extends {IEquatable<IFeatureProperty>}
  * @extends {ICloneable<IFeatureProperty>}
  */
-export interface IFeatureProperty extends IEquatable<IFeatureProperty>, ICloneable<IFeatureProperty> {
+export interface IFeatureProperty
+  extends
+  FeaturePropertyProperties,
+  IEquatable<FeaturePropertyProperties>, ICloneable<FeatureProperty> {
 }
 
-class FeatureProperty implements IFeatureProperty {
-  protected constructor() {
+export class FeatureProperty implements IFeatureProperty {
+  protected constructor() { }
 
-  }
-
-  equals(item: IFeatureProperty): boolean {
+  equals(item: FeaturePropertyProperties): boolean {
     const keys = Object.keys(this);
     const itemKeys = Object.keys(item);
     if (keys.length !== itemKeys.length) {
       return false;
     }
 
-    keys.forEach((key) => {
-      if (item[key] !== this[key]) {
+    for (let i = 0; i < keys.length; i++) {
+      if (item[keys[i]] !== this[keys[i]]) {
         return false;
       }
-    });
+    }
 
     return true;
   }
 
-  clone(): IFeatureProperty {
+  clone(): FeatureProperty {
     const featureProperty = new FeatureProperty();
 
     const keys = Object.keys(this);
@@ -111,23 +115,30 @@ An example of a serialized feature is given below:
  * @implements {IGeoJSON}
  */
 export class Feature
-  extends GeoJSON
+  extends GeoJson
   implements IFeature {
 
   readonly type = GeoJsonTypes.Feature;
 
-  get bbox(): BoundingBox {
-    return this._geometry.bbox;
+  bbox(): BoundingBox {
+    return this._geometry.bbox();
+  }
+  hasBBox(): boolean {
+    return this._geometry.hasBBox();
   }
 
-  toJson(includeBoundingBox: boolean = false): SerialFeature {
-    const jsonBase = super.toJsonBase(includeBoundingBox);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeature {
+    const jsonBase = super.toJsonBase(includeBBox);
 
     let json = {
       ...jsonBase,
-      geometry: this.geometry.toJson(includeBoundingBox),
+      geometry: this.geometry.toJson(includeBBox),
       properties: this.properties as SerialGeoJsonProperties
     } as SerialFeature
+
+    if (this._id) {
+      json.id = this._id;
+    }
 
     return json;
   }
@@ -189,14 +200,14 @@ export class Feature
   static fromJson(json: SerialFeature): Feature {
     const feature = new Feature();
     if (json.id) {
-      feature._id;
+      feature._id = json.id.toString();
     }
 
     if (json.bbox && !json.geometry.bbox) {
       // Both bboxes should be the same. Assume geometry is more up to date, but if it is not present, use feature bbox.
       json.geometry.bbox = json.bbox;
     }
-    feature._geometry = Geometry.fromJson(json.geometry);
+    feature._geometry = GeometryBuilder.fromJson(json.geometry);
 
     feature._properties = FeatureProperty.fromJson(json.properties);
 

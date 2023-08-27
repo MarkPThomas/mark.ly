@@ -1,14 +1,16 @@
 import { Point as SerialPoint } from 'geojson';
 
+import { GeoJsonTypes } from "../enums";
+import { InvalidGeometryException, LngLatOutOfRangeException } from '../exceptions';
+import { GeoJsonConstants } from '../GeoJsonConstants';
+import { Position } from "../types";
 import { BoundingBox } from "../BoundingBox";
+
 import {
   CoordinateContainer,
   CoordinateContainerProperties
 } from "./CoordinateContainer";
-import { Position } from "../types";
-import { GeoJsonTypes } from "../enums";
-import { InvalidGeometryException, LngLatOutOfRangeException } from '../exceptions';
-import { GeoJsonConstants } from '../GeoJsonConstants';
+
 
 export type PointOptions = {
   longitude: number,
@@ -84,14 +86,13 @@ export class Point
     return this._buffer;
   }
 
-
   protected _positions: Position;
-  get positions(): Position {
+  toPositions(): Position {
     return [...this._positions];
   }
 
   get points(): Point {
-    return Point.fromLngLat(this.longitude, this.latitude, this.altitude);
+    return this;
   }
 
   get latitude(): number {
@@ -161,6 +162,8 @@ export class Point
     return Point.fromLngLat(position[0], position[1], position[2], buffer);
   }
 
+
+  static DEFAULT_BUFFER = 0.5;
   /**
    *
    *
@@ -172,7 +175,7 @@ export class Point
    * @return {*}  {Point}
    * @memberof Point
    */
-  static fromLngLat(longitude: number, latitude: number, altitude?: number, buffer: number = 0.5): Point {
+  static fromLngLat(longitude: number, latitude: number, altitude?: number, buffer: number = Point.DEFAULT_BUFFER): Point {
     const point = new Point();
 
     if (longitude < GeoJsonConstants.MIN_LONGITUDE) {

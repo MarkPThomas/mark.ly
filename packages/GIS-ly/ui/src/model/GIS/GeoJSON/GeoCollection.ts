@@ -1,14 +1,20 @@
 import { GeoJsonObject as SerialGeoJsonObject } from "geojson";
 
 import { BoundingBox } from "./BoundingBox";
-import { IGeoJSON, GeoJSON, GeoJsonBaseProperties, IGeoJsonBase, GeoJsonProperties } from "./IGeoJSON";
+import {
+  GeoJson,
+  GeoJsonBaseProperties,
+  IGeoJsonBase,
+  IJson
+} from "./GeoJson";
+import { BBoxState } from "./enums";
 
-export interface GeoCollectionProperties<TItem extends GeoJSON> extends GeoJsonBaseProperties {
+export interface GeoCollectionProperties<TItem extends GeoJson> extends GeoJsonBaseProperties {
   length: number;
   items: TItem[];
 }
 
-export interface GeoCollectionMethods<TItem extends GeoJSON> {
+export interface GeoCollectionMethods<TItem extends GeoJson> {
   getByIndex(index: number): TItem;
   indexOf(item: TItem): number;
   add(item: TItem, updateBBox: boolean): number;
@@ -17,23 +23,24 @@ export interface GeoCollectionMethods<TItem extends GeoJSON> {
   removeByIndex(index: number, updateBBox: boolean): TItem | null;
 }
 
-export interface IGeoCollection<TItem extends GeoJSON, TSerial extends SerialGeoJsonObject>
+export interface IGeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
   extends
   GeoCollectionProperties<TItem>,
   GeoCollectionMethods<TItem>,
-  IGeoJsonBase<GeoCollectionProperties<TItem>, TSerial> {
+  IGeoJsonBase<GeoCollectionProperties<TItem>>,
+  IJson<TSerial[]> {
 
 
-  /**
-   * This takes the currently defined values found inside the GeoJson instance and converts it to a GeoJson string.
-   *
-   * @return {*}  {string}
-   * @memberof IGeoJSON
-   */
-  toJson(includeBoundingBox: boolean): TSerial[];
+  // /**
+  //  * This takes the currently defined values found inside the GeoJson instance and converts it to a GeoJson string.
+  //  *
+  //  * @return {*}  {string}
+  //  * @memberof IGeoJSON
+  //  */
+  // toJson(includeBBox: BBoxState): TSerial[];
 }
 
-export abstract class GeoCollection<TItem extends GeoJSON, TSerial extends SerialGeoJsonObject>
+export abstract class GeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
   implements IGeoCollection<TItem, TSerial>
 {
   protected _length: number = 0;
@@ -42,11 +49,14 @@ export abstract class GeoCollection<TItem extends GeoJSON, TSerial extends Seria
   }
 
   protected _bbox: BoundingBox;
-  get bbox(): BoundingBox {
+  bbox(): BoundingBox {
     if (!this._bbox) {
       this._bbox = this.createBBox();
     }
     return this._bbox;
+  }
+  hasBBox(): boolean {
+    return !!(this._bbox);
   }
 
   protected updateBBox(updateCache: boolean = false) {
@@ -57,10 +67,15 @@ export abstract class GeoCollection<TItem extends GeoJSON, TSerial extends Seria
     }
   }
 
+  // TODO: Update to get all coordinates of contained objects and derive BoundingBox from these.
   protected createBBox(): BoundingBox {
     const bboxes = [];
     this._items.forEach((item) => {
-      bboxes.push(item.bbox.toCornerPoints());
+      if (item.hasBBox()) {
+        bboxes.push(item.bbox().toCornerPoints());
+      } else {
+        bboxes.push(item)
+      }
     });
 
     return BoundingBox.fromPoints(bboxes.flat(Infinity));
@@ -140,13 +155,15 @@ export abstract class GeoCollection<TItem extends GeoJSON, TSerial extends Seria
     return true;
   }
 
-  abstract clone(): IGeoJsonBase<GeoCollectionProperties<TItem>, TSerial>;
+  abstract clone(): IGeoJsonBase<GeoCollectionProperties<TItem>>;
 
   constructor(bbox?: BoundingBox) {
-    this._bbox = bbox;
+    if (bbox) {
+      this._bbox = bbox;
+    }
   }
 
-  toJson(includeBoundingBox: boolean): TSerial[] {
-    return this._items.map((item) => item.toJson(includeBoundingBox) as TSerial);
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): TSerial[] {
+    return this._items.map((item) => item.toJson(includeBBox) as TSerial);
   }
 }
