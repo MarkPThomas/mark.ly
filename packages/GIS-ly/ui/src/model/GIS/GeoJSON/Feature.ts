@@ -7,14 +7,16 @@ import {
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { BoundingBox } from "./BoundingBox";
-import { IGeometry } from "./Geometries/Geometry";
+import { GeometryType, IGeometry } from "./Geometries/Geometry";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
-import { BBoxState, GeoJsonTypes } from "./enums";
-import { GeometryBuilder } from './Geometries';
+import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
+import { GeometryBuilder, GeometryCollection, Point } from './Geometries';
+import { CoordinateContainer } from './Geometries/CoordinateContainer';
 
 export type FeatureOptions = {
   properties?: IFeatureProperty,
-  id?: string
+  id?: string,
+  bbox?: BoundingBox
 }
 
 export type FeaturePropertyProperties = { [name: string]: any; }
@@ -120,11 +122,22 @@ export class Feature
 
   readonly type = GeoJsonTypes.Feature;
 
+  protected _bbox: BoundingBox;
   bbox(): BoundingBox {
+    // if (!this._bbox) {
+    //   let points: Point[];
+    //   if (this._geometry.type === GeoJsonGeometryTypes.GeometryCollection) {
+    //     // points = (this._geometry as GeometryCollection).geometries.
+    //   } else {
+    //     points = (this._geometry as GeometryType).
+    //   }
+    //   this._bbox = BoundingBox.fromPoints(points);
+    // }
+    // return this._bbox;
     return this._geometry.bbox();
   }
   hasBBox(): boolean {
-    return this._geometry.hasBBox();
+    return !!(this._bbox);
   }
 
   toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeature {
@@ -214,7 +227,10 @@ export class Feature
     return feature;
   }
 
-  static fromGeometry(geometry: IGeometry<GeoJsonProperties, SerialGeometry>, { properties, id }: FeatureOptions): Feature {
+  static fromGeometry(
+    geometry: IGeometry<GeoJsonProperties, SerialGeometry>,
+    { properties, id, bbox }: FeatureOptions = {}
+  ): Feature {
     const feature = new Feature();
 
     feature._geometry = geometry;
@@ -224,6 +240,9 @@ export class Feature
     if (properties) {
       feature._properties = properties;
     }
+    // if (bbox) {
+    //   feature._
+    // }
 
     return feature;
   }

@@ -210,7 +210,7 @@ export class Polygon
    * @return {*}  {Polygon}
    * @memberof Polygon
    */
-  static fromOuterInner(outer: LineString, { inner, bbox }: PolygonOptions): Polygon {
+  static fromOuterInner(outer: LineString, { inner, bbox }: PolygonOptions = {}): Polygon {
     const polygon = new Polygon();
 
     polygon._points = [outer.points];

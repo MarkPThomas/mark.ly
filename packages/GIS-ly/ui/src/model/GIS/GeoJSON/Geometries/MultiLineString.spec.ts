@@ -8,6 +8,7 @@ import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 import { BoundingBox } from '../BoundingBox';
 
 import { Point } from './Point';
+import { LineString } from './LineString';
 import { MultiLineString } from './MultiLineString';
 
 describe('##MultiLineString', () => {
@@ -103,11 +104,28 @@ describe('##MultiLineString', () => {
 
     describe('#fromLineStrings', () => {
       it('should make an object from the associated LineStrings', () => {
+        const lineString1 = LineString.fromPositions(multiLineStringPositions[0]);
+        const lineString2 = LineString.fromPositions(multiLineStringPositions[1]);
+        const lineStrings = [lineString1, lineString2];
 
+        const multiLineString = MultiLineString.fromLineStrings(lineStrings);
+
+        expect(multiLineString.type).toEqual(GeoJsonGeometryTypes.MultiLineString);
+        expect(multiLineString.toPositions()).toEqual(multiLineStringPositions);
+        expect(multiLineString.points).toEqual(multiLineStringPoints);
+
+        // Optional properties & Defaults
+        expect(multiLineString.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated LineStrings with a bounding box specified', () => {
+        const lineString1 = LineString.fromPositions(multiLineStringPositions[0]);
+        const lineString2 = LineString.fromPositions(multiLineStringPositions[1]);
+        const lineStrings = [lineString1, lineString2];
 
+        const multiLineString = MultiLineString.fromLineStrings(lineStrings, multiLineStringBBox);
+
+        expect(multiLineString.hasBBox()).toBeTruthy();
       });
     });
   });
@@ -180,11 +198,15 @@ describe('##MultiLineString', () => {
 
     describe('#lineStrings', () => {
       it('should return a LineStrings array representing the Points forming the Geometry', () => {
-        // const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+        const lineString1 = LineString.fromPositions(multiLineStringPositions[0]);
+        const lineString2 = LineString.fromPositions(multiLineStringPositions[1]);
 
-        // const result = multiLineString.lineStrings;
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
 
-        // expect(result).toEqual(multiLineStringLineStrings);
+        const result = multiLineString.lineStrings;
+
+        expect(result[0]).toEqual(lineString1);
+        expect(result[1]).toEqual(lineString2);
       });
     });
   });

@@ -176,8 +176,6 @@ export class FeatureCollection
   }
 }
 
-
-
 // // from FeatureCollection<Geometry, {[name: string]: any;}>
 // type MyFeatureCollection = {
 //   type: string // FeatureCollection

@@ -7,6 +7,7 @@ import { Position } from '../types';
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
 import { Point, PointProperties, PointOptions } from './Point';
+import { BoundingBox } from '../BoundingBox';
 
 describe('##Point', () => {
   let pointBBoxJson: SerialBBox;
@@ -121,22 +122,151 @@ describe('##Point', () => {
     });
 
     describe('#fromLngLat', () => {
-      it('should', () => {
+      it('should make an object with no altitude', () => {
+        const point = Point.fromLngLat(1, 2);
 
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(pointPosition);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeFalsy();
+        expect(point.altitude).toBeUndefined();
+        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.hasBBox()).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should make an object with an altitude specified', () => {
+        const positionWithAltitude: Position = [1, 2, 3];
 
+        const point = Point.fromLngLat(1, 2, 3);
+
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(positionWithAltitude);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeTruthy();
+        expect(point.altitude).toEqual(3);
+        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.hasBBox()).toBeFalsy();
+      });
+
+      it('should make an object with a buffer specified', () => {
+        const point = Point.fromLngLat(1, 2, undefined, 2);
+
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(pointPosition);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeFalsy();
+        expect(point.altitude).toBeUndefined();
+        expect(point.buffer).toEqual(2);
+        expect(point.hasBBox()).toBeFalsy();
+      });
+
+      it('should throw an LngLatOutOfRangeException when latitude is greater than +/-90 degrees', () => {
+        expect(() => Point.fromLngLat(1, 91)).toThrow()
+        expect(() => Point.fromLngLat(1, -91)).toThrow()
+      });
+
+      it('should throw an LngLatOutOfRangeException when longitude is greater than +/-180 degrees', () => {
+        expect(() => Point.fromLngLat(181, 2)).toThrow()
+        expect(() => Point.fromLngLat(-181, 2)).toThrow()
       });
     });
 
     describe('#fromOptions', () => {
-      it('should', () => {
+      it('should make an object with no altitude', () => {
+        const options: PointOptions = {
+          longitude: 1,
+          latitude: 2
+        };
+        const point = Point.fromOptions(options);
 
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(pointPosition);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeFalsy();
+        expect(point.altitude).toBeUndefined();
+        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.hasBBox()).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should make an object with an altitude specified', () => {
+        const positionWithAltitude: Position = [1, 2, 3];
 
+        const options: PointOptions = {
+          longitude: 1,
+          latitude: 2,
+          altitude: 3
+        };
+        const point = Point.fromOptions(options);
+
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(positionWithAltitude);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeTruthy();
+        expect(point.altitude).toEqual(3);
+        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.hasBBox()).toBeFalsy();
+      });
+
+      it('should make an object with a buffer specified', () => {
+        const options: PointOptions = {
+          longitude: 1,
+          latitude: 2,
+          buffer: 2
+        };
+        const point = Point.fromOptions(options);
+
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(pointPosition);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeFalsy();
+        expect(point.altitude).toBeUndefined();
+        expect(point.buffer).toEqual(2);
+        expect(point.hasBBox()).toBeFalsy();
+      });
+
+      it('should make an object with a bounding box specified', () => {
+        const options: PointOptions = {
+          longitude: 1,
+          latitude: 2,
+          bBox: BoundingBox.fromJson(pointBBoxJson)
+        };
+        const point = Point.fromOptions(options);
+
+        expect(point.type).toEqual(GeoJsonGeometryTypes.Point);
+        expect(point.latitude).toEqual(2);
+        expect(point.longitude).toEqual(1);
+        expect(point.toPositions()).toEqual(pointPosition);
+        expect(point.points.equals(point)).toBeTruthy();
+
+        // Optional properties & Defaults
+        expect(point.hasAltitude()).toBeFalsy();
+        expect(point.altitude).toBeUndefined();
+        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.hasBBox()).toBeTruthy();
       });
     });
   });

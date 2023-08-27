@@ -9,6 +9,7 @@ import { BoundingBox } from '../BoundingBox';
 
 import { Point } from './Point';
 import { LineString } from './LineString';
+import { MultiPoint } from './MultiPoint';
 
 describe('##LineString', () => {
   let lineStringBBoxJson: SerialBBox;
@@ -94,11 +95,24 @@ describe('##LineString', () => {
 
     describe('#fromMultiPoint', () => {
       it('should make an object from the associated Points', () => {
+        const multiPoint = MultiPoint.fromPositions([[1, 2], [3, 4]]);
 
+        const lineString = LineString.fromMultiPoint(multiPoint);
+
+        expect(lineString.type).toEqual(GeoJsonGeometryTypes.LineString);
+        expect(lineString.toPositions()).toEqual(lineStringPositions);
+        expect(lineString.points).toEqual(lineStringPoints);
+
+        // Optional properties & Defaults
+        expect(lineString.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated Points with a bounding box specified', () => {
+        const multiPoint = MultiPoint.fromPositions([[1, 2], [3, 4]]);
 
+        const lineString = LineString.fromMultiPoint(multiPoint, lineStringBBox);
+
+        expect(lineString.hasBBox()).toBeTruthy();
       });
     });
   });

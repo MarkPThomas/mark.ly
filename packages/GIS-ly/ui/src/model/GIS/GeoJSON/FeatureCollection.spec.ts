@@ -8,10 +8,12 @@ import {
 
 import { BBoxState, GeoJsonTypes } from './enums';
 import { Position } from './types';
+import { Feature } from './Feature';
+import { BoundingBox } from './BoundingBox';
 
 import { FeatureCollection } from './FeatureCollection';
 
-describe('##Feature', () => {
+describe('##FeatureCollection', () => {
   let pointBBoxJson: SerialBBox;
   let pointJson: SerialPoint;
   let pointPosition: Position;
@@ -23,10 +25,12 @@ describe('##Feature', () => {
   let lineStringPositions: Position[];
   let featureLineStringJson: SerialFeature;
 
+  let featureCollectionBBoxJson: SerialBBox;
   // let featureCollectionBBox: SerialBBox;
   let featureCollectionJson: SerialFeatureCollection;
   // let featureCollectionPoints: Point[];
   // let featureCollectionPositions: Position[];
+  let featureBBox: BoundingBox;
 
   beforeEach(() => {
     pointBBoxJson = [1, 2, 3, 4];
@@ -57,11 +61,13 @@ describe('##Feature', () => {
     //   Point.fromPosition(lineStringPositions[0]),
     //   Point.fromPosition(lineStringPositions[1])
     // ];
-
+    featureCollectionBBoxJson = [1, 2, 3, 4];
     featureCollectionJson = {
       type: 'FeatureCollection',
       features: [featurePointJson, featureLineStringJson]
     }
+
+    featureBBox = BoundingBox.fromJson(featureCollectionBBoxJson);
   });
 
   describe('Creation', () => {
@@ -81,8 +87,7 @@ describe('##Feature', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        const bbox: SerialBBox = [1, 2, 3, 4];
-        featureCollectionJson.bbox = bbox;
+        featureCollectionJson.bbox = featureCollectionBBoxJson;
 
         const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
@@ -92,12 +97,28 @@ describe('##Feature', () => {
     });
 
     describe('#fromFeatures', () => {
-      it('should', () => {
-
+      let features: Feature[];
+      beforeEach(() => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        features = [feature1, feature2];
       });
 
-      it('should', () => {
+      it('should make an object from the associated Features', () => {
+        const expectedFeatureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
+        const featureCollection = FeatureCollection.fromFeatures(features);
+
+        expect(featureCollection).toEqual(expectedFeatureCollection);
+      });
+
+      it('should make an object from the associated Features with a bounding box specified', () => {
+        featureCollectionJson.bbox = featureCollectionBBoxJson;
+        const expectedFeatureCollection = FeatureCollection.fromJson(featureCollectionJson);
+
+        const featureCollection = FeatureCollection.fromFeatures(features, featureBBox);
+
+        expect(featureCollection).toEqual(expectedFeatureCollection);
       });
     });
   });
@@ -152,11 +173,15 @@ describe('##Feature', () => {
 
     describe('#features', () => {
       it('should return a Features array representing the Features forming the Collection', () => {
-        // const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
 
-        // const result = multiLineString.lineStrings;
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
-        // expect(result).toEqual(multiLineStringLineStrings);
+        const result = featureCollection.features;
+
+        expect(result[0]).toEqual(feature1);
+        expect(result[1]).toEqual(feature2);
       });
     });
   });

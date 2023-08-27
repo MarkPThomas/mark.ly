@@ -8,7 +8,7 @@ import {
 import { BBoxState, GeoJsonTypes } from './enums';
 import { Position } from './types';
 
-import { Point } from './Geometries';
+import { LineString, Point } from './Geometries';
 import { BoundingBox } from './BoundingBox';
 import { Feature, FeatureProperty, FeaturePropertyProperties } from './Feature';
 
@@ -108,6 +108,7 @@ describe('##Feature', () => {
   let lineStringPositions: Position[];
 
   let featureJson: SerialFeature;
+  let featureBBox: BoundingBox;
 
   beforeEach(() => {
     lineStringBBoxJson = [1, 2, 3, 4];
@@ -127,6 +128,8 @@ describe('##Feature', () => {
       geometry: lineStringJson,
       properties: {}
     };
+
+    featureBBox = BoundingBox.fromPositions(lineStringPositions);
   });
 
   describe('Creation', () => {
@@ -225,12 +228,59 @@ describe('##Feature', () => {
     });
 
     describe('#fromGeometry', () => {
-      it('should', () => {
+      it('should make an object from the associated Geometry', () => {
+        const geometry = LineString.fromJson(lineStringJson);
+        const feature = Feature.fromGeometry(geometry);
 
+        expect(feature.type).toEqual(GeoJsonTypes.Feature);
+        expect(feature.id).toBeNull();
+        expect(feature.properties).toEqual({});
+
+        // Optional properties & Defaults
+        expect(feature.hasBBox()).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should make an object with properties from the associated Geometry', () => {
+        const propertiesFeatureJson: SerialGeoJsonProperties = {
+          foo: 'bar',
+          moo: 2
+        };
+        const propertiesFeature: FeatureProperty = FeatureProperty.fromJson(propertiesFeatureJson);
 
+        const geometry = LineString.fromJson(lineStringJson);
+        const feature = Feature.fromGeometry(geometry, { properties: propertiesFeature });
+
+        expect(feature.type).toEqual(GeoJsonTypes.Feature);
+        expect(feature.id).toBeNull();
+
+        const properties: FeaturePropertyProperties = {
+          foo: 'bar',
+          moo: 2
+        }
+
+        expect(feature.properties).toEqual(properties);
+      });
+
+      it('should make an object with an ID from the associated Geometry', () => {
+        const geometry = LineString.fromJson(lineStringJson);
+        const feature = Feature.fromGeometry(geometry, { id: '1' });
+
+        expect(feature.type).toEqual(GeoJsonTypes.Feature);
+        expect(feature.properties).toEqual({});
+        expect(feature.hasBBox()).toBeFalsy();
+
+        expect(feature.id).toEqual('1');
+      });
+
+      it('should make an object from the associated Geometry with a bounding box specified', () => {
+        const geometry = LineString.fromJson(lineStringJson);
+        const feature = Feature.fromGeometry(geometry, { bbox: featureBBox });
+
+        expect(feature.type).toEqual(GeoJsonTypes.Feature);
+        expect(feature.id).toBeNull();
+        expect(feature.properties).toEqual({});
+
+        expect(feature.hasBBox()).toBeTruthy();
       });
     });
   });
@@ -309,11 +359,12 @@ describe('##Feature', () => {
 
     describe('#geometry', () => {
       it('should return a Geometry object representing the Feature', () => {
-        // const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+        const geometry = LineString.fromJson(lineStringJson);
+        const feature = Feature.fromJson(featureJson);
 
-        // const result = multiLineString.lineStrings;
+        const result = feature.geometry;
 
-        // expect(result).toEqual(multiLineStringLineStrings);
+        expect(result).toEqual(geometry);
       });
     });
   });
@@ -404,5 +455,4 @@ describe('##Feature', () => {
       });
     });
   });
-
 });
