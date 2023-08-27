@@ -320,25 +320,5 @@ describe('##Polygon', () => {
 
       });
     });
-
-    describe('#pointAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#lineStringAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
   });
 });

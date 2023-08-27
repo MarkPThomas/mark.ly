@@ -29,7 +29,7 @@ class FeatureCollectionDelegate extends GeoCollection<Feature, SerialFeature> {
       if (item.geometry.type === type) {
         features.push(item);
       }
-    })
+    });
 
     return features;
   }
@@ -40,7 +40,7 @@ class FeatureCollectionDelegate extends GeoCollection<Feature, SerialFeature> {
       if (item.geometry.type === type) {
         geometries.push(item.geometry);
       }
-    })
+    });
 
     return geometries;
   }

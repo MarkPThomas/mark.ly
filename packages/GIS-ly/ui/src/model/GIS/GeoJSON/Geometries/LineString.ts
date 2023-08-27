@@ -1,7 +1,5 @@
 import { LineString as SerialLineString } from 'geojson';
 
-import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
-
 import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
 import { Position } from "../types";
@@ -17,7 +15,6 @@ export interface LineStringProperties extends ICoordinateContainer<Position[], P
 
 export interface ILineString
   extends LineStringProperties {
-  pointAtIndex(index: number): Point;
   // toPolyline(precision: number): string;
 }
 
@@ -60,13 +57,6 @@ export class LineString
 
   toPositions(): Position[] {
     return this._points.map((point) => point.toPositions());
-  }
-
-  pointAtIndex(pointIndex: number): Point {
-    if (pointIndex < 0 || this._points.length <= pointIndex) {
-      throw new ArgumentOutOfRangeException(`Point index ${pointIndex} must be between 0 and ${this._points.length}`);
-    }
-    return this._points[pointIndex].clone();
   }
 
   // toPolyline(precision: number): string {

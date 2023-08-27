@@ -236,15 +236,5 @@ describe('##LineString', () => {
 
       });
     });
-
-    describe('#pointAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
   });
 });

@@ -271,35 +271,5 @@ describe('##MultiPolygon', () => {
 
       });
     });
-
-    describe('#pointAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#lineStringAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#polygonAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
   });
 });

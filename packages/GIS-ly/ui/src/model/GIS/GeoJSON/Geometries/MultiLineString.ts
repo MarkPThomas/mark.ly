@@ -1,7 +1,5 @@
 import { MultiLineString as SerialMultiLineString } from 'geojson';
 
-import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
-
 import { BBoxState, GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
 import { Position } from "../types";
@@ -34,8 +32,6 @@ export interface IMultiLineString
    * @memberof IMultiLineString
    */
   lineStrings: LineString[];
-  pointAtIndex(lineStringIndex: number, pointIndex: number): Point;
-  lineStringAtIndex(lineStringIndex: number): LineString;
 }
 
 /**
@@ -90,26 +86,6 @@ export class MultiLineString
 
   get lineStrings(): LineString[] {
     return this._points.map((lineString) => LineString.fromPoints(lineString))
-  }
-
-  pointAtIndex(lineStringIndex: number, pointIndex: number): Point {
-    if (lineStringIndex < 0 || this._points.length <= lineStringIndex) {
-      throw new ArgumentOutOfRangeException(`LineString index ${lineStringIndex} must be between 0 and ${this._points.length}`);
-    }
-
-    const points = this._points[lineStringIndex];
-    if (pointIndex < 0 || points.length <= pointIndex) {
-      throw new ArgumentOutOfRangeException(`Point index ${pointIndex} must be between 0 and ${points.length} at LineString index ${lineStringIndex}`);
-    }
-
-    return points[pointIndex].clone();
-  }
-
-  lineStringAtIndex(lineStringIndex: number): LineString {
-    if (lineStringIndex < 0 || this._points.length <= lineStringIndex) {
-      throw new ArgumentOutOfRangeException(`LineString index ${lineStringIndex} must be between 0 and ${this._points.length}`);
-    }
-    return LineString.fromPoints(this._points[lineStringIndex]);
   }
 
   toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialMultiLineString {

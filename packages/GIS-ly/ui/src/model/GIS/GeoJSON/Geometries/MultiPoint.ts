@@ -1,7 +1,5 @@
 import { MultiPoint as SerialMultiPoint } from 'geojson';
 
-import { ArgumentOutOfRangeException } from "../../../../../../../common/errors/exceptions";
-
 import { GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
 import { Position } from "../types";
@@ -16,7 +14,6 @@ export interface MultiPointProperties extends ICoordinateContainer<Position[], P
 
 export interface IMultiPoint
   extends MultiPointProperties {
-  pointAtIndex(index: number): Point;
 }
 
 /**
@@ -52,13 +49,6 @@ export class MultiPoint
 
   toPositions(): Position[] {
     return this._points.map((point) => point.toPositions());
-  }
-
-  pointAtIndex(pointIndex: number): Point {
-    if (pointIndex < 0 || this._points.length <= pointIndex) {
-      throw new ArgumentOutOfRangeException(`Point index ${pointIndex} must be between 0 and ${this._points.length}`);
-    }
-    return this._points[pointIndex].clone();
   }
 
   equals(item: MultiPointProperties): boolean {

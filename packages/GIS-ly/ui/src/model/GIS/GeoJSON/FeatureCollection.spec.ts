@@ -6,9 +6,10 @@ import {
   FeatureCollection as SerialFeatureCollection,
 } from 'geojson';
 
-import { BBoxState, GeoJsonTypes } from './enums';
+import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from './enums';
 import { Position } from './types';
 import { Feature } from './Feature';
+import { LineString, MultiPoint } from './Geometries';
 import { BoundingBox } from './BoundingBox';
 
 import { FeatureCollection } from './FeatureCollection';
@@ -242,22 +243,50 @@ describe('##FeatureCollection', () => {
     });
 
     describe('#getGeometriesByType', () => {
-      it('should', () => {
+      let features: Feature[];
+      let featureCollection: FeatureCollection;
+      beforeEach(() => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        features = [feature1, feature2];
 
+        featureCollection = FeatureCollection.fromFeatures(features);
       });
 
-      it('should', () => {
+      it('should return an empty array if there are no geometries of the specified type', () => {
+        const multiPoints = featureCollection.getGeometriesByType(GeoJsonGeometryTypes.MultiPoint) as MultiPoint[];
 
+        expect(multiPoints.length).toEqual(0);
+      });
+
+      it('should return an array of Geometries of the specified type', () => {
+        const lineStrings = featureCollection.getGeometriesByType(GeoJsonGeometryTypes.LineString) as LineString[];
+
+        expect(lineStrings.length).toEqual(1);
       });
     });
 
     describe('#getFeaturesByType', () => {
-      it('should', () => {
+      let features: Feature[];
+      let featureCollection: FeatureCollection;
+      beforeEach(() => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        features = [feature1, feature2];
 
+        featureCollection = FeatureCollection.fromFeatures(features);
       });
 
-      it('should', () => {
+      it('should return an empty array if there are no Features containing Geometries of the specified type', () => {
+        const multiPointFeatures = featureCollection.getFeaturesByType(GeoJsonGeometryTypes.MultiPoint);
 
+        expect(multiPointFeatures.length).toEqual(0);
+      });
+
+      it('should return an array of Features containing Geometries of the specified type', () => {
+        const lineStringFeatures = featureCollection.getFeaturesByType(GeoJsonGeometryTypes.LineString);
+
+        expect(lineStringFeatures.length).toEqual(1);
       });
     });
   });

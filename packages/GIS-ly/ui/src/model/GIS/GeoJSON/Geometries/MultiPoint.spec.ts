@@ -212,15 +212,5 @@ describe('##MultiPoint', () => {
 
       });
     });
-
-    describe('#pointAtIndex', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
   });
 });

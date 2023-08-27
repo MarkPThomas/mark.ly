@@ -26,10 +26,6 @@ export interface IMultiPolygon
    * @memberof IMultiPolygon
    */
   polygons: Polygon[]
-
-  pointAtIndex(polygonIndex: number, lineStringIndex: number, pointIndex: number): Point;
-  lineStringAtIndex(polygonIndex: number, lineStringIndex: number): LineString;
-  polygonAtIndex(polygonIndex: number): Polygon;
 }
 
 /**
@@ -103,51 +99,6 @@ export class MultiPolygon
 
   get polygons(): Polygon[] {
     return this._points.map((polygon) => Polygon.fromPoints(polygon));
-  }
-
-  pointAtIndex(polygonIndex: number, lineStringIndex: number, pointIndex: number): Point {
-    if (polygonIndex < 0 || this._points.length <= polygonIndex) {
-      throw new ArgumentOutOfRangeException(
-        `Polygon index ${polygonIndex} must be between 0 and ${this._points.length}`);
-    }
-
-    const polygon = this._points[polygonIndex];
-
-    if (lineStringIndex < 0 || polygon.length <= lineStringIndex) {
-      throw new ArgumentOutOfRangeException(
-        `LineString index ${lineStringIndex} must be between 0 and ${this._points.length} at Polygon index ${polygonIndex}`);
-    }
-
-    const points = polygon[lineStringIndex];
-    if (pointIndex < 0 || points.length <= pointIndex) {
-      throw new ArgumentOutOfRangeException(
-        `Point index ${pointIndex} must be between 0 and ${points.length} at LineString index ${lineStringIndex}`);
-    }
-
-    return points[pointIndex].clone();
-  }
-
-  lineStringAtIndex(polygonIndex: number, lineStringIndex: number): LineString {
-    if (polygonIndex < 0 || this._points.length <= polygonIndex) {
-      throw new ArgumentOutOfRangeException(
-        `Polygon index ${polygonIndex} must be between 0 and ${this._points.length}`);
-    }
-
-    const polygon = this._points[polygonIndex];
-
-    if (lineStringIndex < 0 || polygon.length <= lineStringIndex) {
-      throw new ArgumentOutOfRangeException(
-        `LineString index ${lineStringIndex} must be between 0 and ${polygon.length} at Polygon index ${polygonIndex}`);
-    }
-    return LineString.fromPoints(polygon[lineStringIndex]);
-  }
-
-  polygonAtIndex(polygonIndex: number): Polygon {
-    if (polygonIndex < 0 || this._points.length <= polygonIndex) {
-      throw new ArgumentOutOfRangeException(
-        `Polygon index ${polygonIndex} must be between 0 and ${this._points.length}`);
-    }
-    return Polygon.fromPoints(this._points[polygonIndex]);
   }
 
   toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialMultiPolygon {
