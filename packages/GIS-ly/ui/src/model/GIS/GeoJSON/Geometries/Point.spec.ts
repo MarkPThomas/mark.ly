@@ -225,7 +225,7 @@ describe('##Point', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should create a copy of the object', () => {
 
       });
 
@@ -267,12 +267,18 @@ describe('##Point', () => {
     });
 
     describe('#hasAltitude', () => {
-      it('should', () => {
+      it('should return False when no altitude was specified', () => {
+        const point = Point.fromJson(pointJson);
 
+        expect(point.hasAltitude()).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True when altitudes were specified', () => {
+        const positionWithAltitude: Position = [1, 2, 3];
+        pointJson.coordinates = positionWithAltitude;
+        const point = Point.fromJson(pointJson);
 
+        expect(point.hasAltitude()).toBeTruthy();
       });
     });
   });
