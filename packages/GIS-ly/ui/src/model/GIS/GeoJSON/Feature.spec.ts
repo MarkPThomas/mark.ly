@@ -62,7 +62,7 @@ describe('##FeatureProperty', () => {
         expect(result).toBeTruthy();
       });
 
-      it('should return False for objects that are equal by certain properties', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
         const propertiesJson: SerialGeoJsonProperties = {
           foo: 'bar',
           moo: 2
