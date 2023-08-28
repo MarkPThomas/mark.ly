@@ -121,8 +121,7 @@ describe('##MultiPoint', () => {
 
         expect(result).not.toEqual(multiPointJson);
 
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        multiPointJson.bbox = bboxJson;
+        multiPointJson.bbox = multiPointBBoxJsonActual;
 
         expect(result).toEqual(multiPointJson);
       });

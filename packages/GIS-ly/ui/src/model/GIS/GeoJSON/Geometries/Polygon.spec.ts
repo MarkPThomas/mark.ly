@@ -109,16 +109,13 @@ describe('##Polygon', () => {
 
     describe('#fromOuterInner', () => {
       it('should make an object from the associated outer LineString', () => {
+        const expectedPolygon = Polygon.fromJson(polygonJson);
+
         const lineStringOuter = LineString.fromPositions(polygonOuterPositions[0]);
 
-        const multiLineString = Polygon.fromOuterInner(lineStringOuter);
+        const polygon = Polygon.fromOuterInner(lineStringOuter);
 
-        expect(multiLineString.type).toEqual(GeoJsonGeometryTypes.Polygon);
-        expect(multiLineString.toPositions()).toEqual(polygonOuterPositions);
-        expect(multiLineString.points).toEqual(polygonOuterPoints);
-
-        // Optional properties & Defaults
-        expect(multiLineString.hasBBox()).toBeFalsy();
+        expect(polygon).toEqual(expectedPolygon);
       });
 
       it('should make an object from the associated outer LineString with an inner LineString', () => {
@@ -128,10 +125,10 @@ describe('##Polygon', () => {
         const lineStringInner2 = LineString.fromPositions(polygonInnerPositions[1]);
         const lineStringsInner = [lineStringInner1, lineStringInner2];
 
-        const multiLineString = Polygon.fromOuterInner(lineStringOuter, { inner: lineStringsInner });
+        const polygon = Polygon.fromOuterInner(lineStringOuter, { inner: lineStringsInner });
 
-        expect(multiLineString.type).toEqual(GeoJsonGeometryTypes.Polygon);
-        expect(multiLineString.toPositions()).toEqual([
+        expect(polygon.type).toEqual(GeoJsonGeometryTypes.Polygon);
+        expect(polygon.toPositions()).toEqual([
           polygonOuterPositions[0],
           polygonInnerPositions[0],
           polygonInnerPositions[1]
@@ -153,22 +150,22 @@ describe('##Polygon', () => {
           Point.fromPosition(polygonInnerPositions[1][4]),
         ];
 
-        expect(multiLineString.points).toEqual([
+        expect(polygon.points).toEqual([
           polygonOuterPoints[0],
           polygonOuterPoints1,
           polygonOuterPoints2,
         ]);
 
         // Optional properties & Defaults
-        expect(multiLineString.hasBBox()).toBeFalsy();
+        expect(polygon.hasBBox()).toBeFalsy();
       });
 
       it('should make an object from the associated outer LineString with a bounding box specified', () => {
         const lineStringOuter = LineString.fromPositions(polygonOuterPositions[0]);
 
-        const multiLineString = Polygon.fromOuterInner(lineStringOuter, { bbox: polygonBBox });
+        const polygon = Polygon.fromOuterInner(lineStringOuter, { bbox: polygonBBox });
 
-        expect(multiLineString.hasBBox()).toBeTruthy();
+        expect(polygon.hasBBox()).toBeTruthy();
       });
     });
   });
@@ -199,8 +196,7 @@ describe('##Polygon', () => {
 
         expect(result).not.toEqual(polygonJson);
 
-        const bboxJson: SerialBBox = [-3, -4, 3, 4];
-        polygonJson.bbox = bboxJson;
+        polygonJson.bbox = polygonBBoxJsonActual;
 
         expect(result).toEqual(polygonJson);
       });

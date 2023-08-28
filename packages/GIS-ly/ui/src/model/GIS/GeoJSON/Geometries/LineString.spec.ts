@@ -96,22 +96,19 @@ describe('##LineString', () => {
     });
 
     describe('#fromMultiPoint', () => {
+      let multiPoint: MultiPoint;
+      beforeEach(() => {
+        multiPoint = MultiPoint.fromPositions(lineStringPositions);
+      })
       it('should make an object from the associated Points', () => {
-        const multiPoint = MultiPoint.fromPositions([[1, 2], [3, 4]]);
+        const expectedLineString = LineString.fromJson(lineStringJson);
 
         const lineString = LineString.fromMultiPoint(multiPoint);
 
-        expect(lineString.type).toEqual(GeoJsonGeometryTypes.LineString);
-        expect(lineString.toPositions()).toEqual(lineStringPositions);
-        expect(lineString.points).toEqual(lineStringPoints);
-
-        // Optional properties & Defaults
-        expect(lineString.hasBBox()).toBeFalsy();
+        expect(lineString).toEqual(expectedLineString);
       });
 
       it('should make an object from the associated Points with a bounding box specified', () => {
-        const multiPoint = MultiPoint.fromPositions([[1, 2], [3, 4]]);
-
         const lineString = LineString.fromMultiPoint(multiPoint, lineStringBBox);
 
         expect(lineString.hasBBox()).toBeTruthy();
@@ -145,8 +142,7 @@ describe('##LineString', () => {
 
         expect(result).not.toEqual(lineStringJson);
 
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        lineStringJson.bbox = bboxJson;
+        lineStringJson.bbox = lineStringBBoxJsonActual;
 
         expect(result).toEqual(lineStringJson);
       });

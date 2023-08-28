@@ -105,26 +105,22 @@ describe('##MultiLineString', () => {
     });
 
     describe('#fromLineStrings', () => {
-      it('should make an object from the associated LineStrings', () => {
+      let lineStrings: LineString[];
+      beforeEach(() => {
         const lineString1 = LineString.fromPositions(multiLineStringPositions[0]);
         const lineString2 = LineString.fromPositions(multiLineStringPositions[1]);
-        const lineStrings = [lineString1, lineString2];
+        lineStrings = [lineString1, lineString2];
+      });
+
+      it('should make an object from the associated LineStrings', () => {
+        const expectedMultiLineString = MultiLineString.fromJson(multiLineStringJson);
 
         const multiLineString = MultiLineString.fromLineStrings(lineStrings);
 
-        expect(multiLineString.type).toEqual(GeoJsonGeometryTypes.MultiLineString);
-        expect(multiLineString.toPositions()).toEqual(multiLineStringPositions);
-        expect(multiLineString.points).toEqual(multiLineStringPoints);
-
-        // Optional properties & Defaults
-        expect(multiLineString.hasBBox()).toBeFalsy();
+        expect(multiLineString).toEqual(expectedMultiLineString);
       });
 
       it('should make an object from the associated LineStrings with a bounding box specified', () => {
-        const lineString1 = LineString.fromPositions(multiLineStringPositions[0]);
-        const lineString2 = LineString.fromPositions(multiLineStringPositions[1]);
-        const lineStrings = [lineString1, lineString2];
-
         const multiLineString = MultiLineString.fromLineStrings(lineStrings, multiLineStringBBox);
 
         expect(multiLineString.hasBBox()).toBeTruthy();
@@ -158,8 +154,7 @@ describe('##MultiLineString', () => {
 
         expect(result).not.toEqual(multiLineStringJson);
 
-        const bboxJson: SerialBBox = [1, 2, 7, 8];
-        multiLineStringJson.bbox = bboxJson;
+        multiLineStringJson.bbox = multiLineStringBBoxJsonActual;
 
         expect(result).toEqual(multiLineStringJson);
       });

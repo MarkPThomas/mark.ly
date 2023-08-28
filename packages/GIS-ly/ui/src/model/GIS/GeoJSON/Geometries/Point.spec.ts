@@ -319,13 +319,7 @@ describe('##Point', () => {
 
         expect(result).not.toEqual(pointJson);
 
-        const bboxJsonExpected: SerialBBox = [
-          1 - Point.DEFAULT_BUFFER,
-          2 - Point.DEFAULT_BUFFER,
-          3 + Point.DEFAULT_BUFFER,
-          4 + Point.DEFAULT_BUFFER
-        ];
-        pointJson.bbox = bboxJsonExpected;
+        pointJson.bbox = pointBBoxJsonActual;
 
         expect(result).not.toEqual(pointJson);
       });

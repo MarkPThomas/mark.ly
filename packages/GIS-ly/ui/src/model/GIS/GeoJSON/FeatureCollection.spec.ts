@@ -137,8 +137,7 @@ describe('##FeatureCollection', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        featureCollectionJson.bbox = bboxJson;
+        featureCollectionJson.bbox = featureCollectionBBoxJsonProvided;
         const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
         const result = featureCollection.toJson();
@@ -153,15 +152,13 @@ describe('##FeatureCollection', () => {
 
         expect(result).not.toEqual(featureCollectionJson);
 
-        const bboxJson: SerialBBox = [-1, -2, 3, 4];
-        featureCollectionJson.bbox = bboxJson;
+        featureCollectionJson.bbox = featureCollectionBBoxJsonActual;
 
         expect(result).toEqual(featureCollectionJson);
       });
 
       it('should make a GeoJSON object without a specified bounding box', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        featureCollectionJson.bbox = bboxJson;
+        featureCollectionJson.bbox = featureCollectionBBoxJsonProvided;
         const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
         const result = featureCollection.toJson(BBoxState.Exclude);

@@ -73,14 +73,11 @@ describe('##MultiPolygon', () => {
 
     describe('#fromPositions', () => {
       it('should make an object from the associated Positions', () => {
+        const expectedMultiPolygon = MultiPolygon.fromJson(multiPolygonJson);
+
         const multiPolygon = MultiPolygon.fromPositions(multiPolygonPositions);
 
-        expect(multiPolygon.type).toEqual(GeoJsonGeometryTypes.MultiPolygon);
-        expect(multiPolygon.toPositions()).toEqual(multiPolygonPositions);
-        expect(multiPolygon.points).toEqual(multiPolygonPoints);
-
-        // Optional properties & Defaults
-        expect(multiPolygon.hasBBox()).toBeFalsy();
+        expect(multiPolygon).toEqual(expectedMultiPolygon);
       });
 
       it('should make an object from the associated Positions with a bounding box specified', () => {
@@ -110,26 +107,22 @@ describe('##MultiPolygon', () => {
     });
 
     describe('#fromPolygons', () => {
-      it('should make an object from the associated Polygons', () => {
+      let polygons: Polygon[];
+      beforeEach(() => {
         const polygon1 = Polygon.fromPositions(multiPolygonPositions[0]);
         const polygon2 = Polygon.fromPositions(multiPolygonPositions[1]);
-        const polygons = [polygon1, polygon2];
+        polygons = [polygon1, polygon2];
+      });
+
+      it('should make an object from the associated Polygons', () => {
+        const expectedMultiPolygon = MultiPolygon.fromJson(multiPolygonJson);
 
         const multiPolygon = MultiPolygon.fromPolygons(polygons);
 
-        expect(multiPolygon.type).toEqual(GeoJsonGeometryTypes.MultiPolygon);
-        expect(multiPolygon.toPositions()).toEqual(multiPolygonPositions);
-        expect(multiPolygon.points).toEqual(multiPolygonPoints);
-
-        // Optional properties & Defaults
-        expect(multiPolygon.hasBBox()).toBeFalsy();
+        expect(multiPolygon).toEqual(expectedMultiPolygon);
       });
 
       it('should make an object from the associated Polygons with a bounding box specified', () => {
-        const polygon1 = Polygon.fromPositions(multiPolygonPositions[0]);
-        const polygon2 = Polygon.fromPositions(multiPolygonPositions[1]);
-        const polygons = [polygon1, polygon2];
-
         const multiPolygon = MultiPolygon.fromPolygons(polygons, multiPolygonBBox);
 
         expect(multiPolygon.hasBBox()).toBeTruthy();
@@ -163,8 +156,7 @@ describe('##MultiPolygon', () => {
 
         expect(result).not.toEqual(multiPolygonJson);
 
-        const bboxJson: SerialBBox = [-1, -1, 6, 6];
-        multiPolygonJson.bbox = bboxJson;
+        multiPolygonJson.bbox = multiPolygonBBoxJsonActual;
 
         expect(result).toEqual(multiPolygonJson);
       });
