@@ -1,4 +1,7 @@
-import { GeoJsonObject as SerialGeoJsonObject } from "geojson";
+import {
+  GeoJsonObject as SerialGeoJsonObject,
+  Geometry as SerialGeometry,
+} from "geojson";
 
 import { BoundingBox } from "./BoundingBox";
 import {
@@ -7,7 +10,18 @@ import {
   IGeoJsonBase,
   IJson
 } from "./GeoJson";
-import { BBoxState } from "./enums";
+import { BBoxState, GeoJsonTypes } from "./enums";
+import {
+  GeometryCollection,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Polygon,
+  LineString,
+  Point
+} from "./Geometries";
+import { Feature } from './Feature';
+import { GeometryType, IGeometry } from "./Geometries/Geometry";
 
 export interface GeoCollectionProperties<TItem extends GeoJson> extends GeoJsonBaseProperties {
   length: number;
@@ -30,14 +44,7 @@ export interface IGeoCollection<TItem extends GeoJson, TSerial extends SerialGeo
   IGeoJsonBase<GeoCollectionProperties<TItem>>,
   IJson<TSerial[]> {
 
-
-  // /**
-  //  * This takes the currently defined values found inside the GeoJson instance and converts it to a GeoJson string.
-  //  *
-  //  * @return {*}  {string}
-  //  * @memberof IGeoJSON
-  //  */
-  // toJson(includeBBox: BBoxState): TSerial[];
+  getCoordinates(item: TItem | IGeometry<GeometryType, SerialGeometry>): Point[];
 }
 
 export abstract class GeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
@@ -55,6 +62,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     }
     return this._bbox;
   }
+
   hasBBox(): boolean {
     return !!(this._bbox);
   }
@@ -67,18 +75,40 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     }
   }
 
-  // TODO: Update to get all coordinates of contained objects and derive BoundingBox from these.
   protected createBBox(): BoundingBox {
     const bboxes = [];
     this._items.forEach((item) => {
       if (item.hasBBox()) {
         bboxes.push(item.bbox().toCornerPoints());
       } else {
-        bboxes.push(item)
+        bboxes.push(this.getCoordinates(item));
       }
     });
 
     return BoundingBox.fromPoints(bboxes.flat(Infinity));
+  }
+
+  getCoordinates(item: TItem | IGeometry<GeometryType, SerialGeometry>): Point[] {
+    switch (item.type) {
+      case GeoJsonTypes.Point:
+        return [(item as unknown as Point).points];
+      case GeoJsonTypes.MultiPoint:
+        return (item as unknown as MultiPoint).points.flat(Infinity);
+      case GeoJsonTypes.LineString:
+        return (item as unknown as LineString).points.flat(Infinity);
+      case GeoJsonTypes.MultiLineString:
+        return (item as unknown as MultiLineString).points.flat(Infinity) as Point[];
+      case GeoJsonTypes.Polygon:
+        return (item as unknown as Polygon).points.flat(Infinity) as Point[];
+      case GeoJsonTypes.MultiPolygon:
+        return (item as unknown as MultiPolygon).points.flat(Infinity) as Point[];
+      case GeoJsonTypes.GeometryCollection:
+        return (item as unknown as GeometryCollection).geometries.flat(Infinity) as Point[];
+      case GeoJsonTypes.Feature:
+        return this.getCoordinates((item as unknown as Feature).geometry);
+      default:
+        return [];
+    }
   }
 
   protected _items: TItem[] = [];

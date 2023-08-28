@@ -14,7 +14,7 @@ export class GeometryBuilder {
   static fromJson(json: SerialGeometry): IGeometry<GeoJsonProperties, SerialGeometry> {
     switch (json.type) {
       case GeoJsonTypes.GeometryCollection:
-        return GeometryCollection.fromJson(json.geometries, json.bbox);
+        return GeometryCollection.fromJson(json);
       default:
         return CoordinateContainerBuilder.fromJson(json);
     }

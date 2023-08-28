@@ -7,17 +7,20 @@ import {
 
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 import { Position } from '../types';
-
-import { Point } from './Point';
-import { GeometryCollection } from './GeometryCollection';
 import { BoundingBox } from '../BoundingBox';
 
+import { Point } from './Point';
+import { LineString } from './LineString';
+import { GeometryCollection } from './GeometryCollection';
+
 describe('##GeometryCollection', () => {
-  let pointBBoxJson: SerialBBox;
+  let pointBBoxJsonProvided: SerialBBox;
+  let pointBBoxJsonActual: SerialBBox;
   let pointJson: SerialPoint;
   let pointPosition: Position;
 
-  let lineStringBBoxJson: SerialBBox;
+  let lineStringBBoxJsonProvided: SerialBBox;
+  let lineStringBBoxJsonActual: SerialBBox;
   let lineStringJson: SerialLineString;
   let lineStringPoints: Point[];
   let lineStringPositions: Position[];
@@ -25,18 +28,21 @@ describe('##GeometryCollection', () => {
   let geometryCollectionBBoxProvided: SerialBBox;
   let geometryCollectionBBoxActual: SerialBBox;
   let geometryCollectionJson: SerialGeometryCollection;
-  // let geometryCollectionPoints: Point[][][];
-  // let geometryCollectionPositions: Position[][][];
 
   beforeEach(() => {
-    pointBBoxJson = [1, 2, 3, 4];
-    pointPosition = [1, 2];
+    geometryCollectionBBoxProvided = [1, 2, 3, 4];
+    geometryCollectionBBoxActual = [-1, -2, 3, 4];
+
+    pointBBoxJsonProvided = [1, 2, 3, 4];
+    pointBBoxJsonActual = [-1.5, -2.5, -0.5, -1.5];
+    pointPosition = [-1, -2];
     pointJson = {
       type: 'Point',
       coordinates: pointPosition
     };
 
-    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringBBoxJsonProvided = [2, 3, 4, 5];
+    lineStringBBoxJsonActual = [1, 2, 3, 4];
     lineStringPositions = [[1, 2], [3, 4]];
     lineStringJson = {
       type: 'LineString',
@@ -52,28 +58,12 @@ describe('##GeometryCollection', () => {
       type: 'GeometryCollection',
       geometries: [pointJson, lineStringJson]
     }
-    // geometryCollectionBBoxProvided = [];
-    // geometryCollectionBBoxActual = [];
   });
 
   describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make a collection of a Point object and LineString object from the associated GeoJSON object', () => {
-        const pointPosition: Position = [1, 2];
-        const pointJson: SerialPoint = {
-          type: 'Point',
-          coordinates: pointPosition
-        };
-
-        const lineStringPosition: Position[] = [[1, 2], [3, 4]];
-        const lineStringJson: SerialLineString = {
-          type: 'LineString',
-          coordinates: lineStringPosition
-        };
-
-        const geometriesJson = [pointJson, lineStringJson];
-
-        const geometryCollection = GeometryCollection.fromJson(geometriesJson);
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         expect(geometryCollection.type).toEqual(GeoJsonGeometryTypes.GeometryCollection);
 
@@ -87,29 +77,15 @@ describe('##GeometryCollection', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        const bbox: SerialBBox = [1, 2, 3, 4];
-
-        const pointPosition: Position = [1, 2];
-        const pointJson: SerialPoint = {
-          type: 'Point',
-          coordinates: pointPosition
-        };
-
-        const lineStringPosition: Position[] = [[1, 2], [3, 4]];
-        const lineStringJson: SerialLineString = {
-          type: 'LineString',
-          coordinates: lineStringPosition
-        };
-
-        const geometriesJson = [pointJson, lineStringJson];
-
-        const geometryCollection = GeometryCollection.fromJson(geometriesJson, bbox);
+        geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         expect(geometryCollection.hasBBox()).toBeTruthy();
       });
 
       it('should create an object with an empty list if no geometries are provided', () => {
-        const geometryCollection = GeometryCollection.fromJson([]);
+        geometryCollectionJson.geometries = [];
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         expect(geometryCollection.type).toEqual(GeoJsonGeometryTypes.GeometryCollection);
         expect(geometryCollection.hasBBox()).toBeFalsy();
@@ -118,39 +94,63 @@ describe('##GeometryCollection', () => {
         expect(geometriesResult.length).toEqual(0);
       });
 
-      it('should throw an InvalidGeometryException error if null or undefined are provided', () => {
-        expect(() => GeometryCollection.fromJson(null)).toThrow();
-        expect(() => GeometryCollection.fromJson(undefined)).toThrow();
+      it('should throw an InvalidGeometryException error if the provided GeoJSON object contains a nexted GeometryCollection', () => {
+        geometryCollectionJson.geometries = [geometryCollectionJson];
+
+        expect(() => GeometryCollection.fromJson(geometryCollectionJson)).toThrow();
       });
     });
 
-    describe('#fromLngLat', () => {
-      it('should', () => {
+    describe('#fromGeometries', () => {
+      it('should make a collection of a Point object and LineString object from the provided Geometry objects', () => {
+        const geometryCollectionExpected = GeometryCollection.fromJson(geometryCollectionJson);
 
+        const geometries = [
+          Point.fromJson(pointJson),
+          LineString.fromJson(lineStringJson)
+        ];
+
+        const geometryCollection = GeometryCollection.fromGeometries(geometries);
+
+        expect(geometryCollection).toEqual(geometryCollectionExpected);
       });
 
-      it('should', () => {
+      it('should make an object from the provided Geometry objects with a bounding box specified', () => {
+        geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
+        const geometryCollectionExpected = GeometryCollection.fromJson(geometryCollectionJson);
 
-      });
-    });
+        const geometries = [
+          Point.fromJson(pointJson),
+          LineString.fromJson(lineStringJson)
+        ];
 
-    describe('#fromPosition', () => {
-      it('should', () => {
+        const boundingBox = BoundingBox.fromJson(geometryCollectionBBoxProvided);
 
-      });
+        const geometryCollection = GeometryCollection.fromGeometries(geometries, boundingBox);
 
-      it('should', () => {
+        expect(geometryCollection).toEqual(geometryCollectionExpected);
 
-      });
-    });
-
-    describe('#fromOptions', () => {
-      it('should', () => {
-
+        expect(geometryCollection.hasBBox()).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should create an object with an empty list if no geometries are provided', () => {
+        geometryCollectionJson.geometries = [];
+        const geometryCollectionExpected = GeometryCollection.fromJson(geometryCollectionJson);
 
+        const geometryCollection = GeometryCollection.fromGeometries([]);
+
+        expect(geometryCollection).toEqual(geometryCollectionExpected);
+
+        expect(geometryCollection.hasBBox()).toBeFalsy();
+
+        const geometriesResult = geometryCollection.geometries;
+        expect(geometriesResult.length).toEqual(0);
+      });
+
+      it('should throw an InvalidGeometryException error if the geometries provided contain a nested GeometryCollection', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        expect(() => GeometryCollection.fromGeometries([geometryCollection])).toThrow();
       });
     });
   });
@@ -158,20 +158,7 @@ describe('##GeometryCollection', () => {
   describe('Exporting', () => {
     describe('#toJson', () => {
       it('should make a GeoJSON object', () => {
-        const pointPosition: Position = [1, 2];
-        const pointJson: SerialPoint = {
-          type: 'Point',
-          coordinates: pointPosition
-        };
-
-        const lineStringPosition: Position[] = [[1, 2], [3, 4]];
-        const lineStringJson: SerialLineString = {
-          type: 'LineString',
-          coordinates: lineStringPosition
-        };
-
-        const geometriesJson = [pointJson, lineStringJson];
-        const geometryCollection = GeometryCollection.fromJson(geometriesJson);
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         const result = geometryCollection.toJson();
 
@@ -179,16 +166,7 @@ describe('##GeometryCollection', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        const position: Position[][][] = [
-          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
-          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
-        ];
-        const geometryCollectionJson: SerialGeometryCollection = {
-          type: 'GeometryCollection',
-          coordinates: position,
-          bbox: bboxJson
-        };
+        geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
         const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         const result = geometryCollection.toJson();
@@ -197,37 +175,21 @@ describe('##GeometryCollection', () => {
       });
 
       it('should make a GeoJSON object with a bounding box created', () => {
-        const position: Position[][][] = [
-          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
-          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
-        ];
-        const geometryCollectionJson: SerialGeometryCollection = {
-          type: 'GeometryCollection',
-          coordinates: position
-        };
         const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         const result = geometryCollection.toJson(BBoxState.Include);
 
         expect(result).not.toEqual(geometryCollectionJson);
 
-        const bboxJson: SerialBBox = [-1, -1, 6, 6];
-        geometryCollectionJson.bbox = bboxJson;
+        geometryCollectionJson.bbox = geometryCollectionBBoxActual;
+        geometryCollectionJson.geometries[0].bbox = pointBBoxJsonActual;
+        geometryCollectionJson.geometries[1].bbox = lineStringBBoxJsonActual;
 
         expect(result).toEqual(geometryCollectionJson);
       });
 
       it('should make a GeoJSON object without a bounding box specified', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        const position: Position[][][] = [
-          [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]],
-          [[[6, 6], [5, 6], [5, 5], [6, 5], [6, 6]]],
-        ];
-        const geometryCollectionJson: SerialGeometryCollection = {
-          type: 'GeometryCollection',
-          coordinates: position,
-          bbox: bboxJson
-        };
+        geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
         const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
         const result = geometryCollection.toJson(BBoxState.Exclude);
@@ -240,25 +202,9 @@ describe('##GeometryCollection', () => {
       });
     });
 
-    describe('#toPositions', () => {
-      it('should return a Positions array representing the Points forming the Geometry', () => {
-        const multiPoint = MultiPoint.fromJson(multiPointJson);
+    describe('#getGeometriesByType', () => {
 
-        const result = multiPoint.toPositions();
-
-        expect(result).toEqual(multiPointPositions);
-      });
-    });
-
-    describe('#points', () => {
-      it('should return a Points array representing the Points forming the Geometry', () => {
-        const multiPoint = MultiPoint.fromJson(multiPointJson);
-
-        const result = multiPoint.points;
-
-        expect(result).toEqual(multiPointPoints);
-      });
-    });
+    })
   });
 
   describe('Common Interfaces', () => {
@@ -284,7 +230,13 @@ describe('##GeometryCollection', () => {
       it('should return False for objects that are not equal by certain properties', () => {
         const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
-        geometryCollectionJson.geometries = [3, 4];
+        lineStringPositions.push([9, 10]);
+        lineStringJson = {
+          type: 'LineString',
+          coordinates: lineStringPositions
+        };
+
+        geometryCollectionJson.geometries = [pointJson, lineStringJson];
         const geometryCollectionDiff = GeometryCollection.fromJson(geometryCollectionJson);
 
         const result = geometryCollection.equals(geometryCollectionDiff);
@@ -315,12 +267,11 @@ describe('##GeometryCollection', () => {
 
     describe('#bbox', () => {
       it('should return the currently present Bounding Box', () => {
-        const bboxExpected = BoundingBox.fromJson(geometryCollectionBBoxProvided);
-
         geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
         const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
-
         expect(geometryCollection.hasBBox()).toBeTruthy();
+
+        const bboxExpected = BoundingBox.fromJson(geometryCollectionBBoxProvided);
 
         const result = geometryCollection.bbox();
         expect(geometryCollection.hasBBox()).toBeTruthy();
