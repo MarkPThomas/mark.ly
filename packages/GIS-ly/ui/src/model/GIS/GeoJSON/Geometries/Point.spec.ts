@@ -8,6 +8,7 @@ import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 
 import { Point, PointOptions } from './Point';
 import { BoundingBox } from '../BoundingBox';
+import { GeoJsonConstants } from '../GeoJsonConstants';
 
 describe('##Point', () => {
   let pointBBoxJsonProvided: SerialBBox;
@@ -17,10 +18,10 @@ describe('##Point', () => {
 
   beforeEach(() => {
     pointBBoxJsonActual = [
-      1 - Point.DEFAULT_BUFFER,
-      2 - Point.DEFAULT_BUFFER,
-      1 + Point.DEFAULT_BUFFER,
-      2 + Point.DEFAULT_BUFFER,
+      1 - GeoJsonConstants.DEFAULT_BUFFER,
+      2 - GeoJsonConstants.DEFAULT_BUFFER,
+      1 + GeoJsonConstants.DEFAULT_BUFFER,
+      2 + GeoJsonConstants.DEFAULT_BUFFER,
     ];
     pointBBoxJsonProvided = [1, 2, 3, 4];
     pointPosition = [1, 2];
@@ -44,7 +45,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeFalsy();
         expect(point.altitude).toBeUndefined();
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -63,7 +64,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeTruthy();
         expect(point.altitude).toEqual(3);
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -94,7 +95,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeFalsy();
         expect(point.altitude).toBeUndefined();
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -112,7 +113,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeTruthy();
         expect(point.altitude).toEqual(3);
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -146,7 +147,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeFalsy();
         expect(point.altitude).toBeUndefined();
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -164,7 +165,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeTruthy();
         expect(point.altitude).toEqual(3);
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -212,7 +213,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeFalsy();
         expect(point.altitude).toBeUndefined();
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -235,7 +236,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeTruthy();
         expect(point.altitude).toEqual(3);
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeFalsy();
       });
 
@@ -277,7 +278,7 @@ describe('##Point', () => {
         // Optional properties & Defaults
         expect(point.hasAltitude()).toBeFalsy();
         expect(point.altitude).toBeUndefined();
-        expect(point.buffer).toEqual(Point.DEFAULT_BUFFER);
+        expect(point.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
         expect(point.hasBBox()).toBeTruthy();
       });
     });
