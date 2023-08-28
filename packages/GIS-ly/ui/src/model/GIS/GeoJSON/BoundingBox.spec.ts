@@ -1,12 +1,6 @@
 import {
-  BBox as SerialBBox,
-  LineString as SerialLineString,
-  GeoJsonProperties as SerialGeoJsonProperties,
-  Feature as SerialFeature,
+  BBox as SerialBBox
 } from 'geojson';
-
-import { GeoJsonTypes } from './enums';
-import { Position } from './types';
 
 import { Coordinate } from '../Coordinate';
 import { BoundingBox } from './BoundingBox';
@@ -105,11 +99,17 @@ describe('##BoundingBox', () => {
     });
   });
 
-  describe('Static Factory Methods', () => {
+  let bboxJson: SerialBBox;
+  let bboxWithAltitudeJson: SerialBBox;
+  beforeEach(() => {
+    bboxJson = [1, 2, 3, 4];
+    bboxWithAltitudeJson = [1, 2, 3, 4, 5, 6];
+  })
+
+  describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make an object from the associated GeoJSON object with no altitude', () => {
-        const bbox: SerialBBox = [1, 2, 3, 4];
-        const boundingBox = BoundingBox.fromJson(bbox);
+        const boundingBox = BoundingBox.fromJson(bboxJson);
 
         expect(boundingBox.west).toEqual(1);
         expect(boundingBox.south).toEqual(2);
@@ -123,8 +123,7 @@ describe('##BoundingBox', () => {
       });
 
       it('should make an object from the associated GeoJSON object with an altitude specified', () => {
-        const bbox: SerialBBox = [1, 2, 3, 4, 5, 6];
-        const boundingBox = BoundingBox.fromJson(bbox);
+        const boundingBox = BoundingBox.fromJson(bboxWithAltitudeJson);
 
         expect(boundingBox.west).toEqual(1);
         expect(boundingBox.south).toEqual(2);
@@ -209,8 +208,7 @@ describe('##BoundingBox', () => {
     });
   });
 
-
-  describe('Main Interface Tests', () => {
+  describe('Common Interfaces', () => {
     describe('#clone', () => {
       it('should', () => {
 
@@ -232,11 +230,9 @@ describe('##BoundingBox', () => {
     });
   });
 
-
-  describe('Instance Tests', () => {
+  describe('Exporting', () => {
     describe('#toJson', () => {
       it('should make a GeoJSON object with no altitude', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
         const boundingBox = BoundingBox.fromJson(bboxJson);
 
         const result = boundingBox.toJson();
@@ -245,12 +241,11 @@ describe('##BoundingBox', () => {
       });
 
       it('should make a GeoJSON object with an altitude specified', () => {
-        const bboxJson: SerialBBox = [1, 2, 3, 4, 5, 6];
-        const boundingBox = BoundingBox.fromJson(bboxJson);
+        const boundingBox = BoundingBox.fromJson(bboxWithAltitudeJson);
 
         const result = boundingBox.toJson();
 
-        expect(result).toEqual(bboxJson);
+        expect(result).toEqual(bboxWithAltitudeJson);
       });
     });
 
@@ -265,16 +260,6 @@ describe('##BoundingBox', () => {
     });
 
     describe('#toCornerPoints', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#hasAltitude', () => {
       it('should', () => {
 
       });
@@ -301,6 +286,22 @@ describe('##BoundingBox', () => {
 
       it('should', () => {
 
+      });
+    });
+  });
+
+  describe('Methods', () => {
+    describe('#hasAltitude', () => {
+      it('should return False when no altitude was specified', () => {
+        const boundingBox = BoundingBox.fromJson(bboxJson);
+
+        expect(boundingBox.hasAltitude()).toBeFalsy();
+      });
+
+      it('should return True when altitudes were specified', () => {
+        const boundingBox = BoundingBox.fromJson(bboxWithAltitudeJson);
+
+        expect(boundingBox.hasAltitude()).toBeTruthy();
       });
     });
   });

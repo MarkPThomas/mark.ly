@@ -130,7 +130,7 @@ export class Point
   static fromJson(json: SerialPoint): Point {
     const coordinates = json.coordinates as Position;
 
-    if (!coordinates) {
+    if (!(coordinates.length === 2 || coordinates.length === 3)) {
       throw new InvalidGeometryException(
         `Invalid Coordinates type for "${GeoJsonTypes.Point}". Must be a "Position" tuple of 2 or 3 elements.
         \n See: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.1

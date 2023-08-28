@@ -1,16 +1,62 @@
 import {
   BBox as SerialBBox,
   Point as SerialPoint,
-  LineString as SerialLineString
+  LineString as SerialLineString,
+  GeometryCollection as SerialGeometryCollection
 } from 'geojson';
 
 import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 import { Position } from '../types';
 
+import { Point } from './Point';
 import { GeometryCollection } from './GeometryCollection';
+import { BoundingBox } from '../BoundingBox';
 
 describe('##GeometryCollection', () => {
-  describe('Static Factory Methods', () => {
+  let pointBBoxJson: SerialBBox;
+  let pointJson: SerialPoint;
+  let pointPosition: Position;
+
+  let lineStringBBoxJson: SerialBBox;
+  let lineStringJson: SerialLineString;
+  let lineStringPoints: Point[];
+  let lineStringPositions: Position[];
+
+  let geometryCollectionBBoxProvided: SerialBBox;
+  let geometryCollectionBBoxActual: SerialBBox;
+  let geometryCollectionJson: SerialGeometryCollection;
+  // let geometryCollectionPoints: Point[][][];
+  // let geometryCollectionPositions: Position[][][];
+
+  beforeEach(() => {
+    pointBBoxJson = [1, 2, 3, 4];
+    pointPosition = [1, 2];
+    pointJson = {
+      type: 'Point',
+      coordinates: pointPosition
+    };
+
+    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringPositions = [[1, 2], [3, 4]];
+    lineStringJson = {
+      type: 'LineString',
+      coordinates: lineStringPositions
+    };
+
+    lineStringPoints = [
+      Point.fromPosition(lineStringPositions[0]),
+      Point.fromPosition(lineStringPositions[1])
+    ];
+
+    geometryCollectionJson = {
+      type: 'GeometryCollection',
+      geometries: [pointJson, lineStringJson]
+    }
+    // geometryCollectionBBoxProvided = [];
+    // geometryCollectionBBoxActual = [];
+  });
+
+  describe('Creation', () => {
     describe('#fromJson', () => {
       it('should make a collection of a Point object and LineString object from the associated GeoJSON object', () => {
         const pointPosition: Position = [1, 2];
@@ -109,31 +155,7 @@ describe('##GeometryCollection', () => {
     });
   });
 
-
-  describe('Main Interface Tests', () => {
-    describe('#clone', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-
-    describe('#equals', () => {
-      it('should', () => {
-
-      });
-
-      it('should', () => {
-
-      });
-    });
-  });
-
-
-  describe('Instance Tests', () => {
+  describe('Exporting', () => {
     describe('#toJson', () => {
       it('should make a GeoJSON object', () => {
         const pointPosition: Position = [1, 2];
@@ -218,5 +240,177 @@ describe('##GeometryCollection', () => {
       });
     });
 
+    describe('#toPositions', () => {
+      it('should return a Positions array representing the Points forming the Geometry', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+
+        const result = multiPoint.toPositions();
+
+        expect(result).toEqual(multiPointPositions);
+      });
+    });
+
+    describe('#points', () => {
+      it('should return a Points array representing the Points forming the Geometry', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+
+        const result = multiPoint.points;
+
+        expect(result).toEqual(multiPointPoints);
+      });
+    });
+  });
+
+  describe('Common Interfaces', () => {
+    describe('#clone', () => {
+      it('should return a copy of the values object', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        const pointClone = geometryCollection.clone();
+
+        expect(pointClone).toEqual(geometryCollection);
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+        const geometryCollectionSame = GeometryCollection.fromJson(geometryCollectionJson);
+
+        const result = geometryCollection.equals(geometryCollectionSame);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return False for objects that are not equal by certain properties', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        geometryCollectionJson.geometries = [3, 4];
+        const geometryCollectionDiff = GeometryCollection.fromJson(geometryCollectionJson);
+
+        const result = geometryCollection.equals(geometryCollectionDiff);
+        expect(result).toBeFalsy();
+      });
+    });
+  });
+
+  describe('Methods', () => {
+    describe('#hasBBox', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        const result = geometryCollection.hasBBox();
+
+        expect(result).toBeFalsy();
+      });
+
+      it('should return True if a Bounding Box is present', () => {
+        geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        const result = geometryCollection.hasBBox();
+
+        expect(result).toBeTruthy();
+      });
+    });
+
+    describe('#bbox', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(geometryCollectionBBoxProvided);
+
+        geometryCollectionJson.bbox = geometryCollectionBBoxProvided;
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        expect(geometryCollection.hasBBox()).toBeTruthy();
+
+        const result = geometryCollection.bbox();
+        expect(geometryCollection.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
+      });
+
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(geometryCollectionBBoxActual);
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        expect(geometryCollection.hasBBox()).toBeFalsy();
+
+        const result = geometryCollection.bbox();
+        expect(geometryCollection.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
+      });
+    });
+  });
+
+  describe('Collection Methods', () => {
+    describe('#add', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#addItems', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#indexOf', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#remove', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#removeByIndex', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#getItems', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
+
+    describe('#getByIndex', () => {
+      it('should', () => {
+
+      });
+
+      it('should', () => {
+
+      });
+    });
   });
 });

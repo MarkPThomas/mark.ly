@@ -8,17 +8,20 @@ import { BBoxState, GeoJsonGeometryTypes } from '../enums';
 import { BoundingBox } from '../BoundingBox';
 
 import { Point } from './Point';
+import { MultiPoint } from './MultiPoint';
 import { LineString } from './LineString';
 
 describe('##LineString', () => {
-  let lineStringBBoxJson: SerialBBox;
+  let lineStringBBoxJsonProvided: SerialBBox;
+  let lineStringBBoxJsonActual: SerialBBox;
   let lineStringJson: SerialLineString;
   let lineStringPoints: Point[];
   let lineStringPositions: Position[];
   let lineStringBBox: BoundingBox;
 
   beforeEach(() => {
-    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringBBoxJsonProvided = [2, 3, 4, 5];
+    lineStringBBoxJsonActual = [1, 2, 3, 4];
     lineStringPositions = [[1, 2], [3, 4]];
     lineStringJson = {
       type: 'LineString',
@@ -47,7 +50,7 @@ describe('##LineString', () => {
       });
 
       it('should make an object from the associated GeoJSON object with a bounding box specified', () => {
-        lineStringJson.bbox = lineStringBBoxJson;
+        lineStringJson.bbox = lineStringBBoxJsonProvided;
         const lineString = LineString.fromJson(lineStringJson);
 
         expect(lineString.hasBBox()).toBeTruthy();
@@ -93,12 +96,22 @@ describe('##LineString', () => {
     });
 
     describe('#fromMultiPoint', () => {
+      let multiPoint: MultiPoint;
+      beforeEach(() => {
+        multiPoint = MultiPoint.fromPositions(lineStringPositions);
+      })
       it('should make an object from the associated Points', () => {
+        const expectedLineString = LineString.fromJson(lineStringJson);
 
+        const lineString = LineString.fromMultiPoint(multiPoint);
+
+        expect(lineString).toEqual(expectedLineString);
       });
 
       it('should make an object from the associated Points with a bounding box specified', () => {
+        const lineString = LineString.fromMultiPoint(multiPoint, lineStringBBox);
 
+        expect(lineString.hasBBox()).toBeTruthy();
       });
     });
   });
@@ -114,7 +127,7 @@ describe('##LineString', () => {
       });
 
       it('should make a GeoJSON object with a bounding box specified', () => {
-        lineStringJson.bbox = lineStringBBoxJson;
+        lineStringJson.bbox = lineStringBBoxJsonProvided;
         const lineString = LineString.fromJson(lineStringJson);
 
         const result = lineString.toJson();
@@ -129,14 +142,13 @@ describe('##LineString', () => {
 
         expect(result).not.toEqual(lineStringJson);
 
-        const bboxJson: SerialBBox = [1, 2, 3, 4];
-        lineStringJson.bbox = bboxJson;
+        lineStringJson.bbox = lineStringBBoxJsonActual;
 
         expect(result).toEqual(lineStringJson);
       });
 
       it('should make a GeoJSON object without a bounding box specified', () => {
-        lineStringJson.bbox = lineStringBBoxJson;
+        lineStringJson.bbox = lineStringBBoxJsonProvided;
         const lineString = LineString.fromJson(lineStringJson);
 
         const result = lineString.toJson(BBoxState.Exclude);
@@ -172,54 +184,81 @@ describe('##LineString', () => {
 
   describe('Common Interfaces', () => {
     describe('#clone', () => {
-      it('should', () => {
+      it('should return a copy of the values object', () => {
+        const lineString = LineString.fromJson(lineStringJson);
 
-      });
+        const lineStringClone = lineString.clone();
 
-      it('should', () => {
-
+        expect(lineStringClone).toEqual(lineString);
       });
     });
 
     describe('#equals', () => {
-      it('should', () => {
+      it('should return True for objects that are equal by certain properties', () => {
+        const lineString = LineString.fromJson(lineStringJson);
+        const lineStringSame = LineString.fromJson(lineStringJson);
 
+        const result = lineString.equals(lineStringSame);
+        expect(result).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should return False for objects that are not equal by certain properties', () => {
+        const lineString = LineString.fromJson(lineStringJson);
 
+        lineStringJson.coordinates = [[1, 2], [5, 6]];
+        const lineStringDiff = LineString.fromJson(lineStringJson);
+
+        const result = lineString.equals(lineStringDiff);
+        expect(result).toBeFalsy();
       });
     });
   });
 
   describe('Methods', () => {
     describe('#hasBBox', () => {
-      it('should', () => {
+      it('should return False if no Bounding Box is present', () => {
+        const lineString = LineString.fromJson(lineStringJson);
 
+        const result = lineString.hasBBox();
+
+        expect(result).toBeFalsy();
       });
 
-      it('should', () => {
+      it('should return True if a Bounding Box is present', () => {
+        lineStringJson.bbox = lineStringBBoxJsonProvided;
+        const lineString = LineString.fromJson(lineStringJson);
 
+        const result = lineString.hasBBox();
+
+        expect(result).toBeTruthy();
       });
     });
 
     describe('#bbox', () => {
-      it('should', () => {
+      it('should return the currently present Bounding Box', () => {
+        const bboxExpected = BoundingBox.fromJson(lineStringBBoxJsonProvided);
 
+        lineStringJson.bbox = lineStringBBoxJsonProvided;
+        const lineString = LineString.fromJson(lineStringJson);
+
+        expect(lineString.hasBBox()).toBeTruthy();
+
+        const result = lineString.bbox();
+        expect(lineString.hasBBox()).toBeTruthy();
+
+        expect(result).toEqual(bboxExpected);
       });
 
-      it('should', () => {
+      it('should generate a new Bounding Box from Geometry Points if one is not already present', () => {
+        const bboxExpected = BoundingBox.fromJson(lineStringBBoxJsonActual);
+        const lineString = LineString.fromJson(lineStringJson);
 
-      });
-    });
+        expect(lineString.hasBBox()).toBeFalsy();
 
-    describe('#pointAtIndex', () => {
-      it('should', () => {
+        const result = lineString.bbox();
+        expect(lineString.hasBBox()).toBeTruthy();
 
-      });
-
-      it('should', () => {
-
+        expect(result).toEqual(bboxExpected);
       });
     });
   });
