@@ -105,7 +105,6 @@ describe('##Feature', () => {
   let lineStringBBoxJsonProvided: SerialBBox;
   let lineStringBBoxJsonActual: SerialBBox;
   let lineStringJson: SerialLineString;
-  let lineStringPoints: Point[];
   let lineStringPositions: Position[];
 
   let featureJson: SerialFeature;
@@ -119,11 +118,6 @@ describe('##Feature', () => {
       type: 'LineString',
       coordinates: lineStringPositions
     };
-
-    lineStringPoints = [
-      Point.fromPosition(lineStringPositions[0]),
-      Point.fromPosition(lineStringPositions[1])
-    ];
 
     featureJson = {
       type: 'Feature',
@@ -475,12 +469,73 @@ describe('##Feature', () => {
     });
 
     describe('#setGeometry', () => {
-      it('should', () => {
+      it('should replace geometry in a feature', () => {
+        const feature = Feature.fromJson(featureJson);
 
+        const geometry = LineString.fromJson(lineStringJson);
+
+        feature.setGeometry(geometry);
+
+        expect(feature.geometry).toEqual(geometry);
+
+        lineStringJson.coordinates = [[5, 6], [7, 8]];
+        const geometryReplaced = LineString.fromJson(lineStringJson);
+
+        feature.setGeometry(geometryReplaced);
+
+        expect(feature.geometry).toEqual(geometryReplaced);
       });
 
-      it('should', () => {
+      it('should add properties to a feature', () => {
+        const feature = Feature.fromJson(featureJson);
 
+        expect(feature.properties).toEqual({});
+
+        const geometry = LineString.fromJson(lineStringJson);
+        const properties = FeatureProperty.fromJson({
+          foo: 'bar',
+          moo: 2
+        });
+
+        feature.setGeometry(geometry, properties);
+
+        expect(feature.properties).toEqual(properties);
+      });
+
+      it('should replace properties to a filled feature', () => {
+        const propertiesJson: SerialGeoJsonProperties = {
+          foo: 'bar',
+          moo: 2
+        };
+        featureJson.properties = propertiesJson;
+        const feature = Feature.fromJson(featureJson);
+
+        const propertiesExpected = FeatureProperty.fromJson(propertiesJson);
+
+        expect(feature.properties).toEqual(propertiesExpected);
+
+        const geometry = LineString.fromJson(lineStringJson);
+        const propertiesReplace = FeatureProperty.fromJson({
+          foo: 'mar',
+          moo: 3
+        });
+
+        feature.setGeometry(geometry, propertiesReplace);
+
+        expect(feature.properties).toEqual(propertiesReplace);
+      });
+
+      it('should reset an existing Bounding Box in a filled feature', () => {
+        const feature = Feature.fromJson(featureJson);
+        feature.bbox();
+
+        expect(feature.hasBBox()).toBeTruthy();
+
+        const geometry = LineString.fromJson(lineStringJson);
+
+        feature.setGeometry(geometry);
+
+        expect(feature.hasBBox()).toBeFalsy();
       });
     });
   });

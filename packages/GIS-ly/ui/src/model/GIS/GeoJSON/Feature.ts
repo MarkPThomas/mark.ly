@@ -184,6 +184,8 @@ export class Feature
     if (this.properties) {
       this._properties = properties;
     }
+
+    this._bbox = null;
   }
 
   equals(item: Feature): boolean {
