@@ -162,8 +162,6 @@ export class Point
     return Point.fromLngLat(position[0], position[1], position[2], buffer);
   }
 
-
-  static DEFAULT_BUFFER = 0.5;
   /**
    *
    *
@@ -175,7 +173,10 @@ export class Point
    * @return {*}  {Point}
    * @memberof Point
    */
-  static fromLngLat(longitude: number, latitude: number, altitude?: number, buffer: number = Point.DEFAULT_BUFFER): Point {
+  static fromLngLat(
+    longitude: number, latitude: number, altitude?: number,
+    buffer: number = GeoJsonConstants.DEFAULT_BUFFER
+  ): Point {
     const point = new Point();
 
     if (longitude < GeoJsonConstants.MIN_LONGITUDE) {

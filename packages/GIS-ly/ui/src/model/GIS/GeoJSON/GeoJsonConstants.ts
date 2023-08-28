@@ -33,4 +33,12 @@ export class GeoJsonConstants {
    * @memberof GeoJsonConstants
    */
   static MAX_LATITUDE = 90;
+
+  /**
+   * +/- degrees added to a Point's bounding box.
+   *
+   * @static
+   * @memberof GeoJsonConstants
+   */
+  static DEFAULT_BUFFER = 0.5;
 }

@@ -1,15 +1,15 @@
-import { BBox as SerialBBox } from "geojson";
-
 import { LatLngBoundsExpression, LatLngExpression, LatLngLiteral } from "leaflet";
+import { LatLngLiterals } from "./GeoJSON_Refactor";
+import { Coordinates } from "../Coordinate";
+
+import { BBox as SerialBBox } from "geojson";
 
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
-import { Coordinates } from "../Coordinate";
-
-import { LatLngLiterals } from "./GeoJSON_Refactor";
 import { Position } from "./types";
 
-import { IPoint, Point, PointProperties } from "./Geometries/Point";
+import { IPoint, Point, PointProperties } from "./Geometries";
+import { GeoJsonConstants } from "./GeoJsonConstants";
 
 export type TBoundingBox = [number, number, number, number];
 
@@ -77,6 +77,17 @@ export interface IBoundingBox
   toCornerPoints(): [Point, Point],
 }
 
+type BoundsArgs = {
+  minLat: number
+  minLong: number
+  maxLat: number
+  maxLong: number
+  minAltitude: number
+  maxAltitude: number
+}
+
+type BoundPtArgs = { altitude?: number, bufferDegree?: number };
+
 export class BoundingBox implements IBoundingBox {
   north: number;
   south: number;
@@ -92,11 +103,11 @@ export class BoundingBox implements IBoundingBox {
   protected constructor() { }
 
   northeast(): Point {
-    return Point.fromLngLat(this.east, this.north);
+    return Point.fromLngLat(this.east, this.north, this.northeastAltitude);
   }
 
   southwest(): Point {
-    return Point.fromLngLat(this.west, this.south);
+    return Point.fromLngLat(this.west, this.south, this.southwestAltitude);
   }
 
   toJson(): SerialBBox {
@@ -106,16 +117,23 @@ export class BoundingBox implements IBoundingBox {
   }
 
   toCornerPositions(): [Position, Position] {
-    return [
-      [this.east, this.north],
-      [this.west, this.south]
+    const positions = [
+      [this.west, this.south],
+      [this.east, this.north]
     ];
+
+    if (this.southwestAltitude) {
+      positions[0].push(this.southwestAltitude);
+      positions[1].push(this.northeastAltitude);
+    }
+
+    return positions as [Position, Position];
   }
 
   toCornerPoints(): [Point, Point] {
     return [
-      Point.fromLngLat(this.east, this.north),
-      Point.fromLngLat(this.west, this.south)
+      Point.fromLngLat(this.west, this.south, this.southwestAltitude),
+      Point.fromLngLat(this.east, this.north, this.northeastAltitude),
     ];
   }
 
@@ -123,7 +141,9 @@ export class BoundingBox implements IBoundingBox {
     return this.north === item.north
       && this.south === item.south
       && this.west === item.west
-      && this.east === item.east;
+      && this.east === item.east
+      && this.southwestAltitude === item.southwestAltitude
+      && this.northeastAltitude === item.northeastAltitude;
   }
 
   clone(): BoundingBox {
@@ -217,6 +237,37 @@ export class BoundingBox implements IBoundingBox {
   }
 
   /**
+   * Define a new instance of this class by passing in two coordinates in the same order they would appear
+   * in the serialized {@link Position} form.
+   *
+   * In order to create a box rom the point, a default (or specified) buffer in degrees is applied to all sides of the point.
+   *
+   * @static
+   * @param {number} longitude
+   * @param {number} latitude
+   * @param {BoundPtArgs} { altitude,
+   *       bufferDegree = GeoJsonConstants.DEFAULT_BUFFER }
+   * @return {*}
+   * @memberof BoundingBox
+   */
+  static fromLngLat(
+    longitude: number,
+    latitude: number,
+    { altitude,
+      bufferDegree }: BoundPtArgs = {}
+  ) {
+    let bufferDegreeUsed = bufferDegree ?? GeoJsonConstants.DEFAULT_BUFFER
+    return BoundingBox.fromLngLats(
+      longitude - bufferDegreeUsed,
+      latitude - bufferDegreeUsed,
+      longitude + bufferDegreeUsed,
+      latitude + bufferDegreeUsed,
+      altitude,
+      altitude
+    );
+  }
+
+  /**
    * Define a new instance of this class by passing in four coordinates in the same order they would appear in the serialized GeoJson form.
    *
    * @static
@@ -240,13 +291,13 @@ export class BoundingBox implements IBoundingBox {
     bbox.west = west;
     bbox.south = south;
 
-    if (southwestAltitude && northeastAltitude) {
+    if (southwestAltitude !== undefined && northeastAltitude !== undefined) {
       bbox.southwestAltitude = southwestAltitude;
       bbox.northeastAltitude = northeastAltitude;
-    } else if (southwestAltitude) {
+    } else if (southwestAltitude !== undefined) {
       bbox.southwestAltitude = southwestAltitude;
       bbox.northeastAltitude = southwestAltitude;
-    } else if (northeastAltitude) {
+    } else if (northeastAltitude !== undefined) {
       bbox.southwestAltitude = northeastAltitude;
       bbox.northeastAltitude = northeastAltitude;
     }
@@ -254,103 +305,35 @@ export class BoundingBox implements IBoundingBox {
     return bbox;
   }
 
-  static fromPosition(position: Position, bufferDegree: number): BoundingBox {
-    const bbox = new BoundingBox();
-
-    bbox.east = position[0] + bufferDegree;
-    bbox.north = position[1] + bufferDegree;
-    bbox.west = position[0] - bufferDegree;
-    bbox.south = position[1] - bufferDegree;
-
-    if (position[2]) {
-      bbox.southwestAltitude = position[2];
-      bbox.northeastAltitude = position[2];
-    }
-
-    return bbox;
+  static fromPosition(position: Position, bufferDegree?: number): BoundingBox {
+    return BoundingBox.fromLngLat(position[0], position[1], { altitude: position[2], bufferDegree });
   }
 
   static fromCornerPositions(southwest: Position, northeast: Position): BoundingBox {
-    const bbox = new BoundingBox();
-
-    bbox.east = northeast[0];
-    bbox.north = northeast[1];
-    bbox.west = southwest[0];
-    bbox.south = southwest[1];
-
-    if (southwest[2] && northeast[2]) {
-      bbox.southwestAltitude = southwest[2];
-      bbox.northeastAltitude = northeast[2];
-    } else if (southwest[2]) {
-      bbox.southwestAltitude = southwest[2];
-      bbox.northeastAltitude = southwest[2];
-    } else if (northeast[2]) {
-      bbox.southwestAltitude = northeast[2];
-      bbox.northeastAltitude = northeast[2];
-    }
-
-    return bbox;
+    return BoundingBox.fromLngLats(
+      southwest[0], southwest[1],
+      northeast[0], northeast[1],
+      southwest[2], northeast[2]
+    );
   }
 
   static fromPositions(positions: Position[]): BoundingBox {
-    let minLat = Infinity;
-    let minLong = Infinity;
-    let maxLat = -Infinity;
-    let maxLong = -Infinity;
-    let minAltitude = Infinity;
-    let maxAltitude = -Infinity;
+    const bounds = BoundingBox.getInitialBounds();
 
-    function setBounds(position: Position) {
-      minLat = Math.min(minLat, position[1]);
-      minLong = Math.min(minLong, position[0]);
-
-      maxLat = Math.max(maxLat, position[1]);
-      maxLong = Math.max(maxLong, position[0]);
-
-      if (position[2]) {
-        minAltitude = Math.min(minAltitude, position[2]);
-        maxAltitude = Math.max(maxAltitude, position[2]);
-      }
-    }
-
-    function getArrayDepth(value) {
+    function getArrayDepth(value): number {
       return Array.isArray(value) ?
         1 + Math.max(0, ...value.map(getArrayDepth)) :
         0;
     }
 
     const positionsFlat = positions.flat(getArrayDepth(positions) - 2) as Position[];
-    positionsFlat.forEach((position) => setBounds(position));
+    positionsFlat.forEach((position) => BoundingBox.setBounds(bounds, position[0], position[1], position[2]));
 
-    const bbox = new BoundingBox();
-
-    bbox.east = maxLong;
-    bbox.north = maxLat;
-    bbox.west = minLong;
-    bbox.south = minLat;
-
-    if (minAltitude !== Infinity) {
-      bbox.southwestAltitude = minAltitude;
-      bbox.northeastAltitude = maxAltitude;
-    }
-
-    return bbox;
+    return BoundingBox.fromBoundsArgs(bounds);
   }
 
-  static fromPoint(point: PointProperties, bufferDegree: number): BoundingBox {
-    const bbox = new BoundingBox();
-
-    bbox.east = point.longitude + bufferDegree;
-    bbox.north = point.latitude + bufferDegree;
-    bbox.west = point.longitude - bufferDegree;
-    bbox.south = point.latitude - bufferDegree;
-
-    if (point.altitude) {
-      bbox.southwestAltitude = point.altitude;
-      bbox.northeastAltitude = point.altitude;
-    }
-
-    return bbox;
+  static fromPoint(point: PointProperties, bufferDegree?: number): BoundingBox {
+    return BoundingBox.fromLngLat(point.longitude, point.latitude, { altitude: point.altitude, bufferDegree });
   }
 
   /**
@@ -363,63 +346,53 @@ export class BoundingBox implements IBoundingBox {
    * @memberof BoundingBox
    */
   static fromCornerPoints(southwest: IPoint, northeast: IPoint): BoundingBox {
-    const bbox = new BoundingBox();
-
-    bbox.east = northeast.longitude;
-    bbox.north = northeast.latitude;
-    bbox.west = southwest.longitude;
-    bbox.south = southwest.latitude;
-
-    if (southwest.altitude && northeast.altitude) {
-      bbox.southwestAltitude = southwest.altitude;
-      bbox.northeastAltitude = northeast.altitude;
-    } else if (southwest.altitude) {
-      bbox.southwestAltitude = southwest.altitude;
-      bbox.northeastAltitude = southwest.altitude;
-    } else if (northeast.altitude) {
-      bbox.southwestAltitude = northeast.altitude;
-      bbox.northeastAltitude = northeast.altitude;
-    }
-
-    return bbox;
+    return BoundingBox.fromLngLats(
+      southwest.longitude, southwest.latitude,
+      northeast.longitude, northeast.latitude,
+      southwest.altitude, northeast.altitude
+    );
   }
 
   static fromPoints(points: IPoint[]): BoundingBox {
-    let minLat = Infinity;
-    let minLong = Infinity;
-    let maxLat = -Infinity;
-    let maxLong = -Infinity;
-    let minAltitude = Infinity;
-    let maxAltitude = -Infinity;
-
-    function setBounds(point: IPoint) {
-      minLat = Math.min(minLat, point.latitude);
-      minLong = Math.min(minLong, point.longitude);
-
-      maxLat = Math.max(maxLat, point.latitude);
-      maxLong = Math.max(maxLong, point.longitude);
-
-      if (point.altitude) {
-        minAltitude = Math.min(minAltitude, point.altitude);
-        maxAltitude = Math.max(maxAltitude, point.altitude);
-      }
-    }
+    const bounds = BoundingBox.getInitialBounds();
 
     const pointsFlat = points.flat(Infinity);
-    pointsFlat.forEach((point) => setBounds(point));
+    pointsFlat.forEach((point) => BoundingBox.setBounds(bounds, point.longitude, point.latitude, point.altitude));
 
-    const bbox = new BoundingBox();
+    return BoundingBox.fromBoundsArgs(bounds);
+  }
 
-    bbox.east = maxLong;
-    bbox.north = maxLat;
-    bbox.west = minLong;
-    bbox.south = minLat;
+  protected static fromBoundsArgs(bounds: BoundsArgs): BoundingBox {
+    return BoundingBox.fromLngLats(
+      bounds.minLong, bounds.minLat,
+      bounds.maxLong, bounds.maxLat,
+      bounds.minAltitude !== Infinity ? bounds.minAltitude : undefined,
+      bounds.maxAltitude !== -Infinity ? bounds.maxAltitude : undefined
+    );
+  }
 
-    if (minAltitude !== Infinity) {
-      bbox.southwestAltitude = minAltitude;
-      bbox.northeastAltitude = maxAltitude;
+  protected static getInitialBounds(): BoundsArgs {
+    return {
+      minLat: Infinity,
+      minLong: Infinity,
+      minAltitude: Infinity,
+      maxLat: -Infinity,
+      maxLong: -Infinity,
+      maxAltitude: -Infinity
     }
+  }
 
-    return bbox;
+  protected static setBounds(bounds: BoundsArgs, longitude: number, latitude: number, altitude?: number) {
+
+    bounds.minLat = Math.min(bounds.minLat, latitude);
+    bounds.minLong = Math.min(bounds.minLong, longitude);
+
+    bounds.maxLat = Math.max(bounds.maxLat, latitude);
+    bounds.maxLong = Math.max(bounds.maxLong, longitude);
+
+    if (altitude !== undefined) {
+      bounds.minAltitude = Math.min(bounds.minAltitude, altitude);
+      bounds.maxAltitude = Math.max(bounds.maxAltitude, altitude);
+    }
   }
 }
