@@ -12,6 +12,9 @@ import { BoundingBox } from '../BoundingBox';
 import { Point } from './Point';
 import { LineString } from './LineString';
 import { GeometryCollection } from './GeometryCollection';
+import { GeometryBuilder } from './GeometryBuilder';
+import { GeometryType } from './Geometry';
+import { MultiPoint } from './MultiPoint';
 
 describe('##GeometryCollection', () => {
   let pointBBoxJsonProvided: SerialBBox;
@@ -203,8 +206,28 @@ describe('##GeometryCollection', () => {
     });
 
     describe('#getGeometriesByType', () => {
+      let geometries: GeometryType[];
+      let geometryCollection: GeometryCollection;
+      beforeEach(() => {
+        const geometry1 = GeometryBuilder.fromJson(pointJson) as GeometryType;
+        const geometry2 = GeometryBuilder.fromJson(lineStringJson) as GeometryType;
+        geometries = [geometry1, geometry2];
 
-    })
+        geometryCollection = GeometryCollection.fromGeometries(geometries);
+      });
+
+      it('should return an empty array if there are no geometries of the specified type', () => {
+        const multiPoint = geometryCollection.getGeometriesByType(GeoJsonGeometryTypes.MultiPoint) as MultiPoint[];
+
+        expect(multiPoint.length).toEqual(0);
+      });
+
+      it('should return an array of Geometries of the specified type', () => {
+        const lineStrings = geometryCollection.getGeometriesByType(GeoJsonGeometryTypes.LineString) as LineString[];
+
+        expect(lineStrings.length).toEqual(1);
+      });
+    });
   });
 
   describe('Common Interfaces', () => {
