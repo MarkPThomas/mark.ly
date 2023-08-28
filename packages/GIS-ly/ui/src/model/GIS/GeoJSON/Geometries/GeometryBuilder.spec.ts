@@ -1,13 +1,14 @@
 import {
   BBox as SerialBBox,
   Point as SerialPoint,
-  MultiPoint as SerialMultiPoint,
   LineString as SerialLineString,
   GeometryCollection as SerialGeometryCollection
 } from 'geojson';
 
 import { Position } from '../types';
 import { GeoJsonGeometryTypes } from '../enums';
+import { GeoJsonConstants } from '../GeoJsonConstants';
+
 import { Point } from './Point';
 import { GeometryCollection } from './GeometryCollection';
 
@@ -94,7 +95,7 @@ describe('##GeometryBuilder', () => {
 
       // Optional properties & Defaults
       expect(pointCast.altitude).toBeUndefined();
-      expect(pointCast.buffer).toEqual(Point.DEFAULT_BUFFER);
+      expect(pointCast.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
       expect(pointCast.hasBBox()).toBeFalsy();
     });
 
