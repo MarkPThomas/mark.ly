@@ -15,14 +15,11 @@ import {
   GeoJSON as GeoJSONLeaflet
 } from 'leaflet';
 
-import { Coordinate } from '../Coordinate';
-
-
+import { Coordinate } from './Coordinate';
 
 export type GeoJSONFeatureCollection = FeatureCollection<Geometry, { [name: string]: any; }>;
 
 export type LatLngLiterals = LatLngLiteral | LatLngLiteral[] | LatLngLiteral[][] | LatLngLiteral[][][];
-
 
 export function getCoords(geoJson: GeoJSONFeatureCollection) {
   if (geoJson.features[0].geometry) {
@@ -31,7 +28,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
     switch (geometryType) {
       case 'Point':
         coordinatesPosition = (geoJson.features[0].geometry as Point).coordinates;
-        const coordinate = Coordinate.getCoordinate(
+        const coordinate = Coordinate.fromPosition(
           {
             position: coordinatesPosition,
             timeStamp: geoJson.features[0].properties?.coordinateProperties?.times
@@ -44,7 +41,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
         coordinatesPosition = (geoJson.features[0].geometry as MultiPoint).coordinates;
         const coordinates: Coordinate[] = [];
         for (let coordIndex = 0; coordIndex < coordinatesPosition.length; coordIndex++) {
-          const coordinate = Coordinate.getCoordinate(
+          const coordinate = Coordinate.fromPosition(
             {
               position: coordinatesPosition[coordIndex],
               indices: {
@@ -64,7 +61,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
         for (let segmentIndex = 0; segmentIndex < coordinatesPosition.length; segmentIndex++) {
           const coordinates: Coordinate[] = [];
           for (let coordIndex = 0; coordIndex < coordinatesPosition[segmentIndex].length; coordIndex++) {
-            const coordinate = Coordinate.getCoordinate(
+            const coordinate = Coordinate.fromPosition(
               {
                 position: coordinatesPosition[segmentIndex][coordIndex],
                 indices: {
@@ -90,7 +87,7 @@ export function getCoords(geoJson: GeoJSONFeatureCollection) {
           for (let segmentIndex = 0; segmentIndex < coordinatesPosition[polygonIndex].length; segmentIndex++) {
             const coordinates: Coordinate[] = [];
             for (let coordIndex = 0; coordIndex < coordinatesPosition[polygonIndex][segmentIndex].length; coordIndex++) {
-              const coordinate = Coordinate.getCoordinate(
+              const coordinate = Coordinate.fromPosition(
                 {
                   position: coordinatesPosition[polygonIndex][segmentIndex][coordIndex],
                   indices: {

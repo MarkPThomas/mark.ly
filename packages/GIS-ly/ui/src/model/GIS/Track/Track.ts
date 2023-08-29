@@ -1,11 +1,14 @@
-// import { ElevationRequestApi } from '../../elevationDataApi';
-import { ElevationRequestApi } from '../../../../server/api/elevationDataApi';
+import { Numbers } from '../../../../../../common/utils/math/Numbers';
 
-import { Coordinate } from './Coordinate';
-import { ISegment, Segment } from './Segment';
-import { CoordinateNode, PolyLine } from '../Geometry/PolyLine';
-import { BoundingBox } from './GeoJSON/BoundingBox';
-import { Numbers } from '../../../../../common/utils/math/Numbers';
+import { BoundingBox } from '../GeoJSON/BoundingBox';
+
+import { CoordinateNode, PolyLine } from '../../Geometry/PolyLine';
+
+// import { ElevationRequestApi } from '../../elevationDataApi';
+import { ElevationRequestApi } from '../../../../../server/api/elevationDataApi';
+
+import { Coordinate } from '../Coordinate';
+import { ISegment, Segment } from '../Segment';
 
 
 type EvaluatorArgs = { [name: string]: number };

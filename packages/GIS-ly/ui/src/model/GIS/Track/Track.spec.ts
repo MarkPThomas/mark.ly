@@ -1,6 +1,6 @@
-import { ICoordinate } from '../../../../server/api/elevationDataApi/model';
-import { ISegment, Segment } from '../Geometry/Segment';
-import { Coordinate } from './Coordinate';
+import { ICoordinate } from '../../../../../server/api/elevationDataApi/model';
+import { ISegment, Segment } from '../../Geometry/Segment';
+import { Coordinate } from '../Coordinate';
 import { Track } from './Track';
 
 describe('##Track', () => {
