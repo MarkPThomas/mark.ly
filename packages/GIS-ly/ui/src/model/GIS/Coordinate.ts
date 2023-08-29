@@ -59,8 +59,7 @@ export class Coordinate extends LatLng {
    */
   indices?: CoordinateIndex;
 
-  // TODO: Rename to: fromPosition
-  static getCoordinate({ position, indices, timeStamp }: CoordinateProperties) {
+  static fromPosition({ position, indices, timeStamp }: PositionProperties) {
     const coordinate = new Coordinate(position[1], position[0], position[2]);
 
     if (timeStamp) {
@@ -84,13 +83,11 @@ export class Coordinate extends LatLng {
   }
 }
 
-// TODO: rename to: PositionProperties
-type CoordinateProperties = {
+type PositionProperties = {
   position: Position;
   indices?: CoordinateIndex;
   timeStamp?: string;
 }
-
 
 export type Coordinates = Coordinate | Coordinate[] | Coordinate[][] | Coordinate[][][];
 export type ICoordinates = ICoordinate | ICoordinate[] | ICoordinate[][] | ICoordinate[][][];
