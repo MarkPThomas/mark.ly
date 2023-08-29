@@ -1,5 +1,5 @@
 import { LatLngBoundsExpression, LatLngExpression, LatLngLiteral } from "leaflet";
-import { LatLngLiterals } from "./GeoJSON_Refactor";
+import { LatLngLiterals } from "../GeoJSON_Refactor";
 import { Coordinates } from "../Coordinate";
 
 import { BBox as SerialBBox } from "geojson";
