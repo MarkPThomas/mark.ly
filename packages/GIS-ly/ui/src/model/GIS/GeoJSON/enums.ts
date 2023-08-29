@@ -7,7 +7,8 @@ export enum GeoJsonTypes {
   MultiPolygon = 'MultiPolygon',
   GeometryCollection = 'GeometryCollection',
   Feature = 'Feature',
-  FeatureCollection = 'FeatureCollection'
+  FeatureCollection = 'FeatureCollection',
+  Other = 'Other'   // Primarily used for testing
 }
 
 export enum GeoJsonGeometryTypes {
@@ -17,9 +18,16 @@ export enum GeoJsonGeometryTypes {
   MultiLineString = 'MultiLineString',
   Polygon = 'Polygon',
   MultiPolygon = 'MultiPolygon',
-  GeometryCollection = 'GeometryCollection'
+  GeometryCollection = 'GeometryCollection',
+  Other = 'Other'  // Primarily used for testing
 }
 
+/**
+ * State desired for BoundingBox output from a containing class.
+ *
+ * @export
+ * @enum {number}
+ */
 export enum BBoxState {
   Include,
   IncludeIfPresent,
