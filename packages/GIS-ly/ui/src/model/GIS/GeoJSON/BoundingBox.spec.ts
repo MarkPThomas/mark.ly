@@ -317,6 +317,14 @@ describe('##BoundingBox', () => {
 
           expect(boundingBox).toEqual(boundingBoxExpected);
         });
+
+        it('should make an object from the array with a single specified bounding Position as a single Position', () => {
+          const boundingBoxExpected = BoundingBox.fromJson(pointBBoxJson);
+
+          const boundingBox = BoundingBox.fromPositions([positions[0]]);
+
+          expect(boundingBox).toEqual(boundingBoxExpected);
+        });
       });
     })
 
@@ -393,6 +401,14 @@ describe('##BoundingBox', () => {
           const boundingBoxExpected = BoundingBox.fromJson(bboxWithAltitudeJson);
 
           const boundingBox = BoundingBox.fromPoints(pointsWithAltitude);
+
+          expect(boundingBox).toEqual(boundingBoxExpected);
+        });
+
+        it('should make an object from the array with a single specified bounding Point as a single Point', () => {
+          const boundingBoxExpected = BoundingBox.fromJson(pointBBoxJson);
+
+          const boundingBox = BoundingBox.fromPoints([points[0]]);
 
           expect(boundingBox).toEqual(boundingBoxExpected);
         });

@@ -318,6 +318,10 @@ export class BoundingBox implements IBoundingBox {
   }
 
   static fromPositions(positions: Position[]): BoundingBox {
+    if (positions.length === 1) {
+      return BoundingBox.fromPosition(positions[0]);
+    }
+
     const bounds = BoundingBox.getInitialBounds();
 
     function getArrayDepth(value): number {
@@ -354,6 +358,10 @@ export class BoundingBox implements IBoundingBox {
   }
 
   static fromPoints(points: IPoint[]): BoundingBox {
+    if (points.length === 1) {
+      return BoundingBox.fromPoint(points[0]);
+    }
+
     const bounds = BoundingBox.getInitialBounds();
 
     const pointsFlat = points.flat(Infinity);

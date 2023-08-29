@@ -15,27 +15,26 @@ import { BoundingBox } from './BoundingBox';
 import { FeatureCollection } from './FeatureCollection';
 
 describe('##FeatureCollection', () => {
-  let pointBBoxJson: SerialBBox;
+  let pointBBoxJsonProvided: SerialBBox;
+  let pointBBoxJsonActual: SerialBBox;
   let pointJson: SerialPoint;
   let pointPosition: Position;
   let featurePointJson: SerialFeature;
 
-  let lineStringBBoxJson: SerialBBox;
+  let lineStringBBoxJsonProvided: SerialBBox;
+  let lineStringBBoxJsonActual: SerialBBox;
   let lineStringJson: SerialLineString;
-  // let lineStringPoints: Point[];
   let lineStringPositions: Position[];
   let featureLineStringJson: SerialFeature;
 
   let featureCollectionBBoxJsonProvided: SerialBBox;
   let featureCollectionBBoxJsonActual: SerialBBox;
-  // let featureCollectionBBox: SerialBBox;
   let featureCollectionJson: SerialFeatureCollection;
-  // let featureCollectionPoints: Point[];
-  // let featureCollectionPositions: Position[];
   let featureBBox: BoundingBox;
 
   beforeEach(() => {
-    pointBBoxJson = [1, 2, 3, 4];
+    pointBBoxJsonProvided = [1, 2, 3, 4];
+    pointBBoxJsonActual = [-1.5, -2.5, -0.5, -1.5];
     pointPosition = [-1, -2];
     pointJson = {
       type: 'Point',
@@ -47,7 +46,8 @@ describe('##FeatureCollection', () => {
       properties: {}
     };
 
-    lineStringBBoxJson = [1, 2, 3, 4];
+    lineStringBBoxJsonProvided = [2, 3, 4, 5];
+    lineStringBBoxJsonActual = [1, 2, 3, 4];
     lineStringPositions = [[1, 2], [3, 4]];
     lineStringJson = {
       type: 'LineString',
@@ -59,11 +59,7 @@ describe('##FeatureCollection', () => {
       properties: {}
     };
 
-    // lineStringPoints = [
-    //   Point.fromPosition(lineStringPositions[0]),
-    //   Point.fromPosition(lineStringPositions[1])
-    // ];
-    featureCollectionBBoxJsonProvided = [1, 2, 3, 4];
+    featureCollectionBBoxJsonProvided = [4, 3, 2, 1];
     featureCollectionBBoxJsonActual = [-1, -2, 3, 4];
     featureCollectionJson = {
       type: 'FeatureCollection',
@@ -153,6 +149,10 @@ describe('##FeatureCollection', () => {
         expect(result).not.toEqual(featureCollectionJson);
 
         featureCollectionJson.bbox = featureCollectionBBoxJsonActual;
+        featureCollectionJson.features[0].bbox = pointBBoxJsonActual;
+        featureCollectionJson.features[0].geometry.bbox = pointBBoxJsonActual;
+        featureCollectionJson.features[1].bbox = lineStringBBoxJsonActual;
+        featureCollectionJson.features[1].geometry.bbox = lineStringBBoxJsonActual;
 
         expect(result).toEqual(featureCollectionJson);
       });
@@ -279,7 +279,7 @@ describe('##FeatureCollection', () => {
         featureCollection = FeatureCollection.fromFeatures(features);
       });
 
-      it('should return an empty array if there are no geometries of the specified type', () => {
+      it('should return an empty array if there are no features of the specified type', () => {
         const multiPoints = featureCollection.getGeometriesByType(GeoJsonGeometryTypes.MultiPoint) as MultiPoint[];
 
         expect(multiPoints.length).toEqual(0);
@@ -319,72 +319,349 @@ describe('##FeatureCollection', () => {
 
   describe('Collection Methods', () => {
     describe('#add', () => {
-      it('should', () => {
+      it('should add an item to the collection', () => {
+        const featureCollection = FeatureCollection.fromFeatures([]);
+        const feature = Feature.fromJson(featureLineStringJson);
 
+        expect(featureCollection.features.length).toEqual(0);
+
+        const result = featureCollection.add(feature);
+        expect(result).toEqual(1);
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(feature);
       });
 
-      it('should', () => {
+      it('should reset the Bounding Box to null by default', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const featureCollection = FeatureCollection.fromFeatures([], boundingBox);
+        const feature = Feature.fromJson(featureLineStringJson);
 
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        featureCollection.add(feature);
+
+        expect(featureCollection.hasBBox()).toBeFalsy();
+      });
+
+      it('should update the Bounding Box as specified', () => {
+        const boundingBoxProvided = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+
+        const lineStringBBoxJson: SerialBBox = [1, 2, 3, 4];
+        const boundingBoxActual = BoundingBox.fromJson(lineStringBBoxJson);
+
+        const featureCollection = FeatureCollection.fromFeatures([], boundingBoxProvided);
+        const feature = Feature.fromJson(featureLineStringJson);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxProvided);
+
+        featureCollection.add(feature, true);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxActual);
       });
     });
 
     describe('#addItems', () => {
-      it('should', () => {
+      it('should do nothing if an empty array is provided', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const feature = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature], boundingBox);
 
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(feature);
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        const result = featureCollection.addItems([]);
+        expect(result).toEqual(1);
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(feature);
+        expect(featureCollection.hasBBox()).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should add all items to the collection', () => {
+        const featureCollection = FeatureCollection.fromFeatures([]);
 
+        expect(featureCollection.features.length).toEqual(0);
+
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+
+        const result = featureCollection.addItems([feature1, feature2]);
+        expect(result).toEqual(2);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
+      });
+
+      it('should reset the Bounding Box to null by default', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const featureCollection = FeatureCollection.fromFeatures([], boundingBox);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+
+        featureCollection.addItems([feature1, feature2]);
+
+        expect(featureCollection.hasBBox()).toBeFalsy();
+      });
+
+      it('should update the Bounding Box as specified', () => {
+        const boundingBoxProvided = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const boundingBoxActual = BoundingBox.fromJson(featureCollectionBBoxJsonActual);
+
+        const featureCollection = FeatureCollection.fromFeatures([], boundingBoxProvided);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxProvided);
+
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+
+        featureCollection.addItems([feature1, feature2], true);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxActual);
       });
     });
 
     describe('#indexOf', () => {
-      it('should', () => {
+      it('should return -1 if the item is not found', () => {
+        const featureMissing = Feature.fromJson(featurePointJson);
+        const featurePresent = Feature.fromJson(featureLineStringJson);
 
+        const featureCollection = FeatureCollection.fromFeatures([featurePresent]);
+
+        const result = featureCollection.indexOf(featureMissing);
+
+        expect(result).toEqual(-1);
       });
 
-      it('should', () => {
+      it('should return the index of the present item sought', () => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
 
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2]);
+
+        const result = featureCollection.indexOf(feature2);
+
+        expect(result).toEqual(1);
       });
     });
 
     describe('#remove', () => {
-      it('should', () => {
+      it('should do nothing if the item to be removed is not in the collection', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const featureMissing = Feature.fromJson(featurePointJson);
+        const featurePresent = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([featurePresent], boundingBox);
 
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(featurePresent);
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        const result = featureCollection.remove(featureMissing);
+
+        expect(result).toBeUndefined();
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(featurePresent);
+        expect(featureCollection.hasBBox()).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should remove an item from the collection', () => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2]);
 
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
+
+        const result = featureCollection.remove(feature2);
+
+        expect(result).toEqual(feature2);
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(feature1);
+      });
+
+      it('should reset the Bounding Box to null by default', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2], boundingBox);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        featureCollection.remove(feature2);
+
+        expect(featureCollection.hasBBox()).toBeFalsy();
+      });
+
+      it('should update the Bounding Box as specified', () => {
+        const boundingBoxProvided = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const boundingBoxActual = BoundingBox.fromJson(lineStringBBoxJsonActual);
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2], boundingBoxProvided);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxProvided);
+
+        featureCollection.remove(feature1, true);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxActual);
       });
     });
 
     describe('#removeByIndex', () => {
-      it('should', () => {
+      it('should do nothing if the index is negative', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const featurePresent = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([featurePresent], boundingBox);
 
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(featurePresent);
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        const result = featureCollection.removeByIndex(-1);
+
+        expect(result).toBeUndefined();
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(featurePresent);
+        expect(featureCollection.hasBBox()).toBeTruthy();
       });
 
-      it('should', () => {
+      it('should do nothing if the index greater than the max index', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const featurePresent = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([featurePresent], boundingBox);
 
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(featurePresent);
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        const result = featureCollection.removeByIndex(featureCollection.features.length);
+
+        expect(result).toBeUndefined();
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(featurePresent);
+        expect(featureCollection.hasBBox()).toBeTruthy();
+      });
+
+      it('should remove an item from the collection', () => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2]);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
+
+        const result = featureCollection.removeByIndex(1);
+
+        expect(result).toEqual(feature2);
+
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollection.features[0]).toEqual(feature1);
+      });
+
+      it('should reset the Bounding Box to null by default', () => {
+        const boundingBox = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2], boundingBox);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        featureCollection.removeByIndex(1);
+
+        expect(featureCollection.hasBBox()).toBeFalsy();
+      });
+
+      it('should update the Bounding Box as specified', () => {
+        const boundingBoxProvided = BoundingBox.fromJson(featureCollectionBBoxJsonProvided);
+        const boundingBoxActual = BoundingBox.fromJson(lineStringBBoxJsonActual);
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2], boundingBoxProvided);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxProvided);
+
+        featureCollection.removeByIndex(0, true);
+
+        expect(featureCollection.hasBBox()).toBeTruthy();
+        expect(featureCollection.bbox()).toEqual(boundingBoxActual);
       });
     });
 
     describe('#getItems', () => {
-      it('should', () => {
+      it('should return all of the Geometries in the collection', () => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2]);
 
-      });
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
 
-      it('should', () => {
+        const result = featureCollection.getItems();
 
+        expect(result.length).toEqual(2);
+        expect(result[0]).toEqual(feature1);
+        expect(result[1]).toEqual(feature2);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
       });
     });
 
     describe('#getByIndex', () => {
-      it('should', () => {
+      it('should return undefined if the index is negative', () => {
+        const featurePresent = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([featurePresent]);
 
+        const result = featureCollection.getByIndex(-1);
+
+        expect(result).toBeUndefined();
       });
 
-      it('should', () => {
+      it('should return undefined if the index is greater than the max index', () => {
+        const featurePresent = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([featurePresent]);
 
+        const result = featureCollection.getByIndex(featureCollection.features.length);
+
+        expect(result).toBeUndefined();
+      });
+
+      it('should return the item at the specified index', () => {
+        const feature1 = Feature.fromJson(featurePointJson);
+        const feature2 = Feature.fromJson(featureLineStringJson);
+        const featureCollection = FeatureCollection.fromFeatures([feature1, feature2]);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
+
+        const result = featureCollection.getByIndex(1);
+
+        expect(result).toEqual(feature2);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[0]).toEqual(feature1);
+        expect(featureCollection.features[1]).toEqual(feature2);
       });
     });
   });

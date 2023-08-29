@@ -99,10 +99,19 @@ export class GeometryCollection
 
   bbox(): BoundingBox {
     if (!this._bbox) {
-      this._bbox = this._collection.bbox();
+      this.updateBBox(true);
     }
     return this._bbox;
   }
+
+  protected updateBBox(updateCache: boolean = false) {
+    if (updateCache) {
+      this._bbox = this._collection.bbox();
+    } else {
+      this._bbox = null;
+    }
+  }
+
   hasBBox(): boolean {
     return !!(this._bbox);
   }
@@ -139,11 +148,18 @@ export class GeometryCollection
         `Cannot add "${geometry.type}" to type "${GeoJsonTypes.GeometryCollection}"
         \n See: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.8`);
     }
-    this._bbox = null;
-    return this._collection.add(geometry, updateBBox);
+
+    const originalLength = this._collection.length;
+    const lengthResult = this._collection.add(geometry);
+
+    if (lengthResult > originalLength) {
+      this.updateBBox(updateBBox);
+    }
+
+    return lengthResult;
   }
 
-  addItems(geometries: GeometryType[]): number {
+  addItems(geometries: GeometryType[], updateBBox: boolean = false): number {
     geometries.forEach((geometry, index) => {
       if (geometry.type === GeoJsonTypes.GeometryCollection) {
         throw new InvalidGeometryException(
@@ -152,8 +168,14 @@ export class GeometryCollection
       }
     });
 
-    this._bbox = null;
-    return this._collection.addItems(geometries);
+    const originalLength = this._collection.length;
+    const lengthResult = this._collection.addItems(geometries);
+
+    if (lengthResult > originalLength) {
+      this.updateBBox(updateBBox);
+    }
+
+    return lengthResult;
   }
 
   indexOf(item: GeometryType): number {
@@ -161,13 +183,23 @@ export class GeometryCollection
   }
 
   remove(item: GeometryType, updateBBox: boolean = false): GeometryType {
-    this._bbox = null;
-    return this._collection.remove(item, updateBBox) as GeometryType;
+    const removedItem = this._collection.remove(item, updateBBox) as GeometryType;
+
+    if (removedItem) {
+      this.updateBBox(updateBBox);
+    }
+
+    return removedItem;
   }
 
   removeByIndex(index: number, updateBBox: boolean = false): GeometryType {
-    this._bbox = null;
-    return this._collection.removeByIndex(index, updateBBox) as GeometryType;
+    const removedItem = this._collection.removeByIndex(index, updateBBox) as GeometryType;
+
+    if (removedItem) {
+      this.updateBBox(updateBBox);
+    }
+
+    return removedItem;
   }
 
   equals(geometryCollection: GeometryCollection): boolean {

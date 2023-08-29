@@ -104,4 +104,8 @@ describe('##GeometryBuilder', () => {
       expect(() => GeometryBuilder.fromJson(null)).toThrow();
     });
   });
+
+  describe('#getCoordinates', () => {
+
+  });
 });

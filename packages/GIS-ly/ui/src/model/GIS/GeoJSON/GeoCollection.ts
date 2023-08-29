@@ -1,7 +1,4 @@
-import {
-  GeoJsonObject as SerialGeoJsonObject,
-  Geometry as SerialGeometry,
-} from "geojson";
+import { GeoJsonObject as SerialGeoJsonObject } from "geojson";
 
 import { BoundingBox } from "./BoundingBox";
 import {
@@ -10,18 +7,8 @@ import {
   IGeoJsonBase,
   IJson
 } from "./GeoJson";
-import { BBoxState, GeoJsonTypes } from "./enums";
-import {
-  GeometryCollection,
-  MultiLineString,
-  MultiPoint,
-  MultiPolygon,
-  Polygon,
-  LineString,
-  Point
-} from "./Geometries";
-import { Feature } from './Feature';
-import { GeometryType, IGeometry } from "./Geometries/Geometry";
+import { BBoxState } from "./enums";
+import { GeometryBuilder } from "./Geometries";
 
 export interface GeoCollectionProperties<TItem extends GeoJson> extends GeoJsonBaseProperties {
   length: number;
@@ -43,8 +30,6 @@ export interface IGeoCollection<TItem extends GeoJson, TSerial extends SerialGeo
   GeoCollectionMethods<TItem>,
   IGeoJsonBase<GeoCollectionProperties<TItem>>,
   IJson<TSerial[]> {
-
-  getCoordinates(item: TItem | IGeometry<GeometryType, SerialGeometry>): Point[];
 }
 
 export abstract class GeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
@@ -81,34 +66,11 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
       if (item.hasBBox()) {
         bboxes.push(item.bbox().toCornerPoints());
       } else {
-        bboxes.push(this.getCoordinates(item));
+        bboxes.push(GeometryBuilder.getCoordinates(item));
       }
     });
 
     return BoundingBox.fromPoints(bboxes.flat(Infinity));
-  }
-
-  getCoordinates(item: TItem | IGeometry<GeometryType, SerialGeometry>): Point[] {
-    switch (item.type) {
-      case GeoJsonTypes.Point:
-        return [(item as unknown as Point).points];
-      case GeoJsonTypes.MultiPoint:
-        return (item as unknown as MultiPoint).points.flat(Infinity);
-      case GeoJsonTypes.LineString:
-        return (item as unknown as LineString).points.flat(Infinity);
-      case GeoJsonTypes.MultiLineString:
-        return (item as unknown as MultiLineString).points.flat(Infinity) as Point[];
-      case GeoJsonTypes.Polygon:
-        return (item as unknown as Polygon).points.flat(Infinity) as Point[];
-      case GeoJsonTypes.MultiPolygon:
-        return (item as unknown as MultiPolygon).points.flat(Infinity) as Point[];
-      case GeoJsonTypes.GeometryCollection:
-        return (item as unknown as GeometryCollection).geometries.flat(Infinity) as Point[];
-      case GeoJsonTypes.Feature:
-        return this.getCoordinates((item as unknown as Feature).geometry);
-      default:
-        return [];
-    }
   }
 
   protected _items: TItem[] = [];
@@ -162,6 +124,10 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
   }
 
   removeByIndex(index: number, updateBBox: boolean = false): TItem | null {
+    if (index < 0) {
+      return undefined;
+    }
+
     const item = this._items.splice(index, 1)[0];
     if (item) {
       this._length--;
