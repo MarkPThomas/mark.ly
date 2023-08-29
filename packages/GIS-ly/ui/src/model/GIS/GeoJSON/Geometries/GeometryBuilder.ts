@@ -16,6 +16,7 @@ import { GeometryType, IGeometry } from "./Geometry";
 import { CoordinateContainerBuilder } from "./CoordinateContainerBuilder";
 
 import { Feature } from "../Feature";
+import { FeatureCollection } from "../FeatureCollection";
 
 export class GeometryBuilder {
   /* istanbul ignore next */
@@ -49,9 +50,12 @@ export class GeometryBuilder {
         const points = geometries.map((geometry) => this.getCoordinates(geometry));
 
         return points.flat(Infinity) as Point[];
-      // return (item as unknown as GeometryCollection).geometries.flat(Infinity) as Point[];
       case GeoJsonTypes.Feature:
         return this.getCoordinates((item as unknown as Feature).geometry);
+      case GeoJsonTypes.FeatureCollection:
+        return (item as unknown as FeatureCollection).features.map(
+          (feature) => this.getCoordinates(feature)
+        ).flat(Infinity) as Point[];
       default:
         return [];
     }

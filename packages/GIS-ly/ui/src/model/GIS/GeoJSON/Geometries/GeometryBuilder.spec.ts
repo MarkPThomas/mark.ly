@@ -25,7 +25,7 @@ import { MultiPolygon } from './MultiPolygon';
 import { GeometryCollection } from './GeometryCollection';
 
 import { GeometryBuilder } from './GeometryBuilder';
-import { IGeometry } from './Geometry';
+import { GeometryType, IGeometry } from './Geometry';
 import { GeoJsonProperties } from '../GeoJson';
 import { Feature } from '../Feature';
 import { FeatureCollection } from '../FeatureCollection';
@@ -257,12 +257,24 @@ describe('##GeometryBuilder', () => {
       expect(points).toEqual(expectedPoints);
     });
 
-    it('should return an empty array for any type that is not a Feature or Geometry', () => {
+    it('should get coordinates for a FeatureCollection geometry', () => {
       const featureCollectionJson: SerialFeatureCollection = {
         type: 'FeatureCollection',
         features: [{
           type: 'Feature',
-          properties: {},
+          properties: {
+            _gpxType: 'trk', //trk
+            name: 'FooTrack',
+            time: 'BarTime', //timestamp
+            coordinateProperties: {
+              times: [ // MultiLineString
+                [ // LineString
+                  'Foo1',
+                  'Foo2'
+                ]
+              ]
+            }
+          },
           geometry: {
             type: 'MultiPoint',
             coordinates: [[1, 2], [3, 4]]
@@ -278,10 +290,32 @@ describe('##GeometryBuilder', () => {
       };
       const featureCollection: FeatureCollection = FeatureCollection.fromJson(featureCollectionJson);
 
+      const expectedMultiPointPoints = (featureCollectionJson.features[0].geometry as SerialMultiPoint).coordinates.map(
+        (coordinate: Position) => Point.fromPosition(coordinate)
+      );
+      const expectedPolygonPoints = (featureCollectionJson.features[1].geometry as SerialPolygon).coordinates.flat(1).map(
+        (coordinate: Position) => Point.fromPosition(coordinate)
+      );
+      const expectedPoints = expectedMultiPointPoints.concat(expectedPolygonPoints);
 
       const points = GeometryBuilder.getCoordinates(featureCollection);
 
-      expect(points).toEqual([]);
+      expect(points).toEqual(expectedPoints);
     });
+
+    //// TODO: Not sure how to test, or if this case is even possible?
+    // it('should return an empty array for any type that is not a Feature or Geometry', () => {
+    //   const otherJson: IGeometry<GeometryType, SerialGeometry> = {
+    //     type: 'Other',
+    //     coordinates: [[1, 2], [3, 4]]
+    //   };
+
+    //   const other: FeatureCollection = FeatureCollection.fromJson(otherJson);
+
+
+    //   const points = GeometryBuilder.getCoordinates(other);
+
+    //   expect(points).toEqual([]);
+    // });
   });
 });
