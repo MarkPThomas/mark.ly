@@ -7,11 +7,10 @@ import {
 import { ICloneable, IEquatable } from "../../../../../../common/interfaces";
 
 import { BoundingBox } from "./BoundingBox";
-import { GeometryType, IGeometry } from "./Geometries/Geometry";
+import { IGeometry } from "./Geometries/Geometry";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
-import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
-import { GeometryBuilder, GeometryCollection, Point } from './Geometries';
-import { CoordinateContainer } from './Geometries/CoordinateContainer';
+import { BBoxState, GeoJsonTypes } from "./enums";
+import { GeometryBuilder, Point } from './Geometries';
 
 export type FeatureOptions = {
   properties?: IFeatureProperty,
@@ -124,18 +123,13 @@ export class Feature
 
   protected _bbox: BoundingBox;
   bbox(): BoundingBox {
-    // if (!this._bbox) {
-    //   let points: Point[];
-    //   if (this._geometry.type === GeoJsonGeometryTypes.GeometryCollection) {
-    //     // points = (this._geometry as GeometryCollection).geometries.
-    //   } else {
-    //     points = (this._geometry as GeometryType).
-    //   }
-    //   this._bbox = BoundingBox.fromPoints(points);
-    // }
-    // return this._bbox;
-    return this._geometry.bbox();
+    if (!this._bbox) {
+      let points: Point[] = GeometryBuilder.getCoordinates(this._geometry);
+      this._bbox = BoundingBox.fromPoints(points);
+    }
+    return this._bbox;
   }
+
   hasBBox(): boolean {
     return !!(this._bbox);
   }
@@ -162,7 +156,7 @@ export class Feature
     return this._geometry;
   }
 
-  private _properties: IFeatureProperty;
+  private _properties: IFeatureProperty = FeatureProperty.fromJson({});
   get properties(): IFeatureProperty {
     return { ...this._properties };
   }
@@ -218,13 +212,13 @@ export class Feature
       feature._id = json.id.toString();
     }
 
-    if (json.bbox && !json.geometry.bbox) {
-      // Both bboxes should be the same. Assume geometry is more up to date, but if it is not present, use feature bbox.
-      json.geometry.bbox = json.bbox;
-    }
     feature._geometry = GeometryBuilder.fromJson(json.geometry);
 
     feature._properties = FeatureProperty.fromJson(json.properties);
+
+    if (json.bbox) {
+      feature._bbox = BoundingBox.fromJson(json.bbox);
+    }
 
     return feature;
   }
@@ -236,15 +230,18 @@ export class Feature
     const feature = new Feature();
 
     feature._geometry = geometry;
+
     if (id) {
       feature._id = id;
     }
+
     if (properties) {
       feature._properties = properties;
-    }
-    // if (bbox) {
-    //   feature._
-    // }
+    } else
+
+      if (bbox) {
+        feature._bbox = bbox;
+      }
 
     return feature;
   }

@@ -187,41 +187,6 @@ describe('##Feature', () => {
 
         expect(feature.hasBBox()).toBeTruthy();
       });
-
-      it('should make an object from the associated GeoJSON object with a bounding box specified in the contained Geometry object', () => {
-        featureJson.geometry.bbox = lineStringBBoxJsonProvided;
-
-        const feature = Feature.fromJson(featureJson);
-
-        expect(feature.type).toEqual(GeoJsonTypes.Feature);
-        expect(feature.id).toBeNull();
-        expect(feature.properties).toEqual({});
-
-        expect(feature.hasBBox()).toBeTruthy();
-      });
-
-      it(`should make an object from the associated GeoJSON object with multiple bounding boxes specified
-          with the contained Geometry object governing over one specified at the Feature level`, () => {
-
-        const bboxFeature: SerialBBox = lineStringBBoxJsonProvided;
-        featureJson.bbox = bboxFeature;
-
-        const bboxGeometry: SerialBBox = [5, 6, 7, 8];
-        featureJson.geometry.bbox = bboxGeometry;
-
-        const feature = Feature.fromJson(featureJson);
-
-        expect(feature.type).toEqual(GeoJsonTypes.Feature);
-        expect(feature.id).toBeNull();
-        expect(feature.properties).toEqual({});
-        expect(feature.hasBBox()).toBeTruthy();
-
-        const boundingBoxFeature = BoundingBox.fromJson(bboxFeature);
-        expect(feature.bbox()).not.toEqual(boundingBoxFeature);
-
-        const boundingBoxGeometry = BoundingBox.fromJson(bboxGeometry);
-        expect(feature.bbox()).toEqual(boundingBoxGeometry);
-      });
     });
 
     describe('#fromGeometry', () => {
