@@ -45,7 +45,11 @@ export class GeometryBuilder {
       case GeoJsonTypes.MultiPolygon:
         return (item as unknown as MultiPolygon).points.flat(Infinity) as Point[];
       case GeoJsonTypes.GeometryCollection:
-        return (item as unknown as GeometryCollection).geometries.flat(Infinity) as Point[];
+        const geometries = (item as unknown as GeometryCollection).geometries.flat(Infinity);
+        const points = geometries.map((geometry) => this.getCoordinates(geometry));
+
+        return points.flat(Infinity) as Point[];
+      // return (item as unknown as GeometryCollection).geometries.flat(Infinity) as Point[];
       case GeoJsonTypes.Feature:
         return this.getCoordinates((item as unknown as Feature).geometry);
       default:

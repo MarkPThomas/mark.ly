@@ -192,7 +192,11 @@ export class Point
       throw new LngLatOutOfRangeException(`Latitude ${latitude} cannot be greater than ${GeoJsonConstants.MAX_LATITUDE}`);
     }
 
-    point._positions = [longitude, latitude, altitude];
+    point._positions = [longitude, latitude]
+    if (altitude !== undefined && altitude !== null) {
+      point._positions = [...point._positions, altitude];
+    }
+
     point._buffer = buffer;
 
     return point;

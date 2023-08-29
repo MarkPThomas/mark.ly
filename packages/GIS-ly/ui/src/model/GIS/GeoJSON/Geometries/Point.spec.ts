@@ -322,7 +322,7 @@ describe('##Point', () => {
 
         pointJson.bbox = pointBBoxJsonActual;
 
-        expect(result).not.toEqual(pointJson);
+        expect(result).toEqual(pointJson);
       });
 
       it('should make a GeoJSON object without a specified bounding box', () => {
