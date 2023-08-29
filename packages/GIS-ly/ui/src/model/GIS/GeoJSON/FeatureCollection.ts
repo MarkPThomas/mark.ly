@@ -85,11 +85,24 @@ export class FeatureCollection
 
   readonly type = GeoJsonTypes.FeatureCollection;
 
+  protected _bbox: BoundingBox;
   bbox(): BoundingBox {
-    return this._collection.bbox();
+    if (!this._bbox) {
+      this.updateBBox(true);
+    }
+    return this._bbox;
   }
+
+  protected updateBBox(updateCache: boolean = false) {
+    if (updateCache) {
+      this._bbox = this._collection.bbox();
+    } else {
+      this._bbox = null;
+    }
+  }
+
   hasBBox(): boolean {
-    return this._collection.hasBBox();
+    return !!(this._bbox);
   }
 
   get features(): Feature[] {
@@ -106,33 +119,12 @@ export class FeatureCollection
 
   toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeatureCollection {
     const jsonBase = super.toJsonBase(includeBBox);
-
-    let json = {
+    const json = {
       ...jsonBase,
-      features: this.features.map((feature) => feature.toJson())
+      features: this.features.map((feature) => feature.toJson(includeBBox))
     } as SerialFeatureCollection
 
     return json;
-  }
-
-  add(feature: Feature): number {
-    return this._collection.add(feature);
-  }
-
-  addItems(features: Feature[]): number {
-    return this._collection.addItems(features);
-  }
-
-  indexOf(feature: Feature): number {
-    return this._collection.indexOf(feature);
-  }
-
-  remove(feature: Feature): Feature {
-    return this._collection.remove(feature) as Feature;
-  }
-
-  removeByIndex(index: number): Feature {
-    return this._collection.removeByIndex(index) as Feature;
   }
 
   getItems(): Feature[] {
@@ -143,12 +135,58 @@ export class FeatureCollection
     return this._collection.getByIndex(index) as Feature;
   }
 
+  add(feature: Feature, updateBBox: boolean = false): number {
+    const originalLength = this._collection.length;
+    const lengthResult = this._collection.add(feature);
+
+    if (lengthResult > originalLength) {
+      this.updateBBox(updateBBox);
+    }
+
+    return lengthResult;
+  }
+
+  addItems(features: Feature[], updateBBox: boolean = false): number {
+    const originalLength = this._collection.length;
+    const lengthResult = this._collection.addItems(features);
+
+    if (lengthResult > originalLength) {
+      this.updateBBox(updateBBox);
+    }
+
+    return lengthResult;
+  }
+
+  indexOf(feature: Feature): number {
+    return this._collection.indexOf(feature);
+  }
+
+  remove(feature: Feature, updateBBox: boolean = false): Feature {
+    const removedItem = this._collection.remove(feature, updateBBox) as Feature;
+
+    if (removedItem) {
+      this.updateBBox(updateBBox);
+    }
+
+    return removedItem;
+  }
+
+  removeByIndex(index: number, updateBBox: boolean = false): Feature {
+    const removedItem = this._collection.removeByIndex(index) as Feature;
+
+    if (removedItem) {
+      this.updateBBox(updateBBox);
+    }
+
+    return removedItem;
+  }
+
   equals(featureCollection: FeatureCollection): boolean {
     return this._collection.equals(featureCollection._collection);
   }
 
   clone(): FeatureCollection {
-    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this.bbox());
+    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this._bbox);
   }
 
   protected constructor() {
@@ -156,21 +194,18 @@ export class FeatureCollection
   }
 
   static fromJson(json: SerialFeatureCollection): FeatureCollection {
-    const featureCollection = new FeatureCollection();
+    const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
 
     const features = json.features.map((feature) => Feature.fromJson(feature));
-    featureCollection._collection.addItems(features);
-    if (json.bbox) {
-      featureCollection._collection = new FeatureCollectionDelegate(BoundingBox.fromJson(json.bbox));
-    }
+    const featureCollection = FeatureCollection.fromFeatures(features, bbox);
 
     return featureCollection;
   }
 
   static fromFeatures(features: Feature[], bbox?: BoundingBox): FeatureCollection {
     const featureCollection = new FeatureCollection();
-    featureCollection._collection = new FeatureCollectionDelegate(bbox);
-    featureCollection._collection.addItems(features);
+    featureCollection.addItems(features);
+    featureCollection._bbox = bbox;
 
     return featureCollection;
   }

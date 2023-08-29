@@ -70,8 +70,6 @@ export abstract class CoordinateContainer<TPosition, TPoint, TSerial extends Ser
       if (Array.isArray(this._points)) {
         const points = this._points.flat(Infinity);
         this._bbox = BoundingBox.fromPoints(points);
-      } else if (this._points) {
-        this._bbox = BoundingBox.fromPoint(this._points as unknown as PointProperties, this._buffer);
       } else {
         this._bbox = BoundingBox.fromPoint(this as unknown as PointProperties, this._buffer);
       }

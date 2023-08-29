@@ -98,10 +98,22 @@ export class GeometryCollection
   readonly type = GeoJsonTypes.GeometryCollection;
 
   bbox(): BoundingBox {
-    return this._collection.bbox();
+    if (!this._bbox) {
+      this.updateBBox(true);
+    }
+    return this._bbox;
   }
+
+  protected updateBBox(updateCache: boolean = false) {
+    if (updateCache) {
+      this._bbox = this._collection.bbox();
+    } else {
+      this._bbox = null;
+    }
+  }
+
   hasBBox(): boolean {
-    return this._collection.hasBBox();
+    return !!(this._bbox);
   }
 
   get geometries(): GeometryType[] {
@@ -136,19 +148,34 @@ export class GeometryCollection
         `Cannot add "${geometry.type}" to type "${GeoJsonTypes.GeometryCollection}"
         \n See: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.8`);
     }
-    return this._collection.add(geometry, updateBBox);
+
+    const originalLength = this._collection.length;
+    const lengthResult = this._collection.add(geometry);
+
+    if (lengthResult > originalLength) {
+      this.updateBBox(updateBBox);
+    }
+
+    return lengthResult;
   }
 
-  addItems(geometries: GeometryType[]): number {
+  addItems(geometries: GeometryType[], updateBBox: boolean = false): number {
     geometries.forEach((geometry, index) => {
       if (geometry.type === GeoJsonTypes.GeometryCollection) {
         throw new InvalidGeometryException(
           `Cannot add "${geometry.type}" at index ${index} to type "${GeoJsonTypes.GeometryCollection}"
           \n See: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.8`);
       }
-    })
+    });
 
-    return this._collection.addItems(geometries);
+    const originalLength = this._collection.length;
+    const lengthResult = this._collection.addItems(geometries);
+
+    if (lengthResult > originalLength) {
+      this.updateBBox(updateBBox);
+    }
+
+    return lengthResult;
   }
 
   indexOf(item: GeometryType): number {
@@ -156,11 +183,23 @@ export class GeometryCollection
   }
 
   remove(item: GeometryType, updateBBox: boolean = false): GeometryType {
-    return this._collection.remove(item, updateBBox) as GeometryType;
+    const removedItem = this._collection.remove(item, updateBBox) as GeometryType;
+
+    if (removedItem) {
+      this.updateBBox(updateBBox);
+    }
+
+    return removedItem;
   }
 
   removeByIndex(index: number, updateBBox: boolean = false): GeometryType {
-    return this._collection.removeByIndex(index, updateBBox) as GeometryType;
+    const removedItem = this._collection.removeByIndex(index, updateBBox) as GeometryType;
+
+    if (removedItem) {
+      this.updateBBox(updateBBox);
+    }
+
+    return removedItem;
   }
 
   equals(geometryCollection: GeometryCollection): boolean {
@@ -175,26 +214,24 @@ export class GeometryCollection
     super();
   }
 
-  static fromJson(json: SerialGeometry[], bboxJSon?: SerialBBox): GeometryCollection {
-    if (!json) {
-      throw new InvalidGeometryException(
-        `Invalid Geometries for "${GeoJsonTypes.GeometryCollection}". Must an array of GeoJSON "Geometry" objects.
-        \n See: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.8
-        \n ${JSON.stringify(json)}`);
-    }
+  static fromJson(json: SerialGeometryCollection): GeometryCollection {
+    const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
+    const geometries = json.geometries.map((geometry) => CoordinateContainerBuilder.fromJson(geometry)) as GeometryType[];
 
-    const bbox = bboxJSon ? BoundingBox.fromJson(bboxJSon) : undefined
-    const geometryTypes = json.map((geometry) => CoordinateContainerBuilder.fromJson(geometry)) as GeometryType[];
+    const geometryCollection = GeometryCollection.fromGeometries(geometries, bbox);
 
-    const multiPolygon = GeometryCollection.fromGeometries(geometryTypes, bbox);
-
-    return multiPolygon;
+    return geometryCollection;
   }
 
   static fromGeometries(geometries: GeometryType[], bbox?: BoundingBox): GeometryCollection {
     const geometryCollection = new GeometryCollection();
 
     geometries.forEach((geometry) => {
+      if (geometry.type === GeoJsonTypes.GeometryCollection) {
+        throw new InvalidGeometryException(
+          `Invalid Geometry for "${GeoJsonTypes.GeometryCollection}".
+          Geometry cannot be a GeometryCollection as nested GeometryCollections are to be avoided.`);
+      }
       geometryCollection.add(geometry.clone());
     });
     geometryCollection._bbox = bbox;

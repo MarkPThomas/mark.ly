@@ -10,6 +10,8 @@ import {
 
 import { Position } from '../types';
 import { GeoJsonGeometryTypes } from '../enums';
+import { GeoJsonConstants } from '../GeoJsonConstants';
+
 import { Point } from './Point';
 import { MultiPoint } from './MultiPoint';
 import { LineString } from './LineString';
@@ -42,7 +44,7 @@ describe('##CoordinateContainerBuilder', () => {
 
       // Optional properties & Defaults
       expect(pointCast.altitude).toBeUndefined();
-      expect(pointCast.buffer).toEqual(Point.DEFAULT_BUFFER);
+      expect(pointCast.buffer).toEqual(GeoJsonConstants.DEFAULT_BUFFER);
       expect(pointCast.hasBBox()).toBeFalsy();
     });
 

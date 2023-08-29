@@ -8,6 +8,7 @@ import {
   IJson
 } from "./GeoJson";
 import { BBoxState } from "./enums";
+import { GeometryBuilder } from "./Geometries";
 
 export interface GeoCollectionProperties<TItem extends GeoJson> extends GeoJsonBaseProperties {
   length: number;
@@ -29,15 +30,6 @@ export interface IGeoCollection<TItem extends GeoJson, TSerial extends SerialGeo
   GeoCollectionMethods<TItem>,
   IGeoJsonBase<GeoCollectionProperties<TItem>>,
   IJson<TSerial[]> {
-
-
-  // /**
-  //  * This takes the currently defined values found inside the GeoJson instance and converts it to a GeoJson string.
-  //  *
-  //  * @return {*}  {string}
-  //  * @memberof IGeoJSON
-  //  */
-  // toJson(includeBBox: BBoxState): TSerial[];
 }
 
 export abstract class GeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
@@ -55,6 +47,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     }
     return this._bbox;
   }
+
   hasBBox(): boolean {
     return !!(this._bbox);
   }
@@ -67,14 +60,13 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     }
   }
 
-  // TODO: Update to get all coordinates of contained objects and derive BoundingBox from these.
   protected createBBox(): BoundingBox {
     const bboxes = [];
     this._items.forEach((item) => {
       if (item.hasBBox()) {
         bboxes.push(item.bbox().toCornerPoints());
       } else {
-        bboxes.push(item)
+        bboxes.push(GeometryBuilder.getCoordinates(item));
       }
     });
 
@@ -132,6 +124,10 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
   }
 
   removeByIndex(index: number, updateBBox: boolean = false): TItem | null {
+    if (index < 0) {
+      return undefined;
+    }
+
     const item = this._items.splice(index, 1)[0];
     if (item) {
       this._length--;
