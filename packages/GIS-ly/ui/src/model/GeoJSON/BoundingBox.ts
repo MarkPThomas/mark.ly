@@ -161,53 +161,6 @@ export class BoundingBox implements IBoundingBox {
     return boundingBox;
   }
 
-  static getBoundingBox(coords: LatLngLiterals | TrackPoints): LatLngBoundsExpression | LatLngExpression {
-    let minLat = Infinity;
-    let minLong = Infinity;
-    let maxLat = -Infinity;
-    let maxLong = -Infinity;
-
-    function setBounds(coord: LatLngLiteral) {
-      minLat = Math.min(minLat, coord.lat);
-      minLong = Math.min(minLong, coord.lng);
-
-      maxLat = Math.max(maxLat, coord.lat);
-      maxLong = Math.max(maxLong, coord.lng);
-    }
-
-    if ((coords as any[]).length) {
-      if ((coords as any[][])[0].length) {
-        if ((coords as any[][][])[0][0].length) {
-          coords = coords as LatLngLiteral[][][];
-          for (let polygon = 0; polygon < coords.length; polygon++) {
-            for (let segment = 0; segment < coords[polygon].length; segment++) {
-              for (let coord = 0; coord < coords[polygon][segment].length; coord++) {
-                setBounds(coords[polygon][segment][coord]);
-              }
-            }
-          }
-        } else {
-          coords = coords as LatLngLiteral[][];
-          for (let segment = 0; segment < coords.length; segment++) {
-            for (let coord = 0; coord < coords[segment].length; coord++) {
-              setBounds(coords[segment][coord]);
-            }
-          }
-        }
-      } else {
-        coords = coords as LatLngLiteral[];
-        for (let coord = 0; coord < coords.length; coord++) {
-          setBounds(coords[coord]);
-        }
-      }
-    } else {
-      coords = coords as LatLngLiteral;
-      return [coords.lat, coords.lng];
-    }
-
-    return [[minLat, minLong], [maxLat, maxLong]];
-  }
-
   /**
    * Create a new instance of this class by passing in a formatted valid JSON String.
    *
