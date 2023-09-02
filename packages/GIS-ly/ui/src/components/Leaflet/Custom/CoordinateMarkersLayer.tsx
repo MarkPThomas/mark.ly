@@ -5,7 +5,7 @@ import {
 
 import { hashString } from '../../../../../../common/utils';
 
-import { Coordinate } from '../../../model/GIS/Coordinate';
+import { TrackPoint } from '../../../model/GIS/TrackPoint';
 
 import { CoordinateMarker } from './CoordinateMarker';
 
@@ -15,17 +15,17 @@ export type CoordinateMarkersLayerProps = {
 
 export function CoordinateMarkersLayer({ coords }: CoordinateMarkersLayerProps) {
   return (
-    (coords as Coordinate[][])
+    (coords as TrackPoint[][])
       ?
       <LayerGroup key={hashString(JSON.stringify(coords))}>
         {
-          (coords as Coordinate[][]).map((trkSegsOrCoord) => {
+          (coords as TrackPoint[][]).map((trkSegsOrCoord) => {
             if (trkSegsOrCoord.length) {
               const trkSegs = trkSegsOrCoord;
               return trkSegs.map((coord) =>
                 <CoordinateMarker key={hashString(JSON.stringify(coord))} coord={coord} />);
             } else {
-              const coord = trkSegsOrCoord as unknown as Coordinate;
+              const coord = trkSegsOrCoord as unknown as TrackPoint;
               return <CoordinateMarker key={hashString(JSON.stringify(coord))} coord={coord} />
             }
           })

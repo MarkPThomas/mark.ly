@@ -8,12 +8,12 @@ import { hashString } from '../../../../../../common/utils'; //'common/utils';
 import { Conversion } from '../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 import { Angle } from '../../../../../../common/utils/math/Coordinates/Angle';
 
-import { Coordinate } from '../../../model/GIS/Coordinate';
+import { TrackPoint } from '../../../model/GIS/TrackPoint';
 import { LabelValue } from './LabelValueList';
 
 
 export type CoordinateMarkerProps = {
-  coord: Coordinate
+  coord: TrackPoint
 }
 
 export function CoordinateMarker({ coord }: CoordinateMarkerProps) {

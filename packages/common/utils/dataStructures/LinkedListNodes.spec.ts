@@ -1,4 +1,22 @@
+import { ICloneable } from '../../interfaces';
 import { Node, NodeDouble, NodeKeyVal, NodeDoubleKeyVal } from './LinkedListNodes';
+
+
+type FooBarType = { foo: string };
+
+interface IFooBar extends ICloneable<IFooBar> {
+  foo: string;
+}
+
+class FooBar implements IFooBar {
+  foo: string;
+
+  clone(): FooBar {
+    const fooBar = new FooBar();
+    fooBar.foo = this.foo;
+    return fooBar;
+  }
+}
 
 describe('##Node', () => {
   describe('#constructor', () => {
@@ -99,6 +117,46 @@ describe('##Node', () => {
       expect(node.toObject()).toEqual({ val: 5 });
     })
   });
+
+  describe('#clone', () => {
+    it('should copy the value of the contained value', () => {
+      const node = new Node(2);
+      const nodeClone = node.clone();
+
+      expect(node.val).toEqual(nodeClone.val);
+    });
+
+    it('should copy the the contained value as a copied object reference', () => {
+      const fooBar: FooBarType = { foo: 'bar' };
+      const node = new Node(fooBar);
+
+      const nodeClone = node.clone();
+
+      expect(node.val).toEqual(fooBar);
+      expect(nodeClone.val).toEqual(fooBar);
+
+      fooBar.foo = 'foo';
+
+      expect(node.val).toEqual(fooBar);
+      expect(nodeClone.val).toEqual(fooBar);
+    });
+
+    it('should clone the the contained value if it implements ICloneable', () => {
+      const fooBar = new FooBar();
+      fooBar.foo = 'bar';
+      const node = new Node(fooBar);
+
+      const nodeClone = node.clone();
+
+      expect(node.val).toEqual(fooBar);
+      expect(nodeClone.val).toEqual(fooBar);
+
+      fooBar.foo = 'foo';
+
+      expect(node.val).toEqual(fooBar);
+      expect(nodeClone.val).not.toEqual(fooBar);
+    });
+  });
 });
 
 describe('##NodeKeyVal', () => {
@@ -116,6 +174,67 @@ describe('##NodeKeyVal', () => {
       const node = new NodeDoubleKeyVal(3, 'A')
 
       expect(node.toObject()).toEqual({ val: 'A', key: 3 });
+    });
+  });
+
+  describe('#clone', () => {
+    it('should copy the value of the contained value', () => {
+      const node = new NodeKeyVal('A', 2);
+
+      const nodeClone = node.clone();
+
+      expect(nodeClone.key).toEqual('A');
+      expect(nodeClone.val).toEqual(2);
+    });
+
+    it('should copy the the contained value as a copied object reference', () => {
+      const fooKey: FooBarType = { foo: 'bar' };
+      const fooValue: FooBarType = { foo: 'nar' };
+      const node = new NodeKeyVal(fooKey, fooValue);
+
+      const nodeClone = node.clone();
+
+      expect(node.val).toEqual(fooValue);
+      expect(nodeClone.val).toEqual(fooValue);
+
+      expect(node.key).toEqual(fooKey);
+      expect(nodeClone.key).toEqual(fooKey);
+
+      fooKey.foo = 'foo';
+      fooValue.foo = 'mar';
+
+      expect(node.val).toEqual(fooValue);
+      expect(nodeClone.val).toEqual(fooValue);
+
+      expect(node.key).toEqual(fooKey);
+      expect(nodeClone.key).toEqual(fooKey);
+    });
+
+    it('should clone the the contained value if it implements ICloneable', () => {
+      const fooKey = new FooBar();
+      fooKey.foo = 'bar';
+
+      const fooValue = new FooBar();
+      fooKey.foo = 'nar';
+
+      const node = new NodeKeyVal(fooKey, fooValue);
+
+      const nodeClone = node.clone();
+
+      expect(node.key).toEqual(fooKey);
+      expect(node.val).toEqual(fooValue);
+
+      expect(nodeClone.key).toEqual(fooKey);
+      expect(nodeClone.val).toEqual(fooValue);
+
+      fooKey.foo = 'foo';
+      fooValue.foo = 'mar';
+
+      expect(node.key).toEqual(fooKey);
+      expect(node.val).toEqual(fooValue);
+
+      expect(nodeClone.key).not.toEqual(fooKey);
+      expect(nodeClone.val).not.toEqual(fooValue);
     });
   });
 });

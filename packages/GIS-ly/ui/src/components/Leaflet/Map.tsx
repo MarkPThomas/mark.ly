@@ -19,9 +19,9 @@ import {
 } from '../../model/GIS';
 
 import {
-  Coordinate,
-  Coordinates
-} from '../../model/GIS/Coordinate';
+  TrackPoint,
+  TrackPoints
+} from '../../model/GIS/TrackPoint';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
@@ -40,13 +40,13 @@ export type MapProps = {
 
 export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const [layer, setLayer] = useState<GeoJSON>(null);
-  const [coords, setCoords] = useState<Coordinates | null>(null);
+  const [coords, setCoords] = useState<TrackPoints | null>(null);
   const [layersProps, setLayersProps] = useState(initialLayers)
   const [bounds, setBounds] = useState<LatLngBoundsExpression | LatLngExpression | null>(null);
   const [position, setPosition] = useState(initialPosition);
 
 
-  const updateFromGeoJson = (geoJson: GeoJSONFeatureCollection, newCoords: Coordinate[]) => {
+  const updateFromGeoJson = (geoJson: GeoJSONFeatureCollection, newCoords: TrackPoint[]) => {
     setLayer(geoJson);
     setCoords(newCoords);
     setLayersProps(updatedLayersProps(geoJson, newCoords));
@@ -103,7 +103,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     if (layer as GeoJSONFeatureCollection) {
       const geoJson = mergeTackSegments(layer as GeoJSONFeatureCollection);
       const newCoords = getCoords(geoJson);
-      updateFromGeoJson(geoJson, newCoords as Coordinate[]);
+      updateFromGeoJson(geoJson, newCoords as TrackPoint[]);
     }
   }
 
@@ -126,14 +126,14 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     if (layer as GeoJSONFeatureCollection) {
       const geoJson = clipTrackSegmentByCruft(layer as GeoJSONFeatureCollection);
       const newCoords = getCoords(geoJson);
-      updateFromGeoJson(geoJson, newCoords as Coordinate[]);
+      updateFromGeoJson(geoJson, newCoords as TrackPoint[]);
     }
   }
 
   const handleSmoothStationary = () => {
     console.log('handleSmoothStationary')
     if (layer as GeoJSONFeatureCollection) {
-      const track = new Track(coords as Coordinate[]);
+      const track = new Track(coords as TrackPoint[]);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -149,7 +149,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const handleSmoothBySpeed = () => {
     console.log('handleSmoothBySpeed')
     if (layer as GeoJSONFeatureCollection) {
-      const track = new Track(coords as Coordinate[]);
+      const track = new Track(coords as TrackPoint[]);
       track.addProperties();
       const speedLimitKph = Conversion.Speed.mphToKph(4);
       const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
@@ -164,7 +164,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const handleSmoothByAngularSpeed = () => {
     console.log('handleSmoothByAngularSpeed')
     if (layer as GeoJSONFeatureCollection) {
-      const track = new Track(coords as Coordinate[]);
+      const track = new Track(coords as TrackPoint[]);
       track.addProperties();
 
       //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
@@ -180,7 +180,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
     if (layer as GeoJSONFeatureCollection) {
-      const track = new Track(coords as Coordinate[]);
+      const track = new Track(coords as TrackPoint[]);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary

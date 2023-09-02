@@ -13,32 +13,9 @@ export interface ISegment {
    * @memberof ISegment
    */
   angle: number;
-  // TODO: Separate segment geometry from GIS, w/ GIS deriving and having the following...
-  direction?: {
-    lat: string;
-    lng: string;
-  };
-  duration?: number;
-  /**
-   * Speed in m/s
-   *
-   * @type {number}
-   * @memberof ISegment
-   */
-  speed?: number;
-  height?: number;
-  heightRate?: number;
 }
 
 export class Segment implements ISegment {
   length: number;
   angle: number;
-  direction?: {
-    lat: string;
-    lng: string;
-  };
-  duration?: number;
-  speed?: number;
-  height?: number;
-  heightRate?: number;
 }

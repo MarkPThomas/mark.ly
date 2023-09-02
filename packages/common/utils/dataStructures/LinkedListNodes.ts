@@ -1,4 +1,6 @@
-export interface INode<V> {
+import { ICloneable, IEquatable } from "../../interfaces";
+
+export interface INode<V> extends ICloneable<INode<V>> {
   val: V;
   next: INode<V> | null;
   equals(value: V, cb: ((a: V, b: V) => boolean) | undefined): boolean;
@@ -25,6 +27,15 @@ export class Node<V> implements INode<V>{
       val: this.val
     }
   }
+
+  clone(): Node<V> {
+    let val = this.val;
+    if (val && typeof val === "object" && 'clone' in val) {
+      val = (val as unknown as ICloneable<V>).clone();
+    }
+
+    return new Node(val);
+  }
 }
 
 
@@ -46,6 +57,20 @@ export class NodeKeyVal<K, V> extends Node<V> implements INodeKeyVal<K, V> {
       ...baseObject,
       key: this.key
     }
+  }
+
+  clone(): NodeKeyVal<K, V> {
+    let key = this.key;
+    if (key && typeof key === "object" && 'clone' in key) {
+      key = (key as unknown as ICloneable<K>).clone();
+    }
+
+    let val = this.val;
+    if (val && typeof val === "object" && 'clone' in val) {
+      val = (val as unknown as ICloneable<V>).clone();
+    }
+
+    return new NodeKeyVal<K, V>(key, val);
   }
 }
 
