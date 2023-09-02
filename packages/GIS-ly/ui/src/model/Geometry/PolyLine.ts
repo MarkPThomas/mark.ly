@@ -1,47 +1,82 @@
 import {
-  LinkedListDoubleGeneric,
-  LinkedListDouble,
-  NodeDouble
+  LinkedListDoubleGeneric as List,
+  NodeDouble,
+  INodeDouble
 } from '../../../../../common/utils/dataStructures';
 
-import { Coordinate } from '../GIS/Coordinate';
 import { Segment } from './Segment';
+import { IVertex } from './Vertex';
 
-export class CoordinateNode<V, S> extends NodeDouble<V> {
-  nextSeg: SegmentNode<V, S> | null;
-  prevSeg: SegmentNode<V, S> | null;
+export interface ICoordinateNode<TVertex, TSegment> extends INodeDouble<TVertex> {
+  nextSeg: SegmentNode<TVertex, TSegment> | null;
+  prevSeg: SegmentNode<TVertex, TSegment> | null;
 }
 
-export class SegmentNode<V, S> extends NodeDouble<S> {
-  nextCoord: CoordinateNode<V, S>;
-  prevCoord: CoordinateNode<V, S>;
+export class CoordinateNode<TVertex, TSegment>
+  extends NodeDouble<TVertex>
+  implements ICoordinateNode<TVertex, TSegment>
+{
+  nextSeg: SegmentNode<TVertex, TSegment> | null;
+  prevSeg: SegmentNode<TVertex, TSegment> | null;
+}
 
-  constructor(prevCoord: CoordinateNode<V, S>, nextCoord: CoordinateNode<V, S>, segment?: S) {
+export interface ISegmentNode<TVertex, TSegment> extends INodeDouble<TSegment> {
+  nextCoord: CoordinateNode<TVertex, TSegment>;
+  prevCoord: CoordinateNode<TVertex, TSegment>;
+}
+
+export class SegmentNode<TVertex, TSegment>
+  extends NodeDouble<TSegment>
+  implements ISegmentNode<TVertex, TSegment>
+{
+  nextCoord: CoordinateNode<TVertex, TSegment>;
+  prevCoord: CoordinateNode<TVertex, TSegment>;
+
+  constructor(prevCoord: CoordinateNode<TVertex, TSegment>, nextCoord: CoordinateNode<TVertex, TSegment>, segment?: TSegment) {
     super(segment ?? null);
     this.prevCoord = prevCoord;
     this.nextCoord = nextCoord;
   }
 }
 
-export class PolyLine<V extends Coordinate, S extends Segment> {
-  protected _coords: LinkedListDoubleGeneric<CoordinateNode<V, S>, V>
-    = new LinkedListDoubleGeneric<CoordinateNode<V, S>, V>();
-  protected _segments: LinkedListDouble<SegmentNode<V, S>> = new LinkedListDouble<SegmentNode<V, S>>();
+export interface IPolyline<TPoint, TSegment> {
+  /**
+   * Returns the number of {@link Point} and {@link Segment} items.
+   *
+   * @return {*}  {{
+   *     points: number;
+   *     segments: number;
+   *   }}
+   * @memberof IPolyline
+   */
+  size(): {
+    points: number;
+    segments: number;
+  };
+  points(): TPoint[];
+  segments(): TSegment[];
+}
 
-  constructor(coords: V[]) {
-    this._coords.appendMany(coords);
-    this.buildSegments();
+export class PolyLine<P extends IVertex, S extends Segment> implements IPolyline<P, S>{
+  protected _points: List<CoordinateNode<P, S>, P> = new List<CoordinateNode<P, S>, P>();
+  protected _segments: List<SegmentNode<P, S>, S> = new List<SegmentNode<P, S>, S>();
+
+  constructor(coords: P[]) {
+    if (coords) {
+      this._points.appendMany(coords);
+      this.buildSegments();
+    }
   }
 
   size() {
     return {
-      coords: this._coords.size(),
+      points: this._points.size(),
       segments: this._segments.size()
     }
   }
 
-  coords() {
-    return this._coords.toArray() as V[];
+  points() {
+    return this._points.toArray() as P[];
   }
 
   segments() {
@@ -49,26 +84,26 @@ export class PolyLine<V extends Coordinate, S extends Segment> {
   }
 
   protected buildSegments() {
-    if (this._coords.size() === 0) {
+    if (this._points.size() === 0) {
       return;
     }
 
-    this._segments = new LinkedListDouble<SegmentNode<V, S>>();
+    this._segments = new List<SegmentNode<P, S>, S>();
 
-    let coord = this._coords.getHead()?.next as CoordinateNode<V, S>;
+    let coord = this._points.getHead()?.next as CoordinateNode<P, S>;
     while (coord) {
-      const prevCoord = coord.prev as CoordinateNode<V, S>;
+      const prevCoord = coord.prev as CoordinateNode<P, S>;
       this.buildSegment(prevCoord, coord);
 
-      coord = coord.next as CoordinateNode<V, S>;
+      coord = coord.next as CoordinateNode<P, S>;
     }
-    if (this._coords.size() !== this._segments.size() + 1) {
-      throw new Error(`Polyline of ${this._coords.size()} vertices generated ${this._segments.size()} segments`);
+    if (this._points.size() !== this._segments.size() + 1) {
+      throw new Error(`Polyline of ${this._points.size()} vertices generated ${this._segments.size()} segments`);
     }
   }
 
-  protected buildSegment(coordI: CoordinateNode<V, S>, coordJ: CoordinateNode<V, S>) {
-    const segmentNode = new SegmentNode<V, S>(coordI, coordJ);
+  protected buildSegment(coordI: CoordinateNode<P, S>, coordJ: CoordinateNode<P, S>) {
+    const segmentNode = new SegmentNode<P, S>(coordI, coordJ);
     this._segments.append(segmentNode);
 
     coordI.nextSeg = segmentNode;

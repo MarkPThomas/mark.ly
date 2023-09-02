@@ -1,30 +1,63 @@
-import { Coordinate } from "../GIS/Coordinate"
 import { PolyLine } from "./PolyLine";
 
 describe('##PolyLine', () => {
-  describe('#constructor', () => {
-    it(`should initialize an object of coordinates linked with segments,
-      each represented in separate yet connected linked lists`, () => {
-      const coordinates = [
-        new Coordinate(45, -110),
-        new Coordinate(60, -109),
-        new Coordinate(47, -108),
-      ];
+  let coordinates: [number, number][];
+  beforeEach(() => {
+    coordinates = [
+      [45, -110],
+      [60, -109],
+      [47, -108],
+    ];
+  });
 
-      const polyLine = new PolyLine(coordinates);
+  describe('Creation', () => {
+    describe('#constructor', () => {
+      it(`should initialize an object of coordinates linked with segments,
+        each represented in separate yet connected linked lists`, () => {
+        const polyLine = new PolyLine(coordinates);
 
-      expect(polyLine.size()).toEqual({
-        coords: 3,
-        segments: 2
+        expect(polyLine.size()).toEqual({
+          points: 3,
+          segments: 2
+        });
       });
-
-      // const segments = polyLine.segments();
-      // TODO: Flesh out later. Default is cartesian coords but can be overriden by lat/lng for GIS, or other mappings
-      // expect(segments[1].length).toEqual();
     });
   });
 
-  // describe('#addProperties', () => {
+  describe('Methods', () => {
+    describe('#size', () => {
+      it('should return the number of points and segments in the PolyLine', () => {
+        const polyLine = new PolyLine(coordinates);
+
+        expect(polyLine.size()).toEqual({
+          points: 3,
+          segments: 2
+        });
+      });
+    });
+
+    describe('#points', () => {
+      it('should return the Points in the PolyLine', () => {
+        const polyLine = new PolyLine(coordinates);
+
+        const result = polyLine.points();
+
+        expect(result[0]).toEqual(coordinates[0]);
+        expect(result[1]).toEqual(coordinates[1]);
+        expect(result[2]).toEqual(coordinates[2]);
+      });
+    });
+
+    describe('#segments', () => {
+      it('should return the Segments in the PolyLine', () => {
+        const polyLine = new PolyLine(coordinates);
+
+        const result = polyLine.segments();
+
+        expect(result.length).toEqual(2);
+      });
+    });
+  });
   //   it('should add derived properties to segments', () => {
 
   //   });
