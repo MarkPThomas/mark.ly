@@ -169,6 +169,31 @@ export class LinkedList<N extends NodeSingle<V>, V> extends LinkedListBase<N, V>
     this.head = prevNode;
   }
 
+  splitAt(
+    valueOrNode: V | N,
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+  ): [LinkedList<N, V> | undefined, LinkedList<N, V> | undefined] {
+    const leftList = new LinkedList<N, V>();
+    const rightList = new LinkedList<N, V>();
+
+    const result = this.splitAtBase(leftList, rightList, valueOrNode, cb);
+
+    return [result[0] as LinkedList<N, V>, result[1] as LinkedList<N, V>]
+  }
+
+  splitBetween(
+    valueOrNodeStart: V | N,
+    valueOrNodeEnd: V | N,
+    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+  ): [LinkedList<N, V> | undefined, LinkedList<N, V> | undefined] {
+    const leftList = new LinkedList<N, V>();
+    const rightList = new LinkedList<N, V>();
+
+    const result = this.splitBetweenBase(leftList, rightList, valueOrNodeStart, valueOrNodeEnd, cb);
+
+    return [result[0] as LinkedList<N, V>, result[1] as LinkedList<N, V>]
+  }
+
   toLinkedListDouble() {
     const linkedList = new LinkedListDouble<V>();
     let currNode = this.head;
