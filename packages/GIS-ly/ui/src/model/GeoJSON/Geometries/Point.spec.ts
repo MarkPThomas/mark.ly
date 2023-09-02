@@ -367,7 +367,7 @@ describe('##Point', () => {
 
         const pointClone = point.clone();
 
-        expect(pointClone).toEqual(point);
+        expect(pointClone.equals(point)).toBeTruthy();
       });
     });
 
@@ -456,7 +456,33 @@ describe('##Point', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const point = Point.fromPosition(pointPosition);
 
+        expect(pointJson.bbox).toBeUndefined();
+        expect(point.hasBBox()).toBeFalsy();
+
+        const bbox = point.bbox();
+        expect(pointJson.bbox).toBeUndefined();
+        expect(point.hasBBox()).toBeTruthy();
+
+        point.save();
+        expect(pointJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object to the original GeoJSON object', () => {
+        const point = Point.fromJson(pointJson);
+
+        expect(pointJson.bbox).toBeUndefined();
+        expect(point.hasBBox()).toBeFalsy();
+
+        const bbox = point.bbox();
+        expect(pointJson.bbox).toBeUndefined();
+        expect(point.hasBBox()).toBeTruthy();
+
+        point.save();
+        expect(pointJson.bbox).toEqual(bbox.toJson());
+      });
     });
   });
 });

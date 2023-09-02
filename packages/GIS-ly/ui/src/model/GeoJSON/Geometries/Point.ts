@@ -138,6 +138,7 @@ export class Point
     }
 
     const point = Point.fromPosition(coordinates);
+    point._geoJson = json;
 
     if (json.bbox) {
       point._bbox = BoundingBox.fromJson(json.bbox);

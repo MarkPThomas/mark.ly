@@ -85,6 +85,7 @@ export class MultiPoint
 
     const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
     const multiPoint = MultiPoint.fromPositions(coordinates, bbox);
+    multiPoint._geoJson = json;
 
     return multiPoint;
   }

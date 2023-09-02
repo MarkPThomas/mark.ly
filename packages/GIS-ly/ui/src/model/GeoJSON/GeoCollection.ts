@@ -32,6 +32,8 @@ export interface IGeoCollection<TItem extends GeoJson, TSerial extends SerialGeo
   IJson<TSerial[]> {
 
   updateItem(target: TItem, replacement: TItem): void;
+  save(): void;
+  setJson(json: SerialGeoJsonObject[]): void;
 }
 
 export abstract class GeoCollection<TItem extends GeoJson, TSerial extends SerialGeoJsonObject>
@@ -94,7 +96,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
 
   save(): void {
     this._items.forEach((item, index) => {
-      if (this._itemsDirty[index]) {
+      if (this._itemsDirty[index] && this._geoJson) {
         this._geoJson[index] = this._items[index].toJson(BBoxState.IncludeIfPresent);
         this._itemsDirty[index] = false;
       } else {

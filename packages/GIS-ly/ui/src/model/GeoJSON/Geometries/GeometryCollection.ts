@@ -132,13 +132,15 @@ export class GeometryCollection
   }
 
   save(): void {
-    this.saveBBox();
+    if (this._geoJson) {
+      this.saveBBox();
 
-    if (this._collectionDirty) {
-      (this._geoJson as SerialGeometryCollection).geometries = this._collection.toJson();
-      this._collectionDirty = false;
-    } else {
-      this._collection.save();
+      if (this._collectionDirty) {
+        (this._geoJson as SerialGeometryCollection).geometries = this._collection.toJson();
+        this._collectionDirty = false;
+      } else {
+        this._collection.save();
+      }
     }
   }
 
@@ -245,7 +247,6 @@ export class GeometryCollection
 
     geometryCollection._geoJson = json;
     geometryCollection._collection.setJson(json.geometries);
-    geometryCollection._collectionDirty = false;
     if (bbox) {
       geometryCollection._bboxDirty = false;
     }
@@ -265,7 +266,6 @@ export class GeometryCollection
       geometryCollection.add(geometry.clone());
     });
     geometryCollection._bbox = bbox;
-    geometryCollection._collectionDirty = true;
 
     return geometryCollection;
   }

@@ -115,7 +115,7 @@ describe('##Polygon', () => {
 
         const polygon = Polygon.fromOuterInner(lineStringOuter);
 
-        expect(polygon).toEqual(expectedPolygon);
+        expect(polygon.equals(expectedPolygon)).toBeTruthy();
       });
 
       it('should make an object from the associated outer LineString with an inner LineString', () => {
@@ -266,11 +266,11 @@ describe('##Polygon', () => {
   describe('Common Interfaces', () => {
     describe('#clone', () => {
       it('should return a copy of the values object', () => {
-        const polygonString = Polygon.fromJson(polygonJson);
+        const polygon = Polygon.fromJson(polygonJson);
 
-        const polygonStringClone = polygonString.clone();
+        const polygonClone = polygon.clone();
 
-        expect(polygonStringClone).toEqual(polygonString);
+        expect(polygonClone.equals(polygon)).toBeTruthy();
       });
     });
 
@@ -347,7 +347,33 @@ describe('##Polygon', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const polygon = Polygon.fromPositions(polygonOuterPositions);
 
+        expect(polygonJson.bbox).toBeUndefined();
+        expect(polygon.hasBBox()).toBeFalsy();
+
+        const bbox = polygon.bbox();
+        expect(polygonJson.bbox).toBeUndefined();
+        expect(polygon.hasBBox()).toBeTruthy();
+
+        polygon.save();
+        expect(polygonJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object to the original GeoJSON object', () => {
+        const polygon = Polygon.fromJson(polygonJson);
+
+        expect(polygonJson.bbox).toBeUndefined();
+        expect(polygon.hasBBox()).toBeFalsy();
+
+        const bbox = polygon.bbox();
+        expect(polygonJson.bbox).toBeUndefined();
+        expect(polygon.hasBBox()).toBeTruthy();
+
+        polygon.save();
+        expect(polygonJson.bbox).toEqual(bbox.toJson());
+      });
     });
   });
 });

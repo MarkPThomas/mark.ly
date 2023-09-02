@@ -166,9 +166,9 @@ describe('##MultiPoint', () => {
       it('should return a copy of the values object', () => {
         const multiPoint = MultiPoint.fromJson(multiPointJson);
 
-        const pointClone = multiPoint.clone();
+        const multiPointClone = multiPoint.clone();
 
-        expect(pointClone).toEqual(multiPoint);
+        expect(multiPointClone.equals(multiPoint)).toBeTruthy();
       });
     });
 
@@ -242,7 +242,33 @@ describe('##MultiPoint', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const multiPoint = MultiPoint.fromPositions(multiPointPositions);
 
+        expect(multiPointJson.bbox).toBeUndefined();
+        expect(multiPoint.hasBBox()).toBeFalsy();
+
+        const bbox = multiPoint.bbox();
+        expect(multiPointJson.bbox).toBeUndefined();
+        expect(multiPoint.hasBBox()).toBeTruthy();
+
+        multiPoint.save();
+        expect(multiPointJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object to the original GeoJSON object', () => {
+        const multiPoint = MultiPoint.fromJson(multiPointJson);
+
+        expect(multiPointJson.bbox).toBeUndefined();
+        expect(multiPoint.hasBBox()).toBeFalsy();
+
+        const bbox = multiPoint.bbox();
+        expect(multiPointJson.bbox).toBeUndefined();
+        expect(multiPoint.hasBBox()).toBeTruthy();
+
+        multiPoint.save();
+        expect(multiPointJson.bbox).toEqual(bbox.toJson());
+      });
     });
   });
 });

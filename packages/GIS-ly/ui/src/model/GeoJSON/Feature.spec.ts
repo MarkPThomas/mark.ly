@@ -108,7 +108,7 @@ describe('##Feature', () => {
         const geometry = LineString.fromJson(lineStringJson);
         const feature = Feature.fromGeometry(geometry);
 
-        expect(feature).toEqual(expectedFeature);
+        expect(feature.equals(expectedFeature)).toBeTruthy();
       });
 
       it('should make an object with properties from the associated Geometry', () => {
@@ -240,7 +240,7 @@ describe('##Feature', () => {
 
         const featureClone = feature.clone();
 
-        expect(featureClone).toEqual(feature);
+        expect(featureClone.equals(feature)).toBeTruthy();
       });
     });
 
@@ -344,14 +344,15 @@ describe('##Feature', () => {
 
         feature.setGeometry(geometry);
 
-        expect(feature.geometry).toEqual(geometry);
+        expect(feature.geometry.equals(geometry)).toBeTruthy();
+
 
         lineStringJson.coordinates = [[5, 6], [7, 8]];
         const geometryReplaced = LineString.fromJson(lineStringJson);
 
         feature.setGeometry(geometryReplaced);
 
-        expect(feature.geometry).toEqual(geometryReplaced);
+        expect(feature.geometry.equals(geometryReplaced)).toBeTruthy();
       });
 
       it('should add properties to a feature', () => {
@@ -404,7 +405,82 @@ describe('##Feature', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const geometry = LineString.fromJson(lineStringJson);
+        const feature = Feature.fromGeometry(geometry);
 
+        expect(featureJson.bbox).toBeUndefined();
+        expect(feature.hasBBox()).toBeFalsy();
+
+        const bbox = feature.bbox();
+        expect(featureJson.bbox).toBeUndefined();
+        expect(feature.hasBBox()).toBeTruthy();
+
+        feature.save();
+        expect(featureJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object bounding box to the original GeoJSON object', () => {
+        const feature = Feature.fromJson(featureJson);
+
+        expect(featureJson.bbox).toBeUndefined();
+        expect(feature.hasBBox()).toBeFalsy();
+
+        const bbox = feature.bbox();
+        expect(featureJson.bbox).toBeUndefined();
+        expect(feature.hasBBox()).toBeTruthy();
+
+        feature.save();
+        expect(featureJson.bbox).toEqual(bbox.toJson());
+      });
+
+      it('should propagate updates in the object geometry', () => {
+        const feature = Feature.fromJson(featureJson);
+        const featureGeometryJson = featureJson.geometry as SerialLineString;
+
+        expect(featureGeometryJson.coordinates).toEqual(lineStringPositions);
+
+        const newLineStringPositions = [[5, 6], [7, 8]];
+        const newLineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: newLineStringPositions
+        };
+        const geometryReplaced = LineString.fromJson(newLineStringJson);
+        feature.setGeometry(geometryReplaced);
+
+        expect(feature.geometry.equals(geometryReplaced)).toBeTruthy();
+        expect(featureGeometryJson.coordinates).toEqual(lineStringPositions);
+
+        feature.save();
+
+        const expectedFeatureGeometryJson = featureJson.geometry as SerialLineString;
+        expect(expectedFeatureGeometryJson.coordinates).toEqual(newLineStringPositions);
+      });
+
+      it('should propagate updates in the object properties', () => {
+        const initialPropertiesJson = {
+          foo: 'bar',
+          moo: 2
+        };
+        const initialProperties = FeatureProperty.fromJson(initialPropertiesJson);
+        featureJson.properties = initialProperties;
+        const feature = Feature.fromJson(featureJson);
+
+        expect(featureJson.properties).toEqual(initialPropertiesJson);
+
+        const newPropertiesJson = {
+          foo: 'foo',
+          moo: 2
+        };
+        const newProperties = FeatureProperty.fromJson(newPropertiesJson);
+        feature.setGeometry(feature.geometry, newProperties);
+
+        expect(featureJson.properties).toEqual(initialPropertiesJson);
+
+        feature.save();
+
+        expect(featureJson.properties).toEqual(newPropertiesJson);
+      });
     });
   });
 });

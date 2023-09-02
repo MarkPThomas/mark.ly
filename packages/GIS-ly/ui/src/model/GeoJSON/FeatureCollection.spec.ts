@@ -108,7 +108,7 @@ describe('##FeatureCollection', () => {
 
         const featureCollection = FeatureCollection.fromFeatures(features);
 
-        expect(featureCollection).toEqual(expectedFeatureCollection);
+        expect(featureCollection.equals(expectedFeatureCollection)).toBeTruthy();
       });
 
       it('should make an object from the associated Features with a bounding box specified', () => {
@@ -117,7 +117,7 @@ describe('##FeatureCollection', () => {
 
         const featureCollection = FeatureCollection.fromFeatures(features, featureBBox);
 
-        expect(featureCollection).toEqual(expectedFeatureCollection);
+        expect(featureCollection.equals(expectedFeatureCollection)).toBeTruthy();
       });
     });
   });
@@ -193,7 +193,7 @@ describe('##FeatureCollection', () => {
 
         const featureCollectionClone = featureCollection.clone();
 
-        expect(featureCollectionClone).toEqual(featureCollection);
+        expect(featureCollectionClone.equals(featureCollection)).toBeTruthy();
       });
     });
 
@@ -317,11 +317,315 @@ describe('##FeatureCollection', () => {
     });
 
     describe('#update', () => {
+      let newFeatureJson: SerialFeature;
+      let newFeature: Feature;
+      let featureCollection: FeatureCollection;
 
+      beforeEach(() => {
+        newFeatureJson = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[5, 6], [7, 8]]
+          },
+          properties: {}
+        };
+        newFeature = Feature.fromJson(newFeatureJson);
+
+        featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+      });
+
+      it('should do nothing if the feature to be replaced is not found', () => {
+        const initialFeature = Feature.fromJson(featureLineStringJson);
+
+        const currentFeature = featureCollection.getByIndex(1) as Feature;
+        expect(currentFeature.equals(initialFeature));
+        expect(featureCollection.features.length).toEqual(2);
+
+        const nonExistingFeature = Feature.fromJson({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[9, 10], [11, 12]]
+          },
+          properties: {}
+        });
+
+        featureCollection.update(nonExistingFeature, newFeature);
+
+        const expectedCurrentFeature = featureCollection.getByIndex(1) as Feature;
+        expect(featureCollection.features.length).toEqual(2);
+        expect(expectedCurrentFeature.equals(initialFeature));
+      });
+
+      it('should replace the feature to be replaced with the new feature provided', () => {
+        const initialFeature = Feature.fromJson(featureLineStringJson);
+
+        const currentFeature = featureCollection.getByIndex(1) as Feature;
+        expect(currentFeature.equals(initialFeature));
+        expect(featureCollection.features.length).toEqual(2);
+
+        featureCollection.update(currentFeature, newFeature);
+
+        const expectedCurrentFeature = featureCollection.getByIndex(1) as Feature;
+        expect(featureCollection.features.length).toEqual(2);
+        expect(expectedCurrentFeature.equals(newFeature));
+      });
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const features = [
+          Feature.fromJson(featurePointJson),
+          Feature.fromJson(featureLineStringJson)
+        ];
 
+        const featureCollection = FeatureCollection.fromFeatures(features);
+
+        expect(featureCollectionJson.bbox).toBeUndefined();
+        expect(featureCollection.hasBBox()).toBeFalsy();
+
+        const bbox = featureCollection.bbox();
+        expect(featureCollectionJson.bbox).toBeUndefined();
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        featureCollection.save();
+        expect(featureCollectionJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object bounding box to the original GeoJSON object', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+
+        expect(featureCollectionJson.bbox).toBeUndefined();
+        expect(featureCollection.hasBBox()).toBeFalsy();
+
+        const bbox = featureCollection.bbox();
+        expect(featureCollectionJson.bbox).toBeUndefined();
+        expect(featureCollection.hasBBox()).toBeTruthy();
+
+        featureCollection.save();
+        expect(featureCollectionJson.bbox).toEqual(bbox.toJson());
+      });
+
+      it('#add: should propagate increases in the object feature collection size to the original GeoJSON object list', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+        const initialFeature = Feature.fromJson(featureLineStringJson);
+        const expectedInitialFeature = featureCollection.features[1];
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(expectedInitialFeature.equals(initialFeature)).toBeTruthy();
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        const newFeature1Json: SerialFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[5, 6], [7, 8]]
+          },
+          properties: {}
+        };
+        const newFeature1 = Feature.fromJson(newFeature1Json);
+
+        featureCollection.add(newFeature1);
+        const expectedFeature1 = featureCollection.features[2];
+
+        expect(featureCollection.features.length).toEqual(3);
+        expect(expectedFeature1.equals(newFeature1)).toBeTruthy();
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]
+        );
+
+        featureCollection.save();
+
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson,
+            newFeature1Json
+          ]
+        );
+      });
+
+      it('#addItems: should propagate increases in the object feature collection size to the original GeoJSON object list', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+        const initialFeature = Feature.fromJson(featureLineStringJson);
+        const expectedFeature = featureCollection.features[1];
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(expectedFeature.equals(initialFeature)).toBeTruthy();
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        const newFeature1Json: SerialFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[5, 6], [7, 8]]
+          },
+          properties: {}
+        };
+        const newFeature1 = Feature.fromJson(newFeature1Json);
+
+        const newFeature2Json: SerialFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[9, 10], [11, 12]]
+          },
+          properties: {}
+        };
+        const newFeature2 = Feature.fromJson(newFeature2Json);
+        featureCollection.addItems([newFeature1, newFeature2]);
+
+        const expectedFeature1 = featureCollection.features[2];
+        const expectedFeature2 = featureCollection.features[3];
+
+        expect(featureCollection.features.length).toEqual(4);
+        expect(expectedFeature1.equals(newFeature1)).toBeTruthy();
+        expect(expectedFeature2.equals(newFeature2)).toBeTruthy();
+
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]
+        );
+
+        featureCollection.save();
+
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson,
+            newFeature1Json,
+            newFeature2Json
+          ]
+        );
+      });
+
+      it('#remove: should propagate decreases in the object feature collection size to the original GeoJSON object list', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+        const initialFeature = Feature.fromJson(featureLineStringJson);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        featureCollection.remove(initialFeature);
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        featureCollection.save();
+
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson
+          ]);
+      });
+
+      it('#removeByIndex: should propagate decreases in the object feature collection size to the original GeoJSON object list', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        featureCollection.removeByIndex(1);
+        expect(featureCollection.features.length).toEqual(1);
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        featureCollection.save();
+
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+          ]);
+      });
+
+      it('should propagate updates in the object feature collection to the original GeoJSON object', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+        const initialFeature = Feature.fromJson(featureLineStringJson);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[1].equals(initialFeature)).toBeTruthy();
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        const newFeatureJson: SerialFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[5, 6], [7, 8]]
+          },
+          properties: {}
+        };
+        const newFeature = Feature.fromJson(newFeatureJson);
+
+        featureCollection.update(initialFeature, newFeature);
+
+        expect(featureCollection.features.length).toEqual(2);
+        expect(featureCollection.features[1].equals(newFeature)).toBeTruthy();
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            featureLineStringJson
+          ]);
+
+        featureCollection.save();
+
+        expect(featureCollectionJson.features).toEqual(
+          [
+            featurePointJson,
+            newFeatureJson
+          ]);
+      });
+
+      it('should propagate updates to an object feature in the original GeoJSON object', () => {
+        const featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+        expect(featureCollection.features[1].hasBBox()).toBeFalsy();
+        expect(featureCollectionJson.features[1]).toEqual(featureLineStringJson);
+
+        featureCollection.features[1].bbox();
+        expect(featureCollection.features[1].hasBBox()).toBeTruthy();
+        expect(featureCollectionJson.features[1]).toEqual(featureLineStringJson);
+
+        featureCollection.save();
+        ;
+        const expectedFeatureJson: SerialFeature = {
+          type: 'Feature',
+          bbox: lineStringBBoxJsonActual,
+          geometry: lineStringJson,
+          properties: {}
+        };
+        expect(featureCollectionJson.features[1]).toEqual(expectedFeatureJson);
+      });
     });
   });
 

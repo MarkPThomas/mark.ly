@@ -115,7 +115,7 @@ describe('##GeometryCollection', () => {
 
         const geometryCollection = GeometryCollection.fromGeometries(geometries);
 
-        expect(geometryCollection).toEqual(geometryCollectionExpected);
+        expect(geometryCollection.equals(geometryCollectionExpected)).toBeTruthy();
       });
 
       it('should make an object from the provided Geometry objects with a bounding box specified', () => {
@@ -131,7 +131,7 @@ describe('##GeometryCollection', () => {
 
         const geometryCollection = GeometryCollection.fromGeometries(geometries, boundingBox);
 
-        expect(geometryCollection).toEqual(geometryCollectionExpected);
+        expect(geometryCollection.equals(geometryCollectionExpected)).toBeTruthy();
 
         expect(geometryCollection.hasBBox()).toBeTruthy();
       });
@@ -142,7 +142,7 @@ describe('##GeometryCollection', () => {
 
         const geometryCollection = GeometryCollection.fromGeometries([]);
 
-        expect(geometryCollection).toEqual(geometryCollectionExpected);
+        expect(geometryCollection.equals(geometryCollectionExpected)).toBeTruthy();
 
         expect(geometryCollection.hasBBox()).toBeFalsy();
 
@@ -235,9 +235,9 @@ describe('##GeometryCollection', () => {
       it('should return a copy of the values object', () => {
         const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
 
-        const pointClone = geometryCollection.clone();
+        const geometryCollectionClone = geometryCollection.clone();
 
-        expect(pointClone).toEqual(geometryCollection);
+        expect(geometryCollectionClone.equals(geometryCollection)).toBeTruthy();
       });
     });
 
@@ -316,11 +316,291 @@ describe('##GeometryCollection', () => {
     });
 
     describe('#update', () => {
+      let newLineStringJson: SerialLineString;
+      let newLineString: LineString;
+      let geometryCollection: GeometryCollection;
 
+      beforeEach(() => {
+        newLineStringJson = {
+          type: 'LineString',
+          coordinates: [[5, 6], [7, 8]]
+        };
+        newLineString = LineString.fromJson(newLineStringJson);
+
+        geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+      });
+
+      it('should do nothing if the geometry to be replaced is not found', () => {
+        const initialLineString = LineString.fromJson(lineStringJson);
+
+        const currentLineString = geometryCollection.getByIndex(1) as LineString;
+        expect(currentLineString.equals(initialLineString));
+        expect(geometryCollection.geometries.length).toEqual(2);
+
+        const nonExistingLineString = LineString.fromJson({
+          type: 'LineString',
+          coordinates: [[9, 10], [11, 12]]
+        });
+
+        geometryCollection.update(nonExistingLineString, newLineString);
+
+        const expectedCurrentLineString = geometryCollection.getByIndex(1) as LineString;
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(expectedCurrentLineString.equals(initialLineString));
+      });
+
+      it('should replace the geometry to be replaced with the new geometry provided', () => {
+        const initialLineString = LineString.fromJson(lineStringJson);
+
+        const currentLineString = geometryCollection.getByIndex(1) as LineString;
+        expect(currentLineString.equals(initialLineString));
+        expect(geometryCollection.geometries.length).toEqual(2);
+
+        geometryCollection.update(currentLineString, newLineString);
+
+        const expectedCurrentLineString = geometryCollection.getByIndex(1) as LineString;
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(expectedCurrentLineString.equals(newLineString));
+      });
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const geometries = [
+          Point.fromJson(pointJson),
+          LineString.fromJson(lineStringJson)
+        ];
 
+        const geometryCollection = GeometryCollection.fromGeometries(geometries);
+
+        expect(geometryCollectionJson.bbox).toBeUndefined();
+        expect(geometryCollection.hasBBox()).toBeFalsy();
+
+        const bbox = geometryCollection.bbox();
+        expect(geometryCollectionJson.bbox).toBeUndefined();
+        expect(geometryCollection.hasBBox()).toBeTruthy();
+
+        geometryCollection.save();
+        expect(geometryCollectionJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object bounding box to the original GeoJSON object', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        expect(geometryCollectionJson.bbox).toBeUndefined();
+        expect(geometryCollection.hasBBox()).toBeFalsy();
+
+        const bbox = geometryCollection.bbox();
+        expect(geometryCollectionJson.bbox).toBeUndefined();
+        expect(geometryCollection.hasBBox()).toBeTruthy();
+
+        geometryCollection.save();
+        expect(geometryCollectionJson.bbox).toEqual(bbox.toJson());
+      });
+
+      it('#add: should propagate increases in the object geometry collection size to the original GeoJSON object list', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+        const initiaLineString = LineString.fromJson(lineStringJson);
+        const expectedInitialLineString = geometryCollection.geometries[1];
+
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(expectedInitialLineString.equals(initiaLineString)).toBeTruthy();
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        const newLineString1Json: SerialLineString = {
+          type: 'LineString',
+          coordinates: [[5, 6], [7, 8]]
+        };
+        const newLineString1 = LineString.fromJson(newLineString1Json);
+
+        geometryCollection.add(newLineString1);
+        const expectedLineString1 = geometryCollection.geometries[2];
+
+        expect(geometryCollection.geometries.length).toEqual(3);
+        expect(expectedLineString1.equals(newLineString1)).toBeTruthy();
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]
+        );
+
+        geometryCollection.save();
+
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson,
+            newLineString1Json
+          ]
+        );
+      });
+
+      it('#addItems: should propagate increases in the object geometry collection size to the original GeoJSON object list', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+        const initiaLineString = LineString.fromJson(lineStringJson);
+        const expectedInitialLineString = geometryCollection.geometries[1];
+
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(expectedInitialLineString.equals(initiaLineString)).toBeTruthy();
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        const newLineString1Json: SerialLineString = {
+          type: 'LineString',
+          coordinates: [[5, 6], [7, 8]]
+        };
+        const newLineString1 = LineString.fromJson(newLineString1Json);
+
+        const newLineString2Json: SerialLineString = {
+          type: 'LineString',
+          coordinates: [[9, 10], [11, 12]]
+        };
+        const newLineString2 = LineString.fromJson(newLineString2Json);
+        geometryCollection.addItems([newLineString1, newLineString2]);
+
+        const expectedLineString1 = geometryCollection.geometries[2];
+        const expectedLineString2 = geometryCollection.geometries[3];
+
+        expect(geometryCollection.geometries.length).toEqual(4);
+        expect(expectedLineString1.equals(newLineString1)).toBeTruthy();
+        expect(expectedLineString2.equals(newLineString2)).toBeTruthy();
+
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]
+        );
+
+        geometryCollection.save();
+
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson,
+            newLineString1Json,
+            newLineString2Json
+          ]
+        );
+      });
+
+      it('#remove: should propagate decreases in the object geometry collection size to the original GeoJSON object list', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+        const initiaLineString = LineString.fromJson(lineStringJson);
+
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        geometryCollection.remove(initiaLineString);
+        expect(geometryCollection.geometries.length).toEqual(1);
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        geometryCollection.save();
+
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson
+          ]);
+      });
+
+      it('#removeByIndex: should propagate decreases in the object geometry collection size to the original GeoJSON object list', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        geometryCollection.removeByIndex(1);
+        expect(geometryCollection.geometries.length).toEqual(1);
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        geometryCollection.save();
+
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson
+          ]);
+      });
+
+      it('should propagate updates in the object geometry collection to the original GeoJSON object', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+        const initiaLineString = LineString.fromJson(lineStringJson);
+
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(geometryCollection.geometries[1].equals(initiaLineString)).toBeTruthy();
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        const newLineStringPositions = [[5, 6], [7, 8]];
+        const newLineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: newLineStringPositions
+        };
+        const newLineString = LineString.fromJson(newLineStringJson);
+
+        geometryCollection.update(initiaLineString, newLineString);
+
+        expect(geometryCollection.geometries.length).toEqual(2);
+        expect(geometryCollection.geometries[1].equals(newLineString)).toBeTruthy();
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            lineStringJson
+          ]);
+
+        geometryCollection.save();
+
+        expect(geometryCollectionJson.geometries).toEqual(
+          [
+            pointJson,
+            newLineStringJson
+          ]);
+      });
+
+      it('should propagate updates to an object geometry in the original GeoJSON object', () => {
+        const geometryCollection = GeometryCollection.fromJson(geometryCollectionJson);
+        expect(geometryCollection.geometries[1].hasBBox()).toBeFalsy();
+        expect(geometryCollectionJson.geometries[1]).toEqual(lineStringJson);
+
+        geometryCollection.geometries[1].bbox();
+        expect(geometryCollection.geometries[1].hasBBox()).toBeTruthy();
+        expect(geometryCollectionJson.geometries[1]).toEqual(lineStringJson);
+
+        geometryCollection.save();
+
+        const expectedLineStringJson: SerialLineString = {
+          type: 'LineString',
+          coordinates: lineStringPositions,
+          bbox: lineStringBBoxJsonActual
+        };
+        expect(geometryCollectionJson.geometries[1]).toEqual(expectedLineStringJson);
+      });
     });
   });
 
@@ -382,14 +662,14 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometry], boundingBox);
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometry);
+        expect(geometryCollection.geometries[0].equals(geometry)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
 
         const result = geometryCollection.addItems([]);
         expect(result).toEqual(1);
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometry);
+        expect(geometryCollection.geometries[0].equals(geometry)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
       });
 
@@ -484,7 +764,7 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometryPresent], boundingBox);
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometryPresent);
+        expect(geometryCollection.geometries[0].equals(geometryPresent)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
 
         const result = geometryCollection.remove(geometryMissing);
@@ -492,7 +772,7 @@ describe('##GeometryCollection', () => {
         expect(result).toBeUndefined();
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometryPresent);
+        expect(geometryCollection.geometries[0].equals(geometryPresent)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
       });
 
@@ -502,15 +782,15 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometry1, geometry2]);
 
         expect(geometryCollection.geometries.length).toEqual(2);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
-        expect(geometryCollection.geometries[1]).toEqual(geometry2);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
+        expect(geometryCollection.geometries[1].equals(geometry2)).toBeTruthy();
 
         const result = geometryCollection.remove(geometry2);
 
-        expect(result).toEqual(geometry2);
+        expect(result.equals(geometry2)).toBeTruthy();
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
       });
 
       it('should reset the Bounding Box to null by default', () => {
@@ -550,7 +830,7 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometryPresent], boundingBox);
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometryPresent);
+        expect(geometryCollection.geometries[0].equals(geometryPresent)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
 
         const result = geometryCollection.removeByIndex(-1);
@@ -558,7 +838,7 @@ describe('##GeometryCollection', () => {
         expect(result).toBeUndefined();
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometryPresent);
+        expect(geometryCollection.geometries[0].equals(geometryPresent)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
       });
 
@@ -568,7 +848,7 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometryPresent], boundingBox);
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometryPresent);
+        expect(geometryCollection.geometries[0].equals(geometryPresent)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
 
         const result = geometryCollection.removeByIndex(geometryCollection.geometries.length);
@@ -576,7 +856,7 @@ describe('##GeometryCollection', () => {
         expect(result).toBeUndefined();
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometryPresent);
+        expect(geometryCollection.geometries[0].equals(geometryPresent)).toBeTruthy();
         expect(geometryCollection.hasBBox()).toBeTruthy();
       });
 
@@ -586,15 +866,15 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometry1, geometry2]);
 
         expect(geometryCollection.geometries.length).toEqual(2);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
-        expect(geometryCollection.geometries[1]).toEqual(geometry2);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
+        expect(geometryCollection.geometries[1].equals(geometry2)).toBeTruthy();
 
         const result = geometryCollection.removeByIndex(1);
 
-        expect(result).toEqual(geometry2);
+        expect(result.equals(geometry2)).toBeTruthy();
 
         expect(geometryCollection.geometries.length).toEqual(1);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
       });
 
       it('should reset the Bounding Box to null by default', () => {
@@ -634,18 +914,18 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometry1, geometry2]);
 
         expect(geometryCollection.geometries.length).toEqual(2);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
-        expect(geometryCollection.geometries[1]).toEqual(geometry2);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
+        expect(geometryCollection.geometries[1].equals(geometry2)).toBeTruthy();
 
         const result = geometryCollection.getItems();
 
         expect(result.length).toEqual(2);
-        expect(result[0]).toEqual(geometry1);
-        expect(result[1]).toEqual(geometry2);
+        expect(result[0].equals(geometry1)).toBeTruthy();
+        expect(result[1].equals(geometry2)).toBeTruthy();
 
         expect(geometryCollection.geometries.length).toEqual(2);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
-        expect(geometryCollection.geometries[1]).toEqual(geometry2);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
+        expect(geometryCollection.geometries[1].equals(geometry2)).toBeTruthy();
       });
     });
 
@@ -674,16 +954,16 @@ describe('##GeometryCollection', () => {
         const geometryCollection = GeometryCollection.fromGeometries([geometry1, geometry2]);
 
         expect(geometryCollection.geometries.length).toEqual(2);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
-        expect(geometryCollection.geometries[1]).toEqual(geometry2);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
+        expect(geometryCollection.geometries[1].equals(geometry2)).toBeTruthy();
 
         const result = geometryCollection.getByIndex(1);
 
-        expect(result).toEqual(geometry2);
+        expect(result.equals(geometry2)).toBeTruthy();
 
         expect(geometryCollection.geometries.length).toEqual(2);
-        expect(geometryCollection.geometries[0]).toEqual(geometry1);
-        expect(geometryCollection.geometries[1]).toEqual(geometry2);
+        expect(geometryCollection.geometries[0].equals(geometry1)).toBeTruthy();
+        expect(geometryCollection.geometries[1].equals(geometry2)).toBeTruthy();
       });
     });
   });
