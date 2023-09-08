@@ -3,7 +3,25 @@ import { ICloneable, IEquatable } from "../../interfaces";
 export interface INode<V> extends ICloneable<INode<V>> {
   val: V;
   next: INode<V> | null;
+  /**
+   * Determines if the current node is equal to the provided value.
+   *
+   * @param {V} value Value may be a primitive or a more complex object.
+   * @param {(((a: V, b: V) => boolean) | undefined)} cb Callback by which equality is determined.
+   *
+   * If undefined and if the value is a complex object, reference equality === will be used.
+   * @return {*}  {boolean}
+   * @memberof INode
+   */
   equals(value: V, cb: ((a: V, b: V) => boolean) | undefined): boolean;
+
+  /**
+   * Returns an object with specified properties and values that represent the node.
+   * Base case includes only val.
+   *
+   * @return {*}  {*}
+   * @memberof INode
+   */
   toObject(): any;
 }
 export class Node<V> implements INode<V>{
@@ -14,7 +32,7 @@ export class Node<V> implements INode<V>{
     this.val = value;
   }
 
-  equals(value: V, cb: ((a: V, b: V) => boolean) | undefined = undefined) {
+  equals(value: V, cb: ((a: V, b: V) => boolean) | undefined = undefined): boolean {
     if (cb) {
       return cb(this.val, value);
     } else {
@@ -40,6 +58,12 @@ export class Node<V> implements INode<V>{
 
 
 export interface INodeKeyVal<K, V> extends INode<V> {
+  /**
+   * Unique key by which the value of the node can be referenced.
+   *
+   * @type {K}
+   * @memberof INodeKeyVal
+   */
   key: K;
 }
 
@@ -107,6 +131,12 @@ export class NodeDouble<V> extends Node<V> implements INodeDouble<V>{
 
 
 export interface INodeDoubleKeyVal<K, V> extends INodeDouble<V> {
+  /**
+   * Unique key by which the value of the node can be referenced.
+   *
+   * @type {K}
+   * @memberof INodeDoubleKeyVal
+   */
   key: K;
 }
 export class NodeDoubleKeyVal<K, V> extends NodeDouble<V> implements INodeDoubleKeyVal<K, V>{
