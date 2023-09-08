@@ -66,10 +66,12 @@ export class FeatureProperty implements IFeatureProperty {
   static fromJson(json: SerialGeoJsonProperties): FeatureProperty {
     const featureProperty = new FeatureProperty();
 
-    const keys = Object.keys(json);
-    keys.forEach((key) => {
-      featureProperty[key] = json[key];
-    });
+    if (!!(json)) {
+      const keys = Object.keys(json);
+      keys.forEach((key) => {
+        featureProperty[key] = json[key];
+      });
+    }
 
     return featureProperty;
   }

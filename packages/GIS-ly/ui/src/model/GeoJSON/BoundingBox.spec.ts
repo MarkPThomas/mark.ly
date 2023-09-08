@@ -1,6 +1,4 @@
-import {
-  BBox as SerialBBox
-} from 'geojson';
+import { BBox as SerialBBox } from 'geojson';
 
 import { GeoJsonConstants } from './GeoJsonConstants';
 import { Position } from './types';

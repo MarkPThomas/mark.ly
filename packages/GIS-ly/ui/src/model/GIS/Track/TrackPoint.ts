@@ -5,16 +5,22 @@ import { Point, Position } from "../../GeoJSON";
 import { IDirection } from "../Direction";
 import { TimeStamp } from "./TimeStamp";
 
-export interface PositionIndex {
-  coordIndex: number;
-  segmentIndex?: number;
-  polygonIndex?: number;
-};
+// export interface PositionIndex {
+//   coordIndex: number;
+//   segmentIndex?: number;
+//   polygonIndex?: number;
+// };
 
 interface PositionProperties {
   position: Position;
-  indices?: PositionIndex;
-  timeStamp?: string;
+  // indices?: PositionIndex;
+  timestamp?: string;
+}
+
+interface PointProperties {
+  point: Point;
+  // indices?: PositionIndex;
+  timestamp?: string;
 }
 
 export type ITrackPoints = ITrackPoint | ITrackPoint[] | ITrackPoint[][] | ITrackPoint[][][];
@@ -31,7 +37,7 @@ export interface ITrackPoint {
   lng: number;
   alt?: number | undefined;
 
-  timeStamp?: string;
+  timestamp?: string;
 
   /**
    * Elevation [meters] obtained from an external source for the location, such as DEM/LIDAR data.
@@ -66,13 +72,13 @@ export interface ITrackPoint {
     descentRate: number;
   }
 
-  /**
-   * Index location(s) of the lat/lng within a possible nesting of polygons->segments->coordinates found in a GeoJSON object.
-   *
-   * @type {PositionIndex}
-   * @memberof Coordinate
-   */
-  indices?: PositionIndex;
+  // /**
+  //  * Index location(s) of the lat/lng within a possible nesting of polygons->segments->coordinates found in a GeoJSON object.
+  //  *
+  //  * @type {PositionIndex}
+  //  * @memberof Coordinate
+  //  */
+  // indices?: PositionIndex;
 };
 
 export type TrackPoints = TrackPoint | TrackPoint[] | TrackPoint[][] | TrackPoint[][][];
@@ -81,19 +87,19 @@ export class TrackPoint
   extends LatLng
   implements ITrackPoint {
 
-  constructor(lat: number, lng: number, altitude?: number, timeStamp?: string) {
+  constructor(lat: number, lng: number, altitude?: number, timestamp?: string) {
     super(lat, lng, altitude);
-    if (timeStamp) {
-      this._timeStamp = new TimeStamp(timeStamp);
+    if (timestamp) {
+      this._timestamp = new TimeStamp(timestamp);
     }
   }
 
-  protected _timeStamp: TimeStamp;
-  get timeStamp(): string {
-    return this._timeStamp.time;
+  protected _timestamp: TimeStamp;
+  get timestamp(): string {
+    return this._timestamp?.time;
   }
-  set timeStamp(timeStamp: string) {
-    this._timeStamp = new TimeStamp(timeStamp);
+  set timestamp(timestamp: string) {
+    this._timestamp = new TimeStamp(timestamp);
   }
 
   /**
@@ -135,43 +141,54 @@ export class TrackPoint
    * @type {PositionIndex}
    * @memberof Coordinate
    */
-  indices?: PositionIndex;
-
-  toPoint(): Point {
-    return this.elevation
-      ? Point.fromLngLat(this.lng, this.lat, this.elevation)
-      : Point.fromLngLat(this.lng, this.lat);
-  }
+  // indices?: PositionIndex;
 
   toPosition(): Position {
     return this.elevation
       ? [this.lng, this.lat, this.elevation]
-      : [this.lng, this.lat];
+      : this.alt
+        ? [this.lng, this.lat, this.alt]
+        : [this.lng, this.lat];
   }
 
+  toPoint(): Point {
+    return this.elevation
+      ? Point.fromLngLat(this.lng, this.lat, this.elevation)
+      : this.alt
+        ? Point.fromLngLat(this.lng, this.lat, this.alt)
+        : Point.fromLngLat(this.lng, this.lat);
+  }
+
+
   // == Factory Methods
-  static fromPosition({ position, indices, timeStamp }: PositionProperties) {
+  static fromPosition({ position, timestamp: timeStamp }: PositionProperties) {
     const coordinate = new TrackPoint(position[1], position[0], position[2]);
 
     if (timeStamp) {
-      coordinate._timeStamp = new TimeStamp(timeStamp);
-    }
-
-    if (indices) {
-      coordinate.indices = indices;
+      coordinate._timestamp = new TimeStamp(timeStamp);
     }
 
     return coordinate;
   }
 
-  static toPosition(coord: LatLng): Position {
-    const position = [coord.lng, coord.lat];
-    if (coord.alt) {
-      position.push(coord.alt);
+  static fromPoint({ point, timestamp: timeStamp }: PointProperties) {
+    const coordinate = new TrackPoint(point.latitude, point.longitude, point.altitude);
+
+    if (timeStamp) {
+      coordinate._timestamp = new TimeStamp(timeStamp);
     }
 
-    return position as Position;
+    return coordinate;
   }
+
+  // static toPosition(coord: LatLng): Position {
+  //   const position = [coord.lng, coord.lat];
+  //   if (coord.alt) {
+  //     position.push(coord.alt);
+  //   }
+
+  //   return position as Position;
+  // }
 
   // == Calc Methods
   /**
@@ -231,7 +248,7 @@ export class TrackPoint
  */
   static calcSegmentSpeedMPS(ptI: TrackPoint, ptJ: TrackPoint) {
     const distanceMeter = TrackPoint.calcSegmentDistanceMeters(ptI, ptJ);
-    const timeSec = TimeStamp.calcIntervalSec(ptI.timeStamp, ptJ.timeStamp);
+    const timeSec = TimeStamp.calcIntervalSec(ptI.timestamp, ptJ.timestamp);
 
     return timeSec === 0
       ? 0 :

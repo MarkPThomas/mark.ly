@@ -1,7 +1,3 @@
-import { LatLngBoundsExpression, LatLngExpression, LatLngLiteral } from "leaflet";
-import { LatLngLiterals } from "../GIS/GeoJSON_Refactor";
-import { TrackPoints } from "../GIS/Track/TrackPoint";
-
 import { BBox as SerialBBox } from "geojson";
 
 import { ICloneable, IEquatable } from "../../../../../common/interfaces";

@@ -11,11 +11,11 @@ import {
  * {@link Point} | {@link MultiPoint}/{@link LineString} | {@link MultiLineString}
  *
  * @export
- * @type TrackTimeStamps
+ * @type TrackTimestamps
  */
-export type TrackTimeStamps = string | string[] | string[][];
+export type TrackTimestamps = string | string[] | string[][];
 
-export function getFeatureTimes(feature: Feature): TrackTimeStamps {
+export function getFeatureTimes(feature: Feature): TrackTimestamps {
   return feature.properties?.coordinateProperties?.times;
 }
 
@@ -39,9 +39,9 @@ export interface ITrackPropertyProperties {
     /**
      * Timestamps mapped by indices to the corresponding Point in the associated gemoetry.
      *
-     * @type {TrackTimeStamps}
+     * @type {TrackTimestamps}
      */
-    times: TrackTimeStamps
+    times: TrackTimestamps
   }
 
 }
@@ -58,19 +58,16 @@ export class TrackProperty
   name: string;
   time: string
   coordinateProperties: {
-    times: TrackTimeStamps
+    times: TrackTimestamps
   }
 
   equals(item: TrackProperty): boolean {
-    if (super.equals(item)) {
-      return (
-        this._gpxType === item._gpxType
-        && this.name === item.name
-        && this.time === item.time
-        && this.coordinatePropertiesAreEqual(item)
-      );
-    }
-    return false;
+    return (
+      this._gpxType === item._gpxType
+      && this.name === item.name
+      && this.time === item.time
+      && this.coordinatePropertiesAreEqual(item)
+    );
   }
 
   protected coordinatePropertiesAreEqual(item: TrackProperty): boolean {
@@ -80,19 +77,26 @@ export class TrackProperty
     return this.timestampsAreEqual(thisTimes, itemTimes);
   }
 
-  protected timestampsAreEqual(timestamp1, timestamp2) {
-    if (timestamp1.length !== timestamp2.length) {
+  protected timestampsAreEqual(timestamp1: TrackTimestamps, timestamp2: TrackTimestamps) {
+    if (!Array.isArray(timestamp1) && !Array.isArray(timestamp2)) {
+      return timestamp1 === timestamp2;
+    }
+
+    if (!Array.isArray(timestamp1) || !Array.isArray(timestamp2) || timestamp1.length !== timestamp2.length) {
       return false;
     }
 
     for (let i = 0; i < timestamp1.length; i++) {
-      if (Array.isArray(timestamp1[i]) && Array.isArray(timestamp2[i])
-        && !this.timestampsAreEqual(timestamp1[i], timestamp2[i])
-      ) {
-        return false;
-      } else if (timestamp1[i] !== timestamp2[i]) {
+      if (!this.timestampsAreEqual(timestamp1[i], timestamp2[i])) {
         return false;
       }
+      // if (Array.isArray(timestamp1[i]) && Array.isArray(timestamp2[i])
+      //   && !this.timestampsAreEqual(timestamp1[i], timestamp2[i])
+      // ) {
+      //   return false;
+      // } else if (timestamp1[i] !== timestamp2[i]) {
+      //   return false;
+      // }
     }
     return true;
   }
@@ -103,23 +107,27 @@ export class TrackProperty
     properties._gpxType = this._gpxType;
     properties.name = this.name;
     properties.time = this.time;
-    properties.coordinateProperties = this.cloneCoordinateProperties();
+    properties.coordinateProperties = this.cloneCoordinateProperties(this.coordinateProperties.times);
 
     return properties;
   }
 
-  protected cloneCoordinateProperties() {
-    const timesFirstDim = [...this.coordinateProperties.times[0]];
+  protected cloneCoordinateProperties(times: TrackTimestamps) {
+    if (!Array.isArray(times)) {
+      return { times };
+    }
 
-    if (timesFirstDim.length && timesFirstDim[0].length) {
+    const timesFirstDim = this.coordinateProperties.times[0];
+
+    if (!Array.isArray(timesFirstDim)) {
+      return { times: [...times] };
+    } else {
       const timesSecondDim = [];
-      timesFirstDim.forEach((timeSet) => {
+      times.forEach((timeSet: TrackTimestamps) => {
         timesSecondDim.push([...timeSet]);
       });
 
       return { times: timesSecondDim };
-    } else {
-      return { times: timesFirstDim };
     }
   }
 
@@ -131,7 +139,7 @@ export class TrackProperty
     const json: ITrackPropertyProperties = {
       _gpxType: this._gpxType,
       name: this.name,
-      time: this.name,
+      time: this.time,
       coordinateProperties: {
         times: timestamps
       }
