@@ -105,8 +105,12 @@ export abstract class GeoJson implements IGeoJson<GeoJsonProperties, SerialGeoJs
   }
 
   protected saveBBox() {
-    if (this._bboxDirty) {
-      this._geoJson.bbox = this._bbox.toJson();
+    if (this._bboxDirty && this._geoJson) {
+      if (this._bbox) {
+        this._geoJson.bbox = this._bbox.toJson();
+      } else {
+        delete this._geoJson.bbox;
+      }
       this._bboxDirty = false;
     }
   }

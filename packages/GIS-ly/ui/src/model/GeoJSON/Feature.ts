@@ -103,16 +103,18 @@ export class Feature
   }
 
   save() {
-    this.saveBBox();
+    if (this._geoJson) {
+      this.saveBBox();
 
-    if (this._geometryDirty) {
-      (this._geoJson as SerialFeature).geometry = this._geometry.toJson(BBoxState.IncludeIfPresent);
-      this._geometryDirty = false;
-    }
+      if (this._geometryDirty) {
+        (this._geoJson as SerialFeature).geometry = this._geometry.toJson(BBoxState.IncludeIfPresent);
+        this._geometryDirty = false;
+      }
 
-    if (this._propertiesDirty) {
-      (this._geoJson as SerialFeature).properties = this._properties.toJson();
-      this._propertiesDirty = false;
+      if (this._propertiesDirty) {
+        (this._geoJson as SerialFeature).properties = this._properties.toJson();
+        this._propertiesDirty = false;
+      }
     }
   }
 
@@ -131,7 +133,7 @@ export class Feature
     this._geometry = geometry;
     this._geometryDirty = true;
 
-    if (this.properties) {
+    if (properties) {
       this._properties = properties;
       this._propertiesDirty = true;
     }

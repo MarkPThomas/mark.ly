@@ -19,6 +19,7 @@ export interface IFeatureProperty
   extends
   FeaturePropertyProperties,
   IEquatable<FeaturePropertyProperties>, ICloneable<FeatureProperty> {
+  toJson(): SerialGeoJsonProperties;
 }
 
 export class FeatureProperty implements IFeatureProperty {
@@ -51,13 +52,26 @@ export class FeatureProperty implements IFeatureProperty {
     return featureProperty;
   }
 
+  toJson(): SerialGeoJsonProperties {
+    let json = {}
+
+    const keys = Object.keys(this);
+    keys.forEach((key) => {
+      json[key] = this[key];
+    });
+
+    return json;
+  }
+
   static fromJson(json: SerialGeoJsonProperties): FeatureProperty {
     const featureProperty = new FeatureProperty();
 
-    const keys = Object.keys(json);
-    keys.forEach((key) => {
-      featureProperty[key] = json[key];
-    });
+    if (!!(json)) {
+      const keys = Object.keys(json);
+      keys.forEach((key) => {
+        featureProperty[key] = json[key];
+      });
+    }
 
     return featureProperty;
   }

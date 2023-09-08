@@ -21,13 +21,15 @@ import {
 import {
   TrackPoint,
   TrackPoints
-} from '../../model/GIS/TrackPoint';
+} from '../../model/GIS/Track/TrackPoint';
 
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
+import { IPoint } from '../../model/GeoJSON';
+import { TrackBoundingBox } from '../../model/GIS/Track/TrackBoundingBox';
 
 
 export type MapProps = {
@@ -50,7 +52,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     setLayer(geoJson);
     setCoords(newCoords);
     setLayersProps(updatedLayersProps(geoJson, newCoords));
-    const newBounds = BoundingBox.getBoundingBox(newCoords);
+    const newBounds = TrackBoundingBox.fromTrackPoints(newCoords).toCornerLatLng();
     console.log('newBounds: ', newBounds);
     setBounds(newBounds);
   }
@@ -78,7 +80,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
         setCoords(newCoords);
         setLayersProps(updatedLayersProps(layer, newCoords));
 
-        const newBounds = BoundingBox.getBoundingBox(newCoords);
+        const newBounds = TrackBoundingBox.fromTrackPoints(newCoords).toCornerLatLng();
         console.log('newBounds: ', newBounds);
         setBounds(newBounds);
       }]); // save converted geojson to hook state

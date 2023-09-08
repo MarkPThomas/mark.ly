@@ -5,6 +5,19 @@ import { FeatureProperty } from './FeatureProperty';
 describe('##FeatureProperty', () => {
   describe('Creation', () => {
     describe('#fromJson', () => {
+      it('should make an empty object from null, undefined, or an empty object', () => {
+        const propertiesJson: SerialGeoJsonProperties = {};
+
+        const properties = FeatureProperty.fromJson(propertiesJson);
+        expect(Object.keys(properties).length).toEqual(0);
+
+        const propertiesNull = FeatureProperty.fromJson(null);
+        expect(Object.keys(propertiesNull).length).toEqual(0);
+
+        const propertiesUndefined = FeatureProperty.fromJson(undefined);
+        expect(Object.keys(propertiesUndefined).length).toEqual(0);
+      });
+
       it('should make an object from the associated GeoJSON object', () => {
         const propertiesJson: SerialGeoJsonProperties = {
           foo: 'bar',

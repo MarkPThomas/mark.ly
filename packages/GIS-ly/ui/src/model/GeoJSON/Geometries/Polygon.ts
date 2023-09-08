@@ -153,6 +153,7 @@ export class Polygon
 
     const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
     const polygon = Polygon.fromPositions(coordinates, bbox);
+    polygon._geoJson = json;
 
     return polygon;
   }

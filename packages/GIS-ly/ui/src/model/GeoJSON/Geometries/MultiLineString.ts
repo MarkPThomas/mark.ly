@@ -138,6 +138,7 @@ export class MultiLineString
 
     const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
     const multiLineString = MultiLineString.fromPositions(coordinates, bbox);
+    multiLineString._geoJson = json;
 
     return multiLineString;
   }

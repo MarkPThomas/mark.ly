@@ -1,170 +1,66 @@
-import { LinkedList as LinkedListBase } from './LinkedList';
+import { EqualityCallback, EqualityCallbackOptions, ILinkedList, LinkedList as LinkedListBase } from './LinkedList';
 import { NodeDouble } from './LinkedListNodes';
-import { LinkedListSingle } from './LinkedListSingle';
+import { ILinkedListSingle, LinkedListSingle } from './LinkedListSingle';
 
-export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V> {
-  constructor(items: V[] | null = null) {
-    super();
-    if (items !== null) {
-      this.fromArray(items);
-    }
-  }
+export interface ILinkedListDouble<N extends NodeDouble<V>, V> extends ILinkedList<N, V> {
+  toLinkedListSingle(): LinkedListSingle<V>;
+}
 
-  fromHeadTail(head: N, tail: N) {
-    super.fromHeadTail(head, tail);
-    if (this.head) {
-      this.head.prev = null;
-    }
-  }
+export class LinkedList<N extends NodeDouble<V>, V>
+  extends LinkedListBase<N, V>
+  implements ILinkedListDouble<N, V> {
 
-  getTail() {
-    return this.tail ?? null;
-  }
+  //   constructor(items: V[] | null = null) {
+  //   super(items);
+  //   if (items !== null) {
+  //     this.prependFromArray(items);
+  //   }
+  // }
 
+
+  // === Single Item Operations ===
   prepend(valueOrNode: V | N) {
-    const node = this.getNodeDouble(valueOrNode);
+    const node = this.getNode(valueOrNode);
 
-    node.next = this.head;
-    if (this.head) {
-      this.head.prev = node;
+    node.next = this._head;
+    if (this._head) {
+      this._head.prev = node;
     } else {
-      this.tail = node as N;
+      this._tail = node as N;
     }
-    this.head = node as N;
-    this.length++;
+    this._head = node as N;
+    this._length++;
   }
 
   append(valueOrNode: V | N) {
-    const node = this.getNodeDouble(valueOrNode);
+    const node = this.getNode(valueOrNode);
 
-    node.prev = this.tail;
-    if (this.tail) {
-      this.tail.next = node;
+    node.prev = this._tail;
+    if (this._tail) {
+      this._tail.next = node;
     } else {
-      this.head = node as N;
+      this._head = node as N;
     }
-    this.tail = node as N;
-    this.length++;
-  }
-
-  insertBefore(existingNode: N, valueOrNode: V | N) {
-    const node = this.getNodeDouble(valueOrNode);
-    const priorExistingNode = existingNode.prev;
-
-    if (priorExistingNode) {
-      priorExistingNode.next = node;
-      node.prev = priorExistingNode;
-
-      existingNode.prev = node;
-      node.next = existingNode;
-
-      this.length++;
-    } else {
-      this.prepend(valueOrNode);
-    }
-  }
-
-  insertAfter(existingNode: N, valueOrNode: V | N) {
-    const node = this.getNodeDouble(valueOrNode);
-    const nextExistingNode = existingNode.next;
-
-    if (nextExistingNode) {
-      (nextExistingNode as NodeDouble<V>).prev = node;
-      node.next = nextExistingNode;
-
-      existingNode.next = node;
-      node.prev = existingNode;
-
-      this.length++;
-    } else {
-      this.append(valueOrNode);
-    }
-  }
-
-  remove(
-    valueOrNode: V | N,
-    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
-  ) {
-    const value = this.isNodeDouble(valueOrNode)
-      ? (valueOrNode as NodeDouble<V>).val
-      : valueOrNode as V;
-
-    if (this.head && this.head.val === value) {
-      return this.removeHead();
-    }
-    if (this.tail && this.tail.val === value) {
-      return this.removeTail();
-    }
-
-    if (this.isNodeDouble(valueOrNode) && (valueOrNode as N).removeNode()) {
-      this.length--;
-      return valueOrNode as N;
-    } else {
-      let currNode = this.head;
-      while (currNode) {
-        if (this.areEqual(valueOrNode, currNode, cb)) {
-          currNode.removeNode();
-          this.length--;
-
-          return currNode;
-        }
-        currNode = currNode.next as N;
-      }
-    }
-
-    return null;
-  }
-
-  removeHead() {
-    const removedHead: N | null = this.head;
-    if (removedHead) {
-      const nextHead = removedHead.next as N;
-      removedHead.next = null;
-      if (nextHead) {
-        (nextHead as N).prev = null;
-      }
-      this.head = nextHead;
-      if (this.head === null) {
-        this.tail = null;
-      }
-      this.length--;
-    }
-    return removedHead;
-  }
-
-  removeTail() {
-    const removedTail: N | null = this.tail;
-    if (removedTail) {
-      const previousTail = removedTail.prev;
-      removedTail.prev = null;
-      if (previousTail) {
-        previousTail.next = null;
-      }
-      this.tail = previousTail as N;
-      if (this.tail === null) {
-        this.head = null;
-      }
-      this.length--;
-    }
-    return removedTail;
+    this._tail = node as N;
+    this._length++;
   }
 
   move(
     valueOrNode: V | N,
     spaces: number,
-    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+    cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    if (!spaces || this.length < 2) {
+    if (!spaces || this._length < 2) {
       return false;
     }
 
     // Find matching node
-    let currNode = this.head as N;
+    let currNode = this._head as N;
     let prevNode = null;
     while (currNode) {
       if (this.areEqual(valueOrNode, currNode, cb)) {
-        if ((currNode === this.head && spaces < 0)
-          || (currNode === this.tail && spaces > 0)) {
+        if ((currNode === this._head && spaces < 0)
+          || (currNode === this._tail && spaces > 0)) {
           // Node cannot be moved, abort before altering list
           return false;
         }
@@ -176,8 +72,8 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
         if (!prevNode) {
           if (currNode.next) {
             // head of multi-node
-            this.head = currNode.next as N;
-            this.head.prev = null;
+            this._head = currNode.next as N;
+            this._head.prev = null;
           }
         } else {
           prevNode.next = currNode.next;
@@ -186,8 +82,8 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
             (currNode.next as N).prev = prevNode as N;
           } else {
             // tail of multi-node
-            this.tail = prevNode;
-            this.tail.next = null;
+            this._tail = prevNode;
+            this._tail.next = null;
           }
         }
 
@@ -215,7 +111,7 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
           prevNode.next = nodeMove;
         } else {
           // Inserted at head
-          this.head = nodeMove;
+          this._head = nodeMove;
         }
 
         nodeMove.next = currNode;
@@ -223,7 +119,7 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
           currNode.prev = nodeMove;
         } else {
           // Inserted at tail
-          this.tail = nodeMove;
+          this._tail = nodeMove;
         }
 
         return true;
@@ -235,9 +131,230 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
     return false;
   }
 
+  protected insertBeforeNode(existingNode: N, insertNode: N) {
+    const priorExistingNode = existingNode.prev;
+
+    if (priorExistingNode) {
+      priorExistingNode.next = insertNode;
+      insertNode.prev = priorExistingNode;
+
+      existingNode.prev = insertNode;
+      insertNode.next = existingNode;
+
+      this._length++;
+    } else {
+      this.prepend(insertNode);
+    }
+  }
+
+  protected insertAfterNode(existingNode: N, insertNode: N) {
+    const nextExistingNode = existingNode.next;
+
+    if (nextExistingNode) {
+      (nextExistingNode as N).prev = insertNode;
+      insertNode.next = nextExistingNode;
+
+      existingNode.next = insertNode;
+      insertNode.prev = existingNode;
+
+      this._length++;
+    } else {
+      this.append(insertNode);
+    }
+  }
+
+  splitAt(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): [
+      LinkedList<N, V> | null,
+      LinkedList<N, V> | null
+    ] {
+    const leftList = new LinkedList<N, V>();
+    const rightList = new LinkedList<N, V>();
+
+    const result = this.splitAtBase(leftList, rightList, valueOrNode, cb);
+
+    return [result[0] as LinkedList<N, V>, result[1] as LinkedList<N, V>]
+  }
+
+
+  // === Head Operations ===
+  removeHead() {
+    const removedHead: N | null = this._head;
+    if (removedHead) {
+      const nextHead = removedHead.next as N;
+      removedHead.next = null;
+      if (nextHead) {
+        (nextHead as N).prev = null;
+      }
+      this._head = nextHead;
+      if (this._head === null) {
+        this._tail = null;
+      }
+      this._length--;
+    }
+    return removedHead;
+  }
+
+
+  // === Tail Operations ===
+  getTail() {
+    return this._tail ?? null;
+  }
+
+  removeTail() {
+    const removedTail: N | null = this._tail;
+    if (removedTail) {
+      const previousTail = removedTail.prev;
+      removedTail.prev = null;
+      if (previousTail) {
+        previousTail.next = null;
+      }
+      this._tail = previousTail as N;
+      if (this._tail === null) {
+        this._head = null;
+      }
+      this._length--;
+    }
+    return removedTail;
+  }
+
+
+  // === 'Many' Operations ===
+  protected prependList(items: ILinkedList<N, V>): void {
+    if (!this._head) {
+      this.replaceList(items);
+    } else if (items.tail) {
+      this._head.prev = items.tail;
+      items.tail.next = this._head;
+
+      this._head = items.head;
+
+      this._length += items.size();
+    }
+  }
+
+  protected appendList(items: ILinkedList<N, V>): void {
+    if (!this._tail) {
+      this.replaceList(items);
+    } else if (items.head) {
+      (items.head as N).prev = this._tail;
+      this._tail.next = items.head;
+
+      this._tail = items.tail;
+
+      this._length += items.size();
+    }
+  }
+
+  protected insertListBefore(refNode: N, items: ILinkedList<N, V>): void {
+    if (refNode.prev && items.head && items.tail) {
+      items.head.prev = refNode.prev;
+      items.tail.next = refNode;
+
+      refNode.prev.next = items.head;
+      refNode.prev = items.tail;
+
+      this._length += items.size();
+    } else {
+      this.prependList(items);
+    }
+  }
+
+  protected insertListAfter(refNode: N, items: ILinkedList<N, V>): void {
+    if (refNode.next && items.head && items.tail) {
+      items.head.prev = refNode;
+      items.tail.next = refNode.next;
+
+      (refNode.next as N).prev = items.tail;
+      refNode.next = items.head;
+      this._length += items.size();
+    } else {
+      this.appendList(items);
+    }
+  }
+
+
+  // === Any Operations ===
+  protected removeFirstOrAny(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined,
+    firstOnly: boolean = true
+  ): N[] {
+    const removedNodes: N[] = [];
+
+    const value = this.isNodeDouble(valueOrNode)
+      ? (valueOrNode as NodeDouble<V>).val
+      : valueOrNode as V;
+
+    if (this._head && this._head.val === value) {
+      const node = this.removeHead();
+      if (node) {
+        removedNodes.push(node)
+        if (firstOnly) {
+          return removedNodes;
+        }
+      }
+    }
+    if (this._tail && this._tail.val === value) {
+      const node = this.removeTail();
+      if (node) {
+        removedNodes.push(node)
+        if (firstOnly) {
+          return removedNodes;
+        }
+      }
+    }
+
+    if (this.isNodeDouble(valueOrNode) && (valueOrNode as N).removeNode()) {
+      this._length--;
+      removedNodes.push(valueOrNode as N);
+      if (firstOnly) {
+        return removedNodes;
+      }
+    } else {
+      let currNode = this._head;
+      while (currNode) {
+        if (this.areEqual(valueOrNode, currNode, cb)) {
+          currNode.removeNode();
+          this._length--;
+
+          removedNodes.push(currNode);
+          if (firstOnly) {
+            return removedNodes;
+          }
+        }
+        currNode = currNode.next as N;
+      }
+    }
+
+    return removedNodes;
+  }
+
+
+  // === Range Operations ===
+  splitBetween(
+    valueOrNodeStart: V | N,
+    valueOrNodeEnd: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): [
+      LinkedList<N, V> | null,
+      LinkedList<N, V> | null
+    ] {
+    const leftList = new LinkedList<N, V>();
+    const rightList = new LinkedList<N, V>();
+
+    const result = this.splitBetweenBase(leftList, rightList, valueOrNodeStart, valueOrNodeEnd, cb);
+
+    return [result[0] as LinkedList<N, V>, result[1] as LinkedList<N, V>]
+  }
+
+
+  // === Misc Operations ===
   reverse(): void {
     let prevNode = null;
-    let currNode = this.head;
+    let currNode = this._head;
 
     while (currNode) {
       const tempNode = currNode.next as N;
@@ -249,37 +366,12 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
       prevNode = currNode;
       currNode = tempNode;
     }
-    this.head = prevNode;
+    this._head = prevNode;
   }
 
-  splitAt(
-    valueOrNode: V | N,
-    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
-  ): [LinkedList<N, V> | undefined, LinkedList<N, V> | undefined] {
-    const leftList = new LinkedList<N, V>();
-    const rightList = new LinkedList<N, V>();
-
-    const result = this.splitAtBase(leftList, rightList, valueOrNode, cb);
-
-    return [result[0] as LinkedList<N, V>, result[1] as LinkedList<N, V>]
-  }
-
-  splitBetween(
-    valueOrNodeStart: V | N,
-    valueOrNodeEnd: V | N,
-    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
-  ): [LinkedList<N, V> | undefined, LinkedList<N, V> | undefined] {
-    const leftList = new LinkedList<N, V>();
-    const rightList = new LinkedList<N, V>();
-
-    const result = this.splitBetweenBase(leftList, rightList, valueOrNodeStart, valueOrNodeEnd, cb);
-
-    return [result[0] as LinkedList<N, V>, result[1] as LinkedList<N, V>]
-  }
-
-  toLinkedListSingle() {
+  toLinkedListSingle(): LinkedListSingle<V> {
     const linkedList = new LinkedListSingle<V>();
-    let currNode = this.head;
+    let currNode = this._head;
     while (currNode) {
       linkedList.append(currNode.val);
       currNode = currNode.next as N;
@@ -288,14 +380,24 @@ export class LinkedList<N extends NodeDouble<V>, V> extends LinkedListBase<N, V>
     return linkedList;
   }
 
-  protected getNodeDouble(valueOrNode: V | N) {
-    return (this.isNodeDouble(valueOrNode))
+
+  // === Commonly Used Protected ===
+  protected getNode(valueOrNode: V | N): N {
+    return this.isNodeDouble(valueOrNode)
       ? valueOrNode as N
-      : new NodeDouble(valueOrNode as V);
+      : new NodeDouble(valueOrNode as V) as N;
   }
 
-  protected isNodeDouble(valueOrNode: V | N) {
+  protected isNodeDouble(valueOrNode: V | N): boolean {
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeDouble);
+  }
+
+  protected getPriorNode(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): N | null {
+    let node = this.getNode(valueOrNode);
+    return node.prev as N;
   }
 }
 

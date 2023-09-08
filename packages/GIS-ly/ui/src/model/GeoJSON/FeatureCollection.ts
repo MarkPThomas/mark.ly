@@ -125,13 +125,15 @@ export class FeatureCollection
   }
 
   save(): void {
-    this.saveBBox();
+    if (this._geoJson) {
+      this.saveBBox();
 
-    if (this._collectionDirty) {
-      (this._geoJson as SerialFeatureCollection).features = this._collection.toJson();
-      this._collectionDirty = false;
-    } else {
-      this._collection.save();
+      if (this._collectionDirty) {
+        (this._geoJson as SerialFeatureCollection).features = this._collection.toJson();
+        this._collectionDirty = false;
+      } else {
+        this._collection.save();
+      }
     }
   }
 
@@ -223,7 +225,6 @@ export class FeatureCollection
 
     featureCollection._geoJson = json;
     featureCollection._collection.setJson(json.features);
-    featureCollection._collectionDirty = false;
     if (bbox) {
       featureCollection._bboxDirty = false;
     }
@@ -235,7 +236,6 @@ export class FeatureCollection
     const featureCollection = new FeatureCollection();
     featureCollection.addItems(features);
     featureCollection._bbox = bbox;
-    featureCollection._collectionDirty = true;
 
     return featureCollection;
   }

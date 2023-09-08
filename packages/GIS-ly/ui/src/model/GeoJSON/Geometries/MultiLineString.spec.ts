@@ -117,7 +117,7 @@ describe('##MultiLineString', () => {
 
         const multiLineString = MultiLineString.fromLineStrings(lineStrings);
 
-        expect(multiLineString).toEqual(expectedMultiLineString);
+        expect(multiLineString.equals(expectedMultiLineString)).toBeTruthy();
       });
 
       it('should make an object from the associated LineStrings with a bounding box specified', () => {
@@ -215,7 +215,7 @@ describe('##MultiLineString', () => {
 
         const multiLineStringClone = multiLineString.clone();
 
-        expect(multiLineStringClone).toEqual(multiLineString);
+        expect(multiLineStringClone.equals(multiLineString)).toBeTruthy();
       });
     });
 
@@ -292,7 +292,33 @@ describe('##MultiLineString', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const multiLineString = MultiLineString.fromPositions(multiLineStringPositions);
 
+        expect(multiLineStringJson.bbox).toBeUndefined();
+        expect(multiLineString.hasBBox()).toBeFalsy();
+
+        const bbox = multiLineString.bbox();
+        expect(multiLineStringJson.bbox).toBeUndefined();
+        expect(multiLineString.hasBBox()).toBeTruthy();
+
+        multiLineString.save();
+        expect(multiLineStringJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object to the original GeoJSON object', () => {
+        const multiLineString = MultiLineString.fromJson(multiLineStringJson);
+
+        expect(multiLineStringJson.bbox).toBeUndefined();
+        expect(multiLineString.hasBBox()).toBeFalsy();
+
+        const bbox = multiLineString.bbox();
+        expect(multiLineStringJson.bbox).toBeUndefined();
+        expect(multiLineString.hasBBox()).toBeTruthy();
+
+        multiLineString.save();
+        expect(multiLineStringJson.bbox).toEqual(bbox.toJson());
+      });
     });
   });
 });

@@ -77,7 +77,7 @@ describe('##MultiPolygon', () => {
 
         const multiPolygon = MultiPolygon.fromPositions(multiPolygonPositions);
 
-        expect(multiPolygon).toEqual(expectedMultiPolygon);
+        expect(multiPolygon.equals(expectedMultiPolygon)).toBeTruthy();
       });
 
       it('should make an object from the associated Positions with a bounding box specified', () => {
@@ -119,7 +119,7 @@ describe('##MultiPolygon', () => {
 
         const multiPolygon = MultiPolygon.fromPolygons(polygons);
 
-        expect(multiPolygon).toEqual(expectedMultiPolygon);
+        expect(multiPolygon.equals(expectedMultiPolygon)).toBeTruthy();
       });
 
       it('should make an object from the associated Polygons with a bounding box specified', () => {
@@ -217,7 +217,7 @@ describe('##MultiPolygon', () => {
 
         const multiPolygonClone = multiPolygon.clone();
 
-        expect(multiPolygonClone).toEqual(multiPolygon);
+        expect(multiPolygonClone.equals(multiPolygon)).toBeTruthy();
       });
     });
 
@@ -294,7 +294,33 @@ describe('##MultiPolygon', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const multiPolygon = MultiPolygon.fromPositions(multiPolygonPositions);
 
+        expect(multiPolygonJson.bbox).toBeUndefined();
+        expect(multiPolygon.hasBBox()).toBeFalsy();
+
+        const bbox = multiPolygon.bbox();
+        expect(multiPolygonJson.bbox).toBeUndefined();
+        expect(multiPolygon.hasBBox()).toBeTruthy();
+
+        multiPolygon.save();
+        expect(multiPolygonJson.bbox).toBeUndefined();
+      });
+
+      it('should propagate updates in the object to the original GeoJSON object', () => {
+        const multiPolygon = MultiPolygon.fromJson(multiPolygonJson);
+
+        expect(multiPolygonJson.bbox).toBeUndefined();
+        expect(multiPolygon.hasBBox()).toBeFalsy();
+
+        const bbox = multiPolygon.bbox();
+        expect(multiPolygonJson.bbox).toBeUndefined();
+        expect(multiPolygon.hasBBox()).toBeTruthy();
+
+        multiPolygon.save();
+        expect(multiPolygonJson.bbox).toEqual(bbox.toJson());
+      });
     });
   });
 });

@@ -98,6 +98,7 @@ export class LineString
 
     const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
     const lineString = LineString.fromPositions(coordinates, bbox);
+    lineString._geoJson = json;
 
     return lineString;
   }

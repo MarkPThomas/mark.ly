@@ -160,6 +160,7 @@ export class MultiPolygon
 
     const bbox = json.bbox ? BoundingBox.fromJson(json.bbox) : undefined
     const multiPolygon = MultiPolygon.fromPositions(coordinates, bbox);
+    multiPolygon._geoJson = json;
 
     return multiPolygon;
   }

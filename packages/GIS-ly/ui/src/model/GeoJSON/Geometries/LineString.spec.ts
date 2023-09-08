@@ -105,7 +105,7 @@ describe('##LineString', () => {
 
         const lineString = LineString.fromMultiPoint(multiPoint);
 
-        expect(lineString).toEqual(expectedLineString);
+        expect(lineString.equals(expectedLineString)).toBeTruthy();
       });
 
       it('should make an object from the associated Points with a bounding box specified', () => {
@@ -189,7 +189,7 @@ describe('##LineString', () => {
 
         const lineStringClone = lineString.clone();
 
-        expect(lineStringClone).toEqual(lineString);
+        expect(lineStringClone.equals(lineString)).toBeTruthy();
       });
     });
 
@@ -263,7 +263,33 @@ describe('##LineString', () => {
     });
 
     describe('#save', () => {
+      it('should do nothing for objects not instantiated by a GeoJSON object', () => {
+        const lineString = LineString.fromPositions(lineStringPositions);
 
+        expect(lineStringJson.bbox).toBeUndefined();
+        expect(lineString.hasBBox()).toBeFalsy();
+
+        const bbox = lineString.bbox();
+        expect(lineStringJson.bbox).toBeUndefined();
+        expect(lineString.hasBBox()).toBeTruthy();
+
+        lineString.save();
+        expect(lineStringJson.bbox).toBeUndefined();
+      });
+
+      it('should propoagate updates in the object to the original GeoJSON object', () => {
+        const lineString = LineString.fromJson(lineStringJson);
+
+        expect(lineStringJson.bbox).toBeUndefined();
+        expect(lineString.hasBBox()).toBeFalsy();
+
+        const bbox = lineString.bbox();
+        expect(lineStringJson.bbox).toBeUndefined();
+        expect(lineString.hasBBox()).toBeTruthy();
+
+        lineString.save();
+        expect(lineStringJson.bbox).toEqual(bbox.toJson());
+      });
     });
   });
 });
