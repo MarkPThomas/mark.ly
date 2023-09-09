@@ -45,6 +45,20 @@ describe('##FeatureProperty', () => {
 
         expect(propertiesClone).toEqual(properties);
       });
+
+      it('should return a copy of the nested values object', () => {
+        const propertiesJson: SerialGeoJsonProperties = {
+          fooArray: [['barValue']],
+          mooProperty: {
+            bar: ['foo']
+          }
+        };
+        const properties = FeatureProperty.fromJson(propertiesJson);
+
+        const propertiesClone = properties.clone();
+
+        expect(propertiesClone).toEqual(properties);
+      });
     });
 
     describe('#equals', () => {
@@ -58,6 +72,27 @@ describe('##FeatureProperty', () => {
         const propertiesSameJson: SerialGeoJsonProperties = {
           foo: 'bar',
           moo: 2
+        };
+        const propertiesSame = FeatureProperty.fromJson(propertiesSameJson);
+
+        const result = properties.equals(propertiesSame);
+        expect(result).toBeTruthy();
+      });
+
+      it('should return True for objects that are equal by nested properties', () => {
+        const propertiesJson: SerialGeoJsonProperties = {
+          fooArray: [['barValue']],
+          mooProperty: {
+            bar: ['foo']
+          }
+        };
+        const properties = FeatureProperty.fromJson(propertiesJson);
+
+        const propertiesSameJson: SerialGeoJsonProperties = {
+          fooArray: [['barValue']],
+          mooProperty: {
+            bar: ['foo']
+          }
         };
         const propertiesSame = FeatureProperty.fromJson(propertiesSameJson);
 

@@ -90,8 +90,12 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
 
   updateItem(target: TItem, replacement: TItem): void {
     const index = this.indexOf(target);
-    this._items[index] = replacement;
-    this._itemsDirty[index] = true;
+    if (index === -1) {
+      console.log('Target item not found in collection. Target will not be updated with replacement');
+    } else {
+      this._items[index] = replacement;
+      this._itemsDirty[index] = true;
+    }
   }
 
   save(): void {

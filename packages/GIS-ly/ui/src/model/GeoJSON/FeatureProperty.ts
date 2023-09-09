@@ -33,7 +33,15 @@ export class FeatureProperty implements IFeatureProperty {
     }
 
     for (let i = 0; i < keys.length; i++) {
-      if (item[keys[i]] !== this[keys[i]]) {
+      const currentItem = item[keys[i]];
+      const currentThisItem = this[keys[i]];
+      if (Array.isArray(currentItem) || typeof currentItem === 'object') {
+        // Stringify to compare nested structures by value rather than by reference
+        if (JSON.stringify(currentItem) !== JSON.stringify(currentThisItem)) {
+          return false;
+        }
+      } else if (currentItem !== currentThisItem) {
+        // Do not stringify primitives in order to consider numbers different than strings
         return false;
       }
     }

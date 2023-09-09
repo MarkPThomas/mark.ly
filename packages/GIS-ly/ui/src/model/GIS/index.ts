@@ -1,3 +1,3 @@
-export * from './GeoJSON/GeoJSON_Refactor';
-export * from './Track';
-export * from './GeoJSON/BoundingBox';
+export * from './GeoJSON_Refactor';
+export * from './Track/Track';
+export * from '../GeoJSON/BoundingBox';

@@ -29,7 +29,7 @@ export interface LatLngGPS {
   lat: number;
   lng: number;
   alt?: number | undefined;
-  timeStamp?: string;
+  timestamp?: string;
 }
 
 export interface ITrackPoint {
@@ -161,34 +161,25 @@ export class TrackPoint
 
 
   // == Factory Methods
-  static fromPosition({ position, timestamp: timeStamp }: PositionProperties) {
+  static fromPosition({ position, timestamp }: PositionProperties) {
     const coordinate = new TrackPoint(position[1], position[0], position[2]);
 
-    if (timeStamp) {
-      coordinate._timestamp = new TimeStamp(timeStamp);
+    if (timestamp) {
+      coordinate._timestamp = new TimeStamp(timestamp);
     }
 
     return coordinate;
   }
 
-  static fromPoint({ point, timestamp: timeStamp }: PointProperties) {
+  static fromPoint({ point, timestamp }: PointProperties) {
     const coordinate = new TrackPoint(point.latitude, point.longitude, point.altitude);
 
-    if (timeStamp) {
-      coordinate._timestamp = new TimeStamp(timeStamp);
+    if (timestamp) {
+      coordinate._timestamp = new TimeStamp(timestamp);
     }
 
     return coordinate;
   }
-
-  // static toPosition(coord: LatLng): Position {
-  //   const position = [coord.lng, coord.lat];
-  //   if (coord.alt) {
-  //     position.push(coord.alt);
-  //   }
-
-  //   return position as Position;
-  // }
 
   // == Calc Methods
   /**

@@ -143,7 +143,7 @@ export class Feature
   }
 
   equals(item: Feature): boolean {
-    if (!this._properties.equals(item.properties)) {
+    if (!this._properties.equals(item._properties)) {
       return false;
     }
 
