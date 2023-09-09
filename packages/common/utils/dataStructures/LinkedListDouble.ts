@@ -284,50 +284,87 @@ export class LinkedList<N extends NodeDouble<V>, V>
   ): N[] {
     const removedNodes: N[] = [];
 
-    const value = this.isNodeDouble(valueOrNode)
-      ? (valueOrNode as NodeDouble<V>).val
-      : valueOrNode as V;
+    let currNode = this._head;
+    let prevNode = null;
+    while (currNode) {
+      if (this.areEqual(valueOrNode, currNode, cb)) {
+        const removeNode = currNode;
+        currNode = currNode.next as N;
 
-    if (this._head && this._head.val === value) {
-      const node = this.removeHead();
-      if (node) {
-        removedNodes.push(node)
-        if (firstOnly) {
-          return removedNodes;
-        }
-      }
-    }
-    if (this._tail && this._tail.val === value) {
-      const node = this.removeTail();
-      if (node) {
-        removedNodes.push(node)
-        if (firstOnly) {
-          return removedNodes;
-        }
-      }
-    }
-
-    if (this.isNodeDouble(valueOrNode) && (valueOrNode as N).removeNode()) {
-      this._length--;
-      removedNodes.push(valueOrNode as N);
-      if (firstOnly) {
-        return removedNodes;
-      }
-    } else {
-      let currNode = this._head;
-      while (currNode) {
-        if (this.areEqual(valueOrNode, currNode, cb)) {
-          currNode.removeNode();
-          this._length--;
-
-          removedNodes.push(currNode);
-          if (firstOnly) {
-            return removedNodes;
+        if (prevNode) {
+          prevNode.next = removeNode.next;
+          if (removeNode.next) {
+            (removeNode.next as N).prev = prevNode;
+          } else {
+            this._tail = prevNode;
+          }
+        } else {
+          this._head = removeNode.next as N;
+          if (this._head) {
+            this._head.prev = null;
+          } else {
+            this._tail = null;
           }
         }
+        removeNode.next = null;
+        removeNode.prev = null;
+
+        this._length--;
+
+        removedNodes.push(removeNode);
+        if (firstOnly) {
+          return removedNodes;
+        }
+      } else {
+        prevNode = currNode;
         currNode = currNode.next as N;
       }
     }
+
+    // const value = this.isNodeDouble(valueOrNode)
+    //   ? (valueOrNode as NodeDouble<V>).val
+    //   : valueOrNode as V;
+
+    // if (this._head && this._head.val === value) {
+    //   const node = this.removeHead();
+    //   if (node) {
+    //     removedNodes.push(node)
+    //     if (firstOnly) {
+    //       return removedNodes;
+    //     }
+    //   }
+    // }
+    // if (this._tail && this._tail.val === value) {
+    //   const node = this.removeTail();
+    //   if (node) {
+    //     removedNodes.push(node)
+    //     if (firstOnly) {
+    //       return removedNodes;
+    //     }
+    //   }
+    // }
+
+    // if (this.isNodeDouble(valueOrNode) && (valueOrNode as N).removeNode()) {
+    //   this._length--;
+    //   removedNodes.push(valueOrNode as N);
+    //   if (firstOnly) {
+    //     return removedNodes;
+    //   }
+    // } else {
+    //   let currNode = this._head;
+    //   while (currNode) {
+    //     if (this.areEqual(valueOrNode, currNode, cb)) {
+    //       currNode.removeNode();
+    //       this._length--;
+
+    //       removedNodes.push(currNode);
+    //       if (firstOnly) {
+    //         return removedNodes;
+    //       }
+    //     }
+    //     currNode = currNode.next as N;
+    //   }
+    // }
 
     return removedNodes;
   }
@@ -390,14 +427,6 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
   protected isNodeDouble(valueOrNode: V | N): boolean {
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeDouble);
-  }
-
-  protected getPriorNode(
-    valueOrNode: V | N,
-    cb: EqualityCallbackOptions<V> = undefined
-  ): N | null {
-    let node = this.getNode(valueOrNode);
-    return node.prev as N;
   }
 }
 

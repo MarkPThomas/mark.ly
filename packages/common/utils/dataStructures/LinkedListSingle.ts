@@ -216,7 +216,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
     if (priorRefNode && items.tail) {
       priorRefNode.next = items.head;
-      items.tail = refNode;
+      items.tail.next = refNode;
 
       this._length += items.size();
     } else {
@@ -247,26 +247,32 @@ export class LinkedList<N extends NodeSingle<V>, V>
     let prevNode = null;
     while (currNode) {
       if (this.areEqual(valueOrNode, currNode, cb)) {
+        const removeNode = currNode;
+        currNode = currNode.next as N;
+
         if (prevNode) {
-          prevNode.next = currNode.next;
-          if (!currNode.next) {
+          prevNode.next = removeNode.next;
+          if (!removeNode.next) {
             this._tail = prevNode;
           }
         } else {
-          this._head = currNode.next as N;
+          this._head = removeNode.next as N;
           if (!this._head) {
             this._tail = null;
           }
         }
+        removeNode.next = null;
+
         this._length--;
 
-        removedNodes.push(currNode);
+        removedNodes.push(removeNode);
         if (firstOnly) {
           return removedNodes;
         }
+      } else {
+        prevNode = currNode;
+        currNode = currNode.next as N;
       }
-      prevNode = currNode;
-      currNode = currNode.next as N;
     }
 
     return removedNodes;
@@ -327,22 +333,6 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
   protected isNodeSingle(valueOrNode: V | N): boolean {
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeSingle);
-  }
-
-  protected getPriorNode(
-    valueOrNode: V | N,
-    cb: EqualityCallbackOptions<V> = undefined
-  ): N | null {
-    let node = this._head;
-    let prevNode = null;
-    while (node) {
-      if (this.areEqual(valueOrNode, node, cb)) {
-        return prevNode;
-      }
-      prevNode = node;
-      node = node.next as N;
-    }
-    return null;
   }
 }
 
