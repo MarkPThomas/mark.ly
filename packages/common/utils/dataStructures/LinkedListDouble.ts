@@ -321,51 +321,6 @@ export class LinkedList<N extends NodeDouble<V>, V>
       }
     }
 
-    // const value = this.isNodeDouble(valueOrNode)
-    //   ? (valueOrNode as NodeDouble<V>).val
-    //   : valueOrNode as V;
-
-    // if (this._head && this._head.val === value) {
-    //   const node = this.removeHead();
-    //   if (node) {
-    //     removedNodes.push(node)
-    //     if (firstOnly) {
-    //       return removedNodes;
-    //     }
-    //   }
-    // }
-    // if (this._tail && this._tail.val === value) {
-    //   const node = this.removeTail();
-    //   if (node) {
-    //     removedNodes.push(node)
-    //     if (firstOnly) {
-    //       return removedNodes;
-    //     }
-    //   }
-    // }
-
-    // if (this.isNodeDouble(valueOrNode) && (valueOrNode as N).removeNode()) {
-    //   this._length--;
-    //   removedNodes.push(valueOrNode as N);
-    //   if (firstOnly) {
-    //     return removedNodes;
-    //   }
-    // } else {
-    //   let currNode = this._head;
-    //   while (currNode) {
-    //     if (this.areEqual(valueOrNode, currNode, cb)) {
-    //       currNode.removeNode();
-    //       this._length--;
-
-    //       removedNodes.push(currNode);
-    //       if (firstOnly) {
-    //         return removedNodes;
-    //       }
-    //     }
-    //     currNode = currNode.next as N;
-    //   }
-    // }
-
     return removedNodes;
   }
 
