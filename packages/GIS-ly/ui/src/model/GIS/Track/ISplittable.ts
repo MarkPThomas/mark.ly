@@ -29,7 +29,7 @@ export interface ISplittable<TTrack> {
    * @return {*}  {TTrack} The a copy of the track that lies within the specified limits.
    * @memberof ISplittable
    */
-  splitBySegment(segment: ITrackSegmentLimits): TTrack | undefined;
+  splitToSegment(segment: ITrackSegmentLimits): TTrack | undefined;
 
   /**
    * Splits track at each of the given segment limits. The original track is not modified.
