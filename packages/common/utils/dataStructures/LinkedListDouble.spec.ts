@@ -1165,6 +1165,23 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
       });
 
+      it('should prepend array nodes to an existing list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const addedNodes = [
+          new NodeDouble(6),
+          new NodeDouble(7),
+          new NodeDouble(8),
+          new NodeDouble(9),
+          new NodeDouble(10)
+        ];
+        const result = linkedList.prependMany(addedNodes);
+
+        expect(result).toEqual(5);
+        expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
+      });
+
       it('should do nothing for an empty list provided', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListDouble<number>(values);
@@ -1231,6 +1248,23 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
       });
 
+      it('should append array nodes to an existing list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const addedNodes = [
+          new NodeDouble(6),
+          new NodeDouble(7),
+          new NodeDouble(8),
+          new NodeDouble(9),
+          new NodeDouble(10)
+        ];
+        const result = linkedList.appendMany(addedNodes);
+
+        expect(result).toEqual(5);
+        expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      });
+
       it('should do nothing for an empty list provided', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListDouble<number>(values);
@@ -1287,7 +1321,7 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
       });
 
-      it('should insert the provided array items before the reference and return the number of items inserted into the array', () => {
+      it('should insert the provided array value items before the reference and return the number of items inserted into the array', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListDouble<number>(values);
 
@@ -1298,12 +1332,41 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.toArray()).toEqual([1, 2, 10, 9, 8, 3, 4, 5]);
       });
 
-      it('should insert the provided array items before the head, with the first item as the new head of the list if the reference matches the head', () => {
+      it('should insert the provided array node items before the reference and return the number of items inserted into the array', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const addedNodes: NodeDouble<number>[] = [
+          new NodeDouble(10),
+          new NodeDouble(9),
+          new NodeDouble(8)];
+        const result = linkedList.insertManyBefore(3, addedNodes);
+
+        expect(result).toEqual(3);
+        expect(linkedList.toArray()).toEqual([1, 2, 10, 9, 8, 3, 4, 5]);
+      });
+
+      it('should insert the provided array value items before the head, with the first item as the new head of the list if the reference matches the head', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
         const result = linkedList.insertManyBefore(1, addedValues);
+
+        expect(linkedList.head?.val).toEqual(10);
+        expect(result).toEqual(3);
+        expect(linkedList.toArray()).toEqual([10, 9, 8, 1, 2, 3, 4, 5]);
+      });
+
+      it('should insert the provided array node items before the head, with the first item as the new head of the list if the reference matches the head', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const addedNodes: NodeDouble<number>[] = [
+          new NodeDouble(10),
+          new NodeDouble(9),
+          new NodeDouble(8)];
+        const result = linkedList.insertManyBefore(1, addedNodes);
 
         expect(linkedList.head?.val).toEqual(10);
         expect(result).toEqual(3);
@@ -1357,7 +1420,7 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
       });
 
-      it('should insert the provided array items after the reference and return the number of items inserted into the array', () => {
+      it('should insert the provided array value items after the reference and return the number of items inserted into the array', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListDouble<number>(values);
 
@@ -1368,12 +1431,41 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.toArray()).toEqual([1, 2, 3, 10, 9, 8, 4, 5]);
       });
 
-      it('should insert the provided array items after the tail, with the last item as the new tail of the list if the reference matches the tail', () => {
+      it('should insert the provided array node items after the reference and return the number of items inserted into the array', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const addedNodes: NodeDouble<number>[] = [
+          new NodeDouble(10),
+          new NodeDouble(9),
+          new NodeDouble(8)];
+        const result = linkedList.insertManyAfter(3, addedNodes);
+
+        expect(result).toEqual(3);
+        expect(linkedList.toArray()).toEqual([1, 2, 3, 10, 9, 8, 4, 5]);
+      });
+
+      it('should insert the provided array value items after the tail, with the last item as the new tail of the list if the reference matches the tail', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
         const result = linkedList.insertManyAfter(5, addedValues);
+
+        expect(linkedList.tail?.val).toEqual(8);
+        expect(result).toEqual(3);
+        expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 10, 9, 8]);
+      });
+
+      it('should insert the provided array node items after the tail, with the last item as the new tail of the list if the reference matches the tail', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const addedNodes: NodeDouble<number>[] = [
+          new NodeDouble(10),
+          new NodeDouble(9),
+          new NodeDouble(8)];
+        const result = linkedList.insertManyAfter(5, addedNodes);
 
         expect(linkedList.tail?.val).toEqual(8);
         expect(result).toEqual(3);
@@ -2373,6 +2465,30 @@ describe('##LinkedListDouble', () => {
         });
       });
 
+      describe('with an array of nodes', () => {
+        it(`should replace nodes from the next node after the start node
+        through the last node before the end node,
+        if the start and end values are found in order, non-adjacent`, () => {
+          const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          const linkedList = new LinkedListDouble<number>(values);
+
+          const newNodes = [
+            new NodeDouble(101),
+            new NodeDouble(102),
+            new NodeDouble(103)
+          ];
+
+          const result = linkedList.replaceBetween(2, 7, newNodes);
+
+          expect(result.insertedCount).toEqual(3);
+          expect(result.removedCount).toEqual(4);
+          expect(result.removedHead?.val).toEqual(3);
+
+          expect(linkedList.toArray()).toEqual([1, 2, 101, 102, 103, 7, 8, 9]);
+          expect(linkedList.size()).toEqual(8);
+        });
+      });
+
       describe('with a linked list of values', () => {
         describe('Neither start value nor end value are found', () => {
           it('should do nothing & return a null removed head, a removal count of 0 and an insertion count of 0', () => {
@@ -2777,6 +2893,28 @@ describe('##LinkedListDouble', () => {
             expect(linkedList.toArray()).toEqual([1, 101, 102, 103, 8, 9]);
             expect(linkedList.size()).toEqual(6);
           });
+        });
+      });
+
+      describe('with an array of nodes', () => {
+        it('should replace the start node through the end node if the start and end values are found in order, non-adjacent', () => {
+          const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          const linkedList = new LinkedListDouble<number>(values);
+
+          const newNodes = [
+            new NodeDouble(101),
+            new NodeDouble(102),
+            new NodeDouble(103)
+          ];
+
+          const result = linkedList.replaceFromTo(2, 7, newNodes);
+
+          expect(result.insertedCount).toEqual(3);
+          expect(result.removedCount).toEqual(6);
+          expect(result.removedHead?.val).toEqual(2);
+
+          expect(linkedList.toArray()).toEqual([1, 101, 102, 103, 8, 9]);
+          expect(linkedList.size()).toEqual(6);
         });
       });
 

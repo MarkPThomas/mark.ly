@@ -316,14 +316,14 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @param {(V[] | ILinkedList<N, V>)} items If an array of values is supplied, a nodes will be created to contain them.
    * @memberof ILinkedList
    */
-  prependMany(items: V[] | ILinkedList<N, V>): number;
+  prependMany(items: V[] | N[] | ILinkedList<N, V>): number;
   /**
    * Add an array of values or nodes to the end of the list, maintaining array order.
    *
    * @param {(V[] | ILinkedList<N, V>)} items If an array of values is supplied, a nodes will be created to contain them.
    * @memberof ILinkedList
    */
-  appendMany(items: V[] | ILinkedList<N, V>): number;
+  appendMany(items: V[] | N[] | ILinkedList<N, V>): number;
   /**
    * Inserts the provided value or node just before the referenced value or node.
    *
@@ -343,7 +343,7 @@ export interface ILinkedList<N extends Node<V>, V> {
    */
   insertManyBefore(
     refValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V>
   ): number;
   /**
@@ -365,7 +365,7 @@ export interface ILinkedList<N extends Node<V>, V> {
    */
   insertManyAfter(
     refValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V>
   ): number;
 
@@ -511,7 +511,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   replaceBetween(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V>
   ): {
     insertedCount: number,
@@ -543,7 +543,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   replaceFromTo(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V>
   ): {
     insertedCount: number,
@@ -816,7 +816,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
 
   // === 'Many' Operations ===
-  prependMany(items: V[] | ILinkedList<N, V>): number {
+  prependMany(items: V[] | N[] | ILinkedList<N, V>): number {
     if (Array.isArray(items)) {
       const itemsAsArray = items as V[];
       for (let i = itemsAsArray.length - 1; 0 <= i; i--) {
@@ -831,7 +831,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   protected abstract prependList(items: ILinkedList<N, V>): void;
 
-  appendMany(items: V[] | ILinkedList<N, V>): number {
+  appendMany(items: V[] | N[] | ILinkedList<N, V>): number {
     if (Array.isArray(items)) {
       const itemsAsArray = items as V[];
       itemsAsArray.forEach((item) => {
@@ -848,7 +848,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   insertManyBefore(
     refValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V> = undefined
   ): number {
     const refNode = this.find(refValueOrNode, cb);
@@ -877,7 +877,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   insertManyAfter(
     refValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V> = undefined
   ): number {
     const refNode = this.find(refValueOrNode, cb);
@@ -1165,7 +1165,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   replaceBetween(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     insertedCount: number,
@@ -1200,7 +1200,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   replaceFromTo(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
-    items: V[] | ILinkedList<N, V>,
+    items: V[] | N[] | ILinkedList<N, V>,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     insertedCount: number,

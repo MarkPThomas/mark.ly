@@ -10,14 +10,6 @@ export class LinkedList<N extends NodeDouble<V>, V>
   extends LinkedListBase<N, V>
   implements ILinkedListDouble<N, V> {
 
-  //   constructor(items: V[] | null = null) {
-  //   super(items);
-  //   if (items !== null) {
-  //     this.prependFromArray(items);
-  //   }
-  // }
-
-
   // === Single Item Operations ===
   prepend(valueOrNode: V | N) {
     const node = this.getNode(valueOrNode);
