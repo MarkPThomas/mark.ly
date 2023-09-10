@@ -968,6 +968,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     return this.findRange(startValueOrNode, endValueOrNode, true, cb);
   }
 
+
   protected findRange(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
@@ -984,10 +985,15 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     let endNodeCount = nodesAndCounts.endNodeCount;
 
     // Update counts to account for certain edge cases
-    if (!nodesAndCounts.startNode) {
+    if (this.isSpecified(startValueOrNode) && !nodesAndCounts.startNode) {
       // Start node not found
       startNodeCount = inclusive ? 1 : 0;
-    } else if (endNodeCount >= startNodeCount && !inclusive && !nodesAndCounts.endNode) {
+    } else if (
+      this.isSpecified(endValueOrNode)
+      && endNodeCount >= startNodeCount
+      && !inclusive
+      && !nodesAndCounts.endNode
+    ) {
       // End node not found, end node not found, for exclusive case
       endNodeCount++;
     }
@@ -1031,6 +1037,14 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     let endNode: N | null = null;
     let endNodeCount = 0;
 
+    // Correction handling either of these as null
+    if (!this.isSpecified(startValueOrNode)) {
+      startNode = this._head;
+    }
+    if (!this.isSpecified(endValueOrNode)) {
+      endNode = this._tail;
+    }
+
     let currNode = this._head;
     let prevNode = null;
     while (currNode) {
@@ -1056,6 +1070,16 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
         prevNode = currNode;
       }
       currNode = currNode.next as N;
+    }
+
+    // Correction handling either of these as null
+    if (!this.isSpecified(startValueOrNode)) {
+      startNode = null;
+      startNodeCount = 0;
+    }
+    if (!this.isSpecified(endValueOrNode)) {
+      endNode = null;
+      endNodeCount = this._length;
     }
 
     return {
@@ -1162,6 +1186,28 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   }
 
 
+  protected isSpecified(valueOrNode: V | N): boolean {
+    return valueOrNode !== undefined && valueOrNode !== null;
+  }
+
+  protected matchesHead(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): boolean {
+    return this.isSpecified(this._head as N)
+      && this.isSpecified(valueOrNode)
+      && this.areEqual(valueOrNode, this._head as N, cb)
+  }
+
+  protected matchesTail(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): boolean {
+    return this.isSpecified(this._tail as N)
+      && this.isSpecified(valueOrNode)
+      && this.areEqual(valueOrNode, this._tail as N, cb)
+  }
+
   replaceBetween(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
@@ -1175,20 +1221,34 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     const initialHead = this._head as N;
     let removedNodes = this.removeBetween(startValueOrNode, endValueOrNode, cb);
 
-
     let insertedCount: number;
     if (removedNodes.head === null) {
       // No nodes removed
-      insertedCount = 0;
-    } else {
-      if (this.areEqual(initialHead, removedNodes.head, cb)) {
-        // head was removed
+      if (this.matchesHead(endValueOrNode)) {
         insertedCount = this.prependMany(items);
+      } else if (this.matchesTail(startValueOrNode)) {
+        insertedCount = this.appendMany(items);
+      } else if (this.isSpecified(startValueOrNode) && this.isSpecified(endValueOrNode)) {
+        const startNode = this.find(startValueOrNode);
+        const startNodeNext = startNode?.next as N;
+
+        if (startNode && startNodeNext && this.areEqual(endValueOrNode, startNodeNext, cb)) {
+          // Target nodes are adjacent. Just insert in between.
+          insertedCount = this.insertManyAfter(startNode, items, cb);
+        } else {
+          insertedCount = 0;
+        }
       } else {
-        const insertRefNode = this.getNode(startValueOrNode);
-        insertedCount = this.insertManyAfter(insertRefNode, items, cb);
+        insertedCount = 0;
       }
+    } else if (this.areEqual(initialHead, removedNodes.head, cb)) {
+      // head was removed
+      insertedCount = this.prependMany(items);
+    } else {
+      const insertRefNode = this.getNode(startValueOrNode);
+      insertedCount = this.insertManyAfter(insertRefNode, items, cb);
     }
+
 
     return {
       insertedCount,

@@ -1772,6 +1772,26 @@ describe('##LinkedListSingle', () => {
           expect(resultMany.length).toEqual(4);
         });
       });
+
+      // TODO: Work out how to test this. CANNOT seem to provide null arguments, as intended,
+      //    yet higher up a calling tree, null can somehow be accepted.
+      // Same with removeBetween with null+head as end, or start as tail+null resulting in no
+      //    insertions, but prepend/append.
+      // describe('Search values given as null', () => {
+      //   it(`should return the start node and count from there to found end node
+      //     when start node is given as null`, () => {
+      //   });
+
+      //   it(`should return the end node and count to there from the found start node
+      //     when end node is given as null`, () => {
+
+      //   });
+
+      //   it(`should return the start node, end node, and count of the list length
+      //     when start & end nodes are given as null`, () => {
+
+      //   });
+      // });
     });
 
     describe('#findRangeFromTo', () => {
@@ -2313,7 +2333,7 @@ describe('##LinkedListSingle', () => {
             expect(linkedList.size()).toEqual(4);
           });
 
-          it('should do nothing if the start value is found at the tail', () => {
+          it('should only append if the start value is found at the tail', () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListSingle<number>(values);
 
@@ -2321,12 +2341,12 @@ describe('##LinkedListSingle', () => {
 
             const result = linkedList.replaceBetween(9, 12, newValues);
 
-            expect(result.insertedCount).toEqual(0);
+            expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
             expect(result.removedHead).toBeNull();
 
-            expect(linkedList.toArray()).toEqual(values);
-            expect(linkedList.size()).toEqual(9);
+            expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 101, 102, 103]);
+            expect(linkedList.size()).toEqual(12);
           });
 
           it('should replace nodes from the next node after the start node through the list end, for a start value found anywhere in the middle', () => {
@@ -2347,7 +2367,7 @@ describe('##LinkedListSingle', () => {
         });
 
         describe('Start value not found', () => {
-          it('should do nothing if the end value is found at the head', () => {
+          it('should only prepend if the end value is found at the head', () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListSingle<number>(values);
 
@@ -2355,12 +2375,12 @@ describe('##LinkedListSingle', () => {
 
             const result = linkedList.replaceBetween(-3, 1, newValues);
 
-            expect(result.insertedCount).toEqual(0);
+            expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
             expect(result.removedHead).toBeNull();
 
-            expect(linkedList.toArray()).toEqual(values);
-            expect(linkedList.size()).toEqual(9);
+            expect(linkedList.toArray()).toEqual([101, 102, 103, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(linkedList.size()).toEqual(12);
           });
 
           it('should replace nodes from the head through the last node just before the tail of the list if the end value is found at the tail', () => {
@@ -2429,7 +2449,7 @@ describe('##LinkedListSingle', () => {
             expect(linkedList.size()).toEqual(9);
           });
 
-          it('should do nothing if the start and end values are adjacent', () => {
+          it('should only insert items if the start and end values are adjacent', () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListSingle<number>(values);
 
@@ -2437,12 +2457,12 @@ describe('##LinkedListSingle', () => {
 
             const result = linkedList.replaceBetween(4, 5, newValues);
 
-            expect(result.insertedCount).toEqual(0);
+            expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
             expect(result.removedHead).toBeNull();
 
-            expect(linkedList.toArray()).toEqual(values);
-            expect(linkedList.size()).toEqual(9);
+            expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 101, 102, 103, 5, 6, 7, 8, 9]);
+            expect(linkedList.size()).toEqual(12);
           });
 
           it(`should replace nodes from the next node after the start node
@@ -2525,7 +2545,7 @@ describe('##LinkedListSingle', () => {
             expect(linkedList.size()).toEqual(4);
           });
 
-          it('should do nothing if the start value is found at the tail', () => {
+          it('should only append if the start value is found at the tail', () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListSingle<number>(values);
 
@@ -2533,12 +2553,12 @@ describe('##LinkedListSingle', () => {
 
             const result = linkedList.replaceBetween(9, 12, newValues);
 
-            expect(result.insertedCount).toEqual(0);
+            expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
             expect(result.removedHead).toBeNull();
 
-            expect(linkedList.toArray()).toEqual(values);
-            expect(linkedList.size()).toEqual(9);
+            expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 101, 102, 103]);
+            expect(linkedList.size()).toEqual(12);
           });
 
           it('should replace nodes from the next node after the start node through the list end, for a start value found anywhere in the middle', () => {
@@ -2559,7 +2579,7 @@ describe('##LinkedListSingle', () => {
         });
 
         describe('Start value not found', () => {
-          it('should do nothing if the end value is found at the head', () => {
+          it('should only prepend if the end value is found at the head', () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListSingle<number>(values);
 
@@ -2567,12 +2587,12 @@ describe('##LinkedListSingle', () => {
 
             const result = linkedList.replaceBetween(-3, 1, newValues);
 
-            expect(result.insertedCount).toEqual(0);
+            expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
             expect(result.removedHead).toBeNull();
 
-            expect(linkedList.toArray()).toEqual(values);
-            expect(linkedList.size()).toEqual(9);
+            expect(linkedList.toArray()).toEqual([101, 102, 103, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(linkedList.size()).toEqual(12);
           });
 
           it('should replace nodes from the head through the last node just before the tail of the list if the end value is found at the tail', () => {
@@ -2641,7 +2661,7 @@ describe('##LinkedListSingle', () => {
             expect(linkedList.size()).toEqual(9);
           });
 
-          it('should do nothing if the start and end values are adjacent', () => {
+          it('should only insert items if the start and end values are adjacent', () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListSingle<number>(values);
 
@@ -2649,12 +2669,12 @@ describe('##LinkedListSingle', () => {
 
             const result = linkedList.replaceBetween(4, 5, newValues);
 
-            expect(result.insertedCount).toEqual(0);
+            expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
             expect(result.removedHead).toBeNull();
 
-            expect(linkedList.toArray()).toEqual(values);
-            expect(linkedList.size()).toEqual(9);
+            expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 101, 102, 103, 5, 6, 7, 8, 9]);
+            expect(linkedList.size()).toEqual(12);
           });
 
           it(`should replace nodes from the next node after the start node
