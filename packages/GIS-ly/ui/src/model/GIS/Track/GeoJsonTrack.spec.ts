@@ -13,200 +13,21 @@ import {
 import {
   FeatureCollection,
   Feature,
-  FeatureProperty,
   Point,
   LineString,
-  MultiLineString,
-  GeoJsonGeometryTypes,
-  GeoJsonTypes,
-  MultiPoint,
-  Position
+  Position,
 } from '../../GeoJSON';
 
-import { TrackPoint } from './TrackPoint';
 import { ITrackPropertyProperties, TrackProperty } from './TrackProperty';
 
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { GeoJsonTrack } from './GeoJsonTrack';
 import { ITrackSegmentLimits } from './TrackSegment';
+import { TrackPoint } from './TrackPoint';
 
 const testData = {
-  GeoJson: {
-    Point: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [100.0, 0.0]
-          }
-        }
-      ],
-    },
-    MultiPoint: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'MultiPoint',
-            coordinates: [
-              [100.0, 0.0],
-              [101.0, 0.0],
-              [101.0, 1.0],
-              [100.0, 1.0],
-              [100.0, 0.0]
-            ]
-          }
-        }
-      ],
-    },
-    LineString: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [100.0, 0.0],
-              [101.0, 1.0],
-              [102.0, 2.0],
-              [103.0, 3.0]
-            ]
-          }
-        }
-      ],
-    },
-    MultiLineString: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'MultiLineString',
-            coordinates: [
-              [
-                [100.0, 0.0],
-                [101.0, 1.0]
-              ],
-              [
-                [102.0, 2.0],
-                [103.0, 3.0]
-              ]
-            ]
-          }
-        }
-      ],
-    },
-    Polygon: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [100.0, 0.0],
-                [101.0, 0.0],
-                [101.0, 1.0],
-                [100.0, 1.0],
-                [100.0, 0.0]
-              ]
-            ]
-          }
-        }
-      ],
-    },
-    MultiPolygon: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'MultiPolygon',
-            coordinates: [
-              [
-                [
-                  [102.0, 2.0],
-                  [103.0, 2.0],
-                  [103.0, 3.0],
-                  [102.0, 3.0],
-                  [102.0, 2.0]
-                ]
-              ],
-              [
-                [
-                  [100.0, 0.0],
-                  [101.0, 0.0],
-                  [101.0, 1.0],
-                  [100.0, 1.0],
-                  [100.0, 0.0]
-                ],
-                [
-                  [100.2, 0.2],
-                  [100.2, 0.8],
-                  [100.8, 0.8],
-                  [100.8, 0.2],
-                  [100.2, 0.2]
-                ]
-              ]
-            ]
-          }
-        }
-      ],
-    },
-  },
   GeoJsonFromTracks: {
-    Point: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [100.0, 0.0]
-          },
-          properties: {
-            _gpxType: 'trk',
-            name: 'FooBarTest',
-            time: 'timestamp',
-            coordinateProperties: {
-              times: ['1']
-            }
-          },
-        }
-      ],
-    },
-    MultiPoint: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'MultiPoint',
-            coordinates: [
-              [100.0, 0.0],
-              [101.0, 0.0],
-              [101.0, 1.0],
-              [100.0, 1.0],
-              [100.0, 0.0]
-            ]
-          },
-          properties: {
-            _gpxType: 'trk',
-            name: 'FooBarTest',
-            time: 'timestamp',
-            coordinateProperties: {
-              times: ['1', '2', '3', '4', '5']
-            }
-          },
-        }
-      ],
-    },
     LineString: {
       type: 'FeatureCollection',
       features: [
@@ -231,39 +52,7 @@ const testData = {
           },
         }
       ],
-    },
-    MultiLineString: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'MultiLineString',
-            coordinates: [
-              [
-                [100.0, 0.0, 100],
-                [101.0, 1.0, 200]
-              ],
-              [
-                [102.0, 2.0, 300],
-                [103.0, 3.0, 400]
-              ]
-            ]
-          },
-          properties: {
-            _gpxType: 'trk',
-            name: 'FooBarTest',
-            time: 'timestamp',
-            coordinateProperties: {
-              times: [
-                ['1', '2'],
-                ['3', '4']
-              ]
-            }
-          },
-        }
-      ],
-    },
+    }
   }
 }
 
@@ -303,7 +92,6 @@ describe('##GeoJsonTrack', () => {
     let lineString: LineString;
     let properties: TrackProperty;
     let featureCollection: FeatureCollection;
-    // let geoJsonTrack: GeoJsonTrack;
 
     beforeEach(() => {
       const featureJson = lineStringTrack.features[0];
@@ -327,6 +115,198 @@ describe('##GeoJsonTrack', () => {
       });
     });
 
+
+    describe('Duplication', () => {
+      let featureCollectionJson: SerialFeatureCollection;
+      let featureCollection: FeatureCollection;
+      let geoJsonTrack: GeoJsonTrack;
+
+      beforeEach(() => {
+        featureCollectionJson = JSON.parse(JSON.stringify(testData.GeoJsonFromTracks.LineString as SerialFeatureCollection));
+        featureCollection = FeatureCollection.fromJson(featureCollectionJson);
+        geoJsonTrack = new GeoJsonTrack(featureCollection);
+      });
+
+      // TODO: Test this next to complete Smooth implementations
+      describe('#updateGeoJsonTrackFromTrackPoints', () => {
+        it('should do nothing if no trackpoints are given', () => {
+          const originalCollection = geoJsonTrack.toFeatureCollection();
+
+          const updatedCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints([]);
+
+          expect(updatedCollection).toEqual(originalCollection);
+        });
+
+        it('should update the included FeatureCollection with the provided trackpoints', () => {
+          const positions: Position[] = [
+            [-100.0, 0.0, 10],
+            [-101.0, -1.0, 20],
+            [-102.0, -2.0, 30],
+            [-103.0, -3.0, 40],
+            [-104.0, -4.0, 50],
+          ];
+          const lineString = LineString.fromPositions(positions)
+
+          const propertiesJson = {
+            _gpxType: 'trk',
+            name: 'FooBarTest',
+            time: 'timestamp',
+            coordinateProperties: {
+              times: ['10', '11', '12', '13', '14']
+            }
+          };
+          const properties = TrackProperty.fromJson(propertiesJson);
+
+          const lineStringFeature = Feature.fromGeometry(lineString, { properties });
+          const collection = FeatureCollection.fromFeatures([lineStringFeature]);
+
+          const updatedTracks = [
+            new TrackPoint(0, -100, 10, '10'),
+            new TrackPoint(-1, -101, 20, '11'),
+            new TrackPoint(2.5, 102.5, 350, '12.5'),
+            new TrackPoint(-4, -104, 50, '14'),
+            new TrackPoint(45, 111, 5000, '15'),
+            new TrackPoint(69, 123, 6000, '16')
+          ];
+
+          const originalCollection = collection.clone();
+          const originalPositions = (originalCollection.features[0].geometry as unknown as SerialLineString).coordinates as Position[];
+          const originalTimes = (originalCollection.features[0].geometry as unknown as ITrackPropertyProperties).coordinateProperties.times as string[];
+          const trkPtsOnOriginalCollection = GeoJsonManager.PositionsToTrackPoints(originalPositions, originalTimes);
+
+          const updatedCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints(updatedTracks, collection);
+
+          expect(trkPtsOnOriginalCollection.length).toEqual(7); // 6, then removed 1, added 2
+          expect(trkPtsOnOriginalCollection).toEqual(updatedTracks);
+          expect(updatedCollection).toEqual(collection);
+
+          expect(updatedCollection).not.toEqual(geoJsonTrack.toFeatureCollection());
+          expect(originalCollection).not.toEqual(updatedCollection);
+        });
+
+        it('should update the FeatureCollection with the provided trackpoints', () => {
+          const updatedTracks = geoJsonTrack.trackPoints();
+          updatedTracks[2] = new TrackPoint(2.5, 102.5, 350, '3.5');
+          updatedTracks.splice(3, 1);
+          updatedTracks.push(new TrackPoint(45, 111, 5000, '7'));
+          updatedTracks.push(new TrackPoint(69, 123, 6000, '8'));
+
+          const featureCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints(updatedTracks);
+
+          const tracksOnOriginalTrack = geoJsonTrack.trackPoints()
+          expect(tracksOnOriginalTrack.length).toEqual(7); // 6, then removed 1, added 2
+          expect(tracksOnOriginalTrack).toEqual(updatedTracks);
+
+          expect(featureCollection).toEqual(geoJsonTrack.toFeatureCollection());
+        });
+      })
+
+      describe('#updateGeoJsonTrack', () => {
+        it('should do nothing if segment data has no points', () => {
+          const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const segData = { segPoints: [], segTimestamps: [] };
+
+          geoJsonTrack.updateGeoJsonTrack(segData);
+
+          expect(featureCollectionJson).toEqual(originalJson);
+        });
+
+        it('should update the provided GeoJSON object', () => {
+          const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const modifiedJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const modifiedFeatureCollection = FeatureCollection.fromJson(modifiedJson);
+
+          const segData = {
+            segPoints: [
+              Point.fromPosition([101.0, 1.0, 200]),
+              Point.fromPosition([102.0, 2.0, 300]),
+            ],
+            segTimestamps: ['2, 3']
+          };
+
+          geoJsonTrack.updateGeoJsonTrack(segData, modifiedFeatureCollection);
+
+          expect(featureCollectionJson).toEqual(originalJson);
+          expect(featureCollectionJson).not.toEqual(modifiedJson);
+          expect(featureCollection).not.toEqual(modifiedFeatureCollection);
+
+          const modifiedFeature = modifiedJson.features[0];
+          expect((modifiedFeature.geometry as SerialLineString).coordinates).toEqual(
+            GeoJsonManager.PointsToPositions(segData.segPoints)
+          );
+          expect(modifiedFeature.properties.coordinateProperties.times).toEqual(segData.segTimestamps);
+        });
+
+        it('should update the GeoJsonTrack GeoJSON object if no GeoJSON object is provided', () => {
+          const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const segData = {
+            segPoints: [
+              Point.fromPosition([101.0, 1.0, 200]),
+              Point.fromPosition([102.0, 2.0, 300]),
+            ],
+            segTimestamps: ['2, 3']
+          };
+
+          geoJsonTrack.updateGeoJsonTrack(segData);
+
+          expect(featureCollectionJson).not.toEqual(originalJson);
+
+          const modifiedFeature = featureCollectionJson.features[0];
+          expect((modifiedFeature.geometry as SerialLineString).coordinates).toEqual(
+            GeoJsonManager.PointsToPositions(segData.segPoints)
+          );
+          expect(modifiedFeature.properties.coordinateProperties.times).toEqual(segData.segTimestamps);
+        });
+      });
+
+      describe('#copyBySegmentData', () => {
+        it('should do nothing if segment data has no points', () => {
+          const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const geoJsonTrack: GeoJsonTrack = new GeoJsonTrack(featureCollection);
+          const segData = { segPoints: [], segTimestamps: [] };
+
+          const resultCollection = geoJsonTrack.copyBySegmentData(segData);
+
+          expect(resultCollection.equals(featureCollection)).toBeTruthy();
+          expect(resultCollection.toJson()).toEqual(originalJson);
+        });
+
+        it('should do nothing to the GeoJsonTrack GeoJSON object', () => {
+          const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const geoJsonTrack: GeoJsonTrack = new GeoJsonTrack(featureCollection);
+          const segData = {
+            segPoints: [
+              Point.fromPosition([101.0, 1.0, 200]),
+              Point.fromPosition([102.0, 2.0, 300]),
+            ],
+            segTimestamps: ['2, 3']
+          };
+
+          const resultCollection = geoJsonTrack.copyBySegmentData(segData);
+
+          expect(resultCollection.equals(featureCollection)).toBeFalsy();
+          expect(featureCollectionJson).toEqual(originalJson);
+        });
+
+        it('should return a new GeoJSON object updated with the segment data provided', () => {
+          const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
+          const geoJsonTrack: GeoJsonTrack = new GeoJsonTrack(featureCollection);
+          const segData = {
+            segPoints: [
+              Point.fromPosition([101.0, 1.0, 200]),
+              Point.fromPosition([102.0, 2.0, 300]),
+            ],
+            segTimestamps: ['2, 3']
+          };
+
+          const resultCollection = geoJsonTrack.copyBySegmentData(segData);
+
+          const modifiedFeature = resultCollection.features[0];
+          expect((modifiedFeature.geometry as LineString).points).toEqual(segData.segPoints);
+          expect(modifiedFeature.properties.coordinateProperties.times).toEqual(segData.segTimestamps);
+        });
+      });
+    });
   });
 
 
@@ -351,112 +331,6 @@ describe('##GeoJsonTrack', () => {
         expect(trackPoints[1].toPoint()).toEqual(featurePoints[1]);
         expect(trackPoints[1].timestamp).toEqual(featureTimestamps[1]);
       })
-    });
-
-    describe('#updateGeoJsonTrack', () => {
-      it('should do nothing if segment data has no points', () => {
-        const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const segData = { segPoints: [], segTimestamps: [] };
-
-        geoJsonTrack.updateGeoJsonTrack(segData);
-
-        expect(featureCollectionJson).toEqual(originalJson);
-      });
-
-      it('should update the provided GeoJSON object', () => {
-        const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const modifiedJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const modifiedFeatureCollection = FeatureCollection.fromJson(modifiedJson);
-
-        const segData = {
-          segPoints: [
-            Point.fromPosition([101.0, 1.0, 200]),
-            Point.fromPosition([102.0, 2.0, 300]),
-          ],
-          segTimestamps: ['2, 3']
-        };
-
-        geoJsonTrack.updateGeoJsonTrack(segData, modifiedFeatureCollection);
-
-        expect(featureCollectionJson).toEqual(originalJson);
-        expect(featureCollectionJson).not.toEqual(modifiedJson);
-        expect(featureCollection).not.toEqual(modifiedFeatureCollection);
-
-        const modifiedFeature = modifiedJson.features[0];
-        expect((modifiedFeature.geometry as SerialLineString).coordinates).toEqual(
-          GeoJsonManager.PointsToPositions(segData.segPoints)
-        );
-        expect(modifiedFeature.properties.coordinateProperties.times).toEqual(segData.segTimestamps);
-      });
-
-      it('should update the GeoJsonTrack GeoJSON object if no GeoJSON object is provided', () => {
-        const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const segData = {
-          segPoints: [
-            Point.fromPosition([101.0, 1.0, 200]),
-            Point.fromPosition([102.0, 2.0, 300]),
-          ],
-          segTimestamps: ['2, 3']
-        };
-
-        geoJsonTrack.updateGeoJsonTrack(segData);
-
-        expect(featureCollectionJson).not.toEqual(originalJson);
-
-        const modifiedFeature = featureCollectionJson.features[0];
-        expect((modifiedFeature.geometry as SerialLineString).coordinates).toEqual(
-          GeoJsonManager.PointsToPositions(segData.segPoints)
-        );
-        expect(modifiedFeature.properties.coordinateProperties.times).toEqual(segData.segTimestamps);
-      });
-    });
-
-    describe('#generateGeoJsonTrack', () => {
-      it('should do nothing if segment data has no points', () => {
-        const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const geoJsonTrack: GeoJsonTrack = new GeoJsonTrack(featureCollection);
-        const segData = { segPoints: [], segTimestamps: [] };
-
-        const resultCollection = geoJsonTrack.generateGeoJsonTrack(segData);
-
-        expect(resultCollection.equals(featureCollection)).toBeTruthy();
-        expect(resultCollection.toJson()).toEqual(originalJson);
-      });
-
-      it('should do nothing to the GeoJsonTrack GeoJSON object', () => {
-        const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const geoJsonTrack: GeoJsonTrack = new GeoJsonTrack(featureCollection);
-        const segData = {
-          segPoints: [
-            Point.fromPosition([101.0, 1.0, 200]),
-            Point.fromPosition([102.0, 2.0, 300]),
-          ],
-          segTimestamps: ['2, 3']
-        };
-
-        const resultCollection = geoJsonTrack.generateGeoJsonTrack(segData);
-
-        expect(resultCollection.equals(featureCollection)).toBeFalsy();
-        expect(featureCollectionJson).toEqual(originalJson);
-      });
-
-      it('should return a new GeoJSON object updated with the segment data provided', () => {
-        const originalJson = JSON.parse(JSON.stringify(featureCollectionJson));
-        const geoJsonTrack: GeoJsonTrack = new GeoJsonTrack(featureCollection);
-        const segData = {
-          segPoints: [
-            Point.fromPosition([101.0, 1.0, 200]),
-            Point.fromPosition([102.0, 2.0, 300]),
-          ],
-          segTimestamps: ['2, 3']
-        };
-
-        const resultCollection = geoJsonTrack.generateGeoJsonTrack(segData);
-
-        const modifiedFeature = resultCollection.features[0];
-        expect((modifiedFeature.geometry as LineString).points).toEqual(segData.segPoints);
-        expect(modifiedFeature.properties.coordinateProperties.times).toEqual(segData.segTimestamps);
-      });
     });
 
 

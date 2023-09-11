@@ -1,6 +1,6 @@
 import { ICloneable } from "../../../interfaces";
 import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { CartesianParametricEquationXY } from "../Parametrics/Components/CartesianParametricEquationXY";
+import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
 import { VectorParametric } from "../Vectors/VectorParametric";
 import { ICurve } from "./ICurve";
 import { CurveRange } from "./tools/CurveRange";

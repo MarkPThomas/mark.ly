@@ -5,6 +5,8 @@ import {
   LineString
 } from '../../GeoJSON';
 
+import { ICloneable } from '../../../../../../common/interfaces';
+
 import { IClippable } from './IClippable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
@@ -16,16 +18,23 @@ import {
   TrackProperty
 } from './TrackProperty';
 import { TrackPoint } from './TrackPoint';
+import { GeoJsonManager } from '../GeoJsonManager';
 
 export interface IGeoJsonTrack
   extends
   IClippable,
   ISplittable<FeatureCollection>,
-  IQuery {
+  IQuery,
+  ICloneable<GeoJsonTrack> {
 
   trackMetaData: IBaseTrackProperty;
 
   trackPoints(): TrackPoint[];
+
+  updateGeoJsonTrackFromTrackPoints(
+    trackPoints: TrackPoint[],
+    geoJson?: FeatureCollection
+  ): FeatureCollection;
 
   /**
      * Updates the geoJson data in the manager, or the provided geoJson object.
@@ -47,7 +56,7 @@ export interface IGeoJsonTrack
    * @return {*}  {FeatureCollection}
    * @memberof IGeoJsonTrackManager
    */
-  generateGeoJsonTrack(segData: TrackSegmentData): FeatureCollection;
+  copyBySegmentData(segData: TrackSegmentData): FeatureCollection;
 }
 
 interface IBaseTrackProperty {
@@ -70,6 +79,14 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     this.setBaseTrackPropertyFromJson();
   }
 
+  clone(): GeoJsonTrack {
+    return new GeoJsonTrack(this._geoJson.clone());
+  }
+
+  toFeatureCollection() {
+    return this._geoJson.clone();
+  }
+
   trackPoints(): TrackPoint[] {
     const { segPoints, segTimestamps } = this.getTrackCoordData();
     const trackPoints: TrackPoint[] = [];
@@ -78,9 +95,24 @@ export class GeoJsonTrack implements IGeoJsonTrack {
       const timestamp = segTimestamps[pointIndex];
       const trkPt = TrackPoint.fromPoint({ point, timestamp });
       trackPoints.push(trkPt);
-    })
+    });
 
     return trackPoints;
+  }
+
+  updateGeoJsonTrackFromTrackPoints(
+    trackPoints: TrackPoint[],
+    geoJson?: FeatureCollection
+  ): FeatureCollection {
+    geoJson = geoJson ?? this._geoJson;
+
+    if (trackPoints.length) {
+      const lineString = GeoJsonManager.LineStringFromTrackPoints(trackPoints);
+      const timestamps = trackPoints.map((trackPoint => trackPoint.timestamp));
+
+      this.update(lineString, timestamps, geoJson);
+    }
+    return geoJson;
   }
 
   updateGeoJsonTrack(
@@ -92,22 +124,30 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     if (segData.segPoints.length) {
       const lineString = LineString.fromPoints(segData.segPoints);
 
-      const propertiesJson: ITrackPropertyProperties = {
-        ...this._baseTrackProperty,
-        coordinateProperties: {
-          times: segData.segTimestamps
-        }
-      }
-      const properties = TrackProperty.fromJson(propertiesJson);
-      const updatedFeature = Feature.fromGeometry(lineString, { properties });
-
-      geoJson.update(this.getFeature(), updatedFeature);
-      geoJson.save();
+      this.update(lineString, segData.segTimestamps, geoJson);
     }
     return geoJson;
   }
 
-  generateGeoJsonTrack(segData: TrackSegmentData): FeatureCollection {
+  protected update(
+    lineString: LineString,
+    timestamps: string[],
+    geoJson: FeatureCollection) {
+
+    const propertiesJson: ITrackPropertyProperties = {
+      ...this._baseTrackProperty,
+      coordinateProperties: {
+        times: timestamps
+      }
+    }
+    const properties = TrackProperty.fromJson(propertiesJson);
+    const updatedFeature = Feature.fromGeometry(lineString, { properties });
+
+    geoJson.update(this.getFeature(), updatedFeature);
+    geoJson.save();
+  }
+
+  copyBySegmentData(segData: TrackSegmentData): FeatureCollection {
     const geoJsonClone = this._geoJson.clone();
     return this.updateGeoJsonTrack(segData, geoJsonClone);
   }
@@ -259,7 +299,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
 
   // === ISplittable
   splitByTimes(timestampsSplit: string[]): FeatureCollection[] {
-    const trackLayers: FeatureCollection[] = [];
+    const tracks: FeatureCollection[] = [];
 
     const segmentsData = this.getSegmentsSplitByTimes(timestampsSplit);
     if (segmentsData.length === 1) {
@@ -267,10 +307,10 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     }
 
     segmentsData.forEach((segmentData) => {
-      trackLayers.push(this.generateGeoJsonTrack(segmentData));
+      tracks.push(this.copyBySegmentData(segmentData));
     });
 
-    return this.trimSingleNodeSegments(trackLayers);
+    return this.trimSingleNodeSegments(tracks);
   }
 
   /**
