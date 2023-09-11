@@ -1,4 +1,4 @@
-import { PolyLine } from "./PolyLine";
+import { IPolylineSize, Polyline } from "./Polyline";
 
 describe('##PolyLine', () => {
   let coordinates: [number, number][];
@@ -14,33 +14,37 @@ describe('##PolyLine', () => {
     describe('#constructor', () => {
       it(`should initialize an object of coordinates linked with segments,
         each represented in separate yet connected linked lists`, () => {
-        const polyLine = new PolyLine(coordinates);
+        const polyline = new Polyline(coordinates);
 
-        expect(polyLine.size()).toEqual({
-          points: 3,
+        const expectedSize: IPolylineSize = {
+          vertices: 3,
           segments: 2
-        });
+        };
+
+        expect(polyline.size()).toEqual(expectedSize);
       });
     });
   });
 
   describe('Methods', () => {
     describe('#size', () => {
-      it('should return the number of points and segments in the PolyLine', () => {
-        const polyLine = new PolyLine(coordinates);
+      it('should return the number of vertices and segments in the PolyLine', () => {
+        const polyline = new Polyline(coordinates);
 
-        expect(polyLine.size()).toEqual({
-          points: 3,
+        const expectedSize: IPolylineSize = {
+          vertices: 3,
           segments: 2
-        });
+        };
+
+        expect(polyline.size()).toEqual(expectedSize);
       });
     });
 
-    describe('#points', () => {
-      it('should return the Points in the PolyLine', () => {
-        const polyLine = new PolyLine(coordinates);
+    describe('#vertices', () => {
+      it('should return the Vertices in the PolyLine', () => {
+        const polyline = new Polyline(coordinates);
 
-        const result = polyLine.points();
+        const result = polyline.vertices();
 
         expect(result[0]).toEqual(coordinates[0]);
         expect(result[1]).toEqual(coordinates[1]);
@@ -50,9 +54,9 @@ describe('##PolyLine', () => {
 
     describe('#segments', () => {
       it('should return the Segments in the PolyLine', () => {
-        const polyLine = new PolyLine(coordinates);
+        const polyline = new Polyline(coordinates);
 
-        const result = polyLine.segments();
+        const result = polyline.segments();
 
         expect(result.length).toEqual(2);
       });

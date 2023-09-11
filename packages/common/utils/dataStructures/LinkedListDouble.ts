@@ -375,6 +375,23 @@ export class LinkedList<N extends NodeDouble<V>, V>
   protected isNodeDouble(valueOrNode: V | N): boolean {
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeDouble);
   }
+
+  static fromHead<N extends NodeDouble<V>, V>(head: N): LinkedList<N, V> {
+    const linkedList = new LinkedList<N, V>();
+    linkedList._head = head;
+
+    let currNode = head;
+    let count = head ? 1 : 0;
+    while (currNode && currNode.next) {
+      count++;
+      currNode = currNode.next as N;
+    }
+
+    linkedList._length = count;
+    linkedList._tail = currNode;
+
+    return linkedList;
+  }
 }
 
 export class LinkedListDouble<V> extends LinkedList<NodeDouble<V>, V> {

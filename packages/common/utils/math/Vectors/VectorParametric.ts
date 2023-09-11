@@ -2,7 +2,7 @@
 import { DivideByZeroException } from "../../../errors/exceptions";
 import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";
-import { CartesianParametricEquationXY } from "../Parametrics/Components/CartesianParametricEquationXY";
+import { CartesianParametricEquationXY } from "../Curves/Parametrics/Components/CartesianParametricEquationXY";
 import { Vector } from "./Vector";
 import { VectorLibrary } from "./VectorLibrary";
 

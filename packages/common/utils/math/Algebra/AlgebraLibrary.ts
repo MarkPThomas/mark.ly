@@ -169,8 +169,8 @@ export class AlgebraLibrary {
     if (typeof value1 === 'number' && typeof value2 === 'number') {
       return value1 + (value2 - value1) * value2Weight;
     } else {
-      const point1 = (value1 as CartesianCoordinate);
-      const point2 = (value2 as CartesianCoordinate);
+      const point1 = (value1 as unknown as CartesianCoordinate);
+      const point2 = (value2 as unknown as CartesianCoordinate);
       return point1.addTo(point2.subtractBy(point1).multiplyBy(value2Weight));
     }
   }
@@ -245,25 +245,25 @@ export class AlgebraLibrary {
 
   // === Intersections
 
-  // /**
-  //  * X-coordinate of a horizontal line intersecting the line described by the points provided.
-  //  *
-  //  * @static
-  //  * @param {number} y Y-coordinate of the horizontal line.
-  //  * @param {ICartesianCoordinate} I First point.
-  //  * @param {ICartesianCoordinate} J Second point.
-  //  * @param {number} [tolerance=Numbers.ZeroTolerance]
-  //  * @return {*}  {number}
-  //  * @memberof AlgebraLibrary
-  //  */
-  // public static IntersectionX(
-  //   y: number,
-  //   I: ICartesianCoordinate,
-  //   J: ICartesianCoordinate,
-  //   tolerance: number = Numbers.ZeroTolerance
-  // ): number {
-  //   return IntersectionX(y, I.X, I.Y, J.X, J.Y, tolerance);
-  // }
+  /**
+   * X-coordinate of a horizontal line intersecting the line described by the points provided.
+   *
+   * @static
+   * @param {number} y Y-coordinate of the horizontal line.
+   * @param {ICartesianCoordinate} I First point.
+   * @param {ICartesianCoordinate} J Second point.
+   * @param {number} [tolerance=Numbers.ZeroTolerance]
+   * @return {*}  {number}
+   * @memberof AlgebraLibrary
+   */
+  public static IntersectionXCoordinates(
+    y: number,
+    I: CartesianCoordinate,
+    J: CartesianCoordinate,
+    tolerance: number = Numbers.ZeroTolerance
+  ): number {
+    return this.IntersectionX(y, I.X, I.Y, J.X, J.Y, tolerance);
+  }
 
 
   /**

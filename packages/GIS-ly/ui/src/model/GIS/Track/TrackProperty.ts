@@ -56,9 +56,9 @@ export class TrackProperty
 
   _gpxType: string;
   name: string;
-  time: string
+  time: string;
   coordinateProperties: {
-    times: TrackTimestamps
+    times: TrackTimestamps;
   }
 
   equals(item: TrackProperty): boolean {

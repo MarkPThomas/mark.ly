@@ -39,71 +39,75 @@ export class SegmentNode<TVertex, TSegment>
   }
 }
 
-export interface IPolyline<TPoint, TSegment> {
+
+export interface IPolylineSize {
+  vertices: number;
+  segments: number;
+}
+
+
+export interface IPolyline<TVertex, TSegment> {
   /**
-   * Returns the number of {@link Point} and {@link Segment} items.
+   * Returns the number of {@link Vertex} and {@link Segment} items.
    *
    * @return {*}  {{
-   *     points: number;
+   *     vertices: number;
    *     segments: number;
    *   }}
    * @memberof IPolyline
    */
-  size(): {
-    points: number;
-    segments: number;
-  };
-  points(): TPoint[];
+  size(): IPolylineSize;
+  vertices(): TVertex[];
   segments(): TSegment[];
 }
 
-export class PolyLine<P extends IVertex, S extends Segment> implements IPolyline<P, S>{
-  protected _points: List<CoordinateNode<P, S>, P> = new List<CoordinateNode<P, S>, P>();
-  protected _segments: List<SegmentNode<P, S>, S> = new List<SegmentNode<P, S>, S>();
+export class Polyline<TVertex extends IVertex, TSegment extends Segment> implements IPolyline<TVertex, TSegment>{
+  protected _vertices: List<CoordinateNode<TVertex, TSegment>, TVertex> = new List<CoordinateNode<TVertex, TSegment>, TVertex>();
+  protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
 
-  constructor(coords: P[]) {
+  constructor(coords: TVertex[]) {
     if (coords) {
-      this._points.appendMany(coords);
+      this._vertices.appendMany(coords);
       this.buildSegments();
     }
   }
 
   size() {
     return {
-      points: this._points.size(),
+      vertices: this._vertices.size(),
       segments: this._segments.size()
     }
   }
 
-  points() {
-    return this._points.toArray() as P[];
+  vertices() {
+    return this._vertices.toArray() as TVertex[];
   }
 
   segments() {
-    return this._segments.toArray() as S[];
+    return this._segments.toArray() as TSegment[];
   }
 
   protected buildSegments() {
-    if (this._points.size() === 0) {
+    if (this._vertices.size() === 0) {
       return;
     }
 
-    this._segments = new List<SegmentNode<P, S>, S>();
+    this._segments = new List<SegmentNode<TVertex, TSegment>, TSegment>();
 
-    let coord = this._points.getHead()?.next as CoordinateNode<P, S>;
+    let coord = this._vertices.head?.next as CoordinateNode<TVertex, TSegment>;
     while (coord) {
-      const prevCoord = coord.prev as CoordinateNode<P, S>;
+      const prevCoord = coord.prev as CoordinateNode<TVertex, TSegment>;
       this.buildSegment(prevCoord, coord);
 
-      coord = coord.next as CoordinateNode<P, S>;
+      coord = coord.next as CoordinateNode<TVertex, TSegment>;
     }
-    if (this._points.size() !== this._segments.size() + 1) {
-      throw new Error(`Polyline of ${this._points.size()} vertices generated ${this._segments.size()} segments`);
+    if (this._vertices.size() !== this._segments.size() + 1) {
+      throw new Error(`Polyline of ${this._vertices.size()} vertices generated ${this._segments.size()} segments`);
     }
   }
 
-  protected buildSegment(coordI: CoordinateNode<P, S>, coordJ: CoordinateNode<P, S>) {
-    const segmentNode = new SegmentNode<P, S>(coordI, coordJ);
+  protected buildSegment(coordI: CoordinateNode<TVertex, TSegment>, coordJ: CoordinateNode<TVertex, TSegment>) {
+    const segmentNode = new SegmentNode<TVertex, TSegment>(coordI, coordJ);
     this._segments.append(segmentNode);
 
     coordI.nextSeg = segmentNode;

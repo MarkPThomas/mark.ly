@@ -237,4 +237,48 @@ export class GeoJsonManager implements IGeoJsonManager {
 
     return lineStringCoordinates;
   }
+
+  static LineStringFromTrackPoints(trkPts: TrackPoint[]): LineString {
+    const points: Point[] = [];
+    trkPts.forEach((trkPt) => {
+      points.push(trkPt.toPoint());
+    })
+
+    const geometry = LineString.fromPoints(points);
+
+    return geometry;
+  }
+
+  static LineStringFeatureFromTrackPoints(trkPts: TrackPoint[]): Feature {
+    const points: Point[] = [];
+    const times: string[] = [];
+    trkPts.forEach((trkPt) => {
+      points.push(trkPt.toPoint());
+      times.push(trkPt.timestamp);
+    })
+
+    const propertiesJson = {
+      _gpxType: 'trk',
+      name: times[0],
+      time: times[0],
+      coordinateProperties: {
+        times: times
+      }
+    }
+
+    const geometry = LineString.fromPoints(points);
+    const properties = TrackProperty.fromJson(propertiesJson);
+
+    const feature = Feature.fromGeometry(geometry, { properties });
+
+    return feature;
+  }
+
+  static FeatureCollectionFromTrackPoints(trkPts: TrackPoint[]): FeatureCollection {
+    const lineStringFeature = this.LineStringFeatureFromTrackPoints(trkPts);
+
+    const featureCollection = FeatureCollection.fromFeatures([lineStringFeature]);
+
+    return featureCollection;
+  }
 }
