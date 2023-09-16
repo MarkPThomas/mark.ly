@@ -120,8 +120,9 @@ export class FeatureCollection
   }
 
   update(target: Feature, replacement: Feature): void {
-    this._collection.updateItem(target, replacement);
-    this._collectionDirty = true;
+    if (this._collection.updateItem(target, replacement)) {
+      this._collectionDirty = true;
+    }
   }
 
   save(): void {
@@ -240,33 +241,3 @@ export class FeatureCollection
     return featureCollection;
   }
 }
-
-// // from FeatureCollection<Geometry, {[name: string]: any;}>
-// type MyFeatureCollection = {
-//   type: string // FeatureCollection
-//   // bbox?: BBox[] // of n x n dimensions for lower-left-bottom & upper-right-top corners
-//   features: [
-//     {
-//       type: string, // Feature
-//       // bbox?: BBox[] // of n x n dimensions for lower-left-bottom & upper-right-top corners
-//       geometry: {
-//         type: string, // 'MultiLineString',
-//         // array of track segments, each as an array of coord properties
-//         //    each of which is an array of 3 indices:
-//         //      0 = longitude
-//         //      1 = latitude
-//         //      2 = elevation (m)
-//         coordinates: string[][][]
-//       },
-//       properties: {
-//         _gpxType: string, //trk
-//         name: string,
-//         time: string, //timestamp
-//         coordinateProperties: {
-//           // array of track segments, each as an array of timestamps for each coord
-//           times: string[][]
-//         }
-//       },
-//     }
-//   ],
-// }

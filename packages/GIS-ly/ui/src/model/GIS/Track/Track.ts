@@ -1,45 +1,57 @@
-import { Numbers } from '../../../../../../common/utils/math/Numbers';
-
-import { BoundingBox } from '../../GeoJSON/BoundingBox';
-
-import { CoordinateNode, IPolyline, Polyline, SegmentNode } from '../../Geometry/Polyline';
-
 // import { ElevationRequestApi } from '../../elevationDataApi';
 import { ElevationRequestApi } from '../../../../../server/api/elevationDataApi';
 
-import { LatLngGPS, TrackPoint } from './TrackPoint';
-import { ITrackSegment, ITrackSegmentLimits, TrackSegment, TrackSegmentData } from './TrackSegment';
-import { TimeStamp } from './TimeStamp';
-import { GeoJsonTrack } from './GeoJsonTrack';
-import { PolylineTrack } from './PolylineTrack';
-import { IVertex } from '../../Geometry/Vertex';
-import { geoJson } from 'leaflet';
-import { coordinatesIndexAt } from '../GeoJSON_Refactor';
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
+import { FeatureCollection } from '../../GeoJSON';
+import { CoordinateNode, SegmentNode } from '../../Geometry/Polyline';
+import { GeoJsonManager } from '../GeoJsonManager';
+
 import { IClippable } from './IClippable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
-import { FeatureCollection, LineString } from '../../GeoJSON';
-import { ICloneable } from '../../../../../../common/interfaces';
-import { GeoJsonManager } from '../GeoJsonManager';
+
+import { TrackPoint } from './TrackPoint';
+import { ITrackSegmentLimits, TrackSegment, TrackSegmentData } from './TrackSegment';
+import { TimeStamp } from './TimeStamp';
+import { GeoJsonTrack } from './GeoJsonTrack';
+import { PolylineTrack } from './PolylineTrack';
+import { TrackBoundingBox } from './TrackBoundingBox';
+
+
+export type EvaluatorArgs = { [name: string]: number };
 
 export interface ITrack
   extends
   IClippable,
   ISplittable<Track>,
   IQuery,
-  ICloneable<Track> {
+  ICloneable<Track>,
+  IEquatable<Track> {
+
+  name: string;
+  time: string;
 
   firstPoint: CoordinateNode<TrackPoint, TrackSegment>;
   firstSegment: SegmentNode<TrackPoint, TrackSegment>;
+  lastPoint: CoordinateNode<TrackPoint, TrackSegment>;
+  lastSegment: SegmentNode<TrackPoint, TrackSegment>;
+
+  boundingBox(): TrackBoundingBox;
 
   trackPoints(): TrackPoint[];
   trackSegments(): TrackSegment[];
 
+  // trackPointsByLimits(segment: ITrackSegmentLimits): TrackPoint[];
+  // trackSegmentsByLimits(segment: ITrackSegmentLimits): TrackSegment[];
+
   addProperties(): void;
   addElevationProperties(): void;
 
-  updateTrack(segData: TrackSegmentData, geoJson?: Track): Track;
-  copyBySegmentData(segData: TrackSegmentData): Track;
+  // updateBySegment(segData: TrackSegmentData): void;
+  // extractBySegment for below?
+  copyBySegment(segData: TrackSegmentData): Track;
+
+  getNodesByTime(timestamp: string): CoordinateNode<TrackPoint, TrackSegment>[];
 
   getNodesBy(
     target: number | EvaluatorArgs,
@@ -47,30 +59,44 @@ export interface ITrack
   ): CoordinateNode<TrackPoint, TrackSegment>[];
   // getPointsBy(target, evaluator<CoordType>): TrackPoint[]
 
-  getNodesByTime(timestamp: string): CoordinateNode<TrackPoint, TrackSegment>[];
-
   removeNodes(nodes: CoordinateNode<TrackPoint, TrackSegment>[]): number;
   // removePoints(points: TrackPoint[]) or removePoints(timestamps: string[])
 
-  // insertNodesBefore(
-  //   node: CoordinateNode<TrackPoint, TrackSegment>,
-  //   nodes: CoordinateNode<TrackPoint, TrackSegment>[]
-  // ): number;
-  // insertNodesAfter(
-  //   node: CoordinateNode<TrackPoint, TrackSegment>,
-  //   nodes: CoordinateNode<TrackPoint, TrackSegment>[]
-  // ): number;
-  // insertReplaceNodes(
-  //   tempHeadNode: CoordinateNode<TrackPoint, TrackSegment>,
-  //   tempTailNode: CoordinateNode<TrackPoint, TrackSegment>,
-  //   nodes: CoordinateNode<TrackPoint, TrackSegment>[]
-  // ): number;
+  insertNodesBefore(
+    node: CoordinateNode<TrackPoint, TrackSegment>,
+    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+  ): number;
+
+  insertNodesAfter(
+    node: CoordinateNode<TrackPoint, TrackSegment>,
+    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+  ): number;
+
+  replaceCoordsBetween(
+    lastTimestamp: string,
+    nextTimestamp: string,
+    coords: CoordinateNode<TrackPoint, TrackSegment>[]
+  ): number;
+
+  replaceNodesBetween(
+    startNode: CoordinateNode<TrackPoint, TrackSegment>,
+    endNode: CoordinateNode<TrackPoint, TrackSegment>,
+    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+  ): number
+
+  replaceNodesFromTo(
+    startNode: CoordinateNode<TrackPoint, TrackSegment>,
+    endNode: CoordinateNode<TrackPoint, TrackSegment>,
+    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+  ): number;
   //^^ insertTrackPoints(lastTimestamp, nextTimestamp, [smoothedPauseTrkPt, smoothedResumeTrkPt])
 
   // splitAt
 }
 
 // TODO: Finish refactor
+// TODO: Current uses of 'clip' and similar methods is on GeoJsonTrack with SegmentData.
+//      May be better instead to call these on the PolylineTrack with ITrackSegmentLimits
 // TODO: Smooth & other managers interact with this class.
 //  Calls are delegated appropriately to the correspind child track
 //  Background geoJson is automatically updates when specified
@@ -78,7 +104,14 @@ export interface ITrack
 export class Track implements ITrack {
   private _geoJsonTrack: GeoJsonTrack;
   private _polylineTrack: PolylineTrack;
-  // Keep hashmap by timestamp of each node. This can avoid exposing them while maintaining fast lookup
+
+  get name(): string {
+    return this._geoJsonTrack.trackMetaData.name;
+  }
+
+  get time(): string {
+    return this._geoJsonTrack.trackMetaData.time;
+  }
 
   get firstPoint() {
     return this._polylineTrack.firstPoint;
@@ -86,6 +119,18 @@ export class Track implements ITrack {
 
   get firstSegment() {
     return this._polylineTrack.firstSegment;
+  }
+
+  get lastPoint() {
+    return this._polylineTrack.lastPoint;
+  }
+
+  get lastSegment() {
+    return this._polylineTrack.lastSegment;
+  }
+
+  boundingBox(): TrackBoundingBox {
+    return this._geoJsonTrack.boundingBox();
   }
 
   // TODO: This class should be initialized & returned from GeoJsonManager as part of track merging process.
@@ -123,6 +168,11 @@ export class Track implements ITrack {
     track._polylineTrack = this._polylineTrack.clone();
 
     return track;
+  }
+
+  equals(track: Track): boolean {
+    // Assumed that with polylineTrack acting as a proxy, it is always in sync with the geoJson track whenever outside sources may care
+    return this._geoJsonTrack.equals(track._geoJsonTrack);
   }
 
   addProperties() {
@@ -176,6 +226,10 @@ export class Track implements ITrack {
   removeNodes(nodes: CoordinateNode<TrackPoint, TrackSegment>[]): number {
     const numberRemoved = this._polylineTrack.removeNodes(nodes);
 
+    // TODO: Should this be called here?
+    //    The method is called repeatedly for smooth operations when iterate = true
+    //    Perhaps a suppression flag is added here, whereby the GeoJson can be manually updated once at the end
+    //    The same may apply to any modification operation.
     this.updateGeoJsonTrack(numberRemoved);
 
     return numberRemoved;
@@ -240,13 +294,20 @@ export class Track implements ITrack {
     return numberInserted;
   }
 
-  updateTrack(
+  // TODO: This could potentially be made private/protected
+  updateBySegment(segment: TrackSegmentData): void {
+    this.updateGivenTrack(segment, this);
+  }
+
+  copyBySegment(segment: TrackSegmentData): Track {
+    const track = new Track();
+    return this.updateGivenTrack(segment, track);
+  }
+
+  protected updateGivenTrack(
     segData: TrackSegmentData,
-    track?: Track
+    track: Track
   ): Track {
-
-    track = track ?? this;
-
     track._geoJsonTrack.copyBySegmentData(segData);
 
     const timestamps = segData.segTimestamps;
@@ -257,12 +318,8 @@ export class Track implements ITrack {
     return track;
   }
 
-  copyBySegmentData(segData: TrackSegmentData): Track {
-    const track = new Track();
-    return this.updateTrack(segData, track);
-  }
-
   // === IQuery
+  // TODO: These might be better on the Polyline w/ ITrackSegmentLimits returned and then updating the geoJson collection object on modifying methods
   getSegmentBeforeTime(timestamp: string): TrackSegmentData {
     return this._geoJsonTrack.getSegmentBeforeTime(timestamp);
   }
@@ -281,26 +338,28 @@ export class Track implements ITrack {
 
 
   // === IClippable
+  // TODO: These might be better on the Polyline and then updating the geoJson collection object
   clipBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
 
-    return this.updateTrack(segmentData);
+    return this.updateBySegment(segmentData);
   }
 
   clipAfterTime(timestamp: string) {
     const segmentData = this.getSegmentAfterTime(timestamp);
 
-    return this.updateTrack(segmentData);
+    return this.updateBySegment(segmentData);
   }
 
   clipBetweenTimes(timestampStart: string, timestampEnd: string) {
     const segmentData = this.getSegmentBetweenTimes(timestampStart, timestampEnd);
 
-    return this.updateTrack(segmentData);
+    return this.updateBySegment(segmentData);
   }
 
 
   // === ISplittable
+  // TODO: These might be better on the Polyline and then updating the geoJson collection object
   // TODO: Still need to implement these, decide how to do in polyline,
   // e.g. using hashmap node from timestamp here
   splitByTimes(timestampsSplit: string[]): Track[] {
@@ -312,7 +371,7 @@ export class Track implements ITrack {
     }
 
     segmentsData.forEach((segmentData) => {
-      trackLayers.push(this.copyBySegmentData(segmentData));
+      trackLayers.push(this.copyBySegment(segmentData));
     });
 
     return trackLayers;
@@ -362,13 +421,12 @@ export class Track implements ITrack {
     // return finalTracks.length ? finalTracks : [this._geoJson.clone()];
   }
 
+  // === Static Methods ===
   static nodesToTrackPoints(nodes: CoordinateNode<TrackPoint, TrackSegment>[]): TrackPoint[] {
     return nodes.map((node) => node.val);
   }
 }
 
-
-export type EvaluatorArgs = { [name: string]: number };
 
 
 // export type SegmentLimits = {

@@ -1,9 +1,8 @@
 import { ICoordinate } from '../../../../../server/api/elevationDataApi/model';
-import { ISegment, Segment } from '../../Geometry/Segment';
 import { TrackPoint } from './TrackPoint';
-import { TrackSegment } from './TrackSegment';
+import { TrackSegmentData } from './TrackSegment';
 import { Track } from './Track';
-import { FeatureCollection } from '../../GeoJSON';
+import { FeatureCollection, Point } from '../../GeoJSON';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 describe('##Track', () => {
@@ -78,14 +77,167 @@ describe('##Track', () => {
         expect(track.firstSegment.nextCoord.val).toEqual(trackPoints[1]);
       });
     });
+  });
 
-    describe('Duplication', () => {
-      describe('#updateTrack', () => {
+  describe('Duplication', () => {
+    let trackPoints: TrackPoint[];
+    let track: Track;
+    let segmentData: TrackSegmentData
 
+    beforeEach(() => {
+      const coord1 = new TrackPoint(-8.957287, -77.777452);
+      coord1.timestamp = '2023-07-04T17:22:15Z';
+
+      const coord2 = new TrackPoint(-8.957069, -77.777400);
+      coord2.timestamp = '2023-07-04T17:22:35Z';
+
+      const coord3 = new TrackPoint(-8.956936, -77.777381);
+      coord3.timestamp = '2023-07-04T17:22:46Z';
+
+      const coord4 = new TrackPoint(-8.956758, -77.777211);
+      coord4.timestamp = '2023-07-04T17:23:08Z';
+
+      trackPoints = [
+        coord1,
+        coord2,
+        coord3,
+        coord4
+      ];
+
+      track = Track.fromTrackPoints(trackPoints);
+
+      segmentData = {
+        segPoints: [
+          Point.fromLngLat(120, 45, 100),
+          Point.fromLngLat(121, 46, 200),
+          Point.fromLngLat(122, 47, 300),
+          Point.fromLngLat(123, 48, 400),
+          Point.fromLngLat(124, 49, 500),
+        ],
+        segTimestamps: [
+          '1',
+          '2',
+          '3',
+          '4',
+          '5'
+        ]
+      };
+    });
+
+    describe('#updateBySegment', () => {
+      it('should add data to an empty track', () => {
+        const track = Track.fromTrackPoints([]);
+
+        track.updateBySegment(segmentData);
+
+        const trackPoints = track.trackPoints();
+
+        expect(trackPoints.length).toEqual(5);
+
+        expect(trackPoints[0].lat).toEqual(45);
+        expect(trackPoints[0].lng).toEqual(120);
+        expect(trackPoints[0].alt).toEqual(100);
+        expect(trackPoints[0].timestamp).toEqual('1');
+
+        expect(trackPoints[4].lat).toEqual(49);
+        expect(trackPoints[4].lng).toEqual(124);
+        expect(trackPoints[4].alt).toEqual(500);
+        expect(trackPoints[4].timestamp).toEqual('5');
       });
 
-      describe('#copyBySegmentData', () => {
+      it('should do nothing if segment data has no points', () => {
+        const segmentData: TrackSegmentData = {
+          segPoints: [],
+          segTimestamps: []
+        };
 
+        const trackPointsOriginal = track.trackPoints();
+
+        track.updateBySegment(segmentData);
+
+        const trackPoints = track.trackPoints();
+
+        expect(trackPoints.length).toEqual(trackPointsOriginal.length);
+
+        expect(trackPoints[0].equals(trackPointsOriginal[0])).toBeTruthy();
+        expect(trackPoints[4].equals(trackPointsOriginal[4])).toBeTruthy();
+      });
+
+      it('should update the Track with the provided segment data', () => {
+        const trackPointsOriginal = track.trackPoints();
+
+        track.updateBySegment(segmentData);
+
+        const trackPoints = track.trackPoints();
+
+        expect(trackPointsOriginal.length).toEqual(4);
+        expect(trackPoints.length).toEqual(5);
+
+        expect(trackPoints[0].equals(trackPointsOriginal[0])).toBeTruthy();
+        expect(trackPoints[4].equals(trackPointsOriginal[4])).toBeTruthy();
+      });
+    });
+
+    describe('#copyBySegment', () => {
+      it('should return a new Track with the supplied data when called on an empty track', () => {
+        const track = Track.fromTrackPoints([]);
+        const segmentData: TrackSegmentData = {
+          segPoints: [],
+          segTimestamps: []
+        };
+
+        const copiedTrack = track.copyBySegment(segmentData);
+
+        const trackPoints = copiedTrack.trackPoints();
+
+        expect(trackPoints.length).toEqual(5);
+
+        expect(trackPoints[0].lat).toEqual(45);
+        expect(trackPoints[0].lng).toEqual(120);
+        expect(trackPoints[0].alt).toEqual(100);
+        expect(trackPoints[0].timestamp).toEqual('1');
+
+        expect(trackPoints[4].lat).toEqual(49);
+        expect(trackPoints[4].lng).toEqual(124);
+        expect(trackPoints[4].alt).toEqual(500);
+        expect(trackPoints[4].timestamp).toEqual('5');
+      });
+
+      it('return an empty Track if segment data has no points', () => {
+        const segmentData: TrackSegmentData = {
+          segPoints: [],
+          segTimestamps: []
+        };
+
+        const copiedTrack = track.copyBySegment(segmentData);
+
+        const trackPoints = copiedTrack.trackPoints();
+
+        expect(trackPoints.length).toEqual(0);
+      });
+
+      it('should return a copy of the Track updated with the provided segment data', () => {
+        const trackPointsOriginal = track.trackPoints();
+
+        const updatedTrack = track.copyBySegment(segmentData);
+
+        const updatedTrackPoints = updatedTrack.trackPoints();
+
+        expect(trackPointsOriginal.length).toEqual(4);
+        expect(updatedTrackPoints.length).toEqual(5);
+
+        expect(updatedTrackPoints[0].equals(trackPointsOriginal[0])).toBeFalsy();
+        expect(updatedTrackPoints[4].equals(trackPointsOriginal[4])).toBeFalsy();
+
+        expect(updatedTrackPoints[0].lat).toEqual(45);
+        expect(updatedTrackPoints[0].lng).toEqual(120);
+        expect(updatedTrackPoints[0].alt).toEqual(100);
+        expect(updatedTrackPoints[0].timestamp).toEqual('1');
+
+        expect(updatedTrackPoints[4].lat).toEqual(49);
+        expect(updatedTrackPoints[4].lng).toEqual(124);
+        expect(updatedTrackPoints[4].alt).toEqual(500);
+        expect(updatedTrackPoints[4].timestamp).toEqual('5');
       });
     });
   });
@@ -166,19 +318,19 @@ describe('##Track', () => {
         const coords = track.trackPoints();
 
         // Check middle node
-        expect(coords[1].speedAvg - 1.301).toBeLessThanOrEqual(0.001);
-        expect(coords[1].path.rotation - 0.092).toBeLessThanOrEqual(0.001);
-        expect(coords[1].path.rotationRate - 0.09121).toBeLessThanOrEqual(0.00001);
+        expect(coords[1]._path.speed - 1.301).toBeLessThanOrEqual(0.001);
+        expect(coords[1]._path.rotation - 0.092).toBeLessThanOrEqual(0.001);
+        expect(coords[1]._path.rotationRate - 0.09121).toBeLessThanOrEqual(0.00001);
 
         // Check start node
-        expect(coords[0].speedAvg - 1.245).toBeLessThanOrEqual(0.001);
-        expect(coords[0].path?.rotation).toBeNull();
-        expect(coords[0].path?.rotationRate).toBeNull();
+        expect(coords[0]._path.speed - 1.245).toBeLessThanOrEqual(0.001);
+        expect(coords[0]._path.rotation).toBeNull();
+        expect(coords[0]._path.rotationRate).toBeNull();
 
         // Check end node
-        expect(coords[coords.length - 1].speedAvg - 1.237).toBeLessThanOrEqual(0.001);
-        expect(coords[coords.length - 1].path?.rotation).toBeNull();
-        expect(coords[coords.length - 1].path?.rotationRate).toBeNull();
+        expect(coords[coords.length - 1]._path.speed - 1.237).toBeLessThanOrEqual(0.001);
+        expect(coords[coords.length - 1]._path.rotation).toBeNull();
+        expect(coords[coords.length - 1]._path.rotationRate).toBeNull();
       });
     });
 
@@ -247,8 +399,8 @@ describe('##Track', () => {
         expect(trackCoords[0]).toHaveProperty('elevation');
         expect(trackCoords[0].elevation).toEqual(1000);
         expect(trackCoords[0]).toHaveProperty('path');
-        expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[0]._path.ascentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[0]._path.descentRate).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[0]).toHaveProperty('height');
         expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
@@ -258,8 +410,8 @@ describe('##Track', () => {
         expect(trackCoords[1]).toHaveProperty('elevation');
         expect(trackCoords[1].elevation).toEqual(2000);
         expect(trackCoords[1]).toHaveProperty('path');
-        expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[1]._path.ascentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[1]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[1]).toHaveProperty('height');
         expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
@@ -269,15 +421,15 @@ describe('##Track', () => {
         expect(trackCoords[2]).toHaveProperty('elevation');
         expect(trackCoords[2].elevation).toEqual(1500);
         expect(trackCoords[2]).toHaveProperty('path');
-        expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[2]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[2]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[2]).not.toHaveProperty('height');
         expect(trackSegs[2]).not.toHaveProperty('heightRate');
 
         expect(trackCoords[3]).not.toHaveProperty('elevation');
-        expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[3]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[3]._path.descentRate).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[3]).not.toHaveProperty('height');
         expect(trackSegs[3]).not.toHaveProperty('heightRate');
@@ -285,8 +437,8 @@ describe('##Track', () => {
         expect(trackCoords[4]).toHaveProperty('elevation');
         expect(trackCoords[4].elevation).toEqual(5000);
         expect(trackCoords[4]).toHaveProperty('path');
-        expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[4]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[4]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[4]).toHaveProperty('height');
         expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
@@ -296,8 +448,8 @@ describe('##Track', () => {
         expect(trackCoords[5]).toHaveProperty('elevation');
         expect(trackCoords[5].elevation).toEqual(4000);
         expect(trackCoords[5]).toHaveProperty('path');
-        expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[5]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[5]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
       });
     });
 
@@ -355,8 +507,8 @@ describe('##Track', () => {
         expect(trackCoords[0]).toHaveProperty('elevation');
         expect(trackCoords[0].elevation).toEqual(1000);
         expect(trackCoords[0]).toHaveProperty('path');
-        expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[0]._path.ascentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[0]._path.descentRate).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[0]).toHaveProperty('height');
         expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
@@ -366,8 +518,8 @@ describe('##Track', () => {
         expect(trackCoords[1]).toHaveProperty('elevation');
         expect(trackCoords[1].elevation).toEqual(2000);
         expect(trackCoords[1]).toHaveProperty('path');
-        expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[1]._path.ascentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[1]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[1]).toHaveProperty('height');
         expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
@@ -377,15 +529,15 @@ describe('##Track', () => {
         expect(trackCoords[2]).toHaveProperty('elevation');
         expect(trackCoords[2].elevation).toEqual(1500);
         expect(trackCoords[2]).toHaveProperty('path');
-        expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[2]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[2]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[2]).not.toHaveProperty('height');
         expect(trackSegs[2]).not.toHaveProperty('heightRate');
 
         expect(trackCoords[3]).not.toHaveProperty('elevation');
-        expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[3]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[3]._path.descentRate).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[3]).not.toHaveProperty('height');
         expect(trackSegs[3]).not.toHaveProperty('heightRate');
@@ -393,8 +545,8 @@ describe('##Track', () => {
         expect(trackCoords[4]).toHaveProperty('elevation');
         expect(trackCoords[4].elevation).toEqual(5000);
         expect(trackCoords[4]).toHaveProperty('path');
-        expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[4]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[4]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
         expect(trackSegs[4]).toHaveProperty('height');
         expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
@@ -404,8 +556,8 @@ describe('##Track', () => {
         expect(trackCoords[5]).toHaveProperty('elevation');
         expect(trackCoords[5].elevation).toEqual(4000);
         expect(trackCoords[5]).toHaveProperty('path');
-        expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[5]._path.ascentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[5]._path.descentRate - 50).toBeLessThanOrEqual(0.1);
       });
     });
 

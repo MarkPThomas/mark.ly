@@ -5,7 +5,10 @@ import {
 } from '../../../../../common/utils/dataStructures';
 
 import { Segment } from './Segment';
-import { IVertex } from './Vertex';
+import { IVertex, Vertex } from './Vertex';
+
+export type EvaluatorArgs = { [name: string]: number | string };
+
 
 export interface ICoordinateNode<TVertex, TSegment> extends INodeDouble<TVertex> {
   nextSeg: SegmentNode<TVertex, TSegment> | null;
@@ -32,7 +35,11 @@ export class SegmentNode<TVertex, TSegment>
   nextCoord: CoordinateNode<TVertex, TSegment>;
   prevCoord: CoordinateNode<TVertex, TSegment>;
 
-  constructor(prevCoord: CoordinateNode<TVertex, TSegment>, nextCoord: CoordinateNode<TVertex, TSegment>, segment?: TSegment) {
+  constructor(
+    prevCoord: CoordinateNode<TVertex, TSegment>,
+    nextCoord: CoordinateNode<TVertex, TSegment>,
+    segment?: TSegment
+  ) {
     super(segment ?? null);
     this.prevCoord = prevCoord;
     this.nextCoord = nextCoord;
@@ -47,6 +54,21 @@ export interface IPolylineSize {
 
 
 export interface IPolyline<TVertex, TSegment> {
+  // Properties
+  firstPoint: ICoordinateNode<TVertex, TSegment>;
+  firstSegment: ISegmentNode<TVertex, TSegment>;
+
+  lastPoint: ICoordinateNode<TVertex, TSegment>;
+  lastSegment: ISegmentNode<TVertex, TSegment>;
+
+  // Property Methods
+  /**
+   * Adds derived properties to Segments and Pointss based on initial properties in the Points.
+   *
+   * @memberof IPolyline
+   */
+  addProperties(): void;
+
   /**
    * Returns the number of {@link Vertex} and {@link Segment} items.
    *
@@ -59,16 +81,81 @@ export interface IPolyline<TVertex, TSegment> {
   size(): IPolylineSize;
   vertices(): TVertex[];
   segments(): TSegment[];
+
+  // Query Methods
+  getNodes(
+    target: string | number | EvaluatorArgs,
+    evaluator: (
+      target: string | number | EvaluatorArgs,
+      coord: CoordinateNode<TVertex, TSegment>
+    ) => boolean
+  ): CoordinateNode<TVertex, TSegment>[];
+
+  removeNodes(nodes: CoordinateNode<TVertex, TSegment>[]): number;
+
+  insertNodesBefore(
+    node: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number;
+
+  insertNodesAfter(
+    node: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number;
+
+  replaceNodesBetween(
+    tempHeadNode: CoordinateNode<TVertex, TSegment>,
+    tempTailNode: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number;
+
+  replaceNodesFromTo(
+    startNode: CoordinateNode<TVertex, TSegment>,
+    endNode: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number;
 }
 
-export class Polyline<TVertex extends IVertex, TSegment extends Segment> implements IPolyline<TVertex, TSegment>{
+export class Polyline<TVertex extends Vertex, TSegment extends Segment>
+  implements IPolyline<TVertex, TSegment>
+{
   protected _vertices: List<CoordinateNode<TVertex, TSegment>, TVertex> = new List<CoordinateNode<TVertex, TSegment>, TVertex>();
   protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
+
+  get firstPoint() {
+    return this._vertices.head;
+  }
+
+  get firstSegment() {
+    return this._segments.head;
+  }
+
+  get lastPoint() {
+    return this._vertices.tail;
+  }
+
+  get lastSegment() {
+    return this._segments.tail;
+  }
 
   constructor(coords: TVertex[]) {
     if (coords) {
       this._vertices.appendMany(coords);
       this.buildSegments();
+    }
+  }
+
+  protected updateProperties(numberNodesAffected: number) {
+    if (numberNodesAffected) {
+      // regenerate all segments
+      this.buildSegments();
+      //    optimize: replace segment
+      //     // coord.prevSeg
+      //     // coord.nextSeg
+
+      // update segment properties
+      this.addProperties();
+      //    optimize: update new segment properties and adjacent node properties
     }
   }
 
@@ -114,53 +201,138 @@ export class Polyline<TVertex extends IVertex, TSegment extends Segment> impleme
     coordJ.prevSeg = segmentNode;
   }
 
-  // addProperties() {
-  //   this.addPropertiesToSegments();
-  // }
+  addProperties() {
+    this.addPropertiesToNodes();
+  }
 
-  // protected addPropertiesToSegments() {
-  //   let coord = this._coords.getHead()?.next as CoordinateNode<V, S>;
-  //   while (coord) {
-  //     const prevCoord = coord.prev as CoordinateNode<V, S>;
-  //     this.addSegmentProperties(prevCoord, coord);
+  protected addPropertiesToNodes() {
+    this.addPropertiesToSegments();
+  }
 
-  //     coord = coord.next as CoordinateNode<V, S>;
-  //   }
-  // }
+  protected addPropertiesToSegments() {
+    let coord = this._vertices.head?.next as CoordinateNode<TVertex, TSegment>;
+    while (coord) {
+      const prevCoord = coord.prev as CoordinateNode<TVertex, TSegment>;
+      const segment = this.getSegment(prevCoord.val, coord.val);
+      coord.prevSeg.val = segment;
 
-  // protected addSegmentProperties(coordI: CoordinateNode<V, S>, coordJ: CoordinateNode<V, S>) {
-  //   const segment = new Segment();
+      coord = coord.next as CoordinateNode<TVertex, TSegment>;
+    }
+  }
 
-  //   segment.length = PolyLine.calcSegmentDistance(coordI.val, coordJ.val);
-  //   segment.angle = PolyLine.calcSegmentAngleRads(coordI.val, coordJ.val);
+  protected getSegment(prevCoord: TVertex, nextCoord: TVertex): TSegment {
+    return new Segment() as TSegment;
+  }
 
-  //   coordI.nextSeg.val = segment as S;
-  // }
+  getNodes(
+    target: string | number | EvaluatorArgs,
+    evaluator: (
+      target: string | number | EvaluatorArgs,
+      coord: CoordinateNode<TVertex, TSegment>
+    ) => boolean
+  ): CoordinateNode<TVertex, TSegment>[] {
+    const nodes: CoordinateNode<TVertex, TSegment>[] = [];
 
-  //   /**
-  //  * Returns the distance between two points in a 2D Cartesian coordinate system.
-  //  *
-  //  * @protected
-  //  * @param {Coordinate} ptI
-  //  * @param {Coordinate} ptJ
-  //  * @return {*}
-  //  * @memberof Track
-  //  */
-  //   static calcSegmentDistance(ptI: Coordinate, ptJ: Coordinate) {
-  //     // TODO: Update this once base coord of cartesian pts is implemented
-  //     return ptI.distanceTo(ptJ);
-  //   }
+    let node = this._vertices.head as CoordinateNode<TVertex, TSegment>;
+    while (node) {
+      if (evaluator(target, node)) {
+        nodes.push(node);
+      }
 
-  //   static calcSegmentAngleRads(ptI: Coordinate, ptJ: Coordinate) {
-  //     // TODO: Update this once base coord of cartesian pts is implemented
-  //     // This might need to be overridden in Track for lat/long vs. cartesian coordinate systems
-  //     const latLength = ptI.distanceTo(new Coordinate(ptJ.lat, ptI.lng));
-  //     const lngLength = ptI.distanceTo(new Coordinate(ptI.lat, ptJ.lng));
+      node = node.next as CoordinateNode<TVertex, TSegment>;
+    }
 
-  //     return lngLength
-  //       ? Math.tan(latLength / lngLength)
-  //       : latLength > 0 ? Math.PI / 2
-  //         : latLength < 0 ? 3 * Math.PI / 2
-  //           : null;
-  //   }
+    return nodes;
+  }
+
+  removeNodes(nodes: CoordinateNode<TVertex, TSegment>[]): number {
+    let count = 0;
+
+    nodes.forEach((node) => {
+      if (this._vertices.remove(node)) {
+        count++;
+      }
+    });
+
+    this.updateProperties(count);
+
+    return count;
+  }
+
+  insertNodesBefore(
+    node: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number {
+    const count = this._vertices.insertManyBefore(node, nodes);
+
+    this.updateProperties(count);
+
+    return count;
+  }
+
+  insertNodesAfter(
+    node: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number {
+    const count = this._vertices.insertManyAfter(node, nodes);
+
+    this.updateProperties(count);
+
+    return count;
+  }
+
+  replaceNodesBetween(
+    startNode: CoordinateNode<TVertex, TSegment>,
+    endNode: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number {
+    const results = this._vertices.replaceBetween(startNode, endNode, nodes);
+    const nodesAffected = results.insertedCount + results.removedCount;
+
+    this.updateProperties(nodesAffected);
+
+    return nodesAffected;
+  }
+
+  replaceNodesFromTo(
+    startNode: CoordinateNode<TVertex, TSegment>,
+    endNode: CoordinateNode<TVertex, TSegment>,
+    nodes: CoordinateNode<TVertex, TSegment>[]
+  ): number {
+    const results = this._vertices.replaceFromTo(startNode, endNode, nodes);
+    const nodesAffected = results.insertedCount + results.removedCount;
+
+    this.updateProperties(nodesAffected);
+
+    return nodesAffected;
+  }
+
+
+  protected splitAdjacentNodes(
+    nodeI: CoordinateNode<TVertex, TSegment>,
+    nodeJ: CoordinateNode<TVertex, TSegment>,
+    segIJ: SegmentNode<TVertex, TSegment>
+  ) {
+    if (nodeI) {
+      nodeI.next = null;
+      nodeI.nextSeg = null;
+    }
+
+    if (nodeJ) {
+      nodeJ.prev = null;
+      nodeJ.prevSeg = null;
+    }
+
+    if (segIJ) {
+      segIJ.next = null;
+      segIJ.nextCoord = null;
+
+      segIJ.prev = null;
+      segIJ.prevCoord = null;
+    }
+  }
+
+  protected isSpecified(node: any) {
+    return node !== undefined && node !== null;
+  }
 }

@@ -50,6 +50,7 @@ describe('##CruftManager', () => {
     const timestamps: string[] = data.times;
     const featureCollection = featureCollectionFromPositions(coordinates, timestamps);
     const track = Track.fromGeoJson(FeatureCollection.fromJson(featureCollection));
+
     const cruftManager = new CruftManager(track);
 
     return cruftManager;

@@ -169,11 +169,11 @@ export class GeoJsonManager implements IGeoJsonManager {
 
   static PositionToTrackPoint(position: Position, time: string) {
     return time
-      ? TrackPoint.fromPosition({
+      ? TrackPoint.fromPositionInTime({
         position,
         timestamp: time
       })
-      : TrackPoint.fromPosition({
+      : TrackPoint.fromPositionInTime({
         position
       });
   }
@@ -191,11 +191,11 @@ export class GeoJsonManager implements IGeoJsonManager {
 
   static PointToTrackPoint(point: Point, time: string) {
     return time
-      ? TrackPoint.fromPosition({
+      ? TrackPoint.fromPositionInTime({
         position: point.toPositions(),
         timestamp: time
       })
-      : TrackPoint.fromPosition({
+      : TrackPoint.fromPositionInTime({
         position: point.toPositions()
       });
   }

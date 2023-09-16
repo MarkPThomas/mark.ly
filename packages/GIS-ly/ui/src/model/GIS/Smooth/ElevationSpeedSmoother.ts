@@ -32,9 +32,9 @@ export class ElevationSpeedSmoother extends Smoother {
     coord: CoordinateNode<TrackPoint, TrackSegment>
   ): boolean {
     maxDescentRateMPS = maxDescentRateMPS ?? maxAscentRateMPS;
-    if (coord.val?.path) {
-      return coord.val.path.ascentRate > maxAscentRateMPS
-        || coord.val.path.descentRate > maxDescentRateMPS;
+    if (coord.val?._path) {
+      return coord.val._path.ascentRate > maxAscentRateMPS
+        || coord.val._path.descentRate > maxDescentRateMPS;
     }
 
     return false;

@@ -1,10 +1,3 @@
-// import {
-//   getSegmentBeforeTime,
-//   getSegmentAfterTime,
-//   getSegmentBetweenTimes,
-//   getSegmentsSplitByTimes
-// } from '../GeoJSON_Refactor';
-
 import {
   FeatureCollection as SerialFeatureCollection,
   LineString as SerialLineString
@@ -100,8 +93,6 @@ describe('##GeoJsonTrack', () => {
 
       const feature = Feature.fromGeometry(lineString, { properties });
       featureCollection = FeatureCollection.fromFeatures([feature]);
-
-      // geoJsonTrack = new GeoJsonTrack(featureCollection);
     });
 
     describe('#constructor', () => {
@@ -127,14 +118,13 @@ describe('##GeoJsonTrack', () => {
         geoJsonTrack = new GeoJsonTrack(featureCollection);
       });
 
-      // TODO: Test this next to complete Smooth implementations
       describe('#updateGeoJsonTrackFromTrackPoints', () => {
         it('should do nothing if no trackpoints are given', () => {
           const originalCollection = geoJsonTrack.toFeatureCollection();
 
           const updatedCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints([]);
 
-          expect(updatedCollection).toEqual(originalCollection);
+          expect(updatedCollection.equals(originalCollection)).toBeTruthy();
         });
 
         it('should update the included FeatureCollection with the provided trackpoints', () => {
@@ -170,36 +160,42 @@ describe('##GeoJsonTrack', () => {
           ];
 
           const originalCollection = collection.clone();
-          const originalPositions = (originalCollection.features[0].geometry as unknown as SerialLineString).coordinates as Position[];
-          const originalTimes = (originalCollection.features[0].geometry as unknown as ITrackPropertyProperties).coordinateProperties.times as string[];
-          const trkPtsOnOriginalCollection = GeoJsonManager.PositionsToTrackPoints(originalPositions, originalTimes);
 
           const updatedCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints(updatedTracks, collection);
 
-          expect(trkPtsOnOriginalCollection.length).toEqual(7); // 6, then removed 1, added 2
-          expect(trkPtsOnOriginalCollection).toEqual(updatedTracks);
-          expect(updatedCollection).toEqual(collection);
+          const updatedPoints = (updatedCollection.features[0].geometry as unknown as LineString).points as Point[];
+          const updatedTimes = (updatedCollection.features[0].properties as unknown as ITrackPropertyProperties).coordinateProperties.times as string[];
+          const trkPtsOnUpdatedCollection = GeoJsonManager.PointsToTrackPoints(updatedPoints, updatedTimes);
 
-          expect(updatedCollection).not.toEqual(geoJsonTrack.toFeatureCollection());
-          expect(originalCollection).not.toEqual(updatedCollection);
+          expect(trkPtsOnUpdatedCollection.length).toEqual(6); // 5, then removed 1, added 2
+          trkPtsOnUpdatedCollection.forEach((trkPtUpdatedCollection, index) => {
+            expect(trkPtUpdatedCollection.equals(updatedTracks[index])).toBeTruthy();
+          });
+
+          expect(updatedCollection.equals(collection)).toBeTruthy();
+
+          expect(updatedCollection.equals(geoJsonTrack.toFeatureCollection())).toBeFalsy();
+          expect(updatedCollection.equals(originalCollection)).toBeFalsy();
         });
 
         it('should update the FeatureCollection with the provided trackpoints', () => {
-          const updatedTracks = geoJsonTrack.trackPoints();
-          updatedTracks[2] = new TrackPoint(2.5, 102.5, 350, '3.5');
-          updatedTracks.splice(3, 1);
-          updatedTracks.push(new TrackPoint(45, 111, 5000, '7'));
-          updatedTracks.push(new TrackPoint(69, 123, 6000, '8'));
+          const updatedTrkPts = geoJsonTrack.trackPoints();
+          updatedTrkPts[1] = new TrackPoint(2.5, 102.5, 350, '3.5');
+          updatedTrkPts.splice(2, 1);
+          updatedTrkPts.push(new TrackPoint(45, 111, 5000, '7'));
+          updatedTrkPts.push(new TrackPoint(69, 123, 6000, '8'));
 
-          const featureCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints(updatedTracks);
+          const featureCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints(updatedTrkPts);
 
-          const tracksOnOriginalTrack = geoJsonTrack.trackPoints()
-          expect(tracksOnOriginalTrack.length).toEqual(7); // 6, then removed 1, added 2
-          expect(tracksOnOriginalTrack).toEqual(updatedTracks);
+          const trkPtsOnOriginalTrack = geoJsonTrack.trackPoints()
+          expect(trkPtsOnOriginalTrack.length).toEqual(5); // 4, then removed 1, added 2
+          trkPtsOnOriginalTrack.forEach((trkPtOriginalTrack, index) => {
+            expect(trkPtOriginalTrack.equals(updatedTrkPts[index])).toBeTruthy();
+          });
 
-          expect(featureCollection).toEqual(geoJsonTrack.toFeatureCollection());
+          expect(featureCollection.equals(geoJsonTrack.toFeatureCollection())).toBeTruthy();
         });
-      })
+      });
 
       describe('#updateGeoJsonTrack', () => {
         it('should do nothing if segment data has no points', () => {
@@ -309,7 +305,6 @@ describe('##GeoJsonTrack', () => {
     });
   });
 
-
   describe('Methods', () => {
     let featureCollectionJson: SerialFeatureCollection;
     let featureCollection: FeatureCollection;
@@ -333,6 +328,19 @@ describe('##GeoJsonTrack', () => {
       })
     });
 
+    describe('#toFeatureCollection', () => {
+      // TODO: Implemented in class. Test.
+    });
+
+    describe('Common Interfaces', () => {
+      describe('#clone', () => {
+        // TODO: Implemented in class. Test.
+      });
+
+      describe('#equals', () => {
+        // TODO: Implemented in class. Test.
+      });
+    });
 
     describe('IQuery', () => {
       let lineString: LineString;

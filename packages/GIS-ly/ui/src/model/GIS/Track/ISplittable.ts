@@ -21,7 +21,9 @@ export interface ISplittable<TTrack> {
   splitByTimes(timestampsSplit: string[]): TTrack[];
 
   /**
-   * Splits track at the given segment limits. The original track is not modified.
+   * Splits track at the given segment limits to return only those portions of the track.
+   *
+   * The original track is not modified.
    *
    * If no valid split is found, returns undefined.
    *
@@ -32,7 +34,10 @@ export interface ISplittable<TTrack> {
   splitToSegment(segment: ITrackSegmentLimits): TTrack | undefined;
 
   /**
-   * Splits track at each of the given segment limits. The original track is not modified.
+   * Splits track at each of the given segment limits to return portions of the track that do not
+   * lie within those limits.
+   *
+   * The original track is not modified.
    *
    * @param {ITrackSegmentLimits[]} segments
    * @return {*}  {TTrack[]} Duplicated sub-tracks that are copies of each track portion that lies within each specified pairs of limits.

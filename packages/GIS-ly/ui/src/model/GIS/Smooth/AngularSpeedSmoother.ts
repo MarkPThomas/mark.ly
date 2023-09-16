@@ -22,6 +22,6 @@ export class AngularSpeedSmoother extends Smoother {
   }
 
   protected isExceedingAngularSpeedLimit(limit: number, coord: CoordinateNode<TrackPoint, TrackSegment>) {
-    return coord.val?.path && Math.abs(coord.val.path.rotationRate) > limit;
+    return coord.val?._path && Math.abs(coord.val._path.rotationRate) > limit;
   }
 }
