@@ -40,9 +40,9 @@ export interface IQuery {
    *
    * Points at a given timestamp are duplicated such that they are the last Point of segment I, and first Point of segment J.
    *
-   * @param {string[]} timestampSplit
+   * @param {string[]} timestamps
    * @return {*}  {TrackSegmentData}
    * @memberof IQuery
    */
-  getSegmentsSplitByTimes(timestampSplit: string[]): TrackSegmentData[];
+  getSegmentsSplitByTimes(timestamps: string[]): TrackSegmentData[];
 }
