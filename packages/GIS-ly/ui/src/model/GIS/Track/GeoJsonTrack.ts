@@ -5,7 +5,7 @@ import {
   LineString
 } from '../../GeoJSON';
 
-import { ICloneable } from '../../../../../../common/interfaces';
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import { IClippable } from './IClippable';
 import { IQuery } from './IQuery';
@@ -19,17 +19,23 @@ import {
 } from './TrackProperty';
 import { TrackPoint } from './TrackPoint';
 import { GeoJsonManager } from '../GeoJsonManager';
+import { TrackBoundingBox } from './TrackBoundingBox';
 
 export interface IGeoJsonTrack
   extends
   IClippable,
   ISplittable<FeatureCollection>,
   IQuery,
-  ICloneable<GeoJsonTrack> {
+  ICloneable<GeoJsonTrack>,
+  IEquatable<GeoJsonTrack> {
 
   trackMetaData: IBaseTrackProperty;
 
+  boundingBox(): TrackBoundingBox;
+
   trackPoints(): TrackPoint[];
+
+  toFeatureCollection(): FeatureCollection;
 
   updateGeoJsonTrackFromTrackPoints(
     trackPoints: TrackPoint[],
@@ -73,6 +79,11 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return { ...this._baseTrackProperty };
   }
 
+  boundingBox(): TrackBoundingBox {
+    return TrackBoundingBox.fromBoundingBox(this._geoJson.bbox());
+  }
+
+
   constructor(geoJson: FeatureCollection) {
     this._geoJson = geoJson;
 
@@ -83,7 +94,12 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return new GeoJsonTrack(this._geoJson.clone());
   }
 
-  toFeatureCollection() {
+  equals(track: GeoJsonTrack): boolean {
+    return JSON.stringify(this._baseTrackProperty) === JSON.stringify(track._baseTrackProperty)
+      && this._geoJson.equals(track._geoJson);
+  }
+
+  toFeatureCollection(): FeatureCollection {
     return this._geoJson.clone();
   }
 
@@ -93,7 +109,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
 
     segPoints.forEach((point, pointIndex) => {
       const timestamp = segTimestamps[pointIndex];
-      const trkPt = TrackPoint.fromPoint({ point, timestamp });
+      const trkPt = TrackPoint.fromPointInTime({ point, timestamp });
       trackPoints.push(trkPt);
     });
 
@@ -143,7 +159,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     const properties = TrackProperty.fromJson(propertiesJson);
     const updatedFeature = Feature.fromGeometry(lineString, { properties });
 
-    geoJson.update(this.getFeature(), updatedFeature);
+    geoJson.update(geoJson.features[0], updatedFeature);
     geoJson.save();
   }
 
@@ -342,12 +358,12 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   }
 
   /**
-   * Adds split segment from the collection to the provided Track list, or returns a new list with the split segment as the sole item if found.
+   * Adds split segment from the collection to the provided Track list,
+   * or returns a new list with the split segment as the sole item if found.
    *
    * @protected
    * @param {ITrackSegmentLimits} segment
    * @param {FeatureCollection[]} splitSegments
-   * @param {FeatureCollection[]} [tracks=[]]
    * @return {*}
    * @memberof GeoJsonTrackManager
    */
@@ -396,6 +412,15 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return finalTracks.length ? finalTracks : [this._geoJson.clone()];
   }
 
+  /**
+   * Returns a reduced list of split segments that does not contain the segments defined in the segment limits.
+   *
+   * @protected
+   * @param {ITrackSegmentLimits[]} segmentLimits
+   * @param {FeatureCollection[]} splitSegments
+   * @return {*}  {FeatureCollection[]}
+   * @memberof GeoJsonTrack
+   */
   protected addSplittedSegments(
     segmentLimits: ITrackSegmentLimits[],
     splitSegments: FeatureCollection[]
@@ -405,12 +430,12 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     let splitSegmentIndex = 0;
     while (segmentLimitIndex < segmentLimits.length
       && splitSegmentIndex < splitSegments.length) {
-      const segmentLimit = segmentLimits[segmentLimitIndex];
 
       const splitSegment = splitSegments[splitSegmentIndex];
       const property = (splitSegment.features[0].properties as TrackProperty);
       const times = property.coordinateProperties.times as string[];
 
+      const segmentLimit = segmentLimits[segmentLimitIndex];
       if (segmentLimit.endTime < times[0]) {
         segmentLimitIndex++;
       } else if (times[times.length - 1] < segmentLimit.startTime) {

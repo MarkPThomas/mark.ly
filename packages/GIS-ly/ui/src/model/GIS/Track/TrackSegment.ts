@@ -1,11 +1,11 @@
-import {
-  ISegment as ISegmentGeometry,
-  Segment as SegmentGeometry
-} from '../../Geometry/Segment';
-
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
+import { Segment } from '../../Geometry/Segment';
 import { IDirection } from '../Direction';
-import { Point } from '../../GeoJSON';
-import { TrackPoint } from './TrackPoint';
+import { IPointProperties, PPoint } from '../Point/Point';
+
+import { RouteSegment, IRouteSegmentProperties, RouteSegmentData } from '../Route/RouteSegment';
+import { TimeStamp } from './TimeStamp';
+import { ITrackPointProperties, TrackPoint } from './TrackPoint';
 
 /**
  * Basic data of {@link Point}s and corresponding timestamps that lie within the segment.
@@ -13,20 +13,12 @@ import { TrackPoint } from './TrackPoint';
  * @export
  * @interface TrackSegmentData
  */
-export interface TrackSegmentData {
+export interface TrackSegmentData extends RouteSegmentData {
   /**
-   * All of the {@link Point}s contained within the {@link TrackSegment}.
-   *
-   * @type {Point[]}
-   * @memberof TrackSegments
-   */
-  segPoints: Point[];
-
-  /**
-   * All of the timestamps contained within the {@link TrackSegment}.
+   * All of the timestamps contained within the segment.
    *
    * @type {string[]}
-   * @memberof TrackSegments
+   * @memberof TrackSegmentData
    */
   segTimestamps: string[];
 };
@@ -57,18 +49,7 @@ export interface ITrackSegmentLimits {
   endTime: string | null
 };
 
-export interface ITrackSegment extends ISegmentGeometry {
-  /**
-   * Cardinal direction that the segment is pointing, directed from {@link TrackPoint} I towards {@link TrackPoint} J.
-   *
-   * @type {{
-   *     lat: string;
-   *     lng: string;
-   *   }}
-   * @memberof ITrackSegment
-   */
-  direction?: IDirection;
-
+export interface ITrackSegmentProperties extends IRouteSegmentProperties {
   /**
    * Duration in seconds.
    *
@@ -86,20 +67,20 @@ export interface ITrackSegment extends ISegmentGeometry {
   speed?: number;
 
   /**
-   * Height in meters.
-   *
-   * @type {number}
-   * @memberof ITrackSegment
-   */
-  height?: number;
-
-  /**
    * Rate of height change in m/s.
    *
    * @type {number}
    * @memberof ITrackSegment
    */
   heightRate?: number;
+}
+
+export interface ITrackSegment
+  extends
+  ITrackSegmentProperties,
+  ICloneable<TrackSegment>,
+  IEquatable<ITrackSegmentProperties> {
+
 }
 
 /**
@@ -110,35 +91,99 @@ export interface ITrackSegment extends ISegmentGeometry {
  * @extends {SegmentGeometry}
  * @implements {ISegment}
  */
-export class TrackSegment extends SegmentGeometry implements ITrackSegment {
-  direction?: IDirection;
-  duration?: number;
-  speed?: number;
-  height?: number;
-  heightRate?: number;
+export class TrackSegment
+  extends RouteSegment
+  implements ITrackSegment {
 
-  static calcPathRotationRad(segI: ITrackSegment, segJ: ITrackSegment) {
-    return (segJ?.angle === undefined || segJ.angle === null
-      || segI?.angle === undefined || segI.angle === null
-      || isNaN(segJ.angle - segI.angle)
-    )
-      ? null
-      : segJ.angle - segI.angle;
+  duration: number;
+  speed: number;
+  heightRate: number;
+
+  constructor(length?: number, angle?: number, direction?: IDirection, height?: number, duration?: number) {
+    super(length, angle, direction, height);
+
+    this.duration = duration;
+    if (duration) {
+      this.speed = TrackSegment.calcSpeedMPS(this.length, duration);
+      this.heightRate = TrackSegment.calcElevationSpeedMPS(this.height, duration);
+    }
   }
 
+  static fromTrackPoints(prevCoord: TrackPoint, nextCoord: TrackPoint) {
+    const trackSegment = new TrackSegment();
+
+    trackSegment.addSegmentProperties(prevCoord, nextCoord);
+
+    return trackSegment;
+  }
+
+  // === Common Interfaces ===
+  clone(): TrackSegment {
+    const segment = new TrackSegment(this.length, this.angle, this.direction, this.height);
+
+    if (this.duration) {
+      segment.duration = this.duration;
+    }
+    if (this.speed) {
+      segment.speed = this.speed;
+    }
+    if (this.heightRate) {
+      segment.heightRate = this.heightRate;
+    }
+
+    return segment;
+  }
+
+  equals(segment: ITrackSegmentProperties): boolean {
+    return super.equals(segment)
+      && ((!this.duration && !segment.duration) || segment.duration === this.duration)
+      && ((!this.speed && !segment.speed) || segment.speed === this.speed)
+      && ((!this.heightRate && !segment.heightRate) || segment.heightRate === this.heightRate);
+  }
+
+  // === Methods ===
+  addSegmentProperties(prevCoord: TrackPoint, nextCoord: TrackPoint) {
+    super.addSegmentProperties(prevCoord, nextCoord);
+
+    this.duration = TimeStamp.calcIntervalSec(prevCoord.timestamp, nextCoord.timestamp);
+    if (this.duration) {
+      this.speed = this.length / this.duration;
+    }
+
+    if (this.height !== undefined) {
+      this.heightRate = TrackSegment.calcElevationSpeedMPS(this.height, this.duration);
+    }
+  }
+
+  addElevationData(
+    prevCoord: IPointProperties,
+    nextCoord: IPointProperties
+  ) {
+    super.addElevationData(prevCoord, nextCoord);
+
+    if (this.height !== undefined) {
+      this.heightRate = TrackSegment.calcElevationSpeedMPS(this.height, this.duration);
+    }
+  }
+
+  // == Static Methods
+
   /**
-   * Returns the average speed of two segments in meters/second.
-   * If one segment does not have a numerical speed, the valid segment's speed is returned.
-   *
-   * @protected
-   * @param {TrackSegment} segI
-   * @param {TrackSegment} segJ
-   * @return {*}
-   * @memberof Track
-   */
-  static calcCoordAvgSpeedMPS(segI: ITrackSegment, segJ: ITrackSegment) {
-    const speedI = segI?.speed;
-    const speedJ = segJ?.speed;
+  * Returns the average speed of two segments in meters/second.
+  * If one segment does not have a numerical speed, the valid segment's speed is returned.
+  *
+  * @protected
+  * @param {TrackSegment} segI
+  * @param {TrackSegment} segJ
+  * @return {*}
+  * @memberof Track
+  */
+  static calcAvgSpeedMPS(
+    prevSegment: ITrackSegmentProperties,
+    nextSegment: ITrackSegmentProperties
+  ) {
+    const speedI = prevSegment?.speed;
+    const speedJ = nextSegment?.speed;
 
     return (speedI && speedJ)
       ? (speedI + speedJ) / 2
@@ -147,25 +192,53 @@ export class TrackSegment extends SegmentGeometry implements ITrackSegment {
           : undefined;
   }
 
-  static calcPathAngularSpeedRadPerSec(segI: ITrackSegment, segJ: ITrackSegment) {
-    const pathRotationRad = this.calcPathRotationRad(segI, segJ);
-    const pathDurationSec = (segI?.duration === undefined || segJ?.duration === undefined)
+  static calcAvgElevationSpeedMPS(
+    prevSegment: ITrackSegmentProperties,
+    nextSegment: ITrackSegmentProperties
+  ) {
+    const speedI = prevSegment?.heightRate;
+    const speedJ = nextSegment?.heightRate;
+
+    return ((speedI !== undefined && speedI !== null) && (speedJ !== undefined && speedJ !== null))
+      ? (speedI + speedJ) / 2
+      : speedI ? speedI
+        : speedJ ? speedJ
+          : undefined;
+  }
+
+  static calcAngularSpeedRadPerSec(
+    prevSegment: ITrackSegmentProperties,
+    nextSegment: ITrackSegmentProperties
+  ) {
+    const pathRotationRad = Segment.calcPathRotationRad(prevSegment, nextSegment);
+    const pathDurationSec = (prevSegment.duration === undefined || nextSegment.duration === undefined)
       ? null
-      : segI.duration + segJ.duration;
+      : prevSegment.duration + nextSegment.duration;
 
     return (pathRotationRad === null || pathDurationSec === null)
       ? null
       : pathRotationRad / pathDurationSec;
   }
 
-  static calcCoordAvgElevationSpeedMPS(segI: ITrackSegment, segJ: ITrackSegment) {
-    const speedI = segI?.heightRate;
-    const speedJ = segJ?.heightRate;
+  static calcSegmentSpeedMPS(prevCoord: TrackPoint, nextCoord: TrackPoint) {
+    if (!prevCoord.timestamp || !nextCoord.timestamp) {
+      return 0;
+    }
 
-    return (speedI !== undefined && speedJ !== undefined)
-      ? (speedI + speedJ) / 2
-      : speedI ? speedI
-        : speedJ ? speedJ
-          : undefined;
+    const duration = TimeStamp.calcIntervalSec(prevCoord.timestamp, nextCoord.timestamp);
+    if (duration === undefined) {
+      return undefined;
+    }
+
+    const length = TrackPoint.calcSegmentDistanceMeters(prevCoord, nextCoord);
+    return duration ? length / duration : Infinity;
+  }
+
+  static calcSpeedMPS(length: number, duration: number) {
+    return duration ? length / duration : Infinity;
+  }
+
+  static calcElevationSpeedMPS(elevationChange: number, duration: number) {
+    return duration ? elevationChange / duration : Infinity;
   }
 }

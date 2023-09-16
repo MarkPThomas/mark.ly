@@ -1,13 +1,11 @@
-import { ICoordinate } from '../../../../../server/api/elevationDataApi/model';
-import { ISegment, Segment } from '../../Geometry/Segment';
+import { CoordinateNode, EvaluatorArgs } from '../../Geometry/Polyline';
+import { GeoJsonManager } from '../GeoJsonManager';
 
 import { TrackPoint } from './TrackPoint';
-import { TrackSegment } from './TrackSegment';
-// import { Track } from './Track';
-import { EvaluatorArgs, PolylineTrack } from './PolylineTrack';
-import { GeoJsonManager } from '../GeoJsonManager';
 import { ITrackPropertyProperties } from './TrackProperty';
-import { CoordinateNode } from '../../Geometry/Polyline';
+import { TrackSegment } from './TrackSegment';
+
+import { PolylineTrack } from './PolylineTrack';
 
 describe('##PolylineTrack', () => {
   let lineStringTrack;
@@ -47,27 +45,6 @@ describe('##PolylineTrack', () => {
       ],
     }
   });
-
-  describe('Static Methods', () => {
-    describe('#calcSegmentMappedElevationSpeedMPS', () => {
-      it('should return infinity if the duration is 0', () => {
-        const elevationChange = 1000;
-        const duration = 0;
-
-        const elevationSpeed = PolylineTrack.calcSegmentMappedElevationSpeedMPS(elevationChange, duration);
-        expect(elevationSpeed).toEqual(Infinity);
-      });
-
-      it('should return the rate of elevation change', () => {
-        const elevationChange = 1000;
-        const duration = 2000;
-
-        const elevationSpeed = PolylineTrack.calcSegmentMappedElevationSpeedMPS(elevationChange, duration);
-        expect(elevationSpeed).toEqual(0.5);
-      });
-    });
-  });
-
 
   describe('Creation', () => {
     describe('#constructor', () => {
@@ -137,15 +114,16 @@ describe('##PolylineTrack', () => {
         polylineTrack = new PolylineTrack(trackPoints);
       });
 
-      describe('#clone', () => {
-        // Consider moving this down to Polyline?
-      });
-
       describe('#copyRange', () => {
         // Consider moving this down to Polyline?
       });
 
       describe('#copyRangeByTimestamp', () => {
+        beforeEach(() => {
+          // Add properties to have more to track for point/segment copying
+          polylineTrack.addProperties();
+        });
+
         it('should do nothing with an empty track', () => {
           const startTime = '2023-07-04T17:22:00Z';
           const endTime = trackPoints[2].timestamp;
@@ -153,7 +131,7 @@ describe('##PolylineTrack', () => {
           const emptyPolylineTrack = new PolylineTrack([]);
           const polylineTrackCopy = emptyPolylineTrack.copyRangeByTimestamp(startTime, endTime);
 
-          expect(polylineTrackCopy.size()).toEqual(0);
+          expect(polylineTrackCopy).toBeNull();
         });
 
         it('should copy from the beginning of the track if the start time does not exist in the track', () => {
@@ -162,11 +140,14 @@ describe('##PolylineTrack', () => {
 
           const polylineTrackCopy = polylineTrack.copyRangeByTimestamp(startTime, endTime);
 
-          expect(polylineTrackCopy.size()).toEqual(3);
-          expect(polylineTrackCopy.firstPoint.val).toEqual(trackPoints[0]);
-          expect(polylineTrackCopy.firstSegment.prevCoord.val).toEqual(trackPoints[0]);
-          expect(polylineTrackCopy.firstSegment.nextCoord.val).toEqual(trackPoints[1]);
-          expect(polylineTrackCopy.lastPoint.val).toEqual(trackPoints[2]);
+          expect(polylineTrackCopy.size()).toEqual({
+            vertices: 3,
+            segments: 2
+          });
+          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[1])).toBeTruthy();
+          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[2])).toBeTruthy();
         });
 
         it('should copy to the end of the track if the end time does not exist in the track', () => {
@@ -175,11 +156,14 @@ describe('##PolylineTrack', () => {
 
           const polylineTrackCopy = polylineTrack.copyRangeByTimestamp(startTime, endTime);
 
-          expect(polylineTrackCopy.size()).toEqual(4);
-          expect(polylineTrackCopy.firstPoint.val).toEqual(trackPoints[2]);
-          expect(polylineTrackCopy.firstSegment.prevCoord.val).toEqual(trackPoints[2]);
-          expect(polylineTrackCopy.firstSegment.nextCoord.val).toEqual(trackPoints[3]);
-          expect(polylineTrackCopy.lastPoint.val).toEqual(trackPoints[5]);
+          expect(polylineTrackCopy.size()).toEqual({
+            vertices: 4,
+            segments: 3
+          });
+          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[3])).toBeTruthy();
+          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[5])).toBeTruthy();
         });
 
         it('should copy the track from the start time to the end time provided', () => {
@@ -188,11 +172,14 @@ describe('##PolylineTrack', () => {
 
           const polylineTrackCopy = polylineTrack.copyRangeByTimestamp(startTime, endTime);
 
-          expect(polylineTrackCopy.size()).toEqual(3);
-          expect(polylineTrackCopy.firstPoint.val).toEqual(trackPoints[2]);
-          expect(polylineTrackCopy.firstSegment.prevCoord.val).toEqual(trackPoints[2]);
-          expect(polylineTrackCopy.firstSegment.nextCoord.val).toEqual(trackPoints[3]);
-          expect(polylineTrackCopy.lastPoint.val).toEqual(trackPoints[4]);
+          expect(polylineTrackCopy.size()).toEqual({
+            vertices: 3,
+            segments: 2
+          });
+          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[3])).toBeTruthy();
+          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[4])).toBeTruthy();
         });
 
         it('should copy track by value rather than by reference', () => {
@@ -201,11 +188,14 @@ describe('##PolylineTrack', () => {
 
           const polylineTrackCopy = polylineTrack.copyRangeByTimestamp(startTime, endTime);
 
-          expect(polylineTrackCopy.size()).toEqual(3);
-          expect(polylineTrackCopy.firstPoint.val).toEqual(trackPoints[0]);
-          expect(polylineTrackCopy.firstSegment.prevCoord.val).toEqual(trackPoints[0]);
-          expect(polylineTrackCopy.firstSegment.nextCoord.val).toEqual(trackPoints[1]);
-          expect(polylineTrackCopy.lastPoint.val).toEqual(trackPoints[2]);
+          expect(polylineTrackCopy.size()).toEqual({
+            vertices: 3,
+            segments: 2
+          });
+          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[1])).toBeTruthy();
+          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[2])).toBeTruthy();
 
           // Make original polyline different to ensure copy is by value and not by reference
           let node = polylineTrack.firstPoint;
@@ -225,12 +215,28 @@ describe('##PolylineTrack', () => {
           node.val = coord3New;
           node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
 
-          expect(polylineTrack.firstSegment.prevCoord.val).toEqual(coord1New);
-          expect(polylineTrack.firstSegment.nextCoord.val).toEqual(coord2New);
-          expect(polylineTrackCopy.firstPoint.val).not.toEqual(polylineTrack.firstPoint.val);
-          expect(polylineTrackCopy.lastPoint.val).not.toEqual(polylineTrack.lastPoint.val);
+          expect(polylineTrack.firstSegment.prevCoord.val.equals(coord1New)).toBeTruthy();
+          expect(polylineTrack.firstSegment.nextCoord.val.equals(coord2New)).toBeTruthy();
+          expect(polylineTrackCopy.firstPoint.val.equals(polylineTrack.firstPoint.val)).toBeFalsy();
+          expect(polylineTrackCopy.lastPoint.val.equals(polylineTrack.lastPoint.val)).toBeFalsy();
         });
       });
+    });
+  });
+
+  describe('Common Interfaces', () => {
+    describe('#clone', () => {
+      // TODO: Finish implementing, test
+    });
+
+    describe('#equals', () => {
+      //TODO: Implement? Test.
+    });
+  });
+
+  describe('Optimizations', () => {
+    describe('#generateTimestampMap', () => {
+
     });
   });
 
@@ -310,19 +316,19 @@ describe('##PolylineTrack', () => {
         const coords = polylineTrack.vertices();
 
         // Check middle node
-        expect(coords[1].speedAvg - 1.301).toBeLessThanOrEqual(0.001);
+        expect(coords[1].path.speed - 1.301).toBeLessThanOrEqual(0.001);
         expect(coords[1].path.rotation - 0.092).toBeLessThanOrEqual(0.001);
         expect(coords[1].path.rotationRate - 0.09121).toBeLessThanOrEqual(0.00001);
 
         // Check start node
-        expect(coords[0].speedAvg - 1.245).toBeLessThanOrEqual(0.001);
-        expect(coords[0].path?.rotation).toBeNull();
-        expect(coords[0].path?.rotationRate).toBeNull();
+        expect(coords[0].path.speed - 1.245).toBeLessThanOrEqual(0.001);
+        expect(coords[0].path.rotation).toBeNull();
+        expect(coords[0].path.rotationRate).toBeNull();
 
         // Check end node
-        expect(coords[coords.length - 1].speedAvg - 1.237).toBeLessThanOrEqual(0.001);
-        expect(coords[coords.length - 1].path?.rotation).toBeNull();
-        expect(coords[coords.length - 1].path?.rotationRate).toBeNull();
+        expect(coords[coords.length - 1].path.speed - 1.237).toBeLessThanOrEqual(0.001);
+        expect(coords[coords.length - 1].path.rotation).toBeNull();
+        expect(coords[coords.length - 1].path.rotationRate).toBeNull();
       });
     });
 
@@ -388,58 +394,42 @@ describe('##PolylineTrack', () => {
         expect(trackCoords.length).toEqual(6);
         expect(trackSegs.length).toEqual(5);
 
-        expect(trackCoords[0]).toHaveProperty('elevation');
         expect(trackCoords[0].elevation).toEqual(1000);
-        expect(trackCoords[0]).toHaveProperty('path');
         expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
         expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[0]).toHaveProperty('height');
         expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[0]).toHaveProperty('heightRate');
         expect(trackSegs[0].heightRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackCoords[1]).toHaveProperty('elevation');
         expect(trackCoords[1].elevation).toEqual(2000);
-        expect(trackCoords[1]).toHaveProperty('path');
         expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
         expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[1]).toHaveProperty('height');
         expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[1]).toHaveProperty('heightRate');
         expect(trackSegs[1].heightRate + 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackCoords[2]).toHaveProperty('elevation');
         expect(trackCoords[2].elevation).toEqual(1500);
-        expect(trackCoords[2]).toHaveProperty('path');
         expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[2]).not.toHaveProperty('height');
-        expect(trackSegs[2]).not.toHaveProperty('heightRate');
+        expect(trackSegs[2].height).toBeUndefined();
+        expect(trackSegs[2].heightRate).toBeUndefined();
 
-        expect(trackCoords[3]).not.toHaveProperty('elevation');
+        expect(trackCoords[3].elevation).toBeUndefined();
         expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[3]).not.toHaveProperty('height');
-        expect(trackSegs[3]).not.toHaveProperty('heightRate');
+        expect(trackSegs[3].height).toBeUndefined();
+        expect(trackSegs[3].heightRate).toBeUndefined();
 
-        expect(trackCoords[4]).toHaveProperty('elevation');
         expect(trackCoords[4].elevation).toEqual(5000);
-        expect(trackCoords[4]).toHaveProperty('path');
         expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[4]).toHaveProperty('height');
         expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[4]).toHaveProperty('heightRate');
         expect(trackSegs[4].heightRate + 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackCoords[5]).toHaveProperty('elevation');
         expect(trackCoords[5].elevation).toEqual(4000);
-        expect(trackCoords[5]).toHaveProperty('path');
         expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
       });
@@ -496,58 +486,42 @@ describe('##PolylineTrack', () => {
         expect(trackCoords.length).toEqual(6);
         expect(trackSegs.length).toEqual(5);
 
-        expect(trackCoords[0]).toHaveProperty('elevation');
         expect(trackCoords[0].elevation).toEqual(1000);
-        expect(trackCoords[0]).toHaveProperty('path');
         expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
         expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[0]).toHaveProperty('height');
         expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[0]).toHaveProperty('heightRate');
         expect(trackSegs[0].heightRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackCoords[1]).toHaveProperty('elevation');
         expect(trackCoords[1].elevation).toEqual(2000);
-        expect(trackCoords[1]).toHaveProperty('path');
         expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
         expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[1]).toHaveProperty('height');
         expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[1]).toHaveProperty('heightRate');
         expect(trackSegs[1].heightRate + 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackCoords[2]).toHaveProperty('elevation');
         expect(trackCoords[2].elevation).toEqual(1500);
-        expect(trackCoords[2]).toHaveProperty('path');
         expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[2]).not.toHaveProperty('height');
-        expect(trackSegs[2]).not.toHaveProperty('heightRate');
+        expect(trackSegs[2].height).toBeUndefined();
+        expect(trackSegs[2].heightRate).toBeUndefined();
 
-        expect(trackCoords[3]).not.toHaveProperty('elevation');
+        expect(trackCoords[3].elevation).toBeUndefined();
         expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[3]).not.toHaveProperty('height');
-        expect(trackSegs[3]).not.toHaveProperty('heightRate');
+        expect(trackSegs[3].height).toBeUndefined();
+        expect(trackSegs[3].heightRate).toBeUndefined();
 
-        expect(trackCoords[4]).toHaveProperty('elevation');
         expect(trackCoords[4].elevation).toEqual(5000);
-        expect(trackCoords[4]).toHaveProperty('path');
         expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackSegs[4]).toHaveProperty('height');
         expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[4]).toHaveProperty('heightRate');
         expect(trackSegs[4].heightRate + 50).toBeLessThanOrEqual(0.1);
 
-        expect(trackCoords[5]).toHaveProperty('elevation');
         expect(trackCoords[5].elevation).toEqual(4000);
-        expect(trackCoords[5]).toHaveProperty('path');
         expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
         expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
       });
@@ -560,7 +534,7 @@ describe('##PolylineTrack', () => {
     });
   });
 
-  describe('Manipulating Polyline', () => {
+  describe('Accessing Items', () => {
     let trackPoints: TrackPoint[];
     let polylineTrack: PolylineTrack;
 
@@ -611,6 +585,22 @@ describe('##PolylineTrack', () => {
       });
     });
 
+    describe('#getNodeByTimestamp', () => {
+      // TODO: Test
+    });
+  });
+
+  describe('Manipulating Polyline', () => {
+    let trackPoints: TrackPoint[];
+    let polylineTrack: PolylineTrack;
+
+    beforeEach(() => {
+      const positions = lineStringTrack.features[0].geometry.coordinates;
+      const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
+      trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
+      polylineTrack = new PolylineTrack(trackPoints);
+    });
+
     describe('#removeNodes', () => {
       it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
         const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(-1, -2, undefined, '-1'));
@@ -651,6 +641,14 @@ describe('##PolylineTrack', () => {
         expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
         expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
       });
+    });
+
+    describe('#insertNodesBefore', () => {
+      // TODO: Test
+    });
+
+    describe('#insertNodesAfter', () => {
+      // TODO: Test
     });
 
     describe('#replaceNodesBetween', () => {
@@ -835,6 +833,10 @@ describe('##PolylineTrack', () => {
         expect(node3.next).toEqual(initialTail);
         expect(initialTail.prev).toEqual(node3);
       });
+    });
+
+    describe('#replaceNodesFromTo', () => {
+      // TODO: Test
     });
 
     // describe('#splitAtNode', () => {

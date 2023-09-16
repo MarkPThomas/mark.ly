@@ -1,15 +1,12 @@
-import { LatLng } from "leaflet";
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import { Point, Position } from "../../GeoJSON";
 
 import { IDirection } from "../Direction";
 import { TimeStamp } from "./TimeStamp";
-
-// export interface PositionIndex {
-//   coordIndex: number;
-//   segmentIndex?: number;
-//   polygonIndex?: number;
-// };
+import { ITrackPathProps, TrackPathProps } from "./TrackPathProps";
+import { IRoutePointProperties, RoutePoint } from "../Route/RoutePoint";
+import { ITrackSegmentProperties } from './TrackSegment';
 
 interface PositionProperties {
   position: Position;
@@ -32,29 +29,8 @@ export interface LatLngGPS {
   timestamp?: string;
 }
 
-export interface ITrackPoint {
-  lat: number;
-  lng: number;
-  alt?: number | undefined;
-
-  timestamp?: string;
-
-  /**
-   * Elevation [meters] obtained from an external source for the location, such as DEM/LIDAR data.
-   *
-   * @type {number}
-   * @memberof Coordinate
-   */
-  elevation?: number;
-
-  /**
-   * Average speed [m/s] at the node based on the speed of the segments before and after.
-   * If one segment is missing or has no speed, this is the speed of the other segment.
-   *
-   * @type {number}
-   * @memberof Coordinate
-   */
-  speedAvg?: number;
+export interface ITrackPointProperties extends IRoutePointProperties {
+  timestamp: string;
 
   /**
    * Properties associated with the coordinate, but derived from context within a path.
@@ -65,34 +41,21 @@ export interface ITrackPoint {
    *   }}
    * @memberof Coordinate
    */
-  path?: {
-    rotation: number;
-    rotationRate: number;
-    ascentRate: number;
-    descentRate: number;
-  }
+  path: ITrackPathProps;
+}
 
-  // /**
-  //  * Index location(s) of the lat/lng within a possible nesting of polygons->segments->coordinates found in a GeoJSON object.
-  //  *
-  //  * @type {PositionIndex}
-  //  * @memberof Coordinate
-  //  */
-  // indices?: PositionIndex;
+export interface ITrackPoint
+  extends
+  ITrackPointProperties,
+  ICloneable<TrackPoint>,
+  IEquatable<ITrackPointProperties> {
 };
 
 export type TrackPoints = TrackPoint | TrackPoint[] | TrackPoint[][] | TrackPoint[][][];
 
 export class TrackPoint
-  extends LatLng
+  extends RoutePoint
   implements ITrackPoint {
-
-  constructor(lat: number, lng: number, altitude?: number, timestamp?: string) {
-    super(lat, lng, altitude);
-    if (timestamp) {
-      this._timestamp = new TimeStamp(timestamp);
-    }
-  }
 
   protected _timestamp: TimeStamp;
   get timestamp(): string {
@@ -103,23 +66,6 @@ export class TrackPoint
   }
 
   /**
-   * Elevation [meters] obtained from an external source for the location, such as DEM/LIDAR data.
-   *
-   * @type {number}
-   * @memberof Coordinate
-   */
-  elevation?: number;
-
-  /**
-   * Average speed [m/s] at the node based on the speed of the segments before and after.
-   * If one segment is missing or has no speed, this is the speed of the other segment.
-   *
-   * @type {number}
-   * @memberof Coordinate
-   */
-  speedAvg?: number;
-
-  /**
    * Properties associated with the coordinate, but derived from context within a path.
    *
    * @type {{
@@ -128,123 +74,59 @@ export class TrackPoint
    *   }}
    * @memberof Coordinate
    */
-  path?: {
-    rotation: number;
-    rotationRate: number;
-    ascentRate: number;
-    descentRate: number;
+  _path: ITrackPathProps;
+  get path(): ITrackPathProps {
+    if (!this._path) {
+      this._path = new TrackPathProps();
+    }
+    return this._path;
   }
 
-  /**
-   * Index location(s) of the lat/lng within a possible nesting of polygons->segments->coordinates found in a GeoJSON object.
-   *
-   * @type {PositionIndex}
-   * @memberof Coordinate
-   */
-  // indices?: PositionIndex;
-
-  toPosition(): Position {
-    return this.elevation
-      ? [this.lng, this.lat, this.elevation]
-      : this.alt
-        ? [this.lng, this.lat, this.alt]
-        : [this.lng, this.lat];
+  constructor(lat: number, lng: number, altitude?: number, timestamp?: string) {
+    super(lat, lng, altitude);
+    if (timestamp) {
+      this._timestamp = new TimeStamp(timestamp);
+    }
   }
 
-  toPoint(): Point {
-    return this.elevation
-      ? Point.fromLngLat(this.lng, this.lat, this.elevation)
-      : this.alt
-        ? Point.fromLngLat(this.lng, this.lat, this.alt)
-        : Point.fromLngLat(this.lng, this.lat);
+  protected initialize() {
+    this._path = new TrackPathProps();
   }
 
 
   // == Factory Methods
-  static fromPosition({ position, timestamp }: PositionProperties) {
-    const coordinate = new TrackPoint(position[1], position[0], position[2]);
+  static fromPositionInTime({ position, timestamp }: PositionProperties): TrackPoint {
+    const trackPoint = new TrackPoint(position[1], position[0], position[2], timestamp);
+    trackPoint.initialize();
+    return trackPoint;
+  }
 
-    if (timestamp) {
-      coordinate._timestamp = new TimeStamp(timestamp);
+  static fromPointInTime({ point, timestamp }: PointProperties): TrackPoint {
+    const trackPoint = new TrackPoint(point.latitude, point.longitude, point.altitude, timestamp);
+    trackPoint.initialize();
+    return trackPoint;
+  }
+
+  // === Common Interfaces ===
+  clone(): TrackPoint {
+    const trackPoint = new TrackPoint(this.lat, this.lng, this.alt, this.timestamp);
+
+    if (this.elevation) {
+      trackPoint.elevation = this.elevation;
     }
 
-    return coordinate;
-  }
-
-  static fromPoint({ point, timestamp }: PointProperties) {
-    const coordinate = new TrackPoint(point.latitude, point.longitude, point.altitude);
-
-    if (timestamp) {
-      coordinate._timestamp = new TimeStamp(timestamp);
+    if (this._path) {
+      trackPoint._path = this._path.clone();
     }
 
-    return coordinate;
+    return trackPoint;
   }
 
-  // == Calc Methods
-  /**
- * Returns the distance between two lat/long points in meters.
- *
- * @protected
- * @param {TrackPoint} ptI
- * @param {TrackPoint} ptJ
- * @return {*}
- * @memberof Track
- */
-  static calcSegmentDistanceMeters(ptI: TrackPoint, ptJ: TrackPoint) {
-    return ptI.distanceTo(ptJ);
-  }
+  equals(trackPoint: ITrackPointProperties): boolean {
+    return super.equals(trackPoint)
+      && ((!this.timestamp && !trackPoint.timestamp) || trackPoint.timestamp === this.timestamp)
+      && (this._path && this._path.equals(trackPoint.path));
 
-  static calcSegmentAngleRad(ptI: TrackPoint, ptJ: TrackPoint) {
-    const latLength = ptI.distanceTo(new TrackPoint(ptJ.lat, ptI.lng)) * ((ptJ.lat > ptI.lat) ? 1 : -1);
-    const lngLength = ptI.distanceTo(new TrackPoint(ptI.lat, ptJ.lng)) * ((ptJ.lng > ptI.lng) ? 1 : -1);
-
-
-    return lngLength
-      ? Math.atan2(latLength, lngLength)
-      : latLength > 0 ? Math.PI / 2
-        : latLength < 0 ? 3 * Math.PI / 2
-          : null;
-  }
-
-  static calcSegmentDirection(ptI: TrackPoint, ptJ: TrackPoint): IDirection {
-    const deltaLat = ptJ.lat - ptI.lat;
-    const lat = deltaLat > 0
-      ? 'N'
-      : deltaLat < 0
-        ? 'S'
-        : null;
-
-    const deltaLng = ptJ.lng - ptI.lng;
-    const lng = deltaLng > 0
-      ? 'E'
-      : deltaLng < 0
-        ? 'W'
-        : null;
-    return { lat, lng };
-  }
-
-  static calcSegmentMappedElevationChange(ptI: TrackPoint, ptJ: TrackPoint) {
-    return ptJ.elevation && ptI.elevation ? ptJ.elevation - ptI.elevation : undefined;
-  }
-
-  /**
- * Returns the speed of a straight-line segment joining two points in meters/second.
- *
- * @protected
- * @param {TrackPoint} ptI
- * @param {TrackPoint} ptJ
- * @return {*}
- * @memberof Track
- */
-  static calcSegmentSpeedMPS(ptI: TrackPoint, ptJ: TrackPoint) {
-    const distanceMeter = TrackPoint.calcSegmentDistanceMeters(ptI, ptJ);
-    const timeSec = TimeStamp.calcIntervalSec(ptI.timestamp, ptJ.timestamp);
-
-    return timeSec === 0
-      ? 0 :
-      timeSec ? Math.abs(distanceMeter / timeSec)
-        : undefined;
   }
 }
 
