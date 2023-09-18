@@ -9,7 +9,7 @@ import {
   SegmentNode
 } from '../../Geometry/Polyline';
 
-import { IClippable } from './IClippable';
+import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
 
@@ -563,38 +563,73 @@ export class PolylineTrack
   //    Overall result is comparable once state is saved, but for active modification,
   //       these methods might be better done on the PolylineTrack proxy until state is saved.
 
+  trimBeforeTime(timestamp: string): void {
+    // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
+    // const nodeIncluded = nodeExcluded.prev;
 
-  clipBeforeTime(timestamp: string) {
-    const nodeExcluded = this._pointsByTimestamp.get(timestamp);
-    const nodeIncluded = nodeExcluded.prev;
-
-    this.clipBetweenTimes(nodeExcluded.val.timestamp, nodeIncluded.val.timestamp)[1];
+    this.trimByTimes(timestamp, null);
+    // this.trimByTimes2(nodeExcluded.val.timestamp, nodeIncluded.val.timestamp)[1];
   }
 
-  clipAfterTime(timestamp: string): void {
-    const nodeExcluded = this._pointsByTimestamp.get(timestamp);
-    const nodeIncluded = nodeExcluded.prev;
+  trimAfterTime(timestamp: string): void {
+    // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
+    // const nodeIncluded = nodeExcluded.prev;
 
-    this.clipBetweenTimes(nodeIncluded.val.timestamp, nodeExcluded.val.timestamp)[0];
+    this.trimByTimes(null, timestamp);
+    // this.trimByTimes2(nodeIncluded.val.timestamp, nodeExcluded.val.timestamp)[0];
   }
 
-  clipBetweenTimes(timestampStop: string, timestampResume: string) {
-    // Get Key Vertices & Segments
-    const trackIEndNode = this._pointsByTimestamp.get(timestampStop);
-    let trackJStartNode = this._pointsByTimestamp.get(timestampResume);
 
-    if (trackIEndNode === trackJStartNode) {
-      trackJStartNode = trackJStartNode.clone() as CoordNode;
-      trackJStartNode.next = trackIEndNode.next;
-      trackJStartNode.nextSeg = trackIEndNode.nextSeg;
+  trimByTimes(timestampStart: string, timestampEnd: string): void {
+    if (timestampStart === timestampEnd) {
+      return;
     }
 
-    // Remove any joining segments
-    this.splitAdjacentNodes(trackIEndNode, trackIEndNode.next as CoordNode, trackIEndNode.nextSeg);
-    this.splitAdjacentNodes(trackJStartNode.prev as CoordNode, trackJStartNode, trackJStartNode.prevSeg);
+    const vertexStart = this._pointsByTimestamp.get(timestampStart);
+    const vertexEnd = this._pointsByTimestamp.get(timestampEnd);
 
-    // TODO: Here is where derived properties can be updated for start/end nodes of each track
+    this._vertices.trim(vertexStart, vertexEnd);
+    this._segments.trim(vertexStart.nextSeg, vertexEnd.prevSeg);
+
+    if (vertexStart) {
+      vertexStart.prevSeg.nextCoord = null;
+      vertexStart.prevSeg = null;
+
+      vertexStart.val.path.addPropertiesFromPath(null, vertexStart.nextSeg.val);
+
+      const segmentStart = vertexStart.nextSeg.val;
+      segmentStart.addElevationData(vertexStart.val, vertexStart.next.val);
+    }
+
+    if (vertexEnd) {
+      vertexEnd.nextSeg.prevCoord = null;
+      vertexEnd.nextSeg = null;
+      vertexEnd.val.path.addPropertiesFromPath(vertexEnd.prevSeg.val, null);
+
+      vertexEnd.val.path.addPropertiesFromPath(vertexEnd.nextSeg.val, null);
+
+      const segmentEnd = vertexEnd.prevSeg.val;
+      segmentEnd.addElevationData(vertexEnd.prev.val, vertexEnd.val);
+    }
   }
+
+  // trimByTimes2(timestampStop: string, timestampResume: string): void {
+  //   // Get Key Vertices & Segments
+  //   const trackIEndNode = this._pointsByTimestamp.get(timestampStop);
+  //   let trackJStartNode = this._pointsByTimestamp.get(timestampResume);
+
+  //   if (trackIEndNode === trackJStartNode) {
+  //     trackJStartNode = trackJStartNode.clone() as CoordNode;
+  //     trackJStartNode.next = trackIEndNode.next;
+  //     trackJStartNode.nextSeg = trackIEndNode.nextSeg;
+  //   }
+
+  //   // Remove any joining segments
+  //   this.splitAdjacentNodes(trackIEndNode, trackIEndNode.next as CoordNode, trackIEndNode.nextSeg);
+  //   this.splitAdjacentNodes(trackJStartNode.prev as CoordNode, trackJStartNode, trackJStartNode.prevSeg);
+
+  //   // TODO: Here is where derived properties can be updated for start/end nodes of each track
+  // }
 
   // protected splitAdjacentNodes(nodeI: CoordNode, nodeJ: CoordNode, segIJ: SegNode) {
   //   if (nodeI) {

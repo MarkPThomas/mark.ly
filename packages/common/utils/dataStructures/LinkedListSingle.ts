@@ -4,7 +4,7 @@ import {
   LinkedList as LinkedListBase,
   Node as NodeSingle
 } from './LinkedList';
-import { LinkedListDouble, ILinkedListDouble, NodeDouble } from './LinkedListDouble';
+import { LinkedListDouble } from './LinkedListDouble';
 
 export interface ILinkedListSingle<N extends NodeSingle<V>, V> extends ILinkedList<N, V> {
   toLinkedListDouble(): LinkedListDouble<V>;
@@ -17,7 +17,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
   // === Single Item Operations ===
   prepend(valueOrNode: V | N) {
-    const node = this.getNode(valueOrNode);
+    const node = this.getAsNode(valueOrNode);
     node.next = this._head;
     this._head = node as N;
 
@@ -25,11 +25,11 @@ export class LinkedList<N extends NodeSingle<V>, V>
       this._tail = node as N;
     }
 
-    this._length++;
+    this._lengthDirty = true;
   }
 
   append(valueOrNode: V | N) {
-    const node = this.getNode(valueOrNode);
+    const node = this.getAsNode(valueOrNode);
     let currNode = this._head;
     while (currNode && currNode.next) {
       currNode = currNode.next as N;
@@ -40,15 +40,16 @@ export class LinkedList<N extends NodeSingle<V>, V>
       this._head = node as N;
     }
     this._tail = node as N;
-    this._length++;
+
+    this._lengthDirty = true;
   }
 
   move(
     valueOrNode: V | N,
     spaces: number,
-    cb: ((a: V, b: V) => boolean) | undefined | null = undefined
+    cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    if (!spaces || this._length < 2) {
+    if (!spaces || this.sizeUnderTwo()) {
       return false;
     }
 
@@ -57,41 +58,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
     let count = 1;
     while (currNode) {
       if (this.areEqual(valueOrNode, currNode, cb)) {
-        const nodeMove = currNode;
-        if ((this._head === nodeMove && spaces < 0
-          || nodeMove.next === null && spaces > 0)) {
-          return true;
-        }
-        if (prevNode) {
-          prevNode.next = currNode.next;
-        } else if (currNode.next) {
-          this._head = currNode.next as N;
-        }
-
-        if (spaces > 0) {
-          prevNode = currNode;
-          currNode = currNode.next as N;
-        } else {
-          prevNode = null;
-          currNode = this._head;
-          spaces = Math.max(0, count + spaces - 1);
-        }
-
-        while (currNode && spaces) {
-          prevNode = currNode;
-          currNode = currNode.next as N;
-          spaces--;
-        }
-
-        if (prevNode) {
-          prevNode.next = nodeMove;
-        }
-        nodeMove.next = currNode;
-        if (this._head === currNode) {
-          this._head = nodeMove;
-        }
-
-        return true;
+        return this.moveNode(currNode, prevNode, spaces, count);
       }
       prevNode = currNode;
       currNode = currNode.next as N;
@@ -101,6 +68,50 @@ export class LinkedList<N extends NodeSingle<V>, V>
     return false;
   }
 
+  protected moveNode(
+    currNode: N,
+    prevNode: N | null,
+    spaces: number,
+    currentCount: number
+  ) {
+    const nodeMove = currNode;
+    if ((this._head === nodeMove && spaces < 0
+      || nodeMove.next === null && spaces > 0)) {
+      return false;
+    }
+
+    if (prevNode) {
+      prevNode.next = currNode.next;
+    } else if (currNode.next) {
+      this._head = currNode.next as N;
+    }
+
+    if (spaces > 0) {
+      prevNode = currNode;
+      currNode = currNode.next as N;
+    } else {
+      prevNode = null;
+      currNode = this._head as N;
+      spaces = Math.max(0, currentCount + spaces - 1);
+    }
+
+    while (currNode && spaces) {
+      prevNode = currNode;
+      currNode = currNode.next as N;
+      spaces--;
+    }
+
+    if (prevNode) {
+      prevNode.next = nodeMove;
+    }
+    nodeMove.next = currNode;
+    if (this._head === currNode) {
+      this._head = nodeMove;
+    }
+
+    return true;
+  }
+
   protected insertBeforeNode(refNode: N, insertNode: N): void {
     const priorRefNode = this.getPriorNode(refNode, null);
 
@@ -108,7 +119,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
       priorRefNode.next = insertNode;
       insertNode.next = refNode;
 
-      this._length++;
+      this._lengthDirty = true;
     } else {
       this.prepend(insertNode);
     }
@@ -122,7 +133,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
       refNode.next = insertNode;
 
-      this._length++;
+      this._lengthDirty = true;
     } else {
       this.append(insertNode);
     }
@@ -154,9 +165,24 @@ export class LinkedList<N extends NodeSingle<V>, V>
       }
       removedHead.next = null;
       this._head = nextHead as N;
-      this._length--;
+
+      this._lengthDirty = true;
     }
     return removedHead as N;
+  }
+
+  trimHead(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): N | null {
+    let originalHead: N | null = null;
+    const node = this.getExistingNode(valueOrNode, cb)?.node;
+    if (node) {
+      originalHead = this._head;
+      this._head = node;
+      return originalHead;
+    }
+    return originalHead;
   }
 
 
@@ -170,7 +196,9 @@ export class LinkedList<N extends NodeSingle<V>, V>
     if (!node.next) {
       this._head = null;
       this._tail = null;
-      this._length--;
+
+      this._lengthDirty = true;
+
       return node;
     }
 
@@ -183,8 +211,26 @@ export class LinkedList<N extends NodeSingle<V>, V>
       prevNode.next = null;
       this._tail = prevNode;
     }
-    this._length--;
+
+    this._lengthDirty = true;
     return node;
+  }
+
+  trimTail(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): N | null {
+    let originalTail: N | null = null;
+    const node = this.getExistingNode(valueOrNode, cb)?.node;
+    if (node) {
+      originalTail = this._tail;
+      this._tail = node;
+
+      node.next = null;
+
+      return originalTail;
+    }
+    return originalTail;
   }
 
 
@@ -196,7 +242,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
       items.tail.next = this._head;
       this._head = items.head;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     }
   }
 
@@ -207,7 +253,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
       this._tail.next = items.head;
       this._tail = items.tail;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     }
   }
 
@@ -218,7 +264,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
       priorRefNode.next = items.head;
       items.tail.next = refNode;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     } else {
       this.prependList(items);
     }
@@ -229,7 +275,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
       items.tail.next = refNode.next;
       refNode.next = items.head;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     } else {
       this.appendList(items);
     }
@@ -237,16 +283,18 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
   // === Any Operations ===
   protected removeFirstOrAny(
-    valueOrNode: V | N,
+    value: V,
     cb: EqualityCallbackOptions<V> = undefined,
     firstOnly: boolean = true
-  ): N[] {
+  ): { nodes: N[], indices: number[] } {
     const removedNodes: N[] = [];
+    const indices: number[] = [];
 
+    let count = 0;
     let currNode = this._head;
     let prevNode = null;
     while (currNode) {
-      if (this.areEqual(valueOrNode, currNode, cb)) {
+      if (this.areEqual(value, currNode, cb)) {
         const removeNode = currNode;
         currNode = currNode.next as N;
 
@@ -263,19 +311,21 @@ export class LinkedList<N extends NodeSingle<V>, V>
         }
         removeNode.next = null;
 
-        this._length--;
+        this._lengthDirty = true;
 
         removedNodes.push(removeNode);
+        indices.push(count);
         if (firstOnly) {
-          return removedNodes;
+          return { nodes: removedNodes, indices };
         }
       } else {
         prevNode = currNode;
         currNode = currNode.next as N;
       }
+      count++;
     }
 
-    return removedNodes;
+    return { nodes: removedNodes, indices };
   }
 
 
@@ -325,7 +375,7 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
 
   // === Commonly Used Protected ===
-  protected getNode(valueOrNode: V | N): N {
+  protected getAsNode(valueOrNode: V | N): N {
     return this.isNodeSingle(valueOrNode)
       ? valueOrNode as N
       : new NodeSingle(valueOrNode as V) as N;
@@ -333,6 +383,29 @@ export class LinkedList<N extends NodeSingle<V>, V>
 
   protected isNodeSingle(valueOrNode: V | N): boolean {
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeSingle);
+  }
+
+  static fromHead<N extends NodeSingle<V>, V>(head: N, tail?: N): LinkedList<N, V> {
+    const linkedList = new LinkedList<N, V>();
+    linkedList._head = head;
+
+    if (tail) {
+      linkedList._tail = tail;
+      linkedList._lengthDirty = true;
+    } else {
+      let count = head ? 1 : 0;
+
+      let currNode = head;
+      while (currNode && currNode.next) {
+        count++;
+        currNode = currNode.next as N;
+      }
+
+      linkedList._tail = currNode;
+      linkedList._length = count;
+    }
+
+    return linkedList;
   }
 }
 

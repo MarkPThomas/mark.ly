@@ -656,7 +656,7 @@ describe('##GeoJsonTrack', () => {
         it('should clip track to segment before the timestamp found in a GeoJSON object', () => {
           const timestamp = '3';
 
-          const clippedTrack = geoJsonTrack.clipBeforeTime(timestamp)
+          const clippedTrack = geoJsonTrack.trimBeforeTime(timestamp)
 
           expect((clippedTrack.features[0].geometry as LineString).toPositions()).toEqual(
             [
@@ -671,7 +671,7 @@ describe('##GeoJsonTrack', () => {
         it('should do nothing to the segment if the timestamp is not found', () => {
           const timestamp = '3.1';
 
-          const segments = geoJsonTrack.clipBeforeTime(timestamp)
+          const segments = geoJsonTrack.trimBeforeTime(timestamp)
 
           expect(segments).toEqual(featureCollection);
         });
@@ -681,7 +681,7 @@ describe('##GeoJsonTrack', () => {
         it('should clip track to segment before the timestamp found in a GeoJSON object', () => {
           const timestamp = '3';
 
-          const clippedTrack = geoJsonTrack.clipAfterTime(timestamp)
+          const clippedTrack = geoJsonTrack.trimAfterTime(timestamp)
 
           expect((clippedTrack.features[0].geometry as LineString).toPositions()).toEqual(
             [
@@ -697,7 +697,7 @@ describe('##GeoJsonTrack', () => {
         it('should do nothing to the segment if the timestamp is not found', () => {
           const timestamp = '3.1';
 
-          const segments = geoJsonTrack.clipAfterTime(timestamp)
+          const segments = geoJsonTrack.trimAfterTime(timestamp)
 
           expect(segments).toEqual(featureCollection);
         });
@@ -708,7 +708,7 @@ describe('##GeoJsonTrack', () => {
           const timestampStart = '2';
           const timestampEnd = '4';
 
-          const clippedTrack = geoJsonTrack.clipBetweenTimes(timestampStart, timestampEnd)
+          const clippedTrack = geoJsonTrack.trimByTimes(timestampStart, timestampEnd)
 
           expect((clippedTrack.features[0].geometry as LineString).toPositions()).toEqual(
             [
@@ -724,7 +724,7 @@ describe('##GeoJsonTrack', () => {
           const timestampStart = '2.1';
           const timestampEnd = '4';
 
-          const segments = geoJsonTrack.clipBetweenTimes(timestampStart, timestampEnd)
+          const segments = geoJsonTrack.trimByTimes(timestampStart, timestampEnd)
 
           expect(segments).toEqual(featureCollection);
         });
@@ -733,7 +733,7 @@ describe('##GeoJsonTrack', () => {
           const timestampStart = '3';
           const timestampEnd = '4.1';
 
-          const segments = geoJsonTrack.clipBetweenTimes(timestampStart, timestampEnd)
+          const segments = geoJsonTrack.trimByTimes(timestampStart, timestampEnd)
 
           expect(segments).toEqual(featureCollection);
         });
