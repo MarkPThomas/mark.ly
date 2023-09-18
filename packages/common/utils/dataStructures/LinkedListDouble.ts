@@ -56,16 +56,6 @@ export class LinkedList<N extends NodeDouble<V>, V>
       return this.moveNode(node, spaces);
     } else {
       return false;
-      // // Find matching node
-      // let currNode = this._head as N;
-      // let prevNode = null;
-      // while (currNode) {
-      //   if (this.areEqual(valueOrNode, currNode, cb)) {
-      //     return this.moveNode(currNode, prevNode, spaces);
-      //   }
-      //   prevNode = currNode;
-      //   currNode = currNode.next as N;
-      // }
     }
   }
 

@@ -1116,8 +1116,8 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
         length: nodeSeparation
       };
     } else {
-      const startNodeNext = nodesAndCounts.startNode ? nodesAndCounts.startNode.next as N : null; //this._head;
-      const endNodePrev = nodesAndCounts.endNode ? nodesAndCounts.endNodePrev : null; // ?? this._tail;
+      const startNodeNext = nodesAndCounts.startNode ? nodesAndCounts.startNode.next as N : null;
+      const endNodePrev = nodesAndCounts.endNode ? nodesAndCounts.endNodePrev : null;
       return {
         startNode: startNodeNext,
         endNode: endNodePrev,
@@ -1180,7 +1180,6 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     if (this.isNullOrUndefined(endValue)) {
       endNode = null;
       endNodeCount = this.size();
-      // endNodeCount = this._length;
     }
 
     return {
