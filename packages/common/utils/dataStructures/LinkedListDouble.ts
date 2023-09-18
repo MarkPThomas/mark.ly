@@ -1,6 +1,10 @@
-import { EqualityCallback, EqualityCallbackOptions, ILinkedList, LinkedList as LinkedListBase } from './LinkedList';
+import {
+  EqualityCallbackOptions,
+  ILinkedList,
+  LinkedList as LinkedListBase
+} from './LinkedList';
 import { NodeDouble } from './LinkedListNodes';
-import { ILinkedListSingle, LinkedListSingle } from './LinkedListSingle';
+import { LinkedListSingle } from './LinkedListSingle';
 
 export interface ILinkedListDouble<N extends NodeDouble<V>, V> extends ILinkedList<N, V> {
   toLinkedListSingle(): LinkedListSingle<V>;
@@ -12,7 +16,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
   // === Single Item Operations ===
   prepend(valueOrNode: V | N) {
-    const node = this.getNode(valueOrNode);
+    const node = this.getAsNode(valueOrNode);
 
     node.next = this._head;
     if (this._head) {
@@ -21,11 +25,11 @@ export class LinkedList<N extends NodeDouble<V>, V>
       this._tail = node as N;
     }
     this._head = node as N;
-    this._length++;
+    this._lengthDirty = true;
   }
 
   append(valueOrNode: V | N) {
-    const node = this.getNode(valueOrNode);
+    const node = this.getAsNode(valueOrNode);
 
     node.prev = this._tail;
     if (this._tail) {
@@ -34,7 +38,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
       this._head = node as N;
     }
     this._tail = node as N;
-    this._length++;
+    this._lengthDirty = true;
   }
 
   move(
@@ -42,85 +46,100 @@ export class LinkedList<N extends NodeDouble<V>, V>
     spaces: number,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    if (!spaces || this._length < 2) {
+    if (!spaces || this.sizeUnderTwo()) {
       return false;
     }
 
-    // Find matching node
-    let currNode = this._head as N;
-    let prevNode = null;
-    while (currNode) {
-      if (this.areEqual(valueOrNode, currNode, cb)) {
-        if ((currNode === this._head && spaces < 0)
-          || (currNode === this._tail && spaces > 0)) {
-          // Node cannot be moved, abort before altering list
-          return false;
-        }
+    const node = this.getExistingNode(valueOrNode, cb)?.node;
 
-        // Save matched node
-        const nodeMove = currNode;
+    if (node) {
+      return this.moveNode(node, spaces);
+    } else {
+      return false;
+      // // Find matching node
+      // let currNode = this._head as N;
+      // let prevNode = null;
+      // while (currNode) {
+      //   if (this.areEqual(valueOrNode, currNode, cb)) {
+      //     return this.moveNode(currNode, prevNode, spaces);
+      //   }
+      //   prevNode = currNode;
+      //   currNode = currNode.next as N;
+      // }
+    }
+  }
 
-        // Attach neighboring nodes around matched node
-        if (!prevNode) {
-          if (currNode.next) {
-            // head of multi-node
-            this._head = currNode.next as N;
-            this._head.prev = null;
-          }
-        } else {
-          prevNode.next = currNode.next;
-          if (currNode.next) {
-            // mid of multi-node
-            (currNode.next as N).prev = prevNode as N;
-          } else {
-            // tail of multi-node
-            this._tail = prevNode;
-            this._tail.next = null;
-          }
-        }
-
-        if (spaces > 0 && currNode.next) {
-          // Moving node forward
-          currNode = currNode.next as N
-          while (currNode && spaces) {
-            prevNode = currNode;
-            currNode = currNode.next as N;
-            spaces--;
-          }
-        } else if (spaces < 0 && prevNode) {
-          // Moving node backward
-          currNode = currNode.next as N;
-          while (prevNode && spaces) {
-            currNode = prevNode as N;
-            prevNode = prevNode.prev;
-            spaces++;
-          }
-        }
-
-        // Insert matched node at new position
-        nodeMove.prev = prevNode;
-        if (prevNode) {
-          prevNode.next = nodeMove;
-        } else {
-          // Inserted at head
-          this._head = nodeMove;
-        }
-
-        nodeMove.next = currNode;
-        if (currNode) {
-          currNode.prev = nodeMove;
-        } else {
-          // Inserted at tail
-          this._tail = nodeMove;
-        }
-
-        return true;
-      }
-      prevNode = currNode;
-      currNode = currNode.next as N;
+  protected moveNode(
+    currNode: N,
+    spaces: number
+  ) {
+    if ((currNode === this._head && spaces < 0)
+      || (currNode === this._tail && spaces > 0)
+      || (currNode.next === null && currNode.prev === null)) {
+      // Node cannot be moved, abort before altering list
+      return false;
     }
 
-    return false;
+    let prevNode = currNode.prev;
+
+    // Save matched node
+    const nodeMove = currNode;
+
+    // Attach neighboring nodes around matched node
+    if (!prevNode) {
+      if (currNode.next) {
+        // head of multi-node
+        this._head = currNode.next as N;
+        this._head.prev = null;
+      }
+    } else {
+      prevNode.next = currNode.next;
+      if (currNode.next) {
+        // mid of multi-node
+        (currNode.next as N).prev = prevNode as N;
+      } else {
+        // tail of multi-node
+        this._tail = prevNode as N;
+        this._tail.next = null;
+      }
+    }
+
+    if (spaces > 0 && currNode.next) {
+      // Moving node forward
+      currNode = currNode.next as N
+      while (currNode && spaces) {
+        prevNode = currNode;
+        currNode = currNode.next as N;
+        spaces--;
+      }
+    } else if (spaces < 0 && prevNode) {
+      // Moving node backward
+      currNode = currNode.next as N;
+      while (prevNode && spaces) {
+        currNode = prevNode as N;
+        prevNode = prevNode.prev as N;
+        spaces++;
+      }
+    }
+
+    // Insert matched node at new position
+    nodeMove.prev = prevNode;
+    if (prevNode) {
+      prevNode.next = nodeMove;
+    } else {
+      // Inserted at head
+      this._head = nodeMove;
+    }
+
+    nodeMove.next = currNode;
+    if (currNode) {
+      currNode.prev = nodeMove;
+    } else {
+      // Inserted at tail
+      this._tail = nodeMove;
+    }
+
+    return true;
   }
 
   protected insertBeforeNode(existingNode: N, insertNode: N) {
@@ -133,7 +152,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
       existingNode.prev = insertNode;
       insertNode.next = existingNode;
 
-      this._length++;
+      this._lengthDirty = true;
     } else {
       this.prepend(insertNode);
     }
@@ -149,7 +168,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
       existingNode.next = insertNode;
       insertNode.prev = existingNode;
 
-      this._length++;
+      this._lengthDirty = true;
     } else {
       this.append(insertNode);
     }
@@ -184,9 +203,31 @@ export class LinkedList<N extends NodeDouble<V>, V>
       if (this._head === null) {
         this._tail = null;
       }
-      this._length--;
+
+      this._lengthDirty = true;
     }
     return removedHead;
+  }
+
+  trimHead(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): N | null {
+    let originalHead: N | null = null;
+    const node = this.getExistingNode(valueOrNode, cb)?.node;
+
+    if (node) {
+      originalHead = this._head as N;
+      this._head = node;
+
+      if (node.prev) {
+        node.prev.next = null;
+        node.prev = null;
+      }
+
+      return originalHead;
+    }
+    return originalHead;
   }
 
 
@@ -207,9 +248,31 @@ export class LinkedList<N extends NodeDouble<V>, V>
       if (this._tail === null) {
         this._head = null;
       }
-      this._length--;
+
+      this._lengthDirty = true;
     }
     return removedTail;
+  }
+
+  trimTail(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): N | null {
+    let originalTail: N | null = null;
+    const node = this.getExistingNode(valueOrNode, cb)?.node;
+
+    if (node) {
+      originalTail = this._tail;
+      this._tail = node;
+
+      if (node.next) {
+        (node.next as N).prev = null;
+        node.next = null;
+      }
+
+      return originalTail;
+    }
+    return originalTail;
   }
 
 
@@ -223,7 +286,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
       this._head = items.head;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     }
   }
 
@@ -236,7 +299,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
       this._tail = items.tail;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     }
   }
 
@@ -248,7 +311,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
       refNode.prev.next = items.head;
       refNode.prev = items.tail;
 
-      this._length += items.size();
+      this._lengthDirty = true;
     } else {
       this.prependList(items);
     }
@@ -261,7 +324,8 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
       (refNode.next as N).prev = items.tail;
       refNode.next = items.head;
-      this._length += items.size();
+
+      this._lengthDirty = true;
     } else {
       this.appendList(items);
     }
@@ -270,16 +334,18 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
   // === Any Operations ===
   protected removeFirstOrAny(
-    valueOrNode: V | N,
+    value: V,
     cb: EqualityCallbackOptions<V> = undefined,
     firstOnly: boolean = true
-  ): N[] {
+  ): { nodes: N[], indices: number[] } {
     const removedNodes: N[] = [];
+    const indices: number[] = [];
 
+    let count = 0;
     let currNode = this._head;
     let prevNode = null;
     while (currNode) {
-      if (this.areEqual(valueOrNode, currNode, cb)) {
+      if (this.areEqual(value, currNode, cb)) {
         const removeNode = currNode;
         currNode = currNode.next as N;
 
@@ -301,19 +367,21 @@ export class LinkedList<N extends NodeDouble<V>, V>
         removeNode.next = null;
         removeNode.prev = null;
 
-        this._length--;
+        this._lengthDirty = true;
 
         removedNodes.push(removeNode);
+        indices.push(count);
         if (firstOnly) {
-          return removedNodes;
+          return { nodes: removedNodes, indices };
         }
       } else {
         prevNode = currNode;
         currNode = currNode.next as N;
       }
+      count++;
     }
 
-    return removedNodes;
+    return { nodes: removedNodes, indices };
   }
 
 
@@ -366,7 +434,7 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
 
   // === Commonly Used Protected ===
-  protected getNode(valueOrNode: V | N): N {
+  protected getAsNode(valueOrNode: V | N): N {
     return this.isNodeDouble(valueOrNode)
       ? valueOrNode as N
       : new NodeDouble(valueOrNode as V) as N;
@@ -376,19 +444,25 @@ export class LinkedList<N extends NodeDouble<V>, V>
     return (typeof valueOrNode === 'object' && valueOrNode instanceof NodeDouble);
   }
 
-  static fromHead<N extends NodeDouble<V>, V>(head: N): LinkedList<N, V> {
+  static fromHead<N extends NodeDouble<V>, V>(head: N, tail?: N): LinkedList<N, V> {
     const linkedList = new LinkedList<N, V>();
     linkedList._head = head;
 
-    let currNode = head;
-    let count = head ? 1 : 0;
-    while (currNode && currNode.next) {
-      count++;
-      currNode = currNode.next as N;
-    }
+    if (tail) {
+      linkedList._tail = tail;
+      linkedList._lengthDirty = true;
+    } else {
+      let count = head ? 1 : 0;
 
-    linkedList._length = count;
-    linkedList._tail = currNode;
+      let currNode = head;
+      while (currNode && currNode.next) {
+        count++;
+        currNode = currNode.next as N;
+      }
+
+      linkedList._tail = currNode;
+      linkedList._length = count;
+    }
 
     return linkedList;
   }

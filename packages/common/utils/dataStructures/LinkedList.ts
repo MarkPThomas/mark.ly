@@ -88,7 +88,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   find(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V>
-  ): N | null;
+  ): { node: N, index: number } | null;
   /**
    * Add value or node to the beginning of the list.
    *
@@ -116,7 +116,7 @@ export interface ILinkedList<N extends Node<V>, V> {
     targetValueOrNode: V | N,
     replaceValueOrNode: V | N,
     cb: EqualityCallbackOptions<V>
-  ): N | null;
+  ): { node: N, index: number } | null;
   /**
    * Removes and returns the first value or node with a matching value in the list.
    *
@@ -137,7 +137,30 @@ export interface ILinkedList<N extends Node<V>, V> {
   remove(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V>
-  ): N | null;
+  ): { node: N, index: number } | null;
+
+  /**
+   * Trims the linked list to the provided head & tail targets.
+   *
+   * These targets may be null or undefined as a convenient means of calling the appropriate trim function
+   * automatically out of the 3 valid cases (no start, no end, start & end both valid).
+   *
+   * @param {(V | N | null)} startValueOrNode
+   * @param {(V | N | null)} endValueOrNode
+   * @param {EqualityCallbackOptions<V>} [cb]
+   * @return {*}  {boolean}
+   * @memberof ILinkedList
+   */
+  trim(
+    startValueOrNode?: V | N | null,
+    endValueOrNode?: V | N | null,
+    cb?: EqualityCallbackOptions<V>
+  ): {
+    headOfTrimmedHead: N | null,
+    headOfTrimmedTail: N | null
+  } | null;
+
+
   /**
    * Moves the node or node with a matching value in the list the specified number of steps in the specified direction.
    *
@@ -248,6 +271,11 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @memberof ILinkedList
    */
   removeHead(): N | null;
+
+  trimHead(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V>
+  ): N | null;
   /**
    * Moves the node or node with a matching value in the list to the head of the list.
    *
@@ -286,6 +314,11 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @memberof ILinkedList
    */
   removeTail(): N | null;
+
+  trimTail(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V>
+  ): N | null;
   /**
    * Moves the node or node with a matching value in the list to the tail of the list.
    *
@@ -316,14 +349,20 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @param {(V[] | ILinkedList<N, V>)} items If an array of values is supplied, a nodes will be created to contain them.
    * @memberof ILinkedList
    */
-  prependMany(items: V[] | N[] | ILinkedList<N, V>): number;
+  prependMany(
+    items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount?: boolean,
+  ): number;
   /**
    * Add an array of values or nodes to the end of the list, maintaining array order.
    *
    * @param {(V[] | ILinkedList<N, V>)} items If an array of values is supplied, a nodes will be created to contain them.
    * @memberof ILinkedList
    */
-  appendMany(items: V[] | N[] | ILinkedList<N, V>): number;
+  appendMany(
+    items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount?: boolean,
+  ): number;
   /**
    * Inserts the provided value or node just before the referenced value or node.
    *
@@ -344,7 +383,8 @@ export interface ILinkedList<N extends Node<V>, V> {
   insertManyBefore(
     refValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
-    cb: EqualityCallbackOptions<V>
+    returnListCount?: boolean,
+    cb?: EqualityCallbackOptions<V>
   ): number;
   /**
    * Inserts the provided value or node just after the referenced value or node.
@@ -366,7 +406,8 @@ export interface ILinkedList<N extends Node<V>, V> {
   insertManyAfter(
     refValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
-    cb: EqualityCallbackOptions<V>
+    returnListCount?: boolean,
+    cb?: EqualityCallbackOptions<V>
   ): number;
 
   // === Any Operations ===
@@ -380,7 +421,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   findAny(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V>
-  ): N[];
+  ): { nodes: N[], indices: number[] };
   /**
    * Removes and returns any nodes that match the provided matching criteria.
    * @param {(V | N)} valueOrNode
@@ -391,16 +432,16 @@ export interface ILinkedList<N extends Node<V>, V> {
   removeAny(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V>
-  ): N[];
+  ): { nodes: N[], indices: number[] };
 
   // === Range Operations ===
   /**
    * Range is defined by the start node, end node, and count of total nodes within the range.
    * The start/end of the range is exclusive of the provided start and end values or nodes.
    *
-   * @param {(V | N)} startValueOrNode Value or node indicating the start of the range.
+   * @param {(V | N)} startValue Value or node indicating the start of the range.
    * If not found while the end is, this is taken to be the head of the list.
-   * @param {(V | N)} endValueOrNode Value or node indicating the end of the range.
+   * @param {(V | N)} endValue Value or node indicating the end of the range.
    * If not found while the start is, this is taken to be the tail of the list.
     * @param {EqualityCallbackOptions<V>} cb
    * @return {*}  {({
@@ -411,8 +452,8 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @memberof ILinkedList
    */
   findRangeBetween(
-    startValueOrNode: V | N,
-    endValueOrNode: V | N,
+    startValue: V,
+    endValue: V,
     cb: EqualityCallbackOptions<V>
   ): {
     startNode: N | null,
@@ -423,9 +464,9 @@ export interface ILinkedList<N extends Node<V>, V> {
    * Range is defined by the start node, end node, and count of total nodes within the range.
    * The start/end of the range is inclusive of the provided start and end values or nodes.
    *
-   * @param {(V | N)} startValueOrNode Value or node indicating the start of the range.
+   * @param {(V | N)} startValue Value or node indicating the start of the range.
    * If not found while the end is, this is taken to be the head of the list.
-   * @param {(V | N)} endValueOrNode Value or node indicating the end of the range.
+   * @param {(V | N)} endValue Value or node indicating the end of the range.
    * If not found while the start is, this is taken to be the tail of the list.
    * @param {EqualityCallbackOptions<V>} cb
    * @return {*}  {({
@@ -436,8 +477,8 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @memberof ILinkedList
    */
   findRangeFromTo(
-    startValueOrNode: V | N,
-    endValueOrNode: V | N,
+    startValue: V,
+    endValue: V,
     cb: EqualityCallbackOptions<V>
   ): {
     startNode: N | null,
@@ -460,6 +501,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   removeBetween(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
+    returnListCount: boolean,
     cb: EqualityCallbackOptions<V>
   ): {
     count: number,
@@ -482,6 +524,7 @@ export interface ILinkedList<N extends Node<V>, V> {
   removeFromTo(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
+    returnListCount: boolean,
     cb: EqualityCallbackOptions<V>
   ): {
     count: number,
@@ -512,7 +555,8 @@ export interface ILinkedList<N extends Node<V>, V> {
     startValueOrNode: V | N,
     endValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
-    cb: EqualityCallbackOptions<V>
+    returnListCount?: boolean,
+    cb?: EqualityCallbackOptions<V>
   ): {
     insertedCount: number,
     removedCount: number,
@@ -544,7 +588,8 @@ export interface ILinkedList<N extends Node<V>, V> {
     startValueOrNode: V | N,
     endValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
-    cb: EqualityCallbackOptions<V>
+    returnListCount?: boolean,
+    cb?: EqualityCallbackOptions<V>
   ): {
     insertedCount: number,
     removedCount: number,
@@ -599,6 +644,7 @@ export interface ILinkedList<N extends Node<V>, V> {
    * @memberof ILinkedList
    */
   size(): number;
+  sizeFromTo(start: N | null, end: N | null): number;
   /**
    * Creates an array of values contained in the list nodes, in the order of the nodes in the list.
    *
@@ -633,8 +679,11 @@ export interface ILinkedList<N extends Node<V>, V> {
 
 export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N, V> {
   protected _length: number = 0;
+  protected _lengthDirty: boolean = false;
+
   protected _head: N | null = null;
   protected _tail: N | null = null;
+
   protected callBack: EqualityCallback<V> | undefined = undefined;
 
   constructor(items: V[] | null = null) {
@@ -653,10 +702,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   find(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
-  ): N | null {
-    const nodes = this.findFirstOrAny(valueOrNode, cb, true)[0];
+  ): { node: N, index: number } | null {
+    const results = this.findFirstOrAny(valueOrNode, cb, true);
 
-    return nodes ?? null;
+    return results.nodes.length ? { node: results.nodes[0], index: results.indices[0] } : null;
   }
 
   abstract prepend(valueOrNode: V | N): void;
@@ -666,8 +715,8 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     targetValueOrNode: V | N,
     replaceValueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
-  ): N | null {
-    const targetNode = this.find(targetValueOrNode, cb);
+  ): { node: N, index: number } | null {
+    const targetNode = this.getExistingNode(targetValueOrNode, cb)?.node;
 
     if (targetNode && this.insertAfter(targetNode, replaceValueOrNode, cb)) {
       return this.remove(targetNode, cb);
@@ -678,16 +727,41 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   protected replaceList(items: ILinkedList<N, V>): void {
     this._head = items.head;
     this._tail = items.tail;
-    this._length = items.size();
+
+    this._lengthDirty = true;
   }
 
   remove(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
-  ): N | null {
-    const nodes = this.removeFirstOrAny(valueOrNode, cb, true)[0];
+  ): { node: N, index: number } | null {
+    const node = this.getAsNode(valueOrNode);
+    const results = this.removeFirstOrAny(node.val, cb, true);
 
-    return nodes ?? null;
+    return results.nodes.length ? { node: results.nodes[0], index: results.indices[0] } : null;
+  }
+
+  trim(
+    startValueOrNode: V | N | null,
+    endValueOrNode: V | N | null,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): {
+    headOfTrimmedHead: N | null,
+    headOfTrimmedTail: N | null
+  } | null {
+    let headOfTrimmedHead: N | null = null;
+    if (!this.isNullOrUndefined(startValueOrNode)) {
+      headOfTrimmedHead = this.trimHead(startValueOrNode!, cb);
+    }
+
+    let headOfTrimmedTail: N | null = null;
+    if (!this.isNullOrUndefined(endValueOrNode)) {
+      headOfTrimmedTail = this.trimTail(endValueOrNode!, cb);
+    }
+
+    return headOfTrimmedHead || headOfTrimmedTail
+      ? { headOfTrimmedHead, headOfTrimmedTail }
+      : null;
   }
 
   abstract move(
@@ -701,12 +775,12 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     insertValueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    const refNode = this.find(refValueOrNode, cb);
+    const refNode = this.find(refValueOrNode, cb)?.node;
     if (!refNode) {
       return false;
     }
 
-    const insertNode = this.getNode(insertValueOrNode) as N;
+    const insertNode = this.getAsNode(insertValueOrNode) as N;
     this.insertBeforeNode(refNode, insertNode);
     return true;
   }
@@ -722,12 +796,12 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     insertValueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    const refNode = this.find(refValueOrNode, cb);
+    const refNode = this.find(refValueOrNode, cb)?.node;
     if (!refNode) {
       return false;
     }
 
-    const insertNode = this.getNode(insertValueOrNode) as N;
+    const insertNode = this.getAsNode(insertValueOrNode) as N;
     this.insertAfterNode(refNode, insertNode);
     return true;
   }
@@ -782,12 +856,17 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   abstract removeHead(): N | null;
 
+  abstract trimHead(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V>
+  ): N | null;
+
   moveToHead(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    const node = this.remove(valueOrNode, cb);
-    if (node !== null) {
+    const node = this.remove(valueOrNode, cb)?.node;
+    if (node) {
       this.prepend(node);
       return true;
     }
@@ -802,12 +881,17 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   abstract removeTail(): N | null;
 
+  abstract trimTail(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V>
+  ): N | null;
+
   moveToTail(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    const node = this.remove(valueOrNode, cb);
-    if (node !== null) {
+    const node = this.remove(valueOrNode, cb)?.node;
+    if (node) {
       this.append(node);
       return true;
     }
@@ -816,7 +900,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
 
   // === 'Many' Operations ===
-  prependMany(items: V[] | N[] | ILinkedList<N, V>): number {
+  prependMany(
+    items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount: boolean = false,
+  ): number {
     if (Array.isArray(items)) {
       const itemsAsArray = items as V[];
       for (let i = itemsAsArray.length - 1; 0 <= i; i--) {
@@ -825,13 +912,16 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       return items.length;
     } else {
       this.prependList(items);
-      return items.size();
+      return returnListCount ? items.size() : 1;
     }
   }
 
   protected abstract prependList(items: ILinkedList<N, V>): void;
 
-  appendMany(items: V[] | N[] | ILinkedList<N, V>): number {
+  appendMany(
+    items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount: boolean = false,
+  ): number {
     if (Array.isArray(items)) {
       const itemsAsArray = items as V[];
       itemsAsArray.forEach((item) => {
@@ -840,7 +930,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       return items.length;
     } else {
       this.appendList(items);
-      return items.size();
+      return returnListCount ? items.size() : 1;
     }
   }
 
@@ -849,9 +939,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   insertManyBefore(
     refValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount: boolean = false,
     cb: EqualityCallbackOptions<V> = undefined
   ): number {
-    const refNode = this.find(refValueOrNode, cb);
+    const refNode = this.getExistingNode(refValueOrNode, cb)?.node;
     if (!refNode) {
       // TODO: In any case of this refNode find pattern, determine a better way to report errors.
       console.log('Reference value or node not found', refValueOrNode);
@@ -867,7 +958,9 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       });
     } else {
       this.insertListBefore(refNode, items);
-      count = items.size();
+      if (returnListCount) {
+        count = items.size();
+      }
     }
     return count;
   }
@@ -878,9 +971,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   insertManyAfter(
     refValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount: boolean = false,
     cb: EqualityCallbackOptions<V> = undefined
   ): number {
-    const refNode = this.find(refValueOrNode, cb);
+    const refNode = this.getExistingNode(refValueOrNode, cb)?.node;
     if (!refNode) {
       return 0;
     }
@@ -895,7 +989,9 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       }
     } else {
       this.insertListAfter(refNode, items);
-      count = items.size();
+      if (returnListCount) {
+        count = items.size();
+      }
     }
     return count;
   }
@@ -906,7 +1002,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   findAny(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
-  ): N[] {
+  ): { nodes: N[], indices: number[] } {
     return this.findFirstOrAny(valueOrNode, cb, false);
   }
 
@@ -914,64 +1010,68 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V>,
     firstOnly: boolean = true
-  ): N[] {
+  ): { nodes: N[], indices: number[] } {
     const nodes = [];
+    const indices = [];
+    let count = 0;
     let node = this._head;
     while (node) {
       if (this.areEqual(valueOrNode, node, cb)) {
         nodes.push(node);
+        indices.push(count);
         if (firstOnly) {
-          return nodes;
+          return { nodes, indices };
         }
       }
+      count++;
       node = node.next as N;
     }
-    return nodes;
+    return { nodes, indices };
   }
 
   removeAny(
-    valueOrNode: V | N,
+    value: V,
     cb: EqualityCallbackOptions<V> = undefined
-  ): N[] {
-    return this.removeFirstOrAny(valueOrNode, cb, false);
+  ): { nodes: N[], indices: number[] } {
+    return this.removeFirstOrAny(value, cb, false);
   }
 
   protected abstract removeFirstOrAny(
-    valueOrNode: V | N,
+    value: V,
     cb: EqualityCallbackOptions<V>,
     firstOnly: boolean
-  ): N[];
+  ): { nodes: N[], indices: number[] };
 
 
   // === Range Operations ===
   findRangeBetween(
-    startValueOrNode: V | N,
-    endValueOrNode: V | N,
+    startValue: V,
+    endValue: V,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     startNode: N | null,
     endNode: N | null,
     length: number
   } {
-    return this.findRange(startValueOrNode, endValueOrNode, false, cb);
+    return this.findRange(startValue, endValue, false, cb);
   }
 
   findRangeFromTo(
-    startValueOrNode: V | N,
-    endValueOrNode: V | N,
+    startValue: V,
+    endValue: V,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     startNode: N | null,
     endNode: N | null,
     length: number
   } {
-    return this.findRange(startValueOrNode, endValueOrNode, true, cb);
+    return this.findRange(startValue, endValue, true, cb);
   }
 
 
   protected findRange(
-    startValueOrNode: V | N,
-    endValueOrNode: V | N,
+    startValue: V,
+    endValue: V,
     inclusive: boolean,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
@@ -979,17 +1079,17 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     endNode: N | null,
     length: number
   } {
-    const nodesAndCounts = this.findNodesAndCounts(startValueOrNode, endValueOrNode, cb);
+    const nodesAndCounts = this.findNodesAndCounts(startValue, endValue, cb);
 
     let startNodeCount = nodesAndCounts.startNodeCount;
     let endNodeCount = nodesAndCounts.endNodeCount;
 
     // Update counts to account for certain edge cases
-    if (this.isSpecified(startValueOrNode) && !nodesAndCounts.startNode) {
+    if (!this.isNullOrUndefined(startValue) && !nodesAndCounts.startNode) {
       // Start node not found
       startNodeCount = inclusive ? 1 : 0;
     } else if (
-      this.isSpecified(endValueOrNode)
+      !this.isNullOrUndefined(endValue)
       && endNodeCount >= startNodeCount
       && !inclusive
       && !nodesAndCounts.endNode
@@ -1027,8 +1127,8 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   }
 
   protected findNodesAndCounts(
-    startValueOrNode: V | N,
-    endValueOrNode: V | N,
+    startValue: V,
+    endValue: V,
     cb: EqualityCallbackOptions<V> = undefined
   ) {
     let startNode: N | null = null;
@@ -1038,10 +1138,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     let endNodeCount = 0;
 
     // Correction handling either of these as null
-    if (!this.isSpecified(startValueOrNode)) {
+    if (this.isNullOrUndefined(startValue)) {
       startNode = this._head;
     }
-    if (!this.isSpecified(endValueOrNode)) {
+    if (this.isNullOrUndefined(endValue)) {
       endNode = this._tail;
     }
 
@@ -1050,14 +1150,14 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     while (currNode) {
       if (!startNode) {
         startNodeCount++;
-        if (this.areEqual(startValueOrNode, currNode, cb)) {
+        if (this.areEqual(startValue, currNode, cb)) {
           startNode = currNode;
         }
       }
 
       if (!endNode) {
         endNodeCount++;
-        if (this.areEqual(endValueOrNode, currNode, cb)) {
+        if (this.areEqual(endValue, currNode, cb)) {
           endNode = currNode;
         }
       }
@@ -1073,13 +1173,14 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     }
 
     // Correction handling either of these as null
-    if (!this.isSpecified(startValueOrNode)) {
+    if (this.isNullOrUndefined(startValue)) {
       startNode = null;
       startNodeCount = 0;
     }
-    if (!this.isSpecified(endValueOrNode)) {
+    if (this.isNullOrUndefined(endValue)) {
       endNode = null;
-      endNodeCount = this._length;
+      endNodeCount = this.size();
+      // endNodeCount = this._length;
     }
 
     return {
@@ -1091,24 +1192,44 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     }
   }
 
-
   removeBetween(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
+    returnListCount: boolean = false,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     count: number,
     head: N | null
   } {
-    const { startNode, endNode, length } = this.findRangeBetween(startValueOrNode, endValueOrNode, cb);
+    let startNode: N | null;
+    let endNode: N | null;
+    let length = -1;
+
+    if (this.isNode(startValueOrNode) && this.isNode(endValueOrNode)) {
+      startNode = (this.getExistingNode(startValueOrNode)?.node as N)?.next as N;
+      endNode = this.getPriorNode(this.getExistingNode(endValueOrNode)?.node as N) as N;
+      if (startNode || endNode && returnListCount) {
+        length = this.sizeFromTo(startNode, endNode);
+      }
+    } else {
+      const {
+        startNode: startNodeRange,
+        endNode: endNodeRange,
+        length: lengthRange } = this.findRangeBetween(startValueOrNode as V, endValueOrNode as V, cb);
+
+      startNode = startNodeRange as N;
+      endNode = endNodeRange as N;
+      length = lengthRange;
+    }
+
     const removedHead = this.removeFromToNodes(startNode, endNode);
 
     if (removedHead) {
-      this._length -= length;
+      this._lengthDirty = true;
     }
 
     return {
-      count: length,
+      count: removedHead ? length : 0,
       head: removedHead
     }
   }
@@ -1117,20 +1238,40 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   removeFromTo(
     startValueOrNode: V | N,
     endValueOrNode: V | N,
+    returnListCount: boolean = false,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     count: number,
     head: N | null
   } {
-    const { startNode, endNode, length } = this.findRangeFromTo(startValueOrNode, endValueOrNode, cb);
+    let startNode: N | null;
+    let endNode: N | null;
+    let length = -1;
+
+    if (this.isNode(startValueOrNode) && this.isNode(endValueOrNode)) {
+      startNode = this.getExistingNode(startValueOrNode)?.node ?? null;
+      endNode = this.getExistingNode(endValueOrNode)?.node ?? null;
+      if (startNode || endNode && returnListCount) {
+        length = this.sizeFromTo(startNode, endNode);
+      }
+    } else {
+      const {
+        startNode: startNodeRange,
+        endNode: endNodeRange,
+        length: lengthRange } = this.findRangeFromTo(startValueOrNode as V, endValueOrNode as V, cb);
+
+      startNode = startNodeRange as N;
+      endNode = endNodeRange as N;
+      length = lengthRange;
+    }
     const removedHead = this.removeFromToNodes(startNode, endNode);
 
     if (removedHead) {
-      this._length -= length;
+      this._lengthDirty = true;
     }
 
     return {
-      count: length,
+      count: removedHead ? length : 0,
       head: removedHead
     }
   }
@@ -1186,16 +1327,12 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   }
 
 
-  protected isSpecified(valueOrNode: V | N): boolean {
-    return valueOrNode !== undefined && valueOrNode !== null;
-  }
-
   protected matchesHead(
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    return this.isSpecified(this._head as N)
-      && this.isSpecified(valueOrNode)
+    return !this.isNullOrUndefined(this._head as N)
+      && !this.isNullOrUndefined(valueOrNode)
       && this.areEqual(valueOrNode, this._head as N, cb)
   }
 
@@ -1203,8 +1340,8 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): boolean {
-    return this.isSpecified(this._tail as N)
-      && this.isSpecified(valueOrNode)
+    return !this.isNullOrUndefined(this._tail as N)
+      && !this.isNullOrUndefined(valueOrNode)
       && this.areEqual(valueOrNode, this._tail as N, cb)
   }
 
@@ -1212,6 +1349,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     startValueOrNode: V | N,
     endValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount: boolean = false,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     insertedCount: number,
@@ -1219,22 +1357,22 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     removedHead: N | null
   } {
     const initialHead = this._head as N;
-    let removedNodes = this.removeBetween(startValueOrNode, endValueOrNode, cb);
+    let removedNodes = this.removeBetween(startValueOrNode, endValueOrNode, returnListCount, cb);
 
     let insertedCount: number;
     if (removedNodes.head === null) {
       // No nodes removed
       if (this.matchesHead(endValueOrNode)) {
-        insertedCount = this.prependMany(items);
+        insertedCount = this.prependMany(items, returnListCount);
       } else if (this.matchesTail(startValueOrNode)) {
-        insertedCount = this.appendMany(items);
-      } else if (this.isSpecified(startValueOrNode) && this.isSpecified(endValueOrNode)) {
-        const startNode = this.find(startValueOrNode);
+        insertedCount = this.appendMany(items, returnListCount);
+      } else if (!this.isNullOrUndefined(startValueOrNode) && !this.isNullOrUndefined(endValueOrNode)) {
+        const startNode = this.getExistingNode(startValueOrNode)?.node;
         const startNodeNext = startNode?.next as N;
 
         if (startNode && startNodeNext && this.areEqual(endValueOrNode, startNodeNext, cb)) {
           // Target nodes are adjacent. Just insert in between.
-          insertedCount = this.insertManyAfter(startNode, items, cb);
+          insertedCount = this.insertManyAfter(startNode, items, returnListCount, cb);
         } else {
           insertedCount = 0;
         }
@@ -1243,10 +1381,10 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       }
     } else if (this.areEqual(initialHead, removedNodes.head, cb)) {
       // head was removed
-      insertedCount = this.prependMany(items);
+      insertedCount = this.prependMany(items, returnListCount);
     } else {
-      const insertRefNode = this.getNode(startValueOrNode);
-      insertedCount = this.insertManyAfter(insertRefNode, items, cb);
+      const insertRefNode = this.getExistingNode(startValueOrNode)?.node;
+      insertedCount = this.insertManyAfter(insertRefNode!, items, returnListCount, cb);
     }
 
 
@@ -1261,6 +1399,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     startValueOrNode: V | N,
     endValueOrNode: V | N,
     items: V[] | N[] | ILinkedList<N, V>,
+    returnListCount: boolean = false,
     cb: EqualityCallbackOptions<V> = undefined
   ): {
     insertedCount: number,
@@ -1269,27 +1408,28 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   } {
     const initialHead = this._head as N;
     const initialTail = this._tail as N;
-    const initialLength = this._length;
     const insertRefNode = this.getPriorNode(startValueOrNode, cb) as N;
 
-    let removedNodes = this.removeFromTo(startValueOrNode, endValueOrNode, cb);
+    let removedNodes = this.removeFromTo(startValueOrNode, endValueOrNode, returnListCount, cb);
 
     let insertedCount: number;
     if (removedNodes.head === null) {
       insertedCount = 0;
-    } else
-      if (removedNodes.count === initialLength) {
+    } else {
+
+      if (removedNodes.head === initialHead && this._tail === null) {
         // Entire list was removed
-        insertedCount = this.appendMany(items);
-      } else if (this.areEqual(initialHead, removedNodes.head, cb)) {
+        insertedCount = this.appendMany(items, returnListCount);
+      } else if (initialHead === removedNodes.head) {
         // head was removed
-        insertedCount = this.prependMany(items);
-      } else if (!this.areEqual(initialTail, this._tail as N, cb)) {
+        insertedCount = this.prependMany(items, returnListCount);
+      } else if (initialTail !== this._tail) {
         // tail was removed
-        insertedCount = this.appendMany(items);
+        insertedCount = this.appendMany(items, returnListCount);
       } else {
-        insertedCount = this.insertManyAfter(insertRefNode, items, cb);
+        insertedCount = this.insertManyAfter(insertRefNode, items, returnListCount, cb);
       }
+    }
 
     return {
       insertedCount,
@@ -1336,7 +1476,7 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       }
 
       if (endItemFound) {
-        if (rightList.size() === 0 && this.areEqual(valueOrNodeStart, currNode, cb)) {
+        if (rightList.head === null && this.areEqual(valueOrNodeStart, currNode, cb)) {
           rightList.append(currNode.clone().val);
         } else {
           rightList.append(currNode.val);
@@ -1358,7 +1498,31 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
   // === Misc Operations ===
   size() {
+    if (this._lengthDirty) {
+      let count = this.sizeFromTo(null, null);
+
+      this._length = count;
+      this._lengthDirty = false;
+    }
+
     return this._length;
+  }
+
+  sizeFromTo(start: N | null, end: N | null): number {
+    let count = 0;
+
+    let currNode = start ?? this._head;
+    let targetNode = end ?? this._tail;
+
+    while (currNode) {
+      count++;
+      if (currNode === targetNode) {
+        break;
+      } else {
+        currNode = currNode.next as N;
+      }
+    }
+    return currNode === targetNode ? count : -1;
   }
 
   toArray() {
@@ -1386,7 +1550,41 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
 
 
   // === Commonly Used Protected ===
-  protected abstract getNode(valueOrNode: V | N): N;
+
+  /**
+   * Returns the value or node as a node if it exists in the list, or null otherwise.
+   *
+   * If argument is already a node, it is returned appropriately cast and assumed to already be in the list. Index is null in this case.
+   *
+   * If the argument is a value, the list will be searched to find the matching node to be returned.
+   *
+   * @protected
+   * @param {(V | N)} valueOrNode
+   * @param {EqualityCallbackOptions<V>} [cb=undefined]
+   * @return {*}  {({ node: N, index: number | null } | null)}
+   * @memberof LinkedList
+   */
+  protected getExistingNode(
+    valueOrNode: V | N,
+    cb: EqualityCallbackOptions<V> = undefined
+  ): { node: N, index: number | null } | null {
+    return this.isNode(valueOrNode) ? { node: valueOrNode as N, index: null } : this.find(valueOrNode, cb)
+  }
+
+  /**
+   * Returns the value or node as a node.
+   *
+   * If argument is already a node, it is returned appropriately cast.
+   *
+   * If the argument is a value, it will be added to a newly instantiated node.
+   *
+   * @protected
+   * @abstract
+   * @param {(V | N)} valueOrNode
+   * @return {*}  {N}
+   * @memberof LinkedList
+   */
+  protected abstract getAsNode(valueOrNode: V | N): N;
 
   protected getPriorNode(
     valueOrNode: V | N,
@@ -1402,6 +1600,16 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       node = node.next as N;
     }
     return null;
+  }
+
+  protected sizeUnderTwo() {
+    let count = 0;
+    let node = this._head;
+    while (node && count < 2) {
+      count++;
+      node = node.next as N;
+    }
+    return count < 2;
   }
 
   /**
@@ -1430,8 +1638,21 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       cb = undefined;
     }
 
+    // if (this.isNullOrUndefined(valueOrNode) || this.isNullOrUndefined(node)) {
+    //   console.log('areEqual aborted. valueOrNode, or node, are null or undefined')
+    //   return false;
+    // }
+
     return ((!(valueOrNode instanceof Node) && node.equals(valueOrNode as V, cb))
       || node.val === (valueOrNode as Node<V>).val)
+  }
+
+  protected isNode(valueOrNode: V | N): boolean {
+    return valueOrNode instanceof Node;
+  }
+
+  protected isNullOrUndefined(value: any): boolean {
+    return value === null || value === undefined;
   }
 }
 

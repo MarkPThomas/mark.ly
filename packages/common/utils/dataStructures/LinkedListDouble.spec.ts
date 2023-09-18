@@ -1,4 +1,8 @@
-import { LinkedList, LinkedListDouble, NodeDouble } from './LinkedListDouble';
+import {
+  LinkedList,
+  LinkedListDouble,
+  NodeDouble
+} from './LinkedListDouble';
 import { LinkedList as LinkedListSingle } from './LinkedListSingle';
 import { NodeDoubleKeyVal } from './LinkedListNodes';
 
@@ -24,6 +28,30 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.tail?.val).toEqual(5);
       });
     });
+
+    describe('#fromHead', () => {
+      it('should initialize a linked list from a provided head node', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const linkedListFromHead = LinkedListSingle.fromHead(linkedList.head as NodeDouble<number>)
+
+        expect(linkedListFromHead.size()).toEqual(5);
+        expect(linkedListFromHead.head?.val).toEqual(1);
+        expect(linkedListFromHead.tail?.val).toEqual(5);
+      });
+
+      it('should initialize a linked list from provided head & tail nodes', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const linkedListFromHead = LinkedListSingle.fromHead(linkedList.head as NodeDouble<number>, linkedList.tail as NodeDouble<number>)
+
+        expect(linkedListFromHead.size()).toEqual(5);
+        expect(linkedListFromHead.head?.val).toEqual(1);
+        expect(linkedListFromHead.tail?.val).toEqual(5);
+      });
+    });
   });
 
 
@@ -47,7 +75,7 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const node = new NodeDouble(3);
-        expect(linkedList.find(3)?.val).toEqual(node.val);
+        expect(linkedList.find(3)?.node.val).toEqual(node.val);
       });
 
       it('should return the node with the matching object reference that is found', () => {
@@ -58,11 +86,11 @@ describe('##LinkedListDouble', () => {
         const values: demo[] = [demo1, demo2, demo3];
         const linkedList = new LinkedListDouble<demo>(values);
 
-        expect(linkedList.find(demo2)?.val).toEqual(demo2);
+        expect(linkedList.find(demo2)?.node.val).toEqual(demo2);
       });
 
       it(`should return the node with the matching object reference that is found when a
-        default equality callback has been specified`, () => {
+          default equality callback has been specified`, () => {
         type demo = { foo: string, bar: number }
         const demo1: demo = { foo: 'A', bar: 1 };
         const demo2: demo = { foo: 'B', bar: 2 };
@@ -73,7 +101,7 @@ describe('##LinkedListDouble', () => {
         const cb = (a: demo, b: demo) => a.foo === b.foo;
         linkedList.setEqualityCB(cb);
 
-        expect(linkedList.find(demo2, null)?.val).toEqual(demo2);
+        expect(linkedList.find(demo2, null)?.node.val).toEqual(demo2);
       });
 
       it('should return the node that matches by the default equality callback provided for a value object', () => {
@@ -87,7 +115,7 @@ describe('##LinkedListDouble', () => {
         const cb = (a: demo, b: demo) => a.foo === b.foo;
         linkedList.setEqualityCB(cb);
 
-        expect(linkedList.find({ foo: 'B', bar: 4 })?.val).toEqual({ foo: 'B', bar: 2 });
+        expect(linkedList.find({ foo: 'B', bar: 4 })?.node.val).toEqual({ foo: 'B', bar: 2 });
       });
 
       it('should return the node that matches by the override equality callback provided for a value object', () => {
@@ -100,7 +128,7 @@ describe('##LinkedListDouble', () => {
 
         const cb = (a: demo, b: demo) => a.foo === b.foo;
 
-        expect(linkedList.find({ foo: 'B', bar: 4 }, cb)?.val).toEqual({ foo: 'B', bar: 2 });
+        expect(linkedList.find({ foo: 'B', bar: 4 }, cb)?.node.val).toEqual({ foo: 'B', bar: 2 });
       });
     });
 
@@ -232,7 +260,7 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const replacedNode = linkedList.replace(3, 10);
+        const replacedNode = linkedList.replace(3, 10)?.node;
         expect(replacedNode?.val).toEqual(3);
 
         expect(linkedList.toArray()).toEqual([1, 2, 10, 4, 5]);
@@ -245,7 +273,7 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const replacedNode = linkedList.replace(1, 10);
+        const replacedNode = linkedList.replace(1, 10)?.node;
         expect(replacedNode?.val).toEqual(1);
 
         expect(linkedList.head?.val).toEqual(10);
@@ -259,7 +287,7 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.tail?.val).toEqual(5);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const replacedNode = linkedList.replace(5, 10);
+        const replacedNode = linkedList.replace(5, 10)?.node;
         expect(replacedNode?.val).toEqual(5);
 
         expect(linkedList.tail?.val).toEqual(10);
@@ -272,7 +300,10 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         expect(linkedList.size()).toEqual(0);
-        expect(linkedList.remove(-1)).toBeNull();
+
+        const result = linkedList.remove(-1);
+
+        expect(result).toBeNull();
         expect(linkedList.size()).toEqual(0);
       });
 
@@ -281,7 +312,11 @@ describe('##LinkedListDouble', () => {
         const node = new NodeDouble<number>(6);
 
         expect(linkedList.size()).toEqual(0);
-        expect(linkedList.remove(node)).toBeNull();
+
+        const result = linkedList.remove(node);
+
+        expect(result).toBeNull();
+
         expect(linkedList.size()).toEqual(0);
       });
 
@@ -290,7 +325,10 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         expect(linkedList.size()).toEqual(5);
-        expect(linkedList.remove(-1)).toBeNull();
+
+        const result = linkedList.remove(-1);
+
+        expect(result).toBeNull();
         expect(linkedList.size()).toEqual(5);
       });
 
@@ -300,7 +338,10 @@ describe('##LinkedListDouble', () => {
         const node = new NodeDouble<number>(6);
 
         expect(linkedList.size()).toEqual(5);
-        expect(linkedList.remove(node)).toBeNull();
+
+        const result = linkedList.remove(node);
+
+        expect(result).toBeNull();
         expect(linkedList.size()).toEqual(5);
       });
 
@@ -309,7 +350,10 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         expect(linkedList.size()).toEqual(1);
-        expect(linkedList.remove(3)?.val).toEqual(3);
+
+        const removedNode = linkedList.remove(3)?.node;
+
+        expect(removedNode?.val).toEqual(3);
         expect(linkedList.size()).toEqual(0);
       });
 
@@ -319,7 +363,10 @@ describe('##LinkedListDouble', () => {
         const node = new NodeDouble<number>(3);
 
         expect(linkedList.size()).toEqual(1);
-        expect(linkedList.remove(node)?.val).toEqual(3);
+
+        const removedNode = linkedList.remove(node)?.node;
+
+        expect(removedNode?.val).toEqual(3);
         expect(linkedList.size()).toEqual(0);
       });
 
@@ -329,7 +376,10 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(5);
-        expect(linkedList.remove(1)?.val).toEqual(1);
+
+        const removedNode = linkedList.remove(1)?.node;
+
+        expect(removedNode?.val).toEqual(1);
         expect(linkedList.head?.val).toEqual(2);
         expect(linkedList.tail?.val).toEqual(5);
       });
@@ -342,7 +392,10 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(5);
-        expect(linkedList.remove(node)?.val).toEqual(1);
+
+        const removedNode = linkedList.remove(node)?.node;
+
+        expect(removedNode?.val).toEqual(1);
         expect(linkedList.head?.val).toEqual(2);
         expect(linkedList.tail?.val).toEqual(5);
       });
@@ -353,7 +406,10 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(5);
-        expect(linkedList.remove(5)?.val).toEqual(5);
+
+        const removedNode = linkedList.remove(5)?.node;
+
+        expect(removedNode?.val).toEqual(5);
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(4);
       });
@@ -365,7 +421,10 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(5);
-        expect(linkedList.remove(node)?.val).toEqual(5);
+
+        const removedNode = linkedList.remove(node)?.node;
+
+        expect(removedNode?.val).toEqual(5);
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(4);
       });
@@ -375,7 +434,10 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         expect(linkedList.size()).toEqual(5);
-        expect(linkedList.remove(3)?.val).toEqual(3);
+
+        const removedNode = linkedList.remove(3)?.node;
+
+        expect(removedNode?.val).toEqual(3);
         expect(linkedList.size()).toEqual(4);
       });
 
@@ -385,7 +447,10 @@ describe('##LinkedListDouble', () => {
         const node = new NodeDouble<number>(3);
 
         expect(linkedList.size()).toEqual(5);
-        expect(linkedList.remove(node)?.val).toEqual(3);
+
+        const removedNode = linkedList.remove(node)?.node;
+
+        expect(removedNode?.val).toEqual(3);
         expect(linkedList.size()).toEqual(4);
       });
 
@@ -437,6 +502,139 @@ describe('##LinkedListDouble', () => {
       });
     });
 
+    describe('#trim', () => {
+      it('should return null & do nothing on an empty list', () => {
+        const linkedList = new LinkedListDouble<number>();
+
+        const originalSize = linkedList.size();
+        const originalHead = linkedList.head;
+        const originalTail = linkedList.tail;
+
+        const trimmedHeads = linkedList.trim(2, 4);
+
+        expect(trimmedHeads).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalHead).toEqual(linkedList.head);
+        expect(originalTail).toEqual(linkedList.tail);
+        expect(linkedList.head).toBeNull();
+        expect(linkedList.tail).toBeNull();
+      });
+
+      it('should return null & do nothing if neither of the provided values exists in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalSize = linkedList.size();
+        const originalHead = linkedList.head;
+        const originalTail = linkedList.tail;
+
+        const trimmedHeads = linkedList.trim(-2, -4);
+
+        expect(trimmedHeads).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalHead).toEqual(linkedList.head);
+        expect(originalTail).toEqual(linkedList.tail);
+        expect(linkedList.head?.val).toEqual(1);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
+
+      it('should return the original head & trim to the found start value if the provided start value exists in the list but the end value does not', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalHead = linkedList.head;
+
+        const { headOfTrimmedHead, headOfTrimmedTail } = linkedList.trim(2, -4)!;
+
+        expect(headOfTrimmedHead).toEqual(originalHead);
+        expect(headOfTrimmedTail).toBeNull();
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.head?.val).toEqual(2);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
+
+      it('should return the original head & trim to the found start value if the provided start value exists in the list but the end value is specified as null', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalHead = linkedList.head;
+
+        const { headOfTrimmedHead, headOfTrimmedTail } = linkedList.trim(2, null)!;
+
+        expect(headOfTrimmedHead).toEqual(originalHead);
+        expect(headOfTrimmedTail).toBeNull();
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.head?.val).toEqual(2);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
+
+      it('should return the the node after the found end value & trim after the found end value if the provided end value exists in the list but the start value does not', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const targetNode = linkedList.find(4)?.node;
+        const nodeAfterTarget = targetNode!.next;
+
+        const { headOfTrimmedHead, headOfTrimmedTail } = linkedList.trim(-2, 4)!;
+
+        expect(headOfTrimmedHead).toBeNull();
+        expect(headOfTrimmedTail).toEqual(nodeAfterTarget);
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.tail).toEqual(targetNode);
+        expect(linkedList.head?.val).toEqual(1);
+        expect(linkedList.tail?.val).toEqual(4);
+      });
+
+      it('should return the the node after the found end value & trim after the found end value if the provided end value exists in the list but the start value is specified as null', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const targetNode = linkedList.find(4)?.node;
+        const nodeAfterTarget = targetNode!.next;
+
+        const { headOfTrimmedHead, headOfTrimmedTail } = linkedList.trim(null, 4)!;
+
+        expect(headOfTrimmedHead).toBeNull();
+        expect(headOfTrimmedTail).toEqual(nodeAfterTarget);
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.tail).toEqual(targetNode);
+        expect(linkedList.head?.val).toEqual(1);
+        expect(linkedList.tail?.val).toEqual(4);
+      });
+
+      it('should return the original head & node after the found end valye & trim to the found start value and after the found end value if the provided values both exist in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalHead = linkedList.head;
+        const targetNode = linkedList.find(4)?.node;
+        const nodeAfterTarget = targetNode!.next;
+
+        const { headOfTrimmedHead, headOfTrimmedTail } = linkedList.trim(2, 4)!;
+
+        expect(headOfTrimmedHead).toEqual(originalHead);
+        expect(headOfTrimmedTail).toEqual(nodeAfterTarget);
+        expect(linkedList.size()).toEqual(3);
+        expect(linkedList.head?.val).toEqual(2);
+        expect(linkedList.tail?.val).toEqual(4);
+      });
+
+      it('should return the original head & trim to the found start value if the provided start value exists in the list but, after the end value that also exists in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalHead = linkedList.head;
+
+        const { headOfTrimmedHead, headOfTrimmedTail } = linkedList.trim(4, 2)!;
+
+        expect(headOfTrimmedHead).toEqual(originalHead);
+        expect(headOfTrimmedTail).toBeNull();
+        expect(linkedList.size()).toEqual(2);
+        expect(linkedList.head?.val).toEqual(4);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
+    });
+
     describe('#move', () => {
       it('should do nothing on an empty list', () => {
         const linkedList = new LinkedListDouble<number>();
@@ -444,9 +642,9 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.tail).toBeNull();
         expect(linkedList.toArray()).toEqual([]);
 
-        const node = new NodeDouble<number>(3);
-        expect(linkedList.move(node, 1)).toBeFalsy();
+        const result = linkedList.move(3, 1);
 
+        expect(result).toBeFalsy();
         expect(linkedList.tail).toBeNull();
         expect(linkedList.toArray()).toEqual([]);
       });
@@ -457,9 +655,9 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(-3);
-        expect(linkedList.move(node, 1)).toBeFalsy();
+        const result = linkedList.move(-3, 1);
 
+        expect(result).toBeFalsy();
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
       });
 
@@ -471,9 +669,11 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.tail?.val).toEqual(3);
         expect(linkedList.toArray()).toEqual([3]);
 
-        const node = new NodeDouble<number>(3);
-        expect(linkedList.move(node, 1)).toBeFalsy();
+        const node = linkedList.find(3)!.node;
 
+        const result = linkedList.move(node, 1);
+
+        expect(result).toBeFalsy();
         expect(linkedList.head?.val).toEqual(3);
         expect(linkedList.tail?.val).toEqual(3);
         expect(linkedList.toArray()).toEqual([3]);
@@ -485,9 +685,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(-3);
-        expect(linkedList.move(node, 0)).toBeFalsy();
+        const node = linkedList.find(3)!.node;
 
+        const result = linkedList.move(node, 0);
+
+        expect(result).toBeFalsy();
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
       });
 
@@ -497,9 +699,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(3);
-        expect(linkedList.move(node, 1)).toBeTruthy();
+        const node = linkedList.find(3)!.node;
 
+        const result = linkedList.move(node, 1);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([1, 2, 4, 3, 5]);
       });
 
@@ -509,9 +713,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(3);
-        expect(linkedList.move(node, 4)).toBeTruthy();
+        const node = linkedList.find(3)!.node;
 
+        const result = linkedList.move(node, 4);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([1, 2, 4, 5, 3]);
       });
 
@@ -521,9 +727,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(1);
-        expect(linkedList.move(node, 1)).toBeTruthy();
+        const node = linkedList.find(1)!.node;
 
+        const result = linkedList.move(node, 1);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([2, 1, 3, 4, 5]);
       });
 
@@ -533,9 +741,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(3);
-        expect(linkedList.move(node, -1)).toBeTruthy();
+        const node = linkedList.find(3)!.node;
 
+        const result = linkedList.move(node, -1);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([1, 3, 2, 4, 5]);
       });
 
@@ -545,9 +755,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(3);
-        expect(linkedList.move(node, -4)).toBeTruthy();
+        const node = linkedList.find(3)!.node;
 
+        const result = linkedList.move(node, -4);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([3, 1, 2, 4, 5]);
       });
 
@@ -557,9 +769,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
 
-        const node = new NodeDouble<number>(5);
-        expect(linkedList.move(node, -1)).toBeTruthy();
+        const node = linkedList.find(5)!.node;
 
+        const result = linkedList.move(node, -1);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 4]);
       });
 
@@ -569,9 +783,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2]);
 
-        const node = new NodeDouble<number>(1);
-        expect(linkedList.move(node, 1)).toBeTruthy();
+        const node = linkedList.find(1)!.node;
 
+        const result = linkedList.move(node, 1);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([2, 1]);
       });
 
@@ -581,9 +797,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2]);
 
-        const node = new NodeDouble<number>(2);
-        expect(linkedList.move(node, -1)).toBeTruthy();
+        const node = linkedList.find(2)!.node;
 
+        const result = linkedList.move(node, -1);
+
+        expect(result).toBeTruthy();
         expect(linkedList.toArray()).toEqual([2, 1]);
       });
 
@@ -593,9 +811,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2]);
 
-        const node = new NodeDouble<number>(1);
-        expect(linkedList.move(node, -1)).toBeFalsy();
+        const node = linkedList.find(1)!.node;
 
+        const result = linkedList.move(node, -1);
+
+        expect(result).toBeFalsy();
         expect(linkedList.toArray()).toEqual([1, 2]);
       });
 
@@ -605,9 +825,11 @@ describe('##LinkedListDouble', () => {
 
         expect(linkedList.toArray()).toEqual([1, 2]);
 
-        const node = new NodeDouble<number>(2);
-        expect(linkedList.move(node, 1)).toBeFalsy();
+        const node = linkedList.find(2)!.node;
 
+        const result = linkedList.move(node, 1);
+
+        expect(result).toBeFalsy();
         expect(linkedList.toArray()).toEqual([1, 2]);
       });
     });
@@ -928,6 +1150,63 @@ describe('##LinkedListDouble', () => {
       })
     });
 
+    describe('#trimHead', () => {
+      it('should return null & do nothing on an empty list', () => {
+        const linkedList = new LinkedListDouble<number>();
+
+        const originalSize = linkedList.size();
+        const originalHead = linkedList.head;
+
+        const trimmedHead = linkedList.trimHead(2);
+
+        expect(trimmedHead).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalHead).toEqual(linkedList.head);
+      });
+
+      it('should return null & do nothing if the provided value does not exist in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalSize = linkedList.size();
+        const originalHead = linkedList.head;
+
+        const trimmedHead = linkedList.trimHead(-2);
+
+        expect(trimmedHead).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalHead).toEqual(linkedList.head);
+      });
+
+      it('should return the original head & trim to the found value if the provided value exists in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalHead = linkedList.head;
+
+        const trimmedHead = linkedList.trimHead(2);
+
+        expect(trimmedHead).toEqual(originalHead);
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.head?.val).toEqual(2);
+      });
+
+      it('should return the original head & trim to the existing node if the provided node exists in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalHead = linkedList.head;
+
+        const node = linkedList.find(2)?.node;
+
+        const trimmedHead = linkedList.trimHead(node!);
+
+        expect(trimmedHead).toEqual(originalHead);
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.head).toEqual(node);
+      });
+    });
+
     describe('#moveToHead', () => {
       it('should do nothing on an empty list', () => {
         const linkedList = new LinkedListDouble<number>();
@@ -1057,7 +1336,65 @@ describe('##LinkedListDouble', () => {
 
         linkedList.removeTail();
         expect(linkedList.size()).toEqual(0);
-      })
+      });
+    });
+
+    describe('#trimTail', () => {
+      it('should return null & do nothing on an empty list', () => {
+        const linkedList = new LinkedListDouble<number>();
+
+        const originalSize = linkedList.size();
+        const originalTail = linkedList.tail;
+
+        const trimmedTail = linkedList.trimTail(2);
+
+        expect(trimmedTail).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalTail).toEqual(linkedList.tail);
+      });
+
+      it('should return null & do nothing if the provided value does not exist in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const originalSize = linkedList.size();
+        const originalTail = linkedList.tail;
+
+        const trimmedTail = linkedList.trimTail(-2);
+
+        expect(trimmedTail).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalTail).toEqual(linkedList.tail);
+      });
+
+      it('should return the the node after the found value & trim after the found value if the provided value exists in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const targetNode = linkedList.find(4)?.node;
+        const nodeAfterTarget = targetNode!.next;
+
+        const trimmedTailHead = linkedList.trimTail(4);
+
+        expect(trimmedTailHead).toEqual(nodeAfterTarget);
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.tail).toEqual(targetNode);
+      });
+
+      it('should return the node after the existing node & trim after the existing node if the provided node exists in the list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+
+        const targetNode = linkedList.find(4)?.node;
+        const nodeAfterTarget = targetNode!.next;
+
+        const trimmedTailHead = linkedList.trimTail(targetNode!);
+
+        expect(trimmedTailHead).toEqual(nodeAfterTarget);
+        expect(linkedList.size()).toEqual(4);
+        expect(linkedList.tail).toEqual(targetNode);
+      });
     });
 
     describe('#moveToTail', () => {
@@ -1138,7 +1475,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [];
-        const result = linkedList.prependMany(addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedValues, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
@@ -1148,7 +1487,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const addedValues = [6, 7, 8, 9, 10];
-        const result = linkedList.prependMany(addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedValues, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
@@ -1159,7 +1500,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues = [6, 7, 8, 9, 10];
-        const result = linkedList.prependMany(addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedValues, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
@@ -1176,7 +1519,9 @@ describe('##LinkedListDouble', () => {
           new NodeDouble(9),
           new NodeDouble(10)
         ];
-        const result = linkedList.prependMany(addedNodes);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedNodes, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
@@ -1187,7 +1532,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedList = new LinkedListDouble<number>();
-        const result = linkedList.prependMany(addedList);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedList, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
@@ -1197,7 +1544,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
-        const result = linkedList.prependMany(addedList);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedList, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
@@ -1208,7 +1557,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
-        const result = linkedList.prependMany(addedList);
+        const returnListCount = true;
+
+        const result = linkedList.prependMany(addedList, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10, 1, 2, 3, 4, 5]);
@@ -1221,7 +1572,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [];
-        const result = linkedList.appendMany(addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedValues, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
@@ -1231,7 +1584,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const addedValues = [6, 7, 8, 9, 10];
-        const result = linkedList.appendMany(addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedValues, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
@@ -1242,7 +1597,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues = [6, 7, 8, 9, 10];
-        const result = linkedList.appendMany(addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedValues, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -1259,7 +1616,9 @@ describe('##LinkedListDouble', () => {
           new NodeDouble(9),
           new NodeDouble(10)
         ];
-        const result = linkedList.appendMany(addedNodes);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedNodes, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -1270,7 +1629,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedList = new LinkedListDouble<number>();
-        const result = linkedList.appendMany(addedList);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedList, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
@@ -1280,7 +1641,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
-        const result = linkedList.appendMany(addedList);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedList, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([6, 7, 8, 9, 10]);
@@ -1291,7 +1654,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedList = new LinkedListDouble<number>([6, 7, 8, 9, 10]);
-        const result = linkedList.appendMany(addedList);
+        const returnListCount = true;
+
+        const result = linkedList.appendMany(addedList, returnListCount);
 
         expect(result).toEqual(5);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -1303,8 +1668,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const addedValues: number[] = [1, 2, 3];
+        const returnListCount = true;
 
-        const result = linkedList.insertManyBefore(3, addedValues);
+        const result = linkedList.insertManyBefore(3, addedValues, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([]);
@@ -1315,7 +1681,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
-        const result = linkedList.insertManyBefore(-3, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(-3, addedValues, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
@@ -1326,7 +1694,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
-        const result = linkedList.insertManyBefore(3, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(3, addedValues, returnListCount);
 
         expect(result).toEqual(3);
         expect(linkedList.toArray()).toEqual([1, 2, 10, 9, 8, 3, 4, 5]);
@@ -1340,7 +1710,9 @@ describe('##LinkedListDouble', () => {
           new NodeDouble(10),
           new NodeDouble(9),
           new NodeDouble(8)];
-        const result = linkedList.insertManyBefore(3, addedNodes);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(3, addedNodes, returnListCount);
 
         expect(result).toEqual(3);
         expect(linkedList.toArray()).toEqual([1, 2, 10, 9, 8, 3, 4, 5]);
@@ -1351,7 +1723,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
-        const result = linkedList.insertManyBefore(1, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(1, addedValues, returnListCount);
 
         expect(linkedList.head?.val).toEqual(10);
         expect(result).toEqual(3);
@@ -1366,7 +1740,9 @@ describe('##LinkedListDouble', () => {
           new NodeDouble(10),
           new NodeDouble(9),
           new NodeDouble(8)];
-        const result = linkedList.insertManyBefore(1, addedNodes);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(1, addedNodes, returnListCount);
 
         expect(linkedList.head?.val).toEqual(10);
         expect(result).toEqual(3);
@@ -1378,7 +1754,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues = new LinkedListDouble<number>([10, 9, 8]);
-        const result = linkedList.insertManyBefore(3, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(3, addedValues, returnListCount);
 
         expect(result).toEqual(3);
         expect(linkedList.toArray()).toEqual([1, 2, 10, 9, 8, 3, 4, 5]);
@@ -1389,7 +1767,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues = new LinkedListDouble<number>([10, 9, 8]);
-        const result = linkedList.insertManyBefore(1, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyBefore(1, addedValues, returnListCount);
 
         expect(linkedList.head?.val).toEqual(10);
         expect(result).toEqual(3);
@@ -1402,8 +1782,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const addedValues: number[] = [1, 2, 3];
+        const returnListCount = true;
 
-        const result = linkedList.insertManyAfter(3, addedValues);
+        const result = linkedList.insertManyAfter(3, addedValues, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([]);
@@ -1414,7 +1795,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
-        const result = linkedList.insertManyAfter(-3, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(-3, addedValues, returnListCount);
 
         expect(result).toEqual(0);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 4, 5]);
@@ -1425,7 +1808,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
-        const result = linkedList.insertManyAfter(3, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(3, addedValues, returnListCount);
 
         expect(result).toEqual(3);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 10, 9, 8, 4, 5]);
@@ -1439,7 +1824,9 @@ describe('##LinkedListDouble', () => {
           new NodeDouble(10),
           new NodeDouble(9),
           new NodeDouble(8)];
-        const result = linkedList.insertManyAfter(3, addedNodes);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(3, addedNodes, returnListCount);
 
         expect(result).toEqual(3);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 10, 9, 8, 4, 5]);
@@ -1450,7 +1837,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues: number[] = [10, 9, 8];
-        const result = linkedList.insertManyAfter(5, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(5, addedValues, returnListCount);
 
         expect(linkedList.tail?.val).toEqual(8);
         expect(result).toEqual(3);
@@ -1465,7 +1854,9 @@ describe('##LinkedListDouble', () => {
           new NodeDouble(10),
           new NodeDouble(9),
           new NodeDouble(8)];
-        const result = linkedList.insertManyAfter(5, addedNodes);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(5, addedNodes, returnListCount);
 
         expect(linkedList.tail?.val).toEqual(8);
         expect(result).toEqual(3);
@@ -1477,7 +1868,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues = new LinkedListDouble<number>([10, 9, 8]);
-        const result = linkedList.insertManyAfter(3, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(3, addedValues, returnListCount);
 
         expect(result).toEqual(3);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 10, 9, 8, 4, 5]);
@@ -1488,7 +1881,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const addedValues = new LinkedListDouble<number>([10, 9, 8]);
-        const result = linkedList.insertManyAfter(5, addedValues);
+        const returnListCount = true;
+
+        const result = linkedList.insertManyAfter(5, addedValues, returnListCount);
 
         expect(linkedList.tail?.val).toEqual(8);
         expect(result).toEqual(3);
@@ -1503,7 +1898,7 @@ describe('##LinkedListDouble', () => {
       it('should return an empty array on an empty list', () => {
         const linkedList = new LinkedListDouble<number>();
 
-        const nodes = linkedList.findAny(4);
+        const nodes = linkedList.findAny(4)?.nodes;
 
         expect(nodes.length).toEqual(0);
       });
@@ -1512,7 +1907,7 @@ describe('##LinkedListDouble', () => {
         const values = [4, 1, 4, 2, 4];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.findAny(-4);
+        const nodes = linkedList.findAny(-4)?.nodes;
 
         expect(nodes.length).toEqual(0);
       });
@@ -1522,10 +1917,11 @@ describe('##LinkedListDouble', () => {
         const values = [4, 1, 4, 2, 4];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.findAny(4);
+        const { nodes, indices } = linkedList.findAny(4);
 
         expect(nodes.length).toEqual(3);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([0, 2, 4]);
       });
     });
 
@@ -1533,7 +1929,7 @@ describe('##LinkedListDouble', () => {
       it('should return an empty array on an empty list', () => {
         const linkedList = new LinkedListDouble<number>();
 
-        const nodes = linkedList.removeAny(4);
+        const nodes = linkedList.removeAny(4)?.nodes;
 
         expect(nodes.length).toEqual(0);
       });
@@ -1542,7 +1938,7 @@ describe('##LinkedListDouble', () => {
         const values = [4, 1, 4, 2, 4];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(-4);
+        const nodes = linkedList.removeAny(-4)?.nodes;
 
         expect(nodes.length).toEqual(0);
       });
@@ -1551,21 +1947,26 @@ describe('##LinkedListDouble', () => {
         const values = [1, 4, 2, 4, 3, 4, 5, 4, 6, 4, 7];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(4);
+        const { nodes, indices } = linkedList.removeAny(4);
 
         expect(nodes.length).toEqual(5);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([1, 3, 5, 7, 9]);
+
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 6, 7]);
       });
 
-      it('should return an array of removed nodes that match the provided value in multiple locations in the list that are adjacent matches', () => {
+      it(`should return an array of removed nodes that match the provided value
+         in multiple locations in the list that are adjacent matches`, () => {
         const values = [1, 2, 3, 4, 4, 4, 5, 6, 7];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(4);
+        const { nodes, indices } = linkedList.removeAny(4);
 
         expect(nodes.length).toEqual(3);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([3, 4, 5]);
+
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 6, 7]);
       });
 
@@ -1573,10 +1974,12 @@ describe('##LinkedListDouble', () => {
         const values = [4, 1, 2, 3, 5, 6, 7];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(4);
+        const { nodes, indices } = linkedList.removeAny(4);
 
         expect(nodes.length).toEqual(1);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([0]);
+
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 6, 7]);
         expect(linkedList.head?.val).toEqual(1);
       });
@@ -1585,10 +1988,12 @@ describe('##LinkedListDouble', () => {
         const values = [4, 4, 4, 1, 2, 3, 5, 6, 7];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(4);
+        const { nodes, indices } = linkedList.removeAny(4);
 
         expect(nodes.length).toEqual(3);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([0, 1, 2]);
+
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 6, 7]);
         expect(linkedList.head?.val).toEqual(1);
       });
@@ -1597,10 +2002,12 @@ describe('##LinkedListDouble', () => {
         const values = [1, 2, 3, 5, 6, 7, 4];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(4);
+        const { nodes, indices } = linkedList.removeAny(4);
 
         expect(nodes.length).toEqual(1);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([6]);
+
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 6, 7]);
         expect(linkedList.tail?.val).toEqual(7);
       });
@@ -1609,10 +2016,12 @@ describe('##LinkedListDouble', () => {
         const values = [1, 2, 3, 5, 6, 7, 4, 4, 4];
         const linkedList = new LinkedListDouble<number>(values);
 
-        const nodes = linkedList.removeAny(4);
+        const { nodes, indices } = linkedList.removeAny(4);
 
         expect(nodes.length).toEqual(3);
         expect(nodes[0].val).toEqual(4);
+        expect(indices).toEqual([6, 7, 8]);
+
         expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 6, 7]);
         expect(linkedList.tail?.val).toEqual(7);
       });
@@ -1772,6 +2181,26 @@ describe('##LinkedListDouble', () => {
           expect(resultMany.length).toEqual(4);
         });
       });
+
+      // TODO: Work out how to test this. CANNOT seem to provide null arguments, as intended,
+      //    yet higher up a calling tree, null can somehow be accepted.
+      // Same with removeBetween with null+head as end, or start as tail+null resulting in no
+      //    insertions, but prepend/append.
+      // describe('Search values given as null', () => {
+      //   it(`should return the start node and count from there to found end node
+      //     when start node is given as null`, () => {
+      //   });
+
+      //   it(`should return the end node and count to there from the found start node
+      //     when end node is given as null`, () => {
+
+      //   });
+
+      //   it(`should return the start node, end node, and count of the list length
+      //     when start & end nodes are given as null`, () => {
+
+      //   });
+      // });
     });
 
     describe('#findRangeFromTo', () => {
@@ -1918,8 +2347,9 @@ describe('##LinkedListDouble', () => {
     describe('#removeBetween', () => {
       it('should do nothing & return a null removed head node and a removal count of 0 for an empty list', () => {
         const linkedList = new LinkedListDouble<number>();
+        const returnListCount = true;
 
-        const result = linkedList.removeBetween(2, 4);
+        const result = linkedList.removeBetween(2, 4, returnListCount);
 
         expect(result.head).toBeNull();
         expect(result.count).toEqual(0);
@@ -1931,8 +2361,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing & return a null removed head node and a removal count of 0', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(-2, -4);
+          const result = linkedList.removeBetween(-2, -4, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -1945,8 +2376,9 @@ describe('##LinkedListDouble', () => {
         it('should remove nodes from the next node after the list head through the list end, if the start value is found at the head', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(1, 12);
+          const result = linkedList.removeBetween(1, 12, returnListCount);
 
           expect(result.head?.val).toEqual(2);
           expect(result.count).toEqual(8);
@@ -1959,8 +2391,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing if the start value is found at the tail', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(9, 12);
+          const result = linkedList.removeBetween(9, 12, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -1971,8 +2404,9 @@ describe('##LinkedListDouble', () => {
         it('should remove nodes from the next node after the start node through the list end, for a start value found anywhere in the middle', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(4, 12);
+          const result = linkedList.removeBetween(4, 12, returnListCount);
 
           expect(result.head?.val).toEqual(5);
           expect(result.count).toEqual(5);
@@ -1987,8 +2421,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing if the end value is found at the head', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(-3, 1);
+          const result = linkedList.removeBetween(-3, 1, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -1999,8 +2434,9 @@ describe('##LinkedListDouble', () => {
         it('should remove nodes from the head through the last node just before the tail of the list if the end value is found at the tail', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(-3, 9);
+          const result = linkedList.removeBetween(-3, 9, returnListCount);
 
           expect(result.head?.val).toEqual(1);
           expect(result.count).toEqual(8);
@@ -2013,8 +2449,9 @@ describe('##LinkedListDouble', () => {
         it('should remove nodes from the head node through the last node just before the end node, for an end value found anywhere in the middle', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(-3, 5);
+          const result = linkedList.removeBetween(-3, 5, returnListCount);
 
           expect(result.head?.val).toEqual(1);
           expect(result.count).toEqual(4);
@@ -2029,8 +2466,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing if the end value is found before the start value', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(6, 4);
+          const result = linkedList.removeBetween(6, 4, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -2041,8 +2479,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing if the start and end values are the same', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(4, 4);
+          const result = linkedList.removeBetween(4, 4, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -2053,8 +2492,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing if the start and end values are adjacent', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(4, 5);
+          const result = linkedList.removeBetween(4, 5, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -2067,8 +2507,9 @@ describe('##LinkedListDouble', () => {
       if the start and end values are found in order, non-adjacent`, () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeBetween(2, 7);
+          const result = linkedList.removeBetween(2, 7, returnListCount);
 
           expect(result.head?.val).toEqual(3);
           expect(result.count).toEqual(4);
@@ -2083,8 +2524,9 @@ describe('##LinkedListDouble', () => {
     describe('#removeFromTo', () => {
       it('should do nothing & return a null removed head node and a removal count of 0 for an empty list', () => {
         const linkedList = new LinkedListDouble<number>();
+        const returnListCount = true;
 
-        const result = linkedList.removeFromTo(2, 4);
+        const result = linkedList.removeFromTo(2, 4, returnListCount);
 
         expect(result.head).toBeNull();
         expect(result.count).toEqual(0);
@@ -2096,8 +2538,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing & return a null removed head node and a removal count of 0', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(-2, -4);
+          const result = linkedList.removeFromTo(-2, -4, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -2110,8 +2553,9 @@ describe('##LinkedListDouble', () => {
         it('should remove all nodes in the list if the start value is found at the head', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(1, 12);
+          const result = linkedList.removeFromTo(1, 12, returnListCount);
 
           expect(result.head?.val).toEqual(1);
           expect(result.count).toEqual(9);
@@ -2122,8 +2566,9 @@ describe('##LinkedListDouble', () => {
         it('should remove the tail node if the start value is found at the tail', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(9, 12);
+          const result = linkedList.removeFromTo(9, 12, returnListCount);
 
           expect(result.head?.val).toEqual(9);
           expect(result.count).toEqual(1);
@@ -2136,8 +2581,9 @@ describe('##LinkedListDouble', () => {
         it('should remove nodes from the start node through the tail node for a start value found anywhere in the middle', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(4, 12);
+          const result = linkedList.removeFromTo(4, 12, returnListCount);
 
           expect(result.head?.val).toEqual(4);
           expect(result.count).toEqual(6);
@@ -2152,8 +2598,9 @@ describe('##LinkedListDouble', () => {
         it('should remove the head node if the end value is found at the head', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(-3, 1);
+          const result = linkedList.removeFromTo(-3, 1, returnListCount);
 
           expect(result.head?.val).toEqual(1);
           expect(result.count).toEqual(1);
@@ -2166,8 +2613,9 @@ describe('##LinkedListDouble', () => {
         it('should remove all nodes in the list if the end value is found at the tail', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(-3, 9);
+          const result = linkedList.removeFromTo(-3, 9, returnListCount);
 
           expect(result.head?.val).toEqual(1);
           expect(result.count).toEqual(9);
@@ -2178,8 +2626,9 @@ describe('##LinkedListDouble', () => {
         it('should remove the head node through the end node for an end value found anywhere in the middle', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(-3, 5);
+          const result = linkedList.removeFromTo(-3, 5, returnListCount);
 
           expect(result.head?.val).toEqual(1);
           expect(result.count).toEqual(5);
@@ -2194,8 +2643,9 @@ describe('##LinkedListDouble', () => {
         it('should do nothing if the end value is found before the start value', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(6, 4);
+          const result = linkedList.removeFromTo(6, 4, returnListCount);
 
           expect(result.head).toBeNull();
           expect(result.count).toEqual(0);
@@ -2204,8 +2654,9 @@ describe('##LinkedListDouble', () => {
         it('should remove the matching value node if the start and end values are the same', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(4, 4);
+          const result = linkedList.removeFromTo(4, 4, returnListCount);
 
           expect(result.head?.val).toEqual(4);
           expect(result.count).toEqual(1);
@@ -2218,8 +2669,9 @@ describe('##LinkedListDouble', () => {
         it('should remove the start node through the end node if the start and end values are adjacent', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(4, 5);
+          const result = linkedList.removeFromTo(4, 5, returnListCount);
 
           expect(result.head?.val).toEqual(4);
           expect(result.count).toEqual(2);
@@ -2232,8 +2684,9 @@ describe('##LinkedListDouble', () => {
         it('should remove the start node through the end node if the start and end values are found in order, non-adjacent', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
+          const returnListCount = true;
 
-          const result = linkedList.removeFromTo(4, 7);
+          const result = linkedList.removeFromTo(4, 7, returnListCount);
 
           expect(result.head?.val).toEqual(4);
           expect(result.count).toEqual(4);
@@ -2250,8 +2703,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const newValues = [101, 102, 103];
+        const returnListCount = true;
 
-        const result = linkedList.replaceBetween(2, 4, newValues);
+        const result = linkedList.replaceBetween(2, 4, newValues, returnListCount);
 
         expect(result.insertedCount).toEqual(0);
         expect(result.removedCount).toEqual(0);
@@ -2266,8 +2720,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const newValues: number[] = [];
+        const returnListCount = true;
 
-        const result = linkedList.replaceBetween(3, 12, newValues);
+        const result = linkedList.replaceBetween(3, 12, newValues, returnListCount);
 
         expect(result.insertedCount).toEqual(0);
         expect(result.removedCount).toEqual(6);
@@ -2284,8 +2739,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-2, -4, newValues);
+            const result = linkedList.replaceBetween(-2, -4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2302,8 +2758,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(1, 12, newValues);
+            const result = linkedList.replaceBetween(1, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(8);
@@ -2318,8 +2775,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(9, 12, newValues);
+            const result = linkedList.replaceBetween(9, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
@@ -2334,8 +2792,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(4, 12, newValues);
+            const result = linkedList.replaceBetween(4, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(5);
@@ -2352,8 +2811,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-3, 1, newValues);
+            const result = linkedList.replaceBetween(-3, 1, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
@@ -2368,8 +2828,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-3, 9, newValues);
+            const result = linkedList.replaceBetween(-3, 9, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(8);
@@ -2384,8 +2845,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-3, 5, newValues);
+            const result = linkedList.replaceBetween(-3, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(4);
@@ -2402,8 +2864,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(6, 4, newValues);
+            const result = linkedList.replaceBetween(6, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2418,8 +2881,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(4, 4, newValues);
+            const result = linkedList.replaceBetween(4, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2434,8 +2898,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(4, 5, newValues);
+            const result = linkedList.replaceBetween(4, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
@@ -2452,8 +2917,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(2, 7, newValues);
+            const result = linkedList.replaceBetween(2, 7, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(4);
@@ -2477,6 +2943,7 @@ describe('##LinkedListDouble', () => {
             new NodeDouble(102),
             new NodeDouble(103)
           ];
+          const returnListCount = true;
 
           const result = linkedList.replaceBetween(2, 7, newNodes);
 
@@ -2496,8 +2963,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-2, -4, newValues);
+            const result = linkedList.replaceBetween(-2, -4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2514,8 +2982,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(1, 12, newValues);
+            const result = linkedList.replaceBetween(1, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(8);
@@ -2530,8 +2999,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(9, 12, newValues);
+            const result = linkedList.replaceBetween(9, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
@@ -2546,8 +3016,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(4, 12, newValues);
+            const result = linkedList.replaceBetween(4, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(5);
@@ -2564,8 +3035,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-3, 1, newValues);
+            const result = linkedList.replaceBetween(-3, 1, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
@@ -2580,8 +3052,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-3, 9, newValues);
+            const result = linkedList.replaceBetween(-3, 9, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(8);
@@ -2596,8 +3069,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(-3, 5, newValues);
+            const result = linkedList.replaceBetween(-3, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(4);
@@ -2614,8 +3088,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(6, 4, newValues);
+            const result = linkedList.replaceBetween(6, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2630,8 +3105,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(4, 4, newValues);
+            const result = linkedList.replaceBetween(4, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2646,8 +3122,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(4, 5, newValues);
+            const result = linkedList.replaceBetween(4, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(0);
@@ -2664,8 +3141,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceBetween(2, 7, newValues);
+            const result = linkedList.replaceBetween(2, 7, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(4);
@@ -2683,8 +3161,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>();
 
         const newValues = [101, 102, 103];
+        const returnListCount = true;
 
-        const result = linkedList.replaceFromTo(2, 4, newValues);
+        const result = linkedList.replaceFromTo(2, 4, newValues, returnListCount);
 
         expect(result.insertedCount).toEqual(0);
         expect(result.removedCount).toEqual(0);
@@ -2699,8 +3178,9 @@ describe('##LinkedListDouble', () => {
         const linkedList = new LinkedListDouble<number>(values);
 
         const newValues: number[] = [];
+        const returnListCount = true;
 
-        const result = linkedList.replaceFromTo(3, 12, newValues);
+        const result = linkedList.replaceFromTo(3, 12, newValues, returnListCount);
 
         expect(result.insertedCount).toEqual(0);
         expect(result.removedCount).toEqual(7);
@@ -2717,8 +3197,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-2, -4, newValues);
+            const result = linkedList.replaceFromTo(-2, -4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2735,8 +3216,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(1, 12, newValues);
+            const result = linkedList.replaceFromTo(1, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(9);
@@ -2751,8 +3233,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(9, 12, newValues);
+            const result = linkedList.replaceFromTo(9, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(1);
@@ -2767,8 +3250,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(4, 12, newValues);
+            const result = linkedList.replaceFromTo(4, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(6);
@@ -2785,8 +3269,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-3, 1, newValues);
+            const result = linkedList.replaceFromTo(-3, 1, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(1);
@@ -2801,8 +3286,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-3, 9, newValues);
+            const result = linkedList.replaceFromTo(-3, 9, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(9);
@@ -2817,8 +3303,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-3, 5, newValues);
+            const result = linkedList.replaceFromTo(-3, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(5);
@@ -2835,8 +3322,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(6, 4, newValues);
+            const result = linkedList.replaceFromTo(6, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2851,8 +3339,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(4, 4, newValues);
+            const result = linkedList.replaceFromTo(4, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(1);
@@ -2867,8 +3356,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(4, 5, newValues);
+            const result = linkedList.replaceFromTo(4, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(2);
@@ -2883,8 +3373,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = [101, 102, 103];
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(2, 7, newValues);
+            const result = linkedList.replaceFromTo(2, 7, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(6);
@@ -2906,6 +3397,7 @@ describe('##LinkedListDouble', () => {
             new NodeDouble(102),
             new NodeDouble(103)
           ];
+          const returnListCount = true;
 
           const result = linkedList.replaceFromTo(2, 7, newNodes);
 
@@ -2925,8 +3417,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-2, -4, newValues);
+            const result = linkedList.replaceFromTo(-2, -4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -2943,8 +3436,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(1, 12, newValues);
+            const result = linkedList.replaceFromTo(1, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(9);
@@ -2959,8 +3453,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(9, 12, newValues);
+            const result = linkedList.replaceFromTo(9, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(1);
@@ -2975,8 +3470,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(4, 12, newValues);
+            const result = linkedList.replaceFromTo(4, 12, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(6);
@@ -2993,8 +3489,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-3, 1, newValues);
+            const result = linkedList.replaceFromTo(-3, 1, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(1);
@@ -3009,8 +3506,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-3, 9, newValues);
+            const result = linkedList.replaceFromTo(-3, 9, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(9);
@@ -3025,8 +3523,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(-3, 5, newValues);
+            const result = linkedList.replaceFromTo(-3, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(5);
@@ -3043,8 +3542,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(6, 4, newValues);
+            const result = linkedList.replaceFromTo(6, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(0);
             expect(result.removedCount).toEqual(0);
@@ -3059,8 +3559,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(4, 4, newValues);
+            const result = linkedList.replaceFromTo(4, 4, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(1);
@@ -3075,8 +3576,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(4, 5, newValues);
+            const result = linkedList.replaceFromTo(4, 5, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(2);
@@ -3091,8 +3593,9 @@ describe('##LinkedListDouble', () => {
             const linkedList = new LinkedListDouble<number>(values);
 
             const newValues = new LinkedListDouble<number>([101, 102, 103]);
+            const returnListCount = true;
 
-            const result = linkedList.replaceFromTo(2, 7, newValues);
+            const result = linkedList.replaceFromTo(2, 7, newValues, returnListCount);
 
             expect(result.insertedCount).toEqual(3);
             expect(result.removedCount).toEqual(6);
@@ -3279,6 +3782,86 @@ describe('##LinkedListDouble', () => {
         linkedList.removeTail();
 
         expect(linkedList.size()).toEqual(4);
+      });
+    });
+
+    describe('#sizeFromTo', () => {
+      it('should return -1 for an empty list', () => {
+        const linkedList = new LinkedListDouble<number>();
+
+        const startNode = new NodeDouble(-1);
+        const endNode = new NodeDouble(-2);
+
+        const countResult = linkedList.sizeFromTo(startNode, endNode)
+
+        expect(countResult).toEqual(-1);
+      });
+
+      it('should return -1 if neither provided value is found', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const startNode = new NodeDouble(-1);
+        const endNode = new NodeDouble(-2);
+
+        const countResult = linkedList.sizeFromTo(startNode, endNode);
+
+        expect(countResult).toEqual(-1);
+      });
+
+      it('should return -1 if the provided start node is located after the provided end node', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const startNode = new NodeDouble(4);
+        const endNode = new NodeDouble(2);
+
+        const countResult = linkedList.sizeFromTo(startNode, endNode);
+
+        expect(countResult).toEqual(-1);
+      });
+
+      it('should return the length of the list if only null nodes are provided', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const countResult = linkedList.sizeFromTo(null, null);
+
+        expect(countResult).toEqual(5);
+      });
+
+      it('should return the number of nodes up to and including the second provided node if the first provided node is null', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const endNode = linkedList.find(4)?.node;
+
+        const countResult = linkedList.sizeFromTo(null, endNode!);
+
+        expect(countResult).toEqual(4);
+      });
+
+      it('should return the number of nodes after and including the first provided node if the second provided node is null', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const startNode = linkedList.find(2)?.node;
+
+        const countResult = linkedList.sizeFromTo(startNode!, null);
+
+        expect(countResult).toEqual(4);
+      });
+
+      it('should return the number of nodes between and including the provided nodes', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        const startNode = linkedList.find(2)?.node;
+        const endNode = linkedList.find(4)?.node;
+
+        const countResult = linkedList.sizeFromTo(startNode!, endNode!);
+
+        expect(countResult).toEqual(3);
       });
     });
 
