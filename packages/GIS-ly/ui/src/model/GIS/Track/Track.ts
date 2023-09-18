@@ -6,7 +6,7 @@ import { FeatureCollection } from '../../GeoJSON';
 import { CoordinateNode, SegmentNode } from '../../Geometry/Polyline';
 import { GeoJsonManager } from '../GeoJsonManager';
 
-import { IClippable } from './IClippable';
+import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
 
@@ -22,7 +22,7 @@ export type EvaluatorArgs = { [name: string]: number };
 
 export interface ITrack
   extends
-  IClippable,
+  ITrimmable,
   ISplittable<Track>,
   IQuery,
   ICloneable<Track>,
@@ -339,19 +339,19 @@ export class Track implements ITrack {
 
   // === IClippable
   // TODO: These might be better on the Polyline and then updating the geoJson collection object
-  clipBeforeTime(timestamp: string) {
+  trimBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
 
     return this.updateBySegment(segmentData);
   }
 
-  clipAfterTime(timestamp: string) {
+  trimAfterTime(timestamp: string) {
     const segmentData = this.getSegmentAfterTime(timestamp);
 
     return this.updateBySegment(segmentData);
   }
 
-  clipBetweenTimes(timestampStart: string, timestampEnd: string) {
+  trimByTimes(timestampStart: string, timestampEnd: string) {
     const segmentData = this.getSegmentBetweenTimes(timestampStart, timestampEnd);
 
     return this.updateBySegment(segmentData);

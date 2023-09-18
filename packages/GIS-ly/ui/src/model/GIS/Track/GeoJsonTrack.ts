@@ -7,7 +7,7 @@ import {
 
 import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
-import { IClippable } from './IClippable';
+import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
 
@@ -23,7 +23,7 @@ import { TrackBoundingBox } from './TrackBoundingBox';
 
 export interface IGeoJsonTrack
   extends
-  IClippable,
+  ITrimmable,
   ISplittable<FeatureCollection>,
   IQuery,
   ICloneable<GeoJsonTrack>,
@@ -294,19 +294,19 @@ export class GeoJsonTrack implements IGeoJsonTrack {
 
 
   // === IClippable
-  clipBeforeTime(timestamp: string) {
+  trimBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
 
     return this.updateGeoJsonTrack(segmentData);
   }
 
-  clipAfterTime(timestamp: string) {
+  trimAfterTime(timestamp: string) {
     const segmentData = this.getSegmentAfterTime(timestamp);
 
     return this.updateGeoJsonTrack(segmentData);
   }
 
-  clipBetweenTimes(timestampStart: string, timestampEnd: string) {
+  trimByTimes(timestampStart: string, timestampEnd: string) {
     const segmentData = this.getSegmentBetweenTimes(timestampStart, timestampEnd);
 
     return this.updateGeoJsonTrack(segmentData);
