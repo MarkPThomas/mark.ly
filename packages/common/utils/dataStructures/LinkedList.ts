@@ -1653,6 +1653,19 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
   protected isNullOrUndefined(value: any): boolean {
     return value === null || value === undefined;
   }
+
+
+  static sizeOf<N extends Node<V>, V>(start: N): number {
+    let count = 0;
+
+    let currNode = start;
+    while (currNode) {
+      count++;
+      currNode = currNode.next as N;
+    }
+
+    return count;
+  }
 }
 
 export { Node };

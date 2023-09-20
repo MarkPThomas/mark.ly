@@ -384,7 +384,6 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.tail?.val).toEqual(5);
       });
 
-
       it('should remove the head of a list that matches the specified node', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListSingle<number>(values);
@@ -444,14 +443,17 @@ describe('##LinkedListSingle', () => {
       it('should remove the node from a list where the node is found & return the removed node', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListSingle<number>(values);
-        const node = new NodeSingle<number>(3);
+        const targetNode = new NodeSingle<number>(3);
 
-        expect(linkedList.size()).toEqual(5);
+        const prevNode = linkedList.find(2)!.node;
+        const nextNode = linkedList.find(4)!.node;
 
-        const removedNode = linkedList.remove(node)?.node;
+        const removedNode = linkedList.remove(targetNode)?.node;
 
         expect(removedNode?.val).toEqual(3);
         expect(linkedList.size()).toEqual(4);
+        expect(removedNode!.next).toBeNull();
+        expect(prevNode.next).toEqual(nextNode);
       });
 
       it('should remove the last remaining node in a list that matches the specified value', () => {
@@ -518,6 +520,21 @@ describe('##LinkedListSingle', () => {
         expect(originalTail).toEqual(linkedList.tail);
         expect(linkedList.head).toBeNull();
         expect(linkedList.tail).toBeNull();
+      });
+
+      it('should return null & do nothing on an empty list with a provided node', () => {
+        const linkedList = new LinkedListSingle<number>();
+
+        const originalSize = linkedList.size();
+        const originalHead = linkedList.head;
+        const originalTail = linkedList.tail;
+
+        const trimmedHead = linkedList.trim(new NodeSingle(2), new NodeSingle(4));
+
+        expect(trimmedHead).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalHead).toEqual(linkedList.head);
+        expect(originalTail).toEqual(linkedList.tail);
       });
 
       it('should return null & do nothing if neither of the provided values exists in the list', () => {
@@ -866,7 +883,6 @@ describe('##LinkedListSingle', () => {
       it('should insert the value before the reference and return true', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListSingle<number>(values);
-        const node = new NodeSingle(1);
 
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(5);
@@ -890,6 +906,9 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.tail?.val).toEqual(5);
         expect(linkedList.size()).toEqual(5);
 
+        const prevNode = linkedList.find(2)!.node;
+        const nextNode = prevNode.next;
+
         const insertionSuccess = linkedList.insertBefore(3, node);
         expect(insertionSuccess).toBeTruthy();
 
@@ -897,6 +916,9 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.tail?.val).toEqual(5);
         expect(linkedList.size()).toEqual(6);
         expect(linkedList.toArray()).toEqual([1, 2, 10, 3, 4, 5]);
+
+        expect(prevNode.next).toEqual(node);
+        expect(node.next).toEqual(nextNode);
       });
 
       it('should insert the value before the head as the new head of the list if the reference matches the head', () => {
@@ -967,7 +989,6 @@ describe('##LinkedListSingle', () => {
       it('should insert the value after the reference and return true', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListSingle<number>(values);
-        const node = new NodeSingle(1);
 
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(5);
@@ -991,6 +1012,9 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.tail?.val).toEqual(5);
         expect(linkedList.size()).toEqual(5);
 
+        const prevNode = linkedList.find(3)!.node;
+        const nextNode = prevNode.next;
+
         const insertionSuccess = linkedList.insertAfter(3, node);
         expect(insertionSuccess).toBeTruthy();
 
@@ -998,6 +1022,9 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.tail?.val).toEqual(5);
         expect(linkedList.size()).toEqual(6);
         expect(linkedList.toArray()).toEqual([1, 2, 3, 10, 4, 5]);
+
+        expect(prevNode.next).toEqual(node);
+        expect(node.next).toEqual(nextNode);
       });
 
       it('should insert the value after the tail as the new tail of the list if the reference matches the tail', () => {
@@ -1164,6 +1191,19 @@ describe('##LinkedListSingle', () => {
         expect(originalHead).toEqual(linkedList.head);
       });
 
+      it('should return null & do nothing on an empty list with a provided node', () => {
+        const linkedList = new LinkedListSingle<number>();
+
+        const originalSize = linkedList.size();
+        const originalHead = linkedList.head;
+
+        const trimmedHead = linkedList.trimHead(new NodeSingle(2));
+
+        expect(trimmedHead).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalHead).toEqual(linkedList.head);
+      });
+
       it('should return null & do nothing if the provided value does not exist in the list', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListSingle<number>(values);
@@ -1197,7 +1237,7 @@ describe('##LinkedListSingle', () => {
 
         const originalHead = linkedList.head;
 
-        const node = linkedList.find(2)?.node;
+        const node = linkedList.find(2)!.node;
 
         const trimmedHead = linkedList.trimHead(node!);
 
@@ -1353,6 +1393,19 @@ describe('##LinkedListSingle', () => {
         expect(originalTail).toEqual(linkedList.tail);
       });
 
+      it('should return null & do nothing on an empty list with a provided node', () => {
+        const linkedList = new LinkedListSingle<number>();
+
+        const originalSize = linkedList.size();
+        const originalTail = linkedList.tail;
+
+        const trimmedHead = linkedList.trimTail(new NodeSingle(2));
+
+        expect(trimmedHead).toBeNull();
+        expect(originalSize).toEqual(linkedList.size());
+        expect(originalTail).toEqual(linkedList.tail);
+      });
+
       it('should return null & do nothing if the provided value does not exist in the list', () => {
         const values = [1, 2, 3, 4, 5];
         const linkedList = new LinkedListSingle<number>(values);
@@ -1368,7 +1421,7 @@ describe('##LinkedListSingle', () => {
       });
 
       it('should return the the node after the found value & trim after the found value if the provided value exists in the list', () => {
-        const values = [1, 2, 3, 4, 5];
+        const values = [1, 2, 3, 4, 5, 6];
         const linkedList = new LinkedListSingle<number>(values);
 
         const targetNode = linkedList.find(4)?.node;
@@ -1382,18 +1435,20 @@ describe('##LinkedListSingle', () => {
       });
 
       it('should return the node after the existing node & trim after the existing node if the provided node exists in the list', () => {
-        const values = [1, 2, 3, 4, 5];
+        const values = [1, 2, 3, 4, 5, 6];
         const linkedList = new LinkedListSingle<number>(values);
 
-
-        const targetNode = linkedList.find(4)?.node;
+        const targetNode = linkedList.find(4)!.node;
         const nodeAfterTarget = targetNode!.next;
+
+        expect(targetNode.next).not.toBeNull();
 
         const trimmedTailHead = linkedList.trimTail(targetNode!);
 
         expect(trimmedTailHead).toEqual(nodeAfterTarget);
         expect(linkedList.size()).toEqual(4);
         expect(linkedList.tail).toEqual(targetNode);
+        expect(targetNode.next).toBeNull();
       });
     });
 
@@ -2509,6 +2564,10 @@ describe('##LinkedListSingle', () => {
           const linkedList = new LinkedListSingle<number>(values);
           const returnListCount = true;
 
+          const startNode = linkedList.find(2)!.node;
+          const endNode = linkedList.find(7)!.node;
+          const removedTail = linkedList.find(6)!.node;
+
           const result = linkedList.removeBetween(2, 7, returnListCount);
 
           expect(result.head?.val).toEqual(3);
@@ -2517,6 +2576,9 @@ describe('##LinkedListSingle', () => {
           expect(linkedList.toArray()).toEqual([1, 2, 7, 8, 9]);
           expect(linkedList.head?.val).toEqual(1);
           expect(linkedList.tail?.val).toEqual(9);
+
+          expect(removedTail.next).toBeNull();
+          expect(startNode.next).toEqual(endNode);
         });
       });
     });
@@ -2686,6 +2748,10 @@ describe('##LinkedListSingle', () => {
           const linkedList = new LinkedListSingle<number>(values);
           const returnListCount = true;
 
+          const startNode = linkedList.find(3)!.node;
+          const endNode = linkedList.find(8)!.node;
+          const removedTail = linkedList.find(7)!.node;
+
           const result = linkedList.removeFromTo(4, 7, returnListCount);
 
           expect(result.head?.val).toEqual(4);
@@ -2694,6 +2760,9 @@ describe('##LinkedListSingle', () => {
           expect(linkedList.toArray()).toEqual([1, 2, 3, 8, 9]);
           expect(linkedList.head?.val).toEqual(1);
           expect(linkedList.tail?.val).toEqual(9);
+
+          expect(removedTail.next).toBeNull();
+          expect(startNode.next).toEqual(endNode);
         });
       });
     });
