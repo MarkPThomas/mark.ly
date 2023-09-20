@@ -56,16 +56,6 @@ export class LinkedList<N extends NodeDouble<V>, V>
       return this.moveNode(node, spaces);
     } else {
       return false;
-      // // Find matching node
-      // let currNode = this._head as N;
-      // let prevNode = null;
-      // while (currNode) {
-      //   if (this.areEqual(valueOrNode, currNode, cb)) {
-      //     return this.moveNode(currNode, prevNode, spaces);
-      //   }
-      //   prevNode = currNode;
-      //   currNode = currNode.next as N;
-      // }
     }
   }
 
@@ -213,11 +203,11 @@ export class LinkedList<N extends NodeDouble<V>, V>
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): N | null {
-    let originalHead: N | null = null;
+    let trimmedHead: N | null = null;
     const node = this.getExistingNode(valueOrNode, cb)?.node;
 
-    if (node) {
-      originalHead = this._head as N;
+    if (node && node.prev) {
+      trimmedHead = this._head as N;
       this._head = node;
 
       if (node.prev) {
@@ -225,9 +215,11 @@ export class LinkedList<N extends NodeDouble<V>, V>
         node.prev = null;
       }
 
-      return originalHead;
+      this._lengthDirty = true;
+
+      return trimmedHead;
     }
-    return originalHead;
+    return trimmedHead;
   }
 
 
@@ -258,11 +250,11 @@ export class LinkedList<N extends NodeDouble<V>, V>
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): N | null {
-    let originalTail: N | null = null;
+    let trimmedHead: N | null = null;
     const node = this.getExistingNode(valueOrNode, cb)?.node;
 
-    if (node) {
-      originalTail = this._tail;
+    if (node && node.next) {
+      trimmedHead = node.next as N;
       this._tail = node;
 
       if (node.next) {
@@ -270,9 +262,11 @@ export class LinkedList<N extends NodeDouble<V>, V>
         node.next = null;
       }
 
-      return originalTail;
+      this._lengthDirty = true;
+
+      return trimmedHead;
     }
-    return originalTail;
+    return trimmedHead;
   }
 
 
@@ -386,6 +380,21 @@ export class LinkedList<N extends NodeDouble<V>, V>
 
 
   // === Range Operations ===
+  protected removeFromToNodes(startNode: N | null, endNode: N | null): N | null {
+    const lastTail = startNode?.prev as N;
+    const nextHead = endNode?.next as N;
+    const result = super.removeFromToNodes(startNode, endNode);
+
+    if (result) {
+      result.prev = null;
+      if (nextHead) {
+        nextHead.prev = lastTail;
+      }
+    }
+
+    return result;
+  }
+
   splitBetween(
     valueOrNodeStart: V | N,
     valueOrNodeEnd: V | N,

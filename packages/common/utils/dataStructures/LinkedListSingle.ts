@@ -175,14 +175,14 @@ export class LinkedList<N extends NodeSingle<V>, V>
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): N | null {
-    let originalHead: N | null = null;
+    let trimmedHead: N | null = null;
     const node = this.getExistingNode(valueOrNode, cb)?.node;
-    if (node) {
-      originalHead = this._head;
+    if (node && (node.next || this._tail === node)) {
+      trimmedHead = this._head;
       this._head = node;
-      return originalHead;
+      return trimmedHead;
     }
-    return originalHead;
+    return trimmedHead;
   }
 
 
@@ -220,17 +220,17 @@ export class LinkedList<N extends NodeSingle<V>, V>
     valueOrNode: V | N,
     cb: EqualityCallbackOptions<V> = undefined
   ): N | null {
-    let originalTail: N | null = null;
+    let trimmedHead: N | null = null;
     const node = this.getExistingNode(valueOrNode, cb)?.node;
-    if (node) {
-      originalTail = this._tail;
+    if (node && node.next) {
+      trimmedHead = node.next as N;
       this._tail = node;
 
       node.next = null;
 
-      return originalTail;
+      return trimmedHead;
     }
-    return originalTail;
+    return trimmedHead;
   }
 
 
