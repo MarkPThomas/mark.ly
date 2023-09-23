@@ -17,28 +17,51 @@ export class LinkedList<N extends NodeDouble<V>, V>
   // === Single Item Operations ===
   prepend(valueOrNode: V | N) {
     const node = this.getAsNode(valueOrNode);
+    const { nodeHead, nodeTail } = this.getHeadAndTail(node);
 
-    node.next = this._head;
+    nodeTail.next = this._head;
     if (this._head) {
-      this._head.prev = node;
+      this._head.prev = nodeTail;
     } else {
-      this._tail = node as N;
+      this._tail = nodeTail as N;
     }
-    this._head = node as N;
+    this._head = nodeHead;
+
     this._lengthDirty = true;
   }
 
   append(valueOrNode: V | N) {
     const node = this.getAsNode(valueOrNode);
+    const { nodeHead, nodeTail } = this.getHeadAndTail(node);
 
-    node.prev = this._tail;
+    nodeHead.prev = this._tail;
     if (this._tail) {
-      this._tail.next = node;
+      this._tail.next = nodeHead;
     } else {
-      this._head = node as N;
+      this._head = nodeHead as N;
     }
-    this._tail = node as N;
+    this._tail = nodeTail;
+
     this._lengthDirty = true;
+  }
+
+  protected getHeadAndTail(node: N) {
+    let nodeHead: N = node;
+    let nodeTail: N = node;
+
+    if (node.next && !node.prev) {
+      // head of a list, get tail
+      while (nodeTail.next) {
+        nodeTail = nodeTail.next as N;
+      }
+    } else if (node.prev && !node.next) {
+      // tail of a list, get head
+      while (nodeHead.prev) {
+        nodeHead = nodeHead.prev as N;
+      }
+    }
+
+    return { nodeHead, nodeTail };
   }
 
   move(

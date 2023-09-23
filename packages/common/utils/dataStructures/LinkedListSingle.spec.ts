@@ -179,6 +179,27 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.head?.val).toEqual(6);
         expect(linkedList.tail?.val).toEqual(5);
       });
+
+      it('should add a linked set of nodes with the head provided', () => {
+        const head = new NodeSingle(6);
+        let currNode = head;
+        for (let i = 7; i < 10; i++) {
+          const newNode = new NodeSingle(i);
+          currNode.next = newNode;
+
+          currNode = currNode.next as NodeSingle<number>;
+        }
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListSingle<number>(values);
+
+        expect(linkedList.size()).toEqual(5);
+
+        linkedList.prepend(head);
+
+        expect(linkedList.size()).toEqual(9);
+        expect(linkedList.head?.val).toEqual(6);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
     });
 
     describe('#append', () => {
@@ -227,6 +248,27 @@ describe('##LinkedListSingle', () => {
         expect(linkedList.size()).toEqual(6);
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(6);
+      });
+
+      it('should add a linked set of nodes with the head provided', () => {
+        const head = new NodeSingle(6);
+        let currNode = head;
+        for (let i = 7; i < 10; i++) {
+          const newNode = new NodeSingle(i);
+          currNode.next = newNode;
+
+          currNode = currNode.next as NodeSingle<number>;
+        }
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListSingle<number>(values);
+
+        expect(linkedList.size()).toEqual(5);
+
+        linkedList.append(head);
+
+        expect(linkedList.size()).toEqual(9);
+        expect(linkedList.head?.val).toEqual(1);
+        expect(linkedList.tail?.val).toEqual(9);
       });
     });
 
