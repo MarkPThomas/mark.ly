@@ -20,7 +20,7 @@ export type FeatureOptions = {
 export interface FeatureProperties extends GeoJsonProperties {
   geometry: IGeometry<GeoJsonProperties, SerialGeometry>,
   properties: IFeatureProperty;
-  id: string | null;
+  id: string | number | null;
 
 }
 
