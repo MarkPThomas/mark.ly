@@ -29,6 +29,14 @@ export interface RouteSegmentData {
 
 export interface IRouteSegmentProperties extends ISegmentGeometryProperties {
   /**
+   * Angle in radians, measured the Cartesian/Polar origin, or from due East, projected onto a 2D plane.
+   *
+   * @type {number}
+   * @memberof ISegment
+   */
+  angle: number;
+
+  /**
    * Cardinal direction that the segment is pointing, directed from {@link TrackPoint} I towards {@link TrackPoint} J.
    *
    * @type {{
@@ -68,12 +76,14 @@ export class RouteSegment
   extends SegmentGeometry
   implements IRouteSegment {
 
+  angle: number;
   direction: IDirection;
   height: number;
 
   constructor(length?: number, angle?: number, direction?: IDirection, height?: number) {
-    super(length, angle);
+    super(length);
 
+    this.angle = angle;
     this.direction = direction;
     this.height = height;
   }
@@ -95,6 +105,7 @@ export class RouteSegment
 
   equals(segment: IRouteSegmentProperties): boolean {
     return super.equals(segment)
+      && this.angle === segment.angle
       && ((!this.direction && !segment.direction) || segment.direction === this.direction)
       && ((!this.height && !segment.height) || segment.height === this.height);
   }
@@ -117,5 +128,16 @@ export class RouteSegment
     if (elevationChange !== undefined) {
       this.height = elevationChange;
     }
+  }
+
+
+  // === Calc Methods ===
+  static calcPathRotationRad(segI: IRouteSegmentProperties, segJ: IRouteSegmentProperties) {
+    return (segJ?.angle === undefined || segJ.angle === null
+      || segI?.angle === undefined || segI.angle === null
+      || isNaN(segJ.angle - segI.angle)
+    )
+      ? null
+      : segJ.angle - segI.angle;
   }
 }

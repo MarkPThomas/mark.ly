@@ -7,7 +7,7 @@ import {
 import { BoundingBox } from '../../GeoJSON/BoundingBox';
 
 import {
-  CoordinateNode,
+  VertexNode,
   IPolyline,
   Polyline,
   SegmentNode
@@ -20,7 +20,7 @@ import { RoutePoint } from './RoutePoint';
 import { RouteSegment } from './RouteSegment';
 import { IPointProperties } from '../Point/Point';
 
-type CoordNode = CoordinateNode<RoutePoint, RouteSegment>;
+type CoordNode = VertexNode<RoutePoint, RouteSegment>;
 type SegNode = SegmentNode<RoutePoint, RouteSegment>;
 
 export interface IPolylineRouteMethods<TVertex extends RoutePoint, TSegment extends RouteSegment>
@@ -103,7 +103,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     let startNode;
 
     if (!startNode) {
-      startNode = this.firstPoint;
+      startNode = this.firstVertex;
       if (!startNode) {
         return null;
       }
@@ -169,30 +169,9 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     return polylineRoute as PolylineRoute<TVertex, TSegment>;
   }
   // ===
-
-  protected updateProperties(numberNodesAffected: number) {
-    if (numberNodesAffected) {
-      // regenerate all segments
-      this.buildSegments();
-      //    optimize: replace segment
-      //     // coord.prevSeg
-      //     // coord.nextSeg
-
-      // update segment properties
-      this.addProperties();
-      //    optimize: update new segment properties and adjacent node properties
-    }
-  }
-
   protected addPropertiesToNodes() {
     super.addPropertiesToNodes();
     this.addPathPropertiesToCoords();
-    // let coord = this._vertices.head as CoordNode;
-    // while (coord) {
-    //   coord.val.path.addPropertiesFromPath(coord.prevSeg?.val, coord.nextSeg?.val);
-
-    //   coord = coord.next as CoordNode;
-    // }
   }
 
   protected addPathPropertiesToCoords() {
@@ -204,7 +183,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     }
   }
 
-  protected getSegment(prevCoord: RoutePoint, nextCoord: RoutePoint): TSegment {
+  protected createSegmentValue(prevCoord: RoutePoint, nextCoord: RoutePoint): TSegment {
     return RouteSegment.fromRoutePoints(prevCoord, nextCoord) as TSegment;
   }
 
@@ -261,16 +240,53 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   protected addElevationDataToSegments() {
     console.log('Deriving elevation data for segments...')
-    let coord = this._vertices.head?.next as CoordinateNode<TVertex, TSegment>;
+    let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
     while (coord) {
-      const prevCoord = coord.prev as CoordinateNode<TVertex, TSegment>;
+      const prevCoord = coord.prev as VertexNode<TVertex, TSegment>;
       const prevSegment = prevCoord.nextSeg?.val;
 
       if (prevSegment) {
         prevSegment.addElevationData(prevCoord.val, coord.val);
       }
 
-      coord = coord.next as CoordinateNode<TVertex, TSegment>;
+      coord = coord.next as VertexNode<TVertex, TSegment>;
     }
+  }
+
+  trimBeforePoint(
+    point: VertexNode<TVertex, TSegment>,
+    returnListCount: boolean = false
+  ): number {
+    const trimCount = super.trimBefore(point, returnListCount)
+
+    if (trimCount) {
+      point.val.path.addPropertiesFromPath(point.prevSeg?.val, point.nextSeg?.val);
+    }
+
+    return trimCount;
+  }
+
+  trimAfterPoint(
+    point: VertexNode<TVertex, TSegment>,
+    returnListCount: boolean = false
+  ): number {
+    const trimCount = super.trimAfter(point, returnListCount)
+
+    if (trimCount) {
+      point.val.path.addPropertiesFromPath(point.prevSeg?.val, point.nextSeg?.val);
+    }
+
+    return trimCount;
+  }
+
+  trimToPoints(
+    pointStart: VertexNode<TVertex, TSegment>,
+    pointEnd: VertexNode<TVertex, TSegment>,
+    returnListCount: boolean = false
+  ): number {
+    const headTrim = pointStart ? this.trimBeforePoint(pointStart, returnListCount) : 0;
+    const tailTrim = pointEnd ? this.trimAfterPoint(pointEnd, returnListCount) : 0;
+
+    return headTrim + tailTrim;
   }
 }

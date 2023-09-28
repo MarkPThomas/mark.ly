@@ -1,5 +1,5 @@
 import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
-import { ISegmentProperties, Segment } from '../../Geometry/Segment';
+import { IRouteSegmentProperties, RouteSegment } from './RouteSegment';
 
 export interface IRoutePathPropsProperties {
   rotation: number;
@@ -11,15 +11,15 @@ export interface IRoutePathProps
   IEquatable<IRoutePathPropsProperties> {
 
   addPropertiesFromPath(
-    prevSegment: ISegmentProperties,
-    nextSegment: ISegmentProperties
+    prevSegment: IRouteSegmentProperties,
+    nextSegment: IRouteSegmentProperties
   ): void;
 }
 
 export class RoutePathProps
   implements IRoutePathProps {
 
-  rotation: number;
+  rotation: number = 0;
 
   constructor(rotation?: number) {
     this.rotation = rotation;
@@ -37,9 +37,9 @@ export class RoutePathProps
 
   // === Methods ===
   addPropertiesFromPath(
-    prevSegment: ISegmentProperties,
-    nextSegment: ISegmentProperties
+    prevSegment: IRouteSegmentProperties,
+    nextSegment: IRouteSegmentProperties
   ) {
-    this.rotation = Segment.calcPathRotationRad(prevSegment, nextSegment);
+    this.rotation = RouteSegment.calcPathRotationRad(prevSegment, nextSegment);
   }
 }
