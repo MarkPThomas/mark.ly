@@ -3,7 +3,7 @@ import { ElevationRequestApi } from '../../../../../server/api/elevationDataApi'
 
 import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 import { FeatureCollection } from '../../GeoJSON';
-import { CoordinateNode, SegmentNode } from '../../Geometry/Polyline';
+import { VertexNode, SegmentNode } from '../../Geometry/Polyline';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { ITrimmable } from './ITrimmable';
@@ -31,9 +31,9 @@ export interface ITrack
   name: string;
   time: string;
 
-  firstPoint: CoordinateNode<TrackPoint, TrackSegment>;
+  firstPoint: VertexNode<TrackPoint, TrackSegment>;
   firstSegment: SegmentNode<TrackPoint, TrackSegment>;
-  lastPoint: CoordinateNode<TrackPoint, TrackSegment>;
+  lastPoint: VertexNode<TrackPoint, TrackSegment>;
   lastSegment: SegmentNode<TrackPoint, TrackSegment>;
 
   boundingBox(): TrackBoundingBox;
@@ -51,43 +51,43 @@ export interface ITrack
   // extractBySegment for below?
   copyBySegment(segData: TrackSegmentData): Track;
 
-  getNodesByTime(timestamp: string): CoordinateNode<TrackPoint, TrackSegment>[];
+  getNodesByTime(timestamp: string): VertexNode<TrackPoint, TrackSegment>[];
 
-  getNodesBy(
+  getPointsBy(
     target: number | EvaluatorArgs,
-    evaluator: (target: number | EvaluatorArgs, coord: CoordinateNode<TrackPoint, TrackSegment>) => boolean
-  ): CoordinateNode<TrackPoint, TrackSegment>[];
+    evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean
+  ): VertexNode<TrackPoint, TrackSegment>[];
   // getPointsBy(target, evaluator<CoordType>): TrackPoint[]
 
-  removeNodes(nodes: CoordinateNode<TrackPoint, TrackSegment>[]): number;
+  removePoints(nodes: VertexNode<TrackPoint, TrackSegment>[]): number;
   // removePoints(points: TrackPoint[]) or removePoints(timestamps: string[])
 
   insertNodesBefore(
-    node: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+    node: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number;
 
   insertNodesAfter(
-    node: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+    node: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number;
 
   replaceCoordsBetween(
     lastTimestamp: string,
     nextTimestamp: string,
-    coords: CoordinateNode<TrackPoint, TrackSegment>[]
+    coords: VertexNode<TrackPoint, TrackSegment>[]
   ): number;
 
-  replaceNodesBetween(
-    startNode: CoordinateNode<TrackPoint, TrackSegment>,
-    endNode: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+  replacePointsBetween(
+    startNode: VertexNode<TrackPoint, TrackSegment>,
+    endNode: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number
 
   replaceNodesFromTo(
-    startNode: CoordinateNode<TrackPoint, TrackSegment>,
-    endNode: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+    startNode: VertexNode<TrackPoint, TrackSegment>,
+    endNode: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number;
   //^^ insertTrackPoints(lastTimestamp, nextTimestamp, [smoothedPauseTrkPt, smoothedResumeTrkPt])
 
@@ -114,7 +114,7 @@ export class Track implements ITrack {
   }
 
   get firstPoint() {
-    return this._polylineTrack.firstPoint;
+    return this._polylineTrack.firstVertex;
   }
 
   get firstSegment() {
@@ -122,7 +122,7 @@ export class Track implements ITrack {
   }
 
   get lastPoint() {
-    return this._polylineTrack.lastPoint;
+    return this._polylineTrack.lastVertex;
   }
 
   get lastSegment() {
@@ -201,46 +201,48 @@ export class Track implements ITrack {
   }
 
 
-  getNodesByTime(timestamp: string): CoordinateNode<TrackPoint, TrackSegment>[] {
-    return this._polylineTrack.getNodes(
+  getNodesByTime(timestamp: string): VertexNode<TrackPoint, TrackSegment>[] {
+    return this._polylineTrack.vertexNodesBy(
       timestamp,
-      (timestamp: string, coord: CoordinateNode<TrackPoint, TrackSegment>) => coord.val.timestamp === timestamp
+      (timestamp: string, coord: VertexNode<TrackPoint, TrackSegment>) => coord.val.timestamp === timestamp
     );
   }
 
-  getNodesBy(
+  getPointsBy(
     target: number | EvaluatorArgs,
-    evaluator: (target: number | EvaluatorArgs, coord: CoordinateNode<TrackPoint, TrackSegment>) => boolean
-  ): CoordinateNode<TrackPoint, TrackSegment>[] {
-    return this._polylineTrack.getNodes(target, evaluator);
+    evaluator: (target: number | EvaluatorArgs, point: VertexNode<TrackPoint, TrackSegment>) => boolean
+  ): VertexNode<TrackPoint, TrackSegment>[] {
+    return this._polylineTrack.vertexNodesBy(target, evaluator);
   }
 
 
-  protected updateGeoJsonTrack(numberAffected: number) {
+  updateGeoJsonTrack(numberAffected: number) {
     if (numberAffected) {
       const trackPoints = this._polylineTrack.vertices();
       this._geoJsonTrack.updateGeoJsonTrackFromTrackPoints(trackPoints);
     }
   }
 
-  removeNodes(nodes: CoordinateNode<TrackPoint, TrackSegment>[]): number {
-    const numberRemoved = this._polylineTrack.removeNodes(nodes);
+  removePoints(points: VertexNode<TrackPoint, TrackSegment>[], iterating: boolean = false): number {
+    const numberRemoved = this._polylineTrack.removeAtAny(points);
 
     // TODO: Should this be called here?
     //    The method is called repeatedly for smooth operations when iterate = true
     //    Perhaps a suppression flag is added here, whereby the GeoJson can be manually updated once at the end
     //    The same may apply to any modification operation.
-    this.updateGeoJsonTrack(numberRemoved);
+    if (!iterating) {
+      this.updateGeoJsonTrack(numberRemoved);
+    }
 
     return numberRemoved;
   }
 
 
   insertNodesBefore(
-    node: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+    node: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number {
-    const numberInserted = this._polylineTrack.insertNodesBefore(node, nodes);
+    const numberInserted = this._polylineTrack.insertVerticesBefore(node, nodes);
 
     this.updateGeoJsonTrack(numberInserted);
 
@@ -248,10 +250,10 @@ export class Track implements ITrack {
   }
 
   insertNodesAfter(
-    node: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+    node: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number {
-    const numberInserted = this._polylineTrack.insertNodesAfter(node, nodes);
+    const numberInserted = this._polylineTrack.insertVerticesAfter(node, nodes);
 
     this.updateGeoJsonTrack(numberInserted);
 
@@ -259,35 +261,38 @@ export class Track implements ITrack {
   }
 
 
-  replaceCoordsBetween(lastTimestamp: string, nextTimestamp: string, coords: CoordinateNode<TrackPoint, TrackSegment>[]): number {
+  replaceCoordsBetween(lastTimestamp: string, nextTimestamp: string, coords: VertexNode<TrackPoint, TrackSegment>[]): number {
     const startNode = this.getNodesByTime(lastTimestamp)[0];
     const endNode = this.getNodesByTime(nextTimestamp)[0];
 
-    const numberInserted = this._polylineTrack.replaceNodesBetween(startNode, endNode, coords);
+    const numberInserted = this._polylineTrack.replaceVerticesBetween(startNode, endNode, coords);
 
     this.updateGeoJsonTrack(numberInserted);
 
     return numberInserted;
   }
 
-  replaceNodesBetween(
-    startNode: CoordinateNode<TrackPoint, TrackSegment>,
-    endNode: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+  replacePointsBetween(
+    startPoint: VertexNode<TrackPoint, TrackSegment>,
+    endPoint: VertexNode<TrackPoint, TrackSegment>,
+    points: VertexNode<TrackPoint, TrackSegment>[],
+    iterating: boolean = false
   ): number {
-    const numberInserted = this._polylineTrack.replaceNodesBetween(startNode, endNode, nodes);
+    const numberInserted = this._polylineTrack.replaceVerticesBetween(startPoint, endPoint, points);
 
-    this.updateGeoJsonTrack(numberInserted);
+    if (!iterating) {
+      this.updateGeoJsonTrack(numberInserted);
+    }
 
     return numberInserted;
   }
 
   replaceNodesFromTo(
-    startNode: CoordinateNode<TrackPoint, TrackSegment>,
-    endNode: CoordinateNode<TrackPoint, TrackSegment>,
-    nodes: CoordinateNode<TrackPoint, TrackSegment>[]
+    startNode: VertexNode<TrackPoint, TrackSegment>,
+    endNode: VertexNode<TrackPoint, TrackSegment>,
+    nodes: VertexNode<TrackPoint, TrackSegment>[]
   ): number {
-    const numberInserted = this._polylineTrack.replaceNodesFromTo(startNode, endNode, nodes);
+    const numberInserted = this._polylineTrack.replaceVerticesFromTo(startNode, endNode, nodes);
 
     this.updateGeoJsonTrack(numberInserted);
 
@@ -337,7 +342,7 @@ export class Track implements ITrack {
   }
 
 
-  // === IClippable
+  // === ITrimmable
   // TODO: These might be better on the Polyline and then updating the geoJson collection object
   trimBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
@@ -355,6 +360,25 @@ export class Track implements ITrack {
     const segmentData = this.getSegmentBetweenTimes(timestampStart, timestampEnd);
 
     return this.updateBySegment(segmentData);
+  }
+
+  trimToTimeSegment(segment: ITrackSegmentLimits): number {
+    const numberTrimmed = this._polylineTrack.trimToTimeSegment(segment);
+
+    this.updateGeoJsonTrack(numberTrimmed);
+
+    return numberTrimmed;
+  }
+
+  trimToPoints(
+    startPoint: VertexNode<TrackPoint, TrackSegment>,
+    endPoint: VertexNode<TrackPoint, TrackSegment>
+  ): number {
+    const numberTrimmed = this._polylineTrack.trimToPoints(startPoint, endPoint);
+
+    this.updateGeoJsonTrack(numberTrimmed);
+
+    return numberTrimmed;
   }
 
 
@@ -422,7 +446,7 @@ export class Track implements ITrack {
   }
 
   // === Static Methods ===
-  static nodesToTrackPoints(nodes: CoordinateNode<TrackPoint, TrackSegment>[]): TrackPoint[] {
+  static nodesToTrackPoints(nodes: VertexNode<TrackPoint, TrackSegment>[]): TrackPoint[] {
     return nodes.map((node) => node.val);
   }
 }

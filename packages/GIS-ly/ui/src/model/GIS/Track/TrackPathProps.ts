@@ -39,10 +39,10 @@ export class TrackPathProps
   extends RoutePathProps
   implements ITrackPathProps {
 
-  speed: number;
-  rotationRate: number;
-  ascentRate: number;
-  descentRate: number;
+  speed: number = 0;
+  rotationRate: number = 0;
+  ascentRate: number = 0;
+  descentRate: number = 0;
 
   constructor(rotation?: number, speed?: number, rotationRate?: number, ascentRate?: number, descentRate?: number) {
     super(rotation);
@@ -96,7 +96,9 @@ export class TrackPathProps
       const elevationSpeed = TrackSegment.calcAvgElevationSpeedMPS(prevSegment, nextSegment);
       if (elevationSpeed !== undefined && elevationSpeed > 0) {
         this.ascentRate = elevationSpeed;
+        this.descentRate = 0;
       } else if (elevationSpeed !== undefined && elevationSpeed < 0) {
+        this.ascentRate = 0;
         this.descentRate = Math.abs(elevationSpeed);
       }
     }
@@ -106,7 +108,7 @@ export class TrackPathProps
     prevSegment: ITrackSegmentProperties,
     nextSegment: ITrackSegmentProperties
   ): boolean {
-    return prevSegment.heightRate && nextSegment.heightRate
+    return prevSegment?.heightRate && nextSegment?.heightRate
       ? Numbers.Sign(prevSegment.heightRate) !== Numbers.Sign(nextSegment.heightRate)
       : false;
   }

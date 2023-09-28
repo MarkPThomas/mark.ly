@@ -39,8 +39,8 @@ describe('##Track', () => {
 
         expect(track.firstPoint.val).toEqual(trackPoints[0]);
         expect(track.firstPoint.nextSeg).toEqual(track.firstSegment);
-        expect(track.firstSegment.prevCoord.val).toEqual(trackPoints[0]);
-        expect(track.firstSegment.nextCoord.val).toEqual(trackPoints[1]);
+        expect(track.firstSegment.prevVert.val).toEqual(trackPoints[0]);
+        expect(track.firstSegment.nextVert.val).toEqual(trackPoints[1]);
       });
     });
 
@@ -73,8 +73,8 @@ describe('##Track', () => {
 
         expect(track.firstPoint.val).toEqual(trackPoints[0]);
         expect(track.firstPoint.nextSeg).toEqual(track.firstSegment);
-        expect(track.firstSegment.prevCoord.val).toEqual(trackPoints[0]);
-        expect(track.firstSegment.nextCoord.val).toEqual(trackPoints[1]);
+        expect(track.firstSegment.prevVert.val).toEqual(trackPoints[0]);
+        expect(track.firstSegment.nextVert.val).toEqual(trackPoints[1]);
       });
     });
   });
@@ -566,6 +566,1184 @@ describe('##Track', () => {
     });
   });
 
+
+  describe('Manipulating Polyline', () => {
+    let trackPoints: TrackPoint[];
+    let polylineTrack: PolylineTrack;
+
+    beforeEach(() => {
+      const positions = lineStringTrack.features[0].geometry.coordinates;
+      const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
+      trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
+      polylineTrack = new PolylineTrack(trackPoints);
+    });
+
+    describe('Trim', () => {
+      describe('#trimBeforeVertex', () => {
+        it('should do nothing and return 0 on an empty polyline', () => {
+          polyline = new Polyline([]);
+
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = new VertexNode<TestVertex, Segment>(coordinates[1]);
+
+          const trimCount = polyline.trimBeforeVertex(vertex);
+
+          expect(trimCount).toEqual(0);
+          expect(polyline.size().vertices).toEqual(0);
+          expect(polyline.size().segments).toEqual(0);
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+          expect(polyline.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return 0 when the specified vertex does not exist in the polyline', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = new VertexNode<TestVertex, Segment>([6, -10] as TestVertex);
+
+          const trimCount = polyline.trimBeforeVertex(vertex);
+
+          expect(trimCount).toEqual(0);
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+          expect(polyline.size().vertices).toEqual(6);
+          expect(polyline.size().segments).toEqual(5);
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+        });
+
+        it('should trim off vertices & segments before the specified point and return the a positive number to indicate success', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = polyline.firstVertex.next.next as VertexNode<TestVertex, Segment>;
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevCoord).not.toBeNull();
+
+
+          const trimCount = polyline.trimBeforeVertex(vertex);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).not.toEqual(originalVertexHead);
+          expect(polyline.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(4);
+          expect(polyline.size().segments).toEqual(3);
+          expect(polyline.vertices()).toEqual([
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextCoord).toBeNull();
+        });
+
+        it('should return the number of vertices if requested', () => {
+          const vertex = polyline.firstVertex.next.next as VertexNode<TestVertex, Segment>;
+          const returnListCount = true;
+
+          const trimCount = polyline.trimBeforeVertex(vertex, returnListCount);
+
+          expect(trimCount).toEqual(2);
+        });
+      });
+
+      describe('#trimAfterVertex', () => {
+        it('should do nothing and return 0 on an empty polyline', () => {
+          polyline = new Polyline([]);
+
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = new VertexNode<TestVertex, Segment>(coordinates[1]);
+
+          const trimCount = polyline.trimAfterVertex(vertex);
+
+          expect(trimCount).toEqual(0);
+          expect(polyline.size().vertices).toEqual(0);
+          expect(polyline.size().segments).toEqual(0);
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+          expect(polyline.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return 0 when the specified vertex does not exist in the polyline', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = new VertexNode<TestVertex, Segment>([6, -10] as TestVertex);
+
+          const trimCount = polyline.trimAfterVertex(vertex);
+
+          expect(trimCount).toEqual(0);
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+          expect(polyline.size().vertices).toEqual(6);
+          expect(polyline.size().segments).toEqual(5);
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+        });
+
+        it('should trim off vertices & segments after the specified point and return the a positive number to indicate success', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = polyline.lastVertex.prev.prev as VertexNode<TestVertex, Segment>;
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextCoord).not.toBeNull();
+
+
+          const trimCount = polyline.trimAfterVertex(vertex);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).not.toEqual(originalVertexTail);
+          expect(polyline.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(4);
+          expect(polyline.size().segments).toEqual(3);
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex
+          ]);
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevCoord).toBeNull();
+        });
+
+        it('should return the number of vertices if requested', () => {
+          const vertex = polyline.lastVertex.prev.prev as VertexNode<TestVertex, Segment>;
+          const returnListCount = true;
+
+          const trimCount = polyline.trimAfterVertex(vertex, returnListCount);
+
+          expect(trimCount).toEqual(2);
+        });
+      });
+
+      describe('#trimToVertices', () => {
+        it('should do nothing and return 0 on an empty polyline', () => {
+          polyline = new Polyline([]);
+
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex1 = new VertexNode<TestVertex, Segment>(coordinates[1]);
+          const vertex2 = new VertexNode<TestVertex, Segment>(coordinates[3]);
+
+          const trimCount = polyline.trimToVertices(vertex1, vertex2);
+
+          expect(trimCount).toEqual(0);
+          expect(polyline.size().vertices).toEqual(0);
+          expect(polyline.size().segments).toEqual(0);
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+          expect(polyline.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return 0 when the specified vertex does not exist in the polyline', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex1 = new VertexNode<TestVertex, Segment>([6, -10] as TestVertex);
+          const vertex2 = new VertexNode<TestVertex, Segment>([-6, 10] as TestVertex);
+
+          const trimCount = polyline.trimToVertices(vertex1, vertex2);
+
+          expect(trimCount).toEqual(0);
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+          expect(polyline.size().vertices).toEqual(6);
+          expect(polyline.size().segments).toEqual(5);
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+        });
+
+        it('should trim off vertices & segments before & after the specified start & end point sand return the a positive number to indicate success', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          // Trim before state
+          const vertex1 = polyline.firstVertex.next.next as VertexNode<TestVertex, Segment>;
+          const segmentNext = vertex1.nextSeg;
+          const trimmedVertexTail = vertex1.prev as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex1.prev).not.toBeNull();
+          expect(vertex1.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevCoord).not.toBeNull();
+
+          // Trim after state
+          const vertex2 = polyline.lastVertex.prev.prev as VertexNode<TestVertex, Segment>;
+          const segmentPrev = vertex2.prevSeg;
+          const trimmedVertexHead = vertex2.next as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex2.next).not.toBeNull();
+          expect(vertex2.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextCoord).not.toBeNull();
+
+
+          const trimCount = polyline.trimToVertices(vertex1, vertex2);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).not.toEqual(originalVertexHead);
+          expect(polyline.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).not.toEqual(originalVertexTail);
+          expect(polyline.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(2);
+          expect(polyline.size().segments).toEqual(1);
+          expect(polyline.vertices()).toEqual([
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex
+          ]);
+
+          // New Head
+          expect(vertex1.prev).toBeNull();
+          expect(vertex1.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextCoord).toBeNull();
+
+          // New Tail
+          expect(vertex2.next).toBeNull();
+          expect(vertex2.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevCoord).toBeNull();
+        });
+
+        it('should trim off vertices & segments before the specified start point if the end vertex is not specified', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = polyline.firstVertex.next.next as VertexNode<TestVertex, Segment>;
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevCoord).not.toBeNull();
+
+
+          const trimCount = polyline.trimToVertices(vertex, null);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).not.toEqual(originalVertexHead);
+          expect(polyline.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(4);
+          expect(polyline.size().segments).toEqual(3);
+          expect(polyline.vertices()).toEqual([
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextCoord).toBeNull();
+        });
+
+        it('should trim off vertices & segments before the specified start point if the end vertex is not found', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = polyline.firstVertex.next.next as VertexNode<TestVertex, Segment>;
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevCoord).not.toBeNull();
+
+          const vertexNotExist = new VertexNode<TestVertex, Segment>([-6, 10] as TestVertex);
+
+
+          const trimCount = polyline.trimToVertices(vertex, vertexNotExist);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).not.toEqual(originalVertexHead);
+          expect(polyline.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).toEqual(originalVertexTail);
+          expect(polyline.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(4);
+          expect(polyline.size().segments).toEqual(3);
+          expect(polyline.vertices()).toEqual([
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextCoord).toBeNull();
+        });
+
+        it('should trim off vertices & segments after the specified end point if the start vertex is not specified', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = polyline.lastVertex.prev.prev as VertexNode<TestVertex, Segment>;
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextCoord).not.toBeNull();
+
+
+          const trimCount = polyline.trimToVertices(null, vertex);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).not.toEqual(originalVertexTail);
+          expect(polyline.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(4);
+          expect(polyline.size().segments).toEqual(3);
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex
+          ]);
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevCoord).toBeNull();
+        });
+
+        it('should trim off vertices & segments after the specified end point if the start vertex is not found', () => {
+          const originalVertexHead = polyline.firstVertex;
+          const originalSegmentHead = polyline.firstSegment;
+          const originalVertexTail = polyline.lastVertex;
+          const originalSegmentTail = polyline.lastSegment;
+
+          const vertex = polyline.lastVertex.prev.prev as VertexNode<TestVertex, Segment>;
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<TestVertex, Segment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextCoord).not.toBeNull();
+
+          const vertexNotExist = new VertexNode<TestVertex, Segment>([-6, 10] as TestVertex);
+
+
+          const trimCount = polyline.trimToVertices(vertexNotExist, vertex);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).toEqual(originalVertexHead);
+          expect(polyline.firstSegment).toEqual(originalSegmentHead);
+          expect(polyline.lastVertex).not.toEqual(originalVertexTail);
+          expect(polyline.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polyline.size().vertices).toEqual(4);
+          expect(polyline.size().segments).toEqual(3);
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex
+          ]);
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevCoord).toBeNull();
+        });
+
+        it('should return the number of vertices if requested', () => {
+          const vertex1 = polyline.firstVertex.next.next as VertexNode<TestVertex, Segment>;
+          const vertex2 = polyline.lastVertex.prev.prev as VertexNode<TestVertex, Segment>;
+          const returnListCount = true;
+
+          const trimCount = polyline.trimToVertices(vertex1, vertex2, returnListCount);
+
+          expect(trimCount).toEqual(4);
+        });
+      });
+    });
+
+    describe('Remove', () => {
+      // // removeAtVertex(vertex: VertexNode<TVertex, TSegment>): boolean;
+      // describe('#removeAtVertex', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      describe('#removeNodes', () => {
+        it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(-1, -2, undefined, '-1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1, 101, 200, '-2'));
+
+          const nodes = polylineTrack.removeVertices([node1, node2]);
+
+          expect(nodes).toEqual(0);
+
+          const polylineTrackLength = polylineTrack.size();
+          expect(polylineTrackLength.vertices).toEqual(trackPoints.length);
+          expect(polylineTrackLength.segments).toEqual(trackPoints.length - 1);
+        });
+
+        it('should remove the nodes provided and return a count for the number removed', () => {
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
+
+          const nodes = polylineTrack.removeVertices([node1, node2]);
+
+          expect(nodes).toEqual(2);
+
+          const polylineTrackLength = polylineTrack.size();
+          expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
+          expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
+        });
+
+        it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1, 101, 200, '-2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
+
+          const nodes = polylineTrack.removeVertices([node1, node2, node3]);
+
+          expect(nodes).toEqual(2);
+
+          const polylineTrackLength = polylineTrack.size();
+          expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
+          expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
+        });
+      });
+      // describe('#removeVertices', () => {
+      //   it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
+      //     const node1 = new VertexNode<TestVertex, Segment>([90, -208] as TestVertex);
+      //     const node2 = new VertexNode<TestVertex, Segment>([95, -208] as TestVertex);
+
+      //     const nodes = polyline.removeVertices([node1, node2]);
+
+      //     expect(nodes).toEqual(0);
+
+      //     const polylineLength = polyline.size();
+      //     expect(polylineLength.vertices).toEqual(coordinates.length);
+      //     expect(polylineLength.segments).toEqual(coordinates.length - 1);
+      //   });
+
+      //   it('should remove the nodes provided and return a count for the number removed', () => {
+      //     const node1 = new VertexNode<TestVertex, Segment>(coordinates[1]);
+      //     const node2 = new VertexNode<TestVertex, Segment>(coordinates[2]);
+
+      //     const nodes = polyline.removeVertices([node1, node2]);
+
+      //     expect(nodes).toEqual(2);
+
+      //     const polylineLength = polyline.size();
+      //     expect(polylineLength.vertices).toEqual(coordinates.length - 2);
+      //     expect(polylineLength.segments).toEqual(coordinates.length - 2 - 1);
+      //   });
+
+      //   it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
+      //     const node1 = new VertexNode<TestVertex, Segment>(coordinates[1]);
+      //     const node2 = new VertexNode<TestVertex, Segment>([95, -208] as TestVertex);
+
+      //     const nodes = polyline.removeVertices([node1, node2]);
+
+      //     expect(nodes).toEqual(1);
+
+      //     const polylineLength = polyline.size();
+      //     expect(polylineLength.vertices).toEqual(coordinates.length - 1);
+      //     expect(polylineLength.segments).toEqual(coordinates.length - 1 - 1);
+      //   });
+      // });
+
+      // // removeBetweenVertices(vertexStart: VertexNode<TVertex, TSegment>, vertexEnd: VertexNode<TVertex, TSegment>): number;
+      // describe('#removeBetweenVertices', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      // // removeFromToVertices(vertexStart: VertexNode<TVertex, TSegment>, vertexEnd: VertexNode<TVertex, TSegment>): number;
+      // describe('#removeFromToVertices', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+    });
+
+    describe('Insert', () => {
+      // describe('Before', () => {
+      //   // insertVertexBefore(vertexTarget: VertexNode<TVertex, TSegment>, vertexInsert: VertexNode<TVertex, TSegment>): boolean;
+      //   describe('#insertVertexBefore', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+
+      //   describe('#insertVerticesBefore', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+      // });
+
+      // describe('After', () => {
+      //   // insertVertexAfter(vertexTarget: VertexNode<TVertex, TSegment>, vertexInsert: VertexNode<TVertex, TSegment>): boolean;
+      //   describe('#insertVertexAfter', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+
+
+      //   describe('#insertVerticesAfter', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+      // });
+    });
+
+    describe('Replace', () => {
+      // // replaceVertexAt(vertexTarget: VertexNode<TVertex, TSegment>, vertexReplacement: VertexNode<TVertex, TSegment>): boolean;
+      // describe('#replaceVertexAt', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+
+      describe('#replaceNodesBetween', () => {
+        const getNodeAtCount = (node: VertexNode<TrackPoint, TrackSegment>, count: number) => {
+          while (node) {
+            node = node.next as VertexNode<TrackPoint, TrackSegment>;
+            count--;
+          }
+
+          return node;
+        };
+
+        const getTailNode = (node: VertexNode<TrackPoint, TrackSegment>) => {
+          let tempNode: VertexNode<TrackPoint, TrackSegment>;
+          while (node) {
+            tempNode = node;
+            node = node.next as VertexNode<TrackPoint, TrackSegment>;
+          }
+
+          return tempNode;
+        }
+
+        it('should do nothing if the head & tail nodes are both unspecified', () => {
+          const initialLength = polylineTrack.size();
+
+          const startNode = null;
+          const endNode = null;
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(0);
+          expect(polylineTrack.size()).toEqual(initialLength);
+        });
+
+        it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
+
+          const initialLength = polylineTrack.size();
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, []);
+
+          expect(result).toEqual(2);
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices - 2);
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments - 2);
+        });
+
+        it(`should insert the nodes at the head of track and return the number of nodes inserted
+          if only a tail node is provided and tail node is at the head of the track, `, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex;
+
+          // Use current tail node - by value to also test matching
+          const startNode = null;
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(3); // 3 inserted
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+          expect(polylineTrack.firstVertex.equals(node1.val)).toBeTruthy();
+
+          expect(node3.next.val).toEqual(endNode.val);
+
+          expect(node1).toEqual(polylineTrack.firstVertex);
+          expect(node1.prev).toBeNull();
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toEqual(initialHead);
+          expect(initialHead.prev).toEqual(node3);
+        });
+
+        it(`should insert the nodes at the tail of track and return the number of nodes inserted
+          if only a head node is provided and head node is at the tail of the track`, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex;
+          const initialTail = getTailNode(initialHead);
+
+          // Use current last node - by value to also test matching
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[trackPoints.length - 1]);
+          const endNode = null;
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(3); // 3 inserted
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+          expect(polylineTrack.firstVertex.equals(initialHead.val)).toBeTruthy();
+
+          expect(node1.prev.val).toEqual(startNode.val);
+
+          expect(node1).not.toEqual(polylineTrack.firstVertex);
+          expect(node1).toEqual(initialTail.next);
+          expect(node1.prev).toEqual(initialTail);
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toBeNull();
+        });
+
+        it(`should insert the nodes between the two specified tail/head nodes in the track
+          and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const initialTail = initialHead.next as VertexNode<TrackPoint, TrackSegment>;
+
+          // Insert after first segment, over second segment
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[2]);
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(3); // 3 inserted
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+
+          expect(node1.prev.val).toEqual(startNode.val);
+          expect(node3.next.val).toEqual(endNode.val);
+
+          expect(node1).not.toEqual(polylineTrack.firstVertex);
+          expect(node1).toEqual(initialHead.next);
+          expect(node1.prev).toEqual(initialHead);
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toEqual(initialTail);
+          expect(initialTail.prev).toEqual(node3);
+        });
+
+        it(`should insert the nodes between the two specified tail/head nodes in the track,
+          remove the original set of nodes between these same two points,
+          and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const initialTail = initialHead?.next?.next?.next as VertexNode<TrackPoint, TrackSegment>;
+
+          // Insert after first segment, over second segment
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[4]);
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(5); // 3 inserted, 2 removed
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + 1);
+          expect(node1.prev.val).toEqual(startNode.val);
+          expect(node3.next.val).toEqual(endNode.val);
+
+          expect(node1).not.toEqual(polylineTrack.firstVertex);
+          expect(node1).toEqual(initialHead.next);
+          expect(node1.prev).toEqual(initialHead);
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toEqual(initialTail);
+          expect(initialTail.prev).toEqual(node3);
+        });
+      });
+      // describe('#replaceVerticesBetween', () => {
+      //     beforeEach(() => {
+      //       coordinates = [
+      //         [45, -110] as TestVertex,
+      //         [60, -109] as TestVertex,
+      //         [47, -108] as TestVertex,
+      //         [49, -110] as TestVertex,
+      //         [57, -101] as TestVertex,
+      //         [53, -107] as TestVertex,
+      //       ];
+      //     });
+
+      //     const getNodeAtCount = (node: VertexNode<TestVertex, Segment>, count: number) => {
+      //       while (node) {
+      //         node = node.next as VertexNode<TestVertex, Segment>;
+      //         count--;
+      //       }
+
+      //       return node;
+      //     };
+
+      //     const getTailNode = (node: VertexNode<TestVertex, Segment>) => {
+      //       let tempNode: VertexNode<TestVertex, Segment>;
+      //       while (node) {
+      //         tempNode = node;
+      //         node = node.next as VertexNode<TestVertex, Segment>;
+      //       }
+
+      //       return tempNode;
+      //     }
+
+      //     it('should do nothing if the head & tail nodes are both unspecified', () => {
+      //       const initialLength = polyline.size();
+
+      //       const startNode = null;
+      //       const endNode = null;
+
+      //       const node1 = new VertexNode<TestVertex, Segment>([99, 140] as TestVertex);
+      //       const node2 = new VertexNode<TestVertex, Segment>([666, 69] as TestVertex);
+      //       const node3 = new VertexNode<TestVertex, Segment>([420, 171] as TestVertex);
+      //       const nodes = [node1, node2, node3];
+
+      //       const result = polyline.replaceVerticesBetween(startNode, endNode, nodes);
+
+      //       expect(result).toEqual(0);
+      //       expect(polyline.size()).toEqual(initialLength);
+      //     });
+
+      //     it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
+      //       const startNode = new VertexNode<TestVertex, Segment>(coordinates[0]);
+      //       const endNode = new VertexNode<TestVertex, Segment>(coordinates[3]);
+
+      //       const initialLength = polyline.size();
+
+      //       const result = polyline.replaceVerticesBetween(startNode, endNode, []);
+
+      //       expect(result).toEqual(2);
+      //       expect(polyline.size().vertices).toEqual(initialLength.vertices - 2);
+      //       expect(polyline.size().segments).toEqual(initialLength.segments - 2);
+      //     });
+
+      //     it(`should insert the nodes at the head of track and return the number of nodes inserted
+      // if only a tail node is provided and tail node is at the head of the track, `, () => {
+      //       const initialLength = polyline.size();
+      //       const initialHead = polyline.firstVertex;
+
+      //       // Use current tail node - by value to also test matching
+      //       const startNode = null;
+      //       const endNode = new VertexNode<TestVertex, Segment>(coordinates[0]);
+
+      //       const node1 = new VertexNode<TestVertex, Segment>([99, 140] as TestVertex);
+      //       const node2 = new VertexNode<TestVertex, Segment>([666, 69] as TestVertex);
+      //       const node3 = new VertexNode<TestVertex, Segment>([420, 171] as TestVertex);
+      //       const nodes = [node1, node2, node3];
+
+      //       const result = polyline.replaceVerticesBetween(startNode, endNode, nodes);
+
+      //       expect(result).toEqual(3); // 3 inserted
+      //       expect(polyline.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+      //       expect(polyline.size().segments).toEqual(initialLength.segments + result);
+      //       expect(polyline.firstVertex.equals(node1.val)).toBeTruthy();
+
+      //       expect(node3.next.val).toEqual(endNode.val);
+
+      //       expect(node1).toEqual(polyline.firstVertex);
+      //       expect(node1.prev).toBeNull();
+      //       expect(node1.next).toEqual(node2);
+
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toEqual(initialHead);
+      //       expect(initialHead.prev).toEqual(node3);
+      //     });
+
+      //     it(`should insert the nodes at the tail of track and return the number of nodes inserted
+      // if only a head node is provided and head node is at the tail of the track`, () => {
+      //       const initialLength = polyline.size();
+      //       const initialHead = polyline.firstVertex;
+      //       const initialTail = getTailNode(initialHead);
+
+      //       // Use current last node - by value to also test matching
+      //       const startNode = new VertexNode<TestVertex, Segment>(coordinates[coordinates.length - 1]);
+      //       const endNode = null;
+
+      //       const node1 = new VertexNode<TestVertex, Segment>([99, 140] as TestVertex);
+      //       const node2 = new VertexNode<TestVertex, Segment>([666, 69] as TestVertex);
+      //       const node3 = new VertexNode<TestVertex, Segment>([420, 171] as TestVertex);
+      //       const nodes = [node1, node2, node3];
+
+      //       const result = polyline.replaceVerticesBetween(startNode, endNode, nodes);
+
+      //       expect(result).toEqual(3); // 3 inserted
+      //       expect(polyline.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+      //       expect(polyline.size().segments).toEqual(initialLength.segments + result);
+      //       expect(polyline.firstVertex.equals(initialHead.val)).toBeTruthy();
+
+      //       expect(node1.prev.val).toEqual(startNode.val);
+
+      //       expect(node1).not.toEqual(polyline.firstVertex);
+      //       expect(node1).toEqual(initialTail.next);
+      //       expect(node1.prev).toEqual(initialTail);
+      //       expect(node1.next).toEqual(node2);
+
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toBeNull();
+      //     });
+
+      //     it(`should insert the nodes between the two specified tail/head nodes in the track
+      // and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
+      //       const initialLength = polyline.size();
+      //       const initialHead = polyline.firstVertex.next as VertexNode<TestVertex, Segment>;
+      //       const initialTail = initialHead.next as VertexNode<TestVertex, Segment>;
+
+      //       // Insert after first segment, over second segment
+      //       const startNode = new VertexNode<TestVertex, Segment>(coordinates[1]);
+      //       const endNode = new VertexNode<TestVertex, Segment>(coordinates[2]);
+
+      //       const node1 = new VertexNode<TestVertex, Segment>([99, 140] as TestVertex);
+      //       const node2 = new VertexNode<TestVertex, Segment>([666, 69] as TestVertex);
+      //       const node3 = new VertexNode<TestVertex, Segment>([420, 171] as TestVertex);
+      //       const nodes = [node1, node2, node3];
+
+      //       const result = polyline.replaceVerticesBetween(startNode, endNode, nodes);
+
+      //       expect(result).toEqual(3); // 3 inserted
+      //       expect(polyline.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+      //       expect(polyline.size().segments).toEqual(initialLength.segments + result);
+
+      //       expect(node1.prev.val).toEqual(startNode.val);
+      //       expect(node3.next.val).toEqual(endNode.val);
+
+      //       expect(node1).not.toEqual(polyline.firstVertex);
+      //       expect(node1).toEqual(initialHead.next);
+      //       expect(node1.prev).toEqual(initialHead);
+      //       expect(node1.next).toEqual(node2);
+
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toEqual(initialTail);
+      //       expect(initialTail.prev).toEqual(node3);
+      //     });
+
+      //     it(`should insert the nodes between the two specified tail/head nodes in the track,
+      // remove the original set of nodes between these same two points,
+      // and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
+      //       const initialLength = polyline.size();
+      //       const initialHead = polyline.firstVertex.next as VertexNode<TestVertex, Segment>;
+      //       const initialTail = initialHead?.next?.next?.next as VertexNode<TestVertex, Segment>;
+
+      //       // Insert after first segment, over second segment
+      //       const startNode = new VertexNode<TestVertex, Segment>(coordinates[1]);
+      //       const endNode = new VertexNode<TestVertex, Segment>(coordinates[4]);
+
+      //       const node1 = new VertexNode<TestVertex, Segment>([99, 140] as TestVertex);
+      //       const node2 = new VertexNode<TestVertex, Segment>([666, 69] as TestVertex);
+      //       const node3 = new VertexNode<TestVertex, Segment>([420, 171] as TestVertex);
+      //       const nodes = [node1, node2, node3];
+
+      //       const result = polyline.replaceVerticesBetween(startNode, endNode, nodes);
+
+      //       expect(result).toEqual(5); // 3 inserted, 2 removed
+      //       expect(polyline.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+      //       expect(polyline.size().segments).toEqual(initialLength.segments + 1);
+      //       expect(node1.prev.val).toEqual(startNode.val);
+      //       expect(node3.next.val).toEqual(endNode.val);
+
+      //       expect(node1).not.toEqual(polyline.firstVertex);
+      //       expect(node1).toEqual(initialHead.next);
+      //       expect(node1.prev).toEqual(initialHead);
+      //       expect(node1.next).toEqual(node2);
+
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toEqual(initialTail);
+      //       expect(initialTail.prev).toEqual(node3);
+      //     });
+      //   });
+
+      //   describe('#replaceVerticesFromTo', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+    });
+
+    describe('Splice', () => {
+      // // prependPolyline(polyline: IPolyline<TVertex, TSegment>): IPolyline<TVertex, TSegment>;
+      // describe('#prependPolyline', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      // // appendPolyline(polyline: IPolyline<TVertex, TSegment>): IPolyline<TVertex, TSegment>;
+      // describe('#appendPolyline', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+    });
+
+    describe('Split', () => {
+      // // splitAtVertex(vertex: VertexNode<TVertex, TSegment>): [IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>];
+      // describe('#splitAtVertex', () => {
+      //   it('should ', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+      // });
+
+      // // splitByVertices(vertices: VertexNode<TVertex, TSegment>[]): IPolyline<TVertex, TSegment>[];
+      // describe('#splitByVertices', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+
+
+      // // splitAtSubPolyline(polyline: IPolyline<TVertex, TSegment>): [IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>];
+      // describe('#splitAtSubPolyline', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      // // splitBySubPolylines(polyline: IPolyline<TVertex, TSegment>[]): IPolyline<TVertex, TSegment>[];
+      // describe('#splitBySubPolylines', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+    });
+  });
 
   // describe('Smooth Methods', () => {
   //   describe('#smoothBySpeed', () => {

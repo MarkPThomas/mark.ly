@@ -125,7 +125,7 @@ export class TrackPoint
   equals(trackPoint: ITrackPointProperties): boolean {
     return super.equals(trackPoint)
       && ((!this.timestamp && !trackPoint.timestamp) || trackPoint.timestamp === this.timestamp)
-      && (this._path && this._path.equals(trackPoint.path));
+      && this.path.equals(trackPoint.path);
 
   }
 }

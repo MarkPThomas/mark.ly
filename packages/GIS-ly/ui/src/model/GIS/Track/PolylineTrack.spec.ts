@@ -1,4 +1,4 @@
-import { CoordinateNode, EvaluatorArgs } from '../../Geometry/Polyline';
+import { VertexNode, EvaluatorArgs, SegmentNode } from '../../Geometry/Polyline';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { TrackPoint } from './TrackPoint';
@@ -17,7 +17,7 @@ describe('##PolylineTrack', () => {
           type: 'Feature',
           geometry: {
             type: 'LineString',
-            coordinates: [
+            coords: [
               [100.0, 0.0, 100],
               [101.0, 1.0, 200],
               [102.0, 2.0, 300],
@@ -74,10 +74,10 @@ describe('##PolylineTrack', () => {
       it('should create a new PolyLine object from the provided TrackPoints', () => {
         const polylineTrack = new PolylineTrack(trackPoints);
 
-        expect(polylineTrack.firstPoint.val).toEqual(trackPoints[0]);
-        expect(polylineTrack.firstPoint.nextSeg).toEqual(polylineTrack.firstSegment);
-        expect(polylineTrack.firstSegment.prevCoord.val).toEqual(trackPoints[0]);
-        expect(polylineTrack.firstSegment.nextCoord.val).toEqual(trackPoints[1]);
+        expect(polylineTrack.firstVertex.val).toEqual(trackPoints[0]);
+        expect(polylineTrack.firstVertex.nextSeg).toEqual(polylineTrack.firstSegment);
+        expect(polylineTrack.firstSegment.prevVert.val).toEqual(trackPoints[0]);
+        expect(polylineTrack.firstSegment.nextVert.val).toEqual(trackPoints[1]);
       });
     });
 
@@ -115,7 +115,7 @@ describe('##PolylineTrack', () => {
       });
 
       describe('#copyRange', () => {
-        // Consider moving this down to Polyline?
+        // Consider moving this down to PolylineTrack?
       });
 
       describe('#copyRangeByTimestamp', () => {
@@ -144,10 +144,10 @@ describe('##PolylineTrack', () => {
             vertices: 3,
             segments: 2
           });
-          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[0])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[0])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[1])).toBeTruthy();
-          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstVertex.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevVert.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextVert.val.equals(trackPoints[1])).toBeTruthy();
+          expect(polylineTrackCopy.lastVertex.val.equals(trackPoints[2])).toBeTruthy();
         });
 
         it('should copy to the end of the track if the end time does not exist in the track', () => {
@@ -160,10 +160,10 @@ describe('##PolylineTrack', () => {
             vertices: 4,
             segments: 3
           });
-          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[2])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[2])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[3])).toBeTruthy();
-          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[5])).toBeTruthy();
+          expect(polylineTrackCopy.firstVertex.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevVert.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextVert.val.equals(trackPoints[3])).toBeTruthy();
+          expect(polylineTrackCopy.lastVertex.val.equals(trackPoints[5])).toBeTruthy();
         });
 
         it('should copy the track from the start time to the end time provided', () => {
@@ -176,10 +176,10 @@ describe('##PolylineTrack', () => {
             vertices: 3,
             segments: 2
           });
-          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[2])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[2])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[3])).toBeTruthy();
-          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[4])).toBeTruthy();
+          expect(polylineTrackCopy.firstVertex.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevVert.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextVert.val.equals(trackPoints[3])).toBeTruthy();
+          expect(polylineTrackCopy.lastVertex.val.equals(trackPoints[4])).toBeTruthy();
         });
 
         it('should copy track by value rather than by reference', () => {
@@ -192,33 +192,33 @@ describe('##PolylineTrack', () => {
             vertices: 3,
             segments: 2
           });
-          expect(polylineTrackCopy.firstPoint.val.equals(trackPoints[0])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.prevCoord.val.equals(trackPoints[0])).toBeTruthy();
-          expect(polylineTrackCopy.firstSegment.nextCoord.val.equals(trackPoints[1])).toBeTruthy();
-          expect(polylineTrackCopy.lastPoint.val.equals(trackPoints[2])).toBeTruthy();
+          expect(polylineTrackCopy.firstVertex.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.prevVert.val.equals(trackPoints[0])).toBeTruthy();
+          expect(polylineTrackCopy.firstSegment.nextVert.val.equals(trackPoints[1])).toBeTruthy();
+          expect(polylineTrackCopy.lastVertex.val.equals(trackPoints[2])).toBeTruthy();
 
-          // Make original polyline different to ensure copy is by value and not by reference
-          let node = polylineTrack.firstPoint;
+          // Make original polylineTrack different to ensure copy is by value and not by reference
+          let node = polylineTrack.firstVertex;
 
           const coord1New = new TrackPoint(-9, -77.777452);
           coord1New.timestamp = '2023-07-04T17:22:15Z';
           node.val = coord1New;
-          node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
+          node = node.next as VertexNode<TrackPoint, TrackSegment>;
 
           const coord2New = new TrackPoint(-8, -77.777400);
           coord2New.timestamp = '2023-07-04T17:22:35Z';
           node.val = coord2New;
-          node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
+          node = node.next as VertexNode<TrackPoint, TrackSegment>;
 
           const coord3New = new TrackPoint(-7, -77.777381);
           coord3New.timestamp = '2023-07-04T17:22:46Z';
           node.val = coord3New;
-          node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
+          node = node.next as VertexNode<TrackPoint, TrackSegment>;
 
-          expect(polylineTrack.firstSegment.prevCoord.val.equals(coord1New)).toBeTruthy();
-          expect(polylineTrack.firstSegment.nextCoord.val.equals(coord2New)).toBeTruthy();
-          expect(polylineTrackCopy.firstPoint.val.equals(polylineTrack.firstPoint.val)).toBeFalsy();
-          expect(polylineTrackCopy.lastPoint.val.equals(polylineTrack.lastPoint.val)).toBeFalsy();
+          expect(polylineTrack.firstSegment.prevVert.val.equals(coord1New)).toBeTruthy();
+          expect(polylineTrack.firstSegment.nextVert.val.equals(coord2New)).toBeTruthy();
+          expect(polylineTrackCopy.firstVertex.val.equals(polylineTrack.firstVertex.val)).toBeFalsy();
+          expect(polylineTrackCopy.lastVertex.val.equals(polylineTrack.lastVertex.val)).toBeFalsy();
         });
       });
     });
@@ -308,7 +308,7 @@ describe('##PolylineTrack', () => {
         expect(segments[1].direction).toEqual({ lat: 'N', lng: 'E' });
       });
 
-      it('should add derived properties to coordinates', () => {
+      it('should add derived properties to coords', () => {
         const polylineTrack = new PolylineTrack(trackPoints);
 
         polylineTrack.addProperties();
@@ -395,43 +395,43 @@ describe('##PolylineTrack', () => {
         expect(trackSegs.length).toEqual(5);
 
         expect(trackCoords[0].elevation).toEqual(1000);
-        expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[0].path.ascentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[0].path.descentRate).toBeCloseTo(0, 0);
 
-        expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[0].heightRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackSegs[0].height).toBeCloseTo(1000, 1);
+        expect(trackSegs[0].heightRate).toBeCloseTo(50, 1);
 
         expect(trackCoords[1].elevation).toEqual(2000);
-        expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[1].path.ascentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[1].path.descentRate).toBeCloseTo(50, 1);
 
-        expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[1].heightRate + 50).toBeLessThanOrEqual(0.1);
+        expect(trackSegs[1].height).toBeCloseTo(-500, 1);
+        expect(trackSegs[1].heightRate).toBeCloseTo(-50, 1);
 
         expect(trackCoords[2].elevation).toEqual(1500);
-        expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[2].path.ascentRate).toBeCloseTo(0, 0);
+        expect(trackCoords[2].path.descentRate).toBeCloseTo(50, 1);
 
         expect(trackSegs[2].height).toBeUndefined();
         expect(trackSegs[2].heightRate).toBeUndefined();
 
         expect(trackCoords[3].elevation).toBeUndefined();
-        expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[3].path.ascentRate).toBeUndefined();
+        expect(trackCoords[3].path.descentRate).toBeUndefined();
 
         expect(trackSegs[3].height).toBeUndefined();
         expect(trackSegs[3].heightRate).toBeUndefined();
 
         expect(trackCoords[4].elevation).toEqual(5000);
-        expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[4].path.ascentRate).toBeCloseTo(0, 0);
+        expect(trackCoords[4].path.descentRate).toBeCloseTo(50, 1);
 
-        expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[4].heightRate + 50).toBeLessThanOrEqual(0.1);
+        expect(trackSegs[4].height).toBeCloseTo(-1000, 1);
+        expect(trackSegs[4].heightRate).toBeCloseTo(-50, 1);
 
         expect(trackCoords[5].elevation).toEqual(4000);
-        expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[5].path.ascentRate).toBeCloseTo(0, 0);
+        expect(trackCoords[5].path.descentRate).toBeCloseTo(50, 1);
       });
     });
 
@@ -487,43 +487,43 @@ describe('##PolylineTrack', () => {
         expect(trackSegs.length).toEqual(5);
 
         expect(trackCoords[0].elevation).toEqual(1000);
-        expect(trackCoords[0].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[0].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[0].path.ascentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[0].path.descentRate).toBeCloseTo(0, 0);
 
-        expect(trackSegs[0].height - 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[0].heightRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackSegs[0].height).toBeCloseTo(1000, 1);
+        expect(trackSegs[0].heightRate).toBeCloseTo(50, 1);
 
         expect(trackCoords[1].elevation).toEqual(2000);
-        expect(trackCoords[1].path.ascentRate - 50).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[1].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[1].path.ascentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[1].path.descentRate).toBeCloseTo(50, 1);
 
-        expect(trackSegs[1].height + 500).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[1].heightRate + 50).toBeLessThanOrEqual(0.1);
+        expect(trackSegs[1].height).toBeCloseTo(-500, 1);
+        expect(trackSegs[1].heightRate).toBeCloseTo(-50, 1);
 
         expect(trackCoords[2].elevation).toEqual(1500);
-        expect(trackCoords[2].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[2].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[2].path.ascentRate).toBeCloseTo(0, 0);
+        expect(trackCoords[2].path.descentRate).toBeCloseTo(50, 1);
 
         expect(trackSegs[2].height).toBeUndefined();
         expect(trackSegs[2].heightRate).toBeUndefined();
 
         expect(trackCoords[3].elevation).toBeUndefined();
-        expect(trackCoords[3].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[3].path.descentRate).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[3].path.ascentRate).toBeUndefined();
+        expect(trackCoords[3].path.descentRate).toBeUndefined();
 
         expect(trackSegs[3].height).toBeUndefined();
         expect(trackSegs[3].heightRate).toBeUndefined();
 
         expect(trackCoords[4].elevation).toEqual(5000);
-        expect(trackCoords[4].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[4].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[4].path.ascentRate).toBeCloseTo(0, 0);
+        expect(trackCoords[4].path.descentRate).toBeCloseTo(50, 1);
 
-        expect(trackSegs[4].height + 1000).toBeLessThanOrEqual(0.1);
-        expect(trackSegs[4].heightRate + 50).toBeLessThanOrEqual(0.1);
+        expect(trackSegs[4].height).toBeCloseTo(-1000, 1);
+        expect(trackSegs[4].heightRate).toBeCloseTo(-50, 1);
 
         expect(trackCoords[5].elevation).toEqual(4000);
-        expect(trackCoords[5].path.ascentRate).toBeLessThanOrEqual(0.1);
-        expect(trackCoords[5].path.descentRate - 50).toBeLessThanOrEqual(0.1);
+        expect(trackCoords[5].path.ascentRate).toBeCloseTo(0, 0);
+        expect(trackCoords[5].path.descentRate).toBeCloseTo(50, 1);
       });
     });
 
@@ -539,7 +539,7 @@ describe('##PolylineTrack', () => {
     let polylineTrack: PolylineTrack;
 
     beforeEach(() => {
-      const positions = lineStringTrack.features[0].geometry.coordinates;
+      const positions = lineStringTrack.features[0].geometry.coords;
       const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
       trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
       polylineTrack = new PolylineTrack(trackPoints);
@@ -547,18 +547,18 @@ describe('##PolylineTrack', () => {
 
     describe('#getNodes', () => {
       it('should return an empty array for no matches', () => {
-        const nodes = polylineTrack.getNodes(
+        const nodes = polylineTrack.vertexNodesBy(
           -1,
-          (target: number, coord: CoordinateNode<TrackPoint, TrackSegment>) => coord.val.timestamp <= target.toString()
+          (target: number, coord: VertexNode<TrackPoint, TrackSegment>) => coord.val.timestamp <= target.toString()
         );
 
         expect(nodes.length).toEqual(0);
       });
 
       it('should return all nodes that match the numerical target', () => {
-        const nodes = polylineTrack.getNodes(
+        const nodes = polylineTrack.vertexNodesBy(
           3,
-          (target: number, coord: CoordinateNode<TrackPoint, TrackSegment>) => coord.val.timestamp <= target.toString()
+          (target: number, coord: VertexNode<TrackPoint, TrackSegment>) => coord.val.timestamp <= target.toString()
         );
 
         expect(nodes.length).toEqual(3);
@@ -568,12 +568,12 @@ describe('##PolylineTrack', () => {
       });
 
       it('should return all nodes that match all of the Evaluator Args targets', () => {
-        const nodes = polylineTrack.getNodes(
+        const nodes = polylineTrack.vertexNodesBy(
           {
             time: 3,
             lng: '101'
           },
-          (target: EvaluatorArgs, coord: CoordinateNode<TrackPoint, TrackSegment>) =>
+          (target: EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) =>
             coord.val.timestamp <= target.time.toString()
             && coord.val.lng <= (target.lng as number)
         );
@@ -590,261 +590,1229 @@ describe('##PolylineTrack', () => {
     });
   });
 
-  describe('Manipulating Polyline', () => {
+  describe('Manipulating PolylineTrack', () => {
     let trackPoints: TrackPoint[];
     let polylineTrack: PolylineTrack;
 
     beforeEach(() => {
-      const positions = lineStringTrack.features[0].geometry.coordinates;
+      const positions = lineStringTrack.features[0].geometry.coords;
       const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
       trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
       polylineTrack = new PolylineTrack(trackPoints);
     });
 
-    describe('#removeNodes', () => {
-      it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(-1, -2, undefined, '-1'));
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1, 101, 200, '-2'));
+    describe('Trim', () => {
+      let time1: string;
+      let time2: string;
 
-        const nodes = polylineTrack.removeNodes([node1, node2]);
+      beforeEach(() => {
+        trackPoints = [
+          new TrackPoint(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+          new TrackPoint(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:20Z'),
+          new TrackPoint(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:00:30Z'),
+          new TrackPoint(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:00:40Z'),
+          new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:00:50Z'),
+          new TrackPoint(39.739914418342, -104.99174913377, 0, '2023-07-04T20:01:10Z')
+        ];
+        trackPoints[0].elevation = 1000;
+        trackPoints[1].elevation = 2000;
+        trackPoints[2].elevation = 1500;
+        trackPoints[3].elevation = 1600;
+        trackPoints[4].elevation = 5000;
+        trackPoints[5].elevation = 4000;
 
-        expect(nodes).toEqual(0);
+        polylineTrack = new PolylineTrack(trackPoints);
+        polylineTrack.addProperties();
+        polylineTrack.addElevationProperties();
 
-        const polylineTrackLength = polylineTrack.size();
-        expect(polylineTrackLength.vertices).toEqual(trackPoints.length);
-        expect(polylineTrackLength.segments).toEqual(trackPoints.length - 1);
+
+        time1 = trackPoints[2].timestamp;
+        time2 = trackPoints[3].timestamp;
       });
 
-      it('should remove the nodes provided and return a count for the number removed', () => {
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[0]);
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[3]);
+      describe('#trimBeforeTime', () => {
+        it('should do nothing and return 0 on an empty polylineTrack', () => {
+          polylineTrack = new PolylineTrack([]);
 
-        const nodes = polylineTrack.removeNodes([node1, node2]);
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
 
-        expect(nodes).toEqual(2);
 
-        const polylineTrackLength = polylineTrack.size();
-        expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
-        expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
+          const trimCount = polylineTrack.trimBeforeTime(time1);
+
+          expect(trimCount).toEqual(0);
+          expect(polylineTrack.size().vertices).toEqual(0);
+          expect(polylineTrack.size().segments).toEqual(0);
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineTrack.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return 0 when the specified vertex does not exist in the polylineTrack', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+
+          const trimCount = polylineTrack.trimBeforeTime('-1');
+
+          expect(trimCount).toEqual(0);
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineTrack.size().vertices).toEqual(6);
+          expect(polylineTrack.size().segments).toEqual(5);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1])).toBeTruthy();
+        });
+
+        it('should trim off vertices & segments before the specified point and return the a positive number to indicate success', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const vertex = polylineTrack.getNodeByTimestamp(time1);
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+          // Derived Properties
+          expect(vertex.val.path.rotation).toBeCloseTo(3.038, 3);
+          expect(vertex.val.path.rotationRate).toBeCloseTo(0.1519, 4);
+          expect(vertex.val.path.speed).toBeCloseTo(105.13, 2);
+          expect(vertex.val.path.ascentRate).toBeCloseTo(10, 0);
+          expect(vertex.val.path.descentRate).toBeCloseTo(50, 0);
+
+
+          const trimCount = polylineTrack.trimBeforeTime(time1);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(4);
+          expect(polylineTrack.size().segments).toEqual(3);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1])).toBeTruthy();
+
+          // New Head
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+
+          // Derived Properties
+          expect(vertex.val.path.rotation).toBeNull();
+          expect(vertex.val.path.rotationRate).toBeNull();
+          expect(vertex.val.path.speed).toBeCloseTo(104.46, 2);
+          expect(vertex.val.path.ascentRate).toBeCloseTo(10, 0);
+          expect(vertex.val.path.descentRate).toBeCloseTo(0, 0);
+        });
+
+        it('should return the number of vertices if requested', () => {
+          const returnListCount = true;
+
+          const trimCount = polylineTrack.trimBeforeTime(time1, returnListCount);
+
+          expect(trimCount).toEqual(2);
+        });
       });
 
-      it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[0]);
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1, 101, 200, '-2'));
-        const node3 = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[3]);
+      describe('#trimAfterTime', () => {
+        it('should do nothing and return 0 on an empty polylineTrack', () => {
+          polylineTrack = new PolylineTrack([]);
 
-        const nodes = polylineTrack.removeNodes([node1, node2, node3]);
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
 
-        expect(nodes).toEqual(2);
 
-        const polylineTrackLength = polylineTrack.size();
-        expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
-        expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
+          const trimCount = polylineTrack.trimAfterTime(time2);
+
+          expect(trimCount).toEqual(0);
+          expect(polylineTrack.size().vertices).toEqual(0);
+          expect(polylineTrack.size().segments).toEqual(0);
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineTrack.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return 0 when the specified vertex does not exist in the polylineTrack', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+
+          const trimCount = polylineTrack.trimAfterTime('-1');
+
+          expect(trimCount).toEqual(0);
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineTrack.size().vertices).toEqual(6);
+          expect(polylineTrack.size().segments).toEqual(5);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1])).toBeTruthy();
+        });
+
+        it('should trim off vertices & segments after the specified point and return the a positive number to indicate success', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const vertex = polylineTrack.getNodeByTimestamp(time2);
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+          // Derived Properties
+          expect(vertex.val.path.rotation).toBeCloseTo(-1.531, 3);
+          expect(vertex.val.path.rotationRate).toBeCloseTo(-0.0765, 4);
+          expect(vertex.val.path.speed).toBeCloseTo(81.25, 2);
+          expect(vertex.val.path.ascentRate).toBeCloseTo(175, 0);
+          expect(vertex.val.path.descentRate).toBeCloseTo(0, 0);
+
+
+          const trimCount = polylineTrack.trimAfterTime(time2);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(4);
+          expect(polylineTrack.size().segments).toEqual(3);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1 - 2])).toBeTruthy();
+
+          // New Tail
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+
+          // Derived Properties
+          expect(vertex.val.path.rotation).toBeNull();
+          expect(vertex.val.path.rotationRate).toBeNull();
+          expect(vertex.val.path.speed).toBeCloseTo(104.46, 2);
+          expect(vertex.val.path.ascentRate).toBeCloseTo(10, 0);
+          expect(vertex.val.path.descentRate).toBeCloseTo(0, 0);
+        });
+
+        it('should return the number of vertices if requested', () => {
+          const returnListCount = true;
+
+          const trimCount = polylineTrack.trimAfterTime(time2, returnListCount);
+
+          expect(trimCount).toEqual(2);
+        });
+      });
+
+      describe('#trimToTimes', () => {
+        it('should do nothing and return 0 on an empty polylineTrack', () => {
+          polylineTrack = new PolylineTrack([]);
+
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const trimCount = polylineTrack.trimToTimes(time1, time2);
+
+          expect(trimCount).toEqual(0);
+          expect(polylineTrack.size().vertices).toEqual(0);
+          expect(polylineTrack.size().segments).toEqual(0);
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineTrack.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return 0 when the specified vertex does not exist in the polylineTrack', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const trimCount = polylineTrack.trimToTimes('-3', '-4');
+
+          expect(trimCount).toEqual(0);
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineTrack.size().vertices).toEqual(6);
+          expect(polylineTrack.size().segments).toEqual(5);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1])).toBeTruthy();
+        });
+
+        it('should trim off vertices & segments before & after the specified start & end points and return a positive number to indicate success', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          // Trim before state
+          const vertex1 = polylineTrack.getNodeByTimestamp(time1);
+          const segmentNext = vertex1.nextSeg;
+          const trimmedVertexTail = vertex1.prev as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex1.prev).not.toBeNull();
+          expect(vertex1.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+          // Derived Properties
+          expect(vertex1.val.path.rotation).toBeCloseTo(3.038, 3);
+          expect(vertex1.val.path.rotationRate).toBeCloseTo(0.1519, 4);
+          expect(vertex1.val.path.speed).toBeCloseTo(105.13, 2);
+          expect(vertex1.val.path.ascentRate).toBeCloseTo(10, 0);
+          expect(vertex1.val.path.descentRate).toBeCloseTo(50, 0);
+
+          // Trim after state
+          const vertex2 = polylineTrack.getNodeByTimestamp(time2);
+          const segmentPrev = vertex2.prevSeg;
+          const trimmedVertexHead = vertex2.next as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex2.next).not.toBeNull();
+          expect(vertex2.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+          // Derived Properties
+          expect(vertex2.val.path.rotation).toBeCloseTo(-1.531, 3);
+          expect(vertex2.val.path.rotationRate).toBeCloseTo(-0.0765, 4);
+          expect(vertex2.val.path.speed).toBeCloseTo(81.25, 2);
+          expect(vertex2.val.path.ascentRate).toBeCloseTo(175, 0);
+          expect(vertex2.val.path.descentRate).toBeCloseTo(0, 0);
+
+
+          const trimCount = polylineTrack.trimToTimes(time1, time2);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(2);
+          expect(polylineTrack.size().segments).toEqual(1);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1 - 2])).toBeTruthy();
+
+          // New Head
+          expect(vertex1.prev).toBeNull();
+          expect(vertex1.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+
+          // Derived Properties
+          expect(vertex1.val.path.rotation).toBeNull();
+          expect(vertex1.val.path.rotationRate).toBeNull();
+          expect(vertex1.val.path.speed).toBeCloseTo(104.46, 2);
+          expect(vertex1.val.path.ascentRate).toBeCloseTo(10, 0);
+          expect(vertex1.val.path.descentRate).toBeCloseTo(0, 0);
+
+
+          // New Tail
+          expect(vertex2.next).toBeNull();
+          expect(vertex2.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+
+          // Derived Properties
+          expect(vertex2.val.path.rotation).toBeNull();
+          expect(vertex2.val.path.rotationRate).toBeNull();
+          expect(vertex2.val.path.speed).toBeCloseTo(104.46, 2);
+          expect(vertex2.val.path.ascentRate).toBeCloseTo(10, 0);
+          expect(vertex2.val.path.descentRate).toBeCloseTo(0, 0);
+        });
+
+        it('should trim off vertices & segments before the specified start point if the end vertex is not specified', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const vertex = polylineTrack.getNodeByTimestamp(time1);
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+
+          const trimCount = polylineTrack.trimToTimes(time1, null);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(4);
+          expect(polylineTrack.size().segments).toEqual(3);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1])).toBeTruthy();
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+        });
+
+        it('should trim off vertices & segments before the specified start point if the end vertex is not found', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const vertex = polylineTrack.getNodeByTimestamp(time1);
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+
+          const trimCount = polylineTrack.trimToTimes(time1, '-4');
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(4);
+          expect(polylineTrack.size().segments).toEqual(3);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1])).toBeTruthy();
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+        });
+
+        it('should trim off vertices & segments after the specified end point if the start vertex is not specified', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const vertex = polylineTrack.getNodeByTimestamp(time2);
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+
+          const trimCount = polylineTrack.trimToTimes(null, time2);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(4);
+          expect(polylineTrack.size().segments).toEqual(3);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1 - 2])).toBeTruthy();
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+        });
+
+        it('should trim off vertices & segments after the specified end point if the start vertex is not found', () => {
+          const originalVertexHead = polylineTrack.firstVertex;
+          const originalSegmentHead = polylineTrack.firstSegment;
+          const originalVertexTail = polylineTrack.lastVertex;
+          const originalSegmentTail = polylineTrack.lastSegment;
+
+          const vertex = polylineTrack.getNodeByTimestamp(time2);
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<TrackPoint, TrackSegment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+
+          const trimCount = polylineTrack.trimToTimes('-3', time2);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polylineTrack.firstVertex).toEqual(originalVertexHead);
+          expect(polylineTrack.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineTrack.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineTrack.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineTrack.size().vertices).toEqual(4);
+          expect(polylineTrack.size().segments).toEqual(3);
+
+          const vertices = polylineTrack.vertices();
+          expect(vertices[0].equals(trackPoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(trackPoints[trackPoints.length - 1 - 2])).toBeTruthy();
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+        });
+
+        it('should return the number of vertices if requested', () => {
+          const returnListCount = true;
+
+          const trimCount = polylineTrack.trimToTimes(time1, time2, returnListCount);
+
+          expect(trimCount).toEqual(4);
+        });
       });
     });
 
-    describe('#insertNodesBefore', () => {
-      // TODO: Test
+    describe('Remove', () => {
+      // // removeAtVertex(vertex: VertexNode<TVertex, TSegment>): boolean;
+      // describe('#removeAtVertex', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      describe('#removeNodes', () => {
+        it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(-1, -2, undefined, '-1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1, 101, 200, '-2'));
+
+          const nodes = polylineTrack.removeAtAny([node1, node2]);
+
+          expect(nodes).toEqual(0);
+
+          const polylineTrackLength = polylineTrack.size();
+          expect(polylineTrackLength.vertices).toEqual(trackPoints.length);
+          expect(polylineTrackLength.segments).toEqual(trackPoints.length - 1);
+        });
+
+        it('should remove the nodes provided and return a count for the number removed', () => {
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
+
+          const nodes = polylineTrack.removeAtAny([node1, node2]);
+
+          expect(nodes).toEqual(2);
+
+          const polylineTrackLength = polylineTrack.size();
+          expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
+          expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
+        });
+
+        it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1, 101, 200, '-2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
+
+          const nodes = polylineTrack.removeAtAny([node1, node2, node3]);
+
+          expect(nodes).toEqual(2);
+
+          const polylineTrackLength = polylineTrack.size();
+          expect(polylineTrackLength.vertices).toEqual(trackPoints.length - 2);
+          expect(polylineTrackLength.segments).toEqual(trackPoints.length - 2 - 1);
+        });
+      });
+      // describe('#removeVertices', () => {
+      //   it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
+      //     const node1 = new VertexNode<TrackPoint, TrackSegment>([90, -208] as TrackPoint);
+      //     const node2 = new VertexNode<TrackPoint, TrackSegment>([95, -208] as TrackPoint);
+
+      //     const nodes = polylineTrack.removeVertices([node1, node2]);
+
+      //     expect(nodes).toEqual(0);
+
+      //     const polylineLength = polylineTrack.size();
+      //     expect(polylineLength.vertices).toEqual(coords.length);
+      //     expect(polylineLength.segments).toEqual(coords.length - 1);
+      //   });
+
+      //   it('should remove the nodes provided and return a count for the number removed', () => {
+      //     const node1 = new VertexNode<TrackPoint, TrackSegment>(coords[1]);
+      //     const node2 = new VertexNode<TrackPoint, TrackSegment>(coords[2]);
+
+      //     const nodes = polylineTrack.removeVertices([node1, node2]);
+
+      //     expect(nodes).toEqual(2);
+
+      //     const polylineLength = polylineTrack.size();
+      //     expect(polylineLength.vertices).toEqual(coords.length - 2);
+      //     expect(polylineLength.segments).toEqual(coords.length - 2 - 1);
+      //   });
+
+      //   it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
+      //     const node1 = new VertexNode<TrackPoint, TrackSegment>(coords[1]);
+      //     const node2 = new VertexNode<TrackPoint, TrackSegment>([95, -208] as TrackPoint);
+
+      //     const nodes = polylineTrack.removeVertices([node1, node2]);
+
+      //     expect(nodes).toEqual(1);
+
+      //     const polylineLength = polylineTrack.size();
+      //     expect(polylineLength.vertices).toEqual(coords.length - 1);
+      //     expect(polylineLength.segments).toEqual(coords.length - 1 - 1);
+      //   });
+      // });
+
+      // // removeBetweenVertices(vertexStart: VertexNode<TVertex, TSegment>, vertexEnd: VertexNode<TVertex, TSegment>): number;
+      // describe('#removeBetweenVertices', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      // // removeFromToVertices(vertexStart: VertexNode<TVertex, TSegment>, vertexEnd: VertexNode<TVertex, TSegment>): number;
+      // describe('#removeFromToVertices', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
     });
 
-    describe('#insertNodesAfter', () => {
-      // TODO: Test
+    describe('Insert', () => {
+      // describe('Before', () => {
+      //   // insertVertexBefore(vertexTarget: VertexNode<TVertex, TSegment>, vertexInsert: VertexNode<TVertex, TSegment>): boolean;
+      //   describe('#insertVertexBefore', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+
+      //   describe('#insertVerticesBefore', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+      // });
+
+      // describe('After', () => {
+      //   // insertVertexAfter(vertexTarget: VertexNode<TVertex, TSegment>, vertexInsert: VertexNode<TVertex, TSegment>): boolean;
+      //   describe('#insertVertexAfter', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+
+
+      //   describe('#insertVerticesAfter', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+      // });
     });
 
-    describe('#replaceNodesBetween', () => {
-      const getNodeAtCount = (node: CoordinateNode<TrackPoint, TrackSegment>, count: number) => {
-        while (node) {
-          node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
-          count--;
+    describe('Replace', () => {
+      // // replaceVertexAt(vertexTarget: VertexNode<TVertex, TSegment>, vertexReplacement: VertexNode<TVertex, TSegment>): boolean;
+      // describe('#replaceVertexAt', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+
+      describe('#replaceNodesBetween', () => {
+        const getNodeAtCount = (node: VertexNode<TrackPoint, TrackSegment>, count: number) => {
+          while (node) {
+            node = node.next as VertexNode<TrackPoint, TrackSegment>;
+            count--;
+          }
+
+          return node;
+        };
+
+        const getTailNode = (node: VertexNode<TrackPoint, TrackSegment>) => {
+          let tempNode: VertexNode<TrackPoint, TrackSegment>;
+          while (node) {
+            tempNode = node;
+            node = node.next as VertexNode<TrackPoint, TrackSegment>;
+          }
+
+          return tempNode;
         }
 
-        return node;
-      };
+        it('should do nothing if the head & tail nodes are both unspecified', () => {
+          const initialLength = polylineTrack.size();
 
-      const getTailNode = (node: CoordinateNode<TrackPoint, TrackSegment>) => {
-        let tempNode: CoordinateNode<TrackPoint, TrackSegment>;
-        while (node) {
-          tempNode = node;
-          node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
-        }
+          const startNode = null;
+          const endNode = null;
 
-        return tempNode;
-      }
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
 
-      it('should do nothing if the head & tail nodes are both unspecified', () => {
-        const initialLength = polylineTrack.size();
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
 
-        const startNode = null;
-        const endNode = null;
+          expect(result).toEqual(0);
+          expect(polylineTrack.size()).toEqual(initialLength);
+        });
 
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
-        const node3 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
-        const nodes = [node1, node2, node3];
+        it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
 
-        const result = polylineTrack.replaceNodesBetween(startNode, endNode, nodes);
+          const initialLength = polylineTrack.size();
 
-        expect(result).toEqual(0);
-        expect(polylineTrack.size()).toEqual(initialLength);
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, []);
+
+          expect(result).toEqual(2);
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices - 2);
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments - 2);
+        });
+
+        it(`should insert the nodes at the head of track and return the number of nodes inserted
+          if only a tail node is provided and tail node is at the head of the track, `, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex;
+
+          // Use current tail node - by value to also test matching
+          const startNode = null;
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[0]);
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(3); // 3 inserted
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+          expect(polylineTrack.firstVertex.equals(node1.val)).toBeTruthy();
+
+          expect(node3.next.val).toEqual(endNode.val);
+
+          expect(node1).toEqual(polylineTrack.firstVertex);
+          expect(node1.prev).toBeNull();
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toEqual(initialHead);
+          expect(initialHead.prev).toEqual(node3);
+        });
+
+        it(`should insert the nodes at the tail of track and return the number of nodes inserted
+          if only a head node is provided and head node is at the tail of the track`, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex;
+          const initialTail = getTailNode(initialHead);
+
+          // Use current last node - by value to also test matching
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[trackPoints.length - 1]);
+          const endNode = null;
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(3); // 3 inserted
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+          expect(polylineTrack.firstVertex.equals(initialHead.val)).toBeTruthy();
+
+          expect(node1.prev.val).toEqual(startNode.val);
+
+          expect(node1).not.toEqual(polylineTrack.firstVertex);
+          expect(node1).toEqual(initialTail.next);
+          expect(node1.prev).toEqual(initialTail);
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toBeNull();
+        });
+
+        it(`should insert the nodes between the two specified tail/head nodes in the track
+          and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const initialTail = initialHead.next as VertexNode<TrackPoint, TrackSegment>;
+
+          // Insert after first segment, over second segment
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[2]);
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(3); // 3 inserted
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+
+          expect(node1.prev.val).toEqual(startNode.val);
+          expect(node3.next.val).toEqual(endNode.val);
+
+          expect(node1).not.toEqual(polylineTrack.firstVertex);
+          expect(node1).toEqual(initialHead.next);
+          expect(node1.prev).toEqual(initialHead);
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toEqual(initialTail);
+          expect(initialTail.prev).toEqual(node3);
+        });
+
+        it(`should insert the nodes between the two specified tail/head nodes in the track,
+          remove the original set of nodes between these same two points,
+          and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
+          const initialLength = polylineTrack.size();
+          const initialHead = polylineTrack.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
+          const initialTail = initialHead?.next?.next?.next as VertexNode<TrackPoint, TrackSegment>;
+
+          // Insert after first segment, over second segment
+          const startNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
+          const endNode = new VertexNode<TrackPoint, TrackSegment>(trackPoints[4]);
+
+          const node1 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
+          const node2 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
+          const node3 = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
+          const nodes = [node1, node2, node3];
+
+          const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+          expect(result).toEqual(5); // 3 inserted, 2 removed
+          expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+          expect(polylineTrack.size().segments).toEqual(initialLength.segments + 1);
+          expect(node1.prev.val).toEqual(startNode.val);
+          expect(node3.next.val).toEqual(endNode.val);
+
+          expect(node1).not.toEqual(polylineTrack.firstVertex);
+          expect(node1).toEqual(initialHead.next);
+          expect(node1.prev).toEqual(initialHead);
+          expect(node1.next).toEqual(node2);
+
+          expect(node3.prev).toEqual(node2);
+          expect(node3.next).toEqual(initialTail);
+          expect(initialTail.prev).toEqual(node3);
+        });
       });
+      // describe('#replaceVerticesBetween', () => {
+      //     beforeEach(() => {
+      //       coords = [
+      //         [45, -110] as TrackPoint,
+      //         [60, -109] as TrackPoint,
+      //         [47, -108] as TrackPoint,
+      //         [49, -110] as TrackPoint,
+      //         [57, -101] as TrackPoint,
+      //         [53, -107] as TrackPoint,
+      //       ];
+      //     });
 
-      it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
-        const startNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[0]);
-        const endNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[3]);
+      //     const getNodeAtCount = (node: VertexNode<TrackPoint, TrackSegment>, count: number) => {
+      //       while (node) {
+      //         node = node.next as VertexNode<TrackPoint, TrackSegment>;
+      //         count--;
+      //       }
 
-        const initialLength = polylineTrack.size();
+      //       return node;
+      //     };
 
-        const result = polylineTrack.replaceNodesBetween(startNode, endNode, []);
+      //     const getTailNode = (node: VertexNode<TrackPoint, TrackSegment>) => {
+      //       let tempNode: VertexNode<TrackPoint, TrackSegment>;
+      //       while (node) {
+      //         tempNode = node;
+      //         node = node.next as VertexNode<TrackPoint, TrackSegment>;
+      //       }
 
-        expect(result).toEqual(2);
-        expect(polylineTrack.size().vertices).toEqual(initialLength.vertices - 2);
-        expect(polylineTrack.size().segments).toEqual(initialLength.segments - 2);
-      });
+      //       return tempNode;
+      //     }
 
-      it(`should insert the nodes at the head of track and return the number of nodes inserted
-        if only a tail node is provided and tail node is at the head of the track, `, () => {
-        const initialLength = polylineTrack.size();
-        const initialHead = polylineTrack.firstPoint;
+      //     it('should do nothing if the head & tail nodes are both unspecified', () => {
+      //       const initialLength = polylineTrack.size();
 
-        // Use current tail node - by value to also test matching
-        const startNode = null;
-        const endNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[0]);
+      //       const startNode = null;
+      //       const endNode = null;
 
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
-        const node3 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
-        const nodes = [node1, node2, node3];
+      //       const node1 = new VertexNode<TrackPoint, TrackSegment>([99, 140] as TrackPoint);
+      //       const node2 = new VertexNode<TrackPoint, TrackSegment>([666, 69] as TrackPoint);
+      //       const node3 = new VertexNode<TrackPoint, TrackSegment>([420, 171] as TrackPoint);
+      //       const nodes = [node1, node2, node3];
 
-        const result = polylineTrack.replaceNodesBetween(startNode, endNode, nodes);
+      //       const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
 
-        expect(result).toEqual(3); // 3 inserted
-        expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-        expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
-        expect(polylineTrack.firstPoint.equals(node1.val)).toBeTruthy();
+      //       expect(result).toEqual(0);
+      //       expect(polylineTrack.size()).toEqual(initialLength);
+      //     });
 
-        expect(node3.next.val).toEqual(endNode.val);
+      //     it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
+      //       const startNode = new VertexNode<TrackPoint, TrackSegment>(coords[0]);
+      //       const endNode = new VertexNode<TrackPoint, TrackSegment>(coords[3]);
 
-        expect(node1).toEqual(polylineTrack.firstPoint);
-        expect(node1.prev).toBeNull();
-        expect(node1.next).toEqual(node2);
+      //       const initialLength = polylineTrack.size();
 
-        expect(node3.prev).toEqual(node2);
-        expect(node3.next).toEqual(initialHead);
-        expect(initialHead.prev).toEqual(node3);
-      });
+      //       const result = polylineTrack.replaceVerticesBetween(startNode, endNode, []);
 
-      it(`should insert the nodes at the tail of track and return the number of nodes inserted
-        if only a head node is provided and head node is at the tail of the track`, () => {
-        const initialLength = polylineTrack.size();
-        const initialHead = polylineTrack.firstPoint;
-        const initialTail = getTailNode(initialHead);
+      //       expect(result).toEqual(2);
+      //       expect(polylineTrack.size().vertices).toEqual(initialLength.vertices - 2);
+      //       expect(polylineTrack.size().segments).toEqual(initialLength.segments - 2);
+      //     });
 
-        // Use current last node - by value to also test matching
-        const startNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[trackPoints.length - 1]);
-        const endNode = null;
+      //     it(`should insert the nodes at the head of track and return the number of nodes inserted
+      // if only a tail node is provided and tail node is at the head of the track, `, () => {
+      //       const initialLength = polylineTrack.size();
+      //       const initialHead = polylineTrack.firstVertex;
 
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
-        const node3 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
-        const nodes = [node1, node2, node3];
+      //       // Use current tail node - by value to also test matching
+      //       const startNode = null;
+      //       const endNode = new VertexNode<TrackPoint, TrackSegment>(coords[0]);
 
-        const result = polylineTrack.replaceNodesBetween(startNode, endNode, nodes);
+      //       const node1 = new VertexNode<TrackPoint, TrackSegment>([99, 140] as TrackPoint);
+      //       const node2 = new VertexNode<TrackPoint, TrackSegment>([666, 69] as TrackPoint);
+      //       const node3 = new VertexNode<TrackPoint, TrackSegment>([420, 171] as TrackPoint);
+      //       const nodes = [node1, node2, node3];
 
-        expect(result).toEqual(3); // 3 inserted
-        expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-        expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
-        expect(polylineTrack.firstPoint.equals(initialHead.val)).toBeTruthy();
+      //       const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
 
-        expect(node1.prev.val).toEqual(startNode.val);
+      //       expect(result).toEqual(3); // 3 inserted
+      //       expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+      //       expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+      //       expect(polylineTrack.firstVertex.equals(node1.val)).toBeTruthy();
 
-        expect(node1).not.toEqual(polylineTrack.firstPoint);
-        expect(node1).toEqual(initialTail.next);
-        expect(node1.prev).toEqual(initialTail);
-        expect(node1.next).toEqual(node2);
+      //       expect(node3.next.val).toEqual(endNode.val);
 
-        expect(node3.prev).toEqual(node2);
-        expect(node3.next).toBeNull();
-      });
+      //       expect(node1).toEqual(polylineTrack.firstVertex);
+      //       expect(node1.prev).toBeNull();
+      //       expect(node1.next).toEqual(node2);
 
-      it(`should insert the nodes between the two specified tail/head nodes in the track
-        and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
-        const initialLength = polylineTrack.size();
-        const initialHead = polylineTrack.firstPoint.next as CoordinateNode<TrackPoint, TrackSegment>;
-        const initialTail = initialHead.next as CoordinateNode<TrackPoint, TrackSegment>;
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toEqual(initialHead);
+      //       expect(initialHead.prev).toEqual(node3);
+      //     });
 
-        // Insert after first segment, over second segment
-        const startNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[1]);
-        const endNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[2]);
+      //     it(`should insert the nodes at the tail of track and return the number of nodes inserted
+      // if only a head node is provided and head node is at the tail of the track`, () => {
+      //       const initialLength = polylineTrack.size();
+      //       const initialHead = polylineTrack.firstVertex;
+      //       const initialTail = getTailNode(initialHead);
 
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
-        const node3 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
-        const nodes = [node1, node2, node3];
+      //       // Use current last node - by value to also test matching
+      //       const startNode = new VertexNode<TrackPoint, TrackSegment>(coords[coords.length - 1]);
+      //       const endNode = null;
 
-        const result = polylineTrack.replaceNodesBetween(startNode, endNode, nodes);
+      //       const node1 = new VertexNode<TrackPoint, TrackSegment>([99, 140] as TrackPoint);
+      //       const node2 = new VertexNode<TrackPoint, TrackSegment>([666, 69] as TrackPoint);
+      //       const node3 = new VertexNode<TrackPoint, TrackSegment>([420, 171] as TrackPoint);
+      //       const nodes = [node1, node2, node3];
 
-        expect(result).toEqual(3); // 3 inserted
-        expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-        expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+      //       const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
 
-        expect(node1.prev.val).toEqual(startNode.val);
-        expect(node3.next.val).toEqual(endNode.val);
+      //       expect(result).toEqual(3); // 3 inserted
+      //       expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+      //       expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
+      //       expect(polylineTrack.firstVertex.equals(initialHead.val)).toBeTruthy();
 
-        expect(node1).not.toEqual(polylineTrack.firstPoint);
-        expect(node1).toEqual(initialHead.next);
-        expect(node1.prev).toEqual(initialHead);
-        expect(node1.next).toEqual(node2);
+      //       expect(node1.prev.val).toEqual(startNode.val);
 
-        expect(node3.prev).toEqual(node2);
-        expect(node3.next).toEqual(initialTail);
-        expect(initialTail.prev).toEqual(node3);
-      });
+      //       expect(node1).not.toEqual(polylineTrack.firstVertex);
+      //       expect(node1).toEqual(initialTail.next);
+      //       expect(node1.prev).toEqual(initialTail);
+      //       expect(node1.next).toEqual(node2);
 
-      it(`should insert the nodes between the two specified tail/head nodes in the track,
-        remove the original set of nodes between these same two points,
-        and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
-        const initialLength = polylineTrack.size();
-        const initialHead = polylineTrack.firstPoint.next as CoordinateNode<TrackPoint, TrackSegment>;
-        const initialTail = initialHead?.next?.next?.next as CoordinateNode<TrackPoint, TrackSegment>;
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toBeNull();
+      //     });
 
-        // Insert after first segment, over second segment
-        const startNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[1]);
-        const endNode = new CoordinateNode<TrackPoint, TrackSegment>(trackPoints[4]);
+      //     it(`should insert the nodes between the two specified tail/head nodes in the track
+      // and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
+      //       const initialLength = polylineTrack.size();
+      //       const initialHead = polylineTrack.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
+      //       const initialTail = initialHead.next as VertexNode<TrackPoint, TrackSegment>;
 
-        const node1 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.1, 101.5, 200, '2.1'));
-        const node2 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.2, 102, 210, '2.2'));
-        const node3 = new CoordinateNode<TrackPoint, TrackSegment>(new TrackPoint(1.3, 107, 240, '2.3'));
-        const nodes = [node1, node2, node3];
+      //       // Insert after first segment, over second segment
+      //       const startNode = new VertexNode<TrackPoint, TrackSegment>(coords[1]);
+      //       const endNode = new VertexNode<TrackPoint, TrackSegment>(coords[2]);
 
-        const result = polylineTrack.replaceNodesBetween(startNode, endNode, nodes);
+      //       const node1 = new VertexNode<TrackPoint, TrackSegment>([99, 140] as TrackPoint);
+      //       const node2 = new VertexNode<TrackPoint, TrackSegment>([666, 69] as TrackPoint);
+      //       const node3 = new VertexNode<TrackPoint, TrackSegment>([420, 171] as TrackPoint);
+      //       const nodes = [node1, node2, node3];
 
-        expect(result).toEqual(5); // 3 inserted, 2 removed
-        expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
-        expect(polylineTrack.size().segments).toEqual(initialLength.segments + 1);
-        expect(node1.prev.val).toEqual(startNode.val);
-        expect(node3.next.val).toEqual(endNode.val);
+      //       const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
 
-        expect(node1).not.toEqual(polylineTrack.firstPoint);
-        expect(node1).toEqual(initialHead.next);
-        expect(node1.prev).toEqual(initialHead);
-        expect(node1.next).toEqual(node2);
+      //       expect(result).toEqual(3); // 3 inserted
+      //       expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
+      //       expect(polylineTrack.size().segments).toEqual(initialLength.segments + result);
 
-        expect(node3.prev).toEqual(node2);
-        expect(node3.next).toEqual(initialTail);
-        expect(initialTail.prev).toEqual(node3);
-      });
+      //       expect(node1.prev.val).toEqual(startNode.val);
+      //       expect(node3.next.val).toEqual(endNode.val);
+
+      //       expect(node1).not.toEqual(polylineTrack.firstVertex);
+      //       expect(node1).toEqual(initialHead.next);
+      //       expect(node1.prev).toEqual(initialHead);
+      //       expect(node1.next).toEqual(node2);
+
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toEqual(initialTail);
+      //       expect(initialTail.prev).toEqual(node3);
+      //     });
+
+      //     it(`should insert the nodes between the two specified tail/head nodes in the track,
+      // remove the original set of nodes between these same two points,
+      // and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
+      //       const initialLength = polylineTrack.size();
+      //       const initialHead = polylineTrack.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
+      //       const initialTail = initialHead?.next?.next?.next as VertexNode<TrackPoint, TrackSegment>;
+
+      //       // Insert after first segment, over second segment
+      //       const startNode = new VertexNode<TrackPoint, TrackSegment>(coords[1]);
+      //       const endNode = new VertexNode<TrackPoint, TrackSegment>(coords[4]);
+
+      //       const node1 = new VertexNode<TrackPoint, TrackSegment>([99, 140] as TrackPoint);
+      //       const node2 = new VertexNode<TrackPoint, TrackSegment>([666, 69] as TrackPoint);
+      //       const node3 = new VertexNode<TrackPoint, TrackSegment>([420, 171] as TrackPoint);
+      //       const nodes = [node1, node2, node3];
+
+      //       const result = polylineTrack.replaceVerticesBetween(startNode, endNode, nodes);
+
+      //       expect(result).toEqual(5); // 3 inserted, 2 removed
+      //       expect(polylineTrack.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+      //       expect(polylineTrack.size().segments).toEqual(initialLength.segments + 1);
+      //       expect(node1.prev.val).toEqual(startNode.val);
+      //       expect(node3.next.val).toEqual(endNode.val);
+
+      //       expect(node1).not.toEqual(polylineTrack.firstVertex);
+      //       expect(node1).toEqual(initialHead.next);
+      //       expect(node1.prev).toEqual(initialHead);
+      //       expect(node1.next).toEqual(node2);
+
+      //       expect(node3.prev).toEqual(node2);
+      //       expect(node3.next).toEqual(initialTail);
+      //       expect(initialTail.prev).toEqual(node3);
+      //     });
+      //   });
+
+      //   describe('#replaceVerticesFromTo', () => {
+      //     it('should ', () => {
+
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
     });
 
-    describe('#replaceNodesFromTo', () => {
-      // TODO: Test
+    describe('Splice', () => {
+      // // prependPolyline(polylineTrack: IPolyline<TVertex, TSegment>): IPolyline<TVertex, TSegment>;
+      // describe('#prependPolyline', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      // // appendPolyline(polylineTrack: IPolyline<TVertex, TSegment>): IPolyline<TVertex, TSegment>;
+      // describe('#appendPolyline', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
     });
 
-    // describe('#splitAtNode', () => {
-    //   it('should ', () => {
+    describe('Split', () => {
+      // // splitAtVertex(vertex: VertexNode<TVertex, TSegment>): [IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>];
+      // describe('#splitAtVertex', () => {
+      //   it('should ', () => {
+      //     it('should ', () => {
 
-    //   });
-    // });
+      //     });
+
+      //     it('should ', () => {
+
+      //     });
+      //   });
+      // });
+
+      // // splitByVertices(vertices: VertexNode<TVertex, TSegment>[]): IPolyline<TVertex, TSegment>[];
+      // describe('#splitByVertices', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+
+
+      // // splitAtSubPolyline(polylineTrack: IPolyline<TVertex, TSegment>): [IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>];
+      // describe('#splitAtSubPolyline', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+
+      // // splitBySubPolylines(polylineTrack: IPolyline<TVertex, TSegment>[]): IPolyline<TVertex, TSegment>[];
+      // describe('#splitBySubPolylines', () => {
+      //   it('should ', () => {
+
+      //   });
+
+      //   it('should ', () => {
+
+      //   });
+      // });
+    });
   });
+
 
   // describe('IQuery', () => {
   //   let lineString: LineString;
@@ -853,7 +1821,7 @@ describe('##PolylineTrack', () => {
 
   //   beforeEach(() => {
   //     const featureJson = lineStringTrack.features[0];
-  //     lineString = LineString.fromPositions(featureJson.geometry.coordinates);
+  //     lineString = LineString.fromPositions(featureJson.geometry.coords);
   //     properties = TrackProperty.fromJson(featureJson.properties);
 
   //     const feature = Feature.fromGeometry(lineString, { properties });
@@ -975,7 +1943,7 @@ describe('##PolylineTrack', () => {
   //       );
   //     });
 
-  //     it('should return three segments split by a two coordinates found in a GeoJSON object', () => {
+  //     it('should return three segments split by a two coords found in a GeoJSON object', () => {
   //       const timestamp1 = '2';
   //       const timestamp2 = '4';
 
@@ -1014,7 +1982,7 @@ describe('##PolylineTrack', () => {
   //       );
   //     });
 
-  //     it('should return two segments split by 1 coordinate found in a GeoJSON object with 2 coordinates provided', () => {
+  //     it('should return two segments split by 1 coordinate found in a GeoJSON object with 2 coords provided', () => {
   //       const timestamp = '3';
   //       const timestampInvalid = '3.1';
 
@@ -1115,7 +2083,7 @@ describe('##PolylineTrack', () => {
 
   //   beforeEach(() => {
   //     const featureJson = lineStringTrack.features[0];
-  //     lineString = LineString.fromPositions(featureJson.geometry.coordinates);
+  //     lineString = LineString.fromPositions(featureJson.geometry.coords);
   //     properties = TrackProperty.fromJson(featureJson.properties);
 
   //     const feature = Feature.fromGeometry(lineString, { properties });
@@ -1172,7 +2140,7 @@ describe('##PolylineTrack', () => {
   //   });
 
   //   describe('#clipBetweenTimes', () => {
-  //     it('should clip track to segment between the coordinates found in a GeoJSON object', () => {
+  //     it('should clip track to segment between the coords found in a GeoJSON object', () => {
   //       const timestampStart = '2';
   //       const timestampEnd = '4';
 
@@ -1215,7 +2183,7 @@ describe('##PolylineTrack', () => {
 
   //   beforeEach(() => {
   //     const featureJson = lineStringTrack.features[0];
-  //     lineString = LineString.fromPositions(featureJson.geometry.coordinates);
+  //     lineString = LineString.fromPositions(featureJson.geometry.coords);
   //     properties = TrackProperty.fromJson(featureJson.properties);
 
   //     const feature = Feature.fromGeometry(lineString, { properties });
@@ -1256,7 +2224,7 @@ describe('##PolylineTrack', () => {
   //       );
   //     });
 
-  //     it('should return three track segments split by two coordinates found in a GeoJSON object', () => {
+  //     it('should return three track segments split by two coords found in a GeoJSON object', () => {
   //       const timestamp1 = '2';
   //       const timestamp2 = '4';
 
@@ -1295,7 +2263,7 @@ describe('##PolylineTrack', () => {
   //       );
   //     });
 
-  //     it('should return two track segments split by 1 coordinate found in a GeoJSON object with 2 coordinates provided', () => {
+  //     it('should return two track segments split by 1 coordinate found in a GeoJSON object with 2 coords provided', () => {
   //       const timestamp = '3';
   //       const timestampInvalid = '3.1';
 
@@ -1486,7 +2454,7 @@ describe('##PolylineTrack', () => {
   //             type: 'Feature',
   //             geometry: {
   //               type: 'LineString',
-  //               coordinates: [
+  //               coords: [
   //                 [100.0, 0.0, 100],
   //                 [101.0, 1.0, 200],
   //                 [102.0, 2.0, 300],
@@ -1512,7 +2480,7 @@ describe('##PolylineTrack', () => {
   //       }
 
   //       const featureJson = lineStringTrack.features[0];
-  //       const lineString = LineString.fromPositions(featureJson.geometry.coordinates);
+  //       const lineString = LineString.fromPositions(featureJson.geometry.coords);
   //       const properties = TrackProperty.fromJson(featureJson.properties);
 
   //       const feature = Feature.fromGeometry(lineString, { properties });
@@ -1742,17 +2710,17 @@ describe('##PolylineTrack', () => {
   //       const coord1 = new TrackPoint(-8.9448362309, -77.7124663163);
   //       coord1.timeStamp = '2023-07-04T20:50:08Z';
   //       // Speed (average): 3.575 m/s = 8.0 mph
-  //       // Segment speed: 3.575 m/s = 8.0 mph
+  //       // TrackSegment speed: 3.575 m/s = 8.0 mph
 
   //       const coord2 = new TrackPoint(-8.9447123464, -77.7121659927);
   //       coord2.timeStamp = '2023-07-04T20:50:18Z';
   //       // Speed (average): 2.069 m/s = 4.6 mph
-  //       // Segment speed: 0.564 m/s = 1.3 mph
+  //       // TrackSegment speed: 0.564 m/s = 1.3 mph
 
   //       const coord3 = new TrackPoint(-8.9446145296, -77.7118207421);
   //       coord3.timeStamp = '2023-07-04T20:51:28Z';
   //       // Speed (average): 1.137 m/s = 2.5 mph
-  //       // Segment speed: 1.71 m/s = 3.8 mph
+  //       // TrackSegment speed: 1.71 m/s = 3.8 mph
 
   //       const coord4 = new TrackPoint(-8.945042761, -77.7116469014);
   //       coord4.timeStamp = '2023-07-04T20:51:58Z';
@@ -1779,17 +2747,17 @@ describe('##PolylineTrack', () => {
   //       const coord1 = new TrackPoint(-8.9448362309, -77.7124663163);
   //       coord1.timeStamp = '2023-07-04T20:50:08Z';
   //       // Speed (average): 1.083 m/s = 2.4 mph
-  //       // Segment speed:  m/s =  mph
+  //       // TrackSegment speed:  m/s =  mph
 
   //       const coord2 = new TrackPoint(-8.9447123464, -77.7121659927);
   //       coord2.timeStamp = '2023-07-04T20:50:41Z';
   //       // Speed (average): 0.870 m/s = 1.9 mph
-  //       // Segment speed:  m/s =  mph
+  //       // TrackSegment speed:  m/s =  mph
 
   //       const coord3 = new TrackPoint(-8.9446145296, -77.7118207421);
   //       coord3.timeStamp = '2023-07-04T20:51:41Z';
   //       // Speed (average): 2.89 m/s = 6.46 mph
-  //       // Segment speed:  m/s =  mph
+  //       // TrackSegment speed:  m/s =  mph
 
   //       const coord4 = new TrackPoint(-8.945042761, -77.7116469014);
   //       coord4.timeStamp = '2023-07-04T20:51:51Z';
@@ -1812,7 +2780,7 @@ describe('##PolylineTrack', () => {
   //       expect(track.points().length).toEqual(3);
   //     });
 
-  //     it('should remove coordinates from a track that have speeds above the specified limit', () => {
+  //     it('should remove coords from a track that have speeds above the specified limit', () => {
   //       const coord1 = new TrackPoint(-8.9448362309, -77.7124663163);
   //       coord1.timeStamp = '2023-07-04T20:49:58Z';
   //       // Speed (average): 1.787 m/s = 4.0 mph
@@ -1848,7 +2816,7 @@ describe('##PolylineTrack', () => {
   //   });
 
   //   describe('#smoothByAngularSpeed', () => {
-  //     it('should remove coordinates from a track that have clockwise angular speeds above the specified limit', () => {
+  //     it('should remove coords from a track that have clockwise angular speeds above the specified limit', () => {
   //       const coord1 = new TrackPoint(39.74007868370209, -105.0076261841355);
   //       coord1.timeStamp = '2023-07-04T20:00:00Z';
 
@@ -1882,7 +2850,7 @@ describe('##PolylineTrack', () => {
   //       expect(track.points().length).toEqual(4);
   //     });
 
-  //     it('should remove coordinates from a track that have counter-clockwise angular speeds above the specified limit', () => {
+  //     it('should remove coords from a track that have counter-clockwise angular speeds above the specified limit', () => {
   //       const coord1 = new TrackPoint(39.74007868370209, -105.0076261841355);
   //       coord1.timeStamp = '2023-07-04T20:00:00Z';
 
@@ -1918,7 +2886,7 @@ describe('##PolylineTrack', () => {
   //   });
 
   //   describe('#smoothStationary', () => {
-  //     it('should remove coordinates from a track that have a speeds below the specified limit', () => {
+  //     it('should remove coords from a track that have a speeds below the specified limit', () => {
   //       const coords = [
   //         new TrackPoint(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
   //         new TrackPoint(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:07:20Z'),
@@ -1938,7 +2906,7 @@ describe('##PolylineTrack', () => {
   //       expect(track.points().length).toEqual(4);
   //     });
 
-  //     it('should ??? coordinates from a track that do not have speed data', () => {
+  //     it('should ??? coords from a track that do not have speed data', () => {
   //       // TODO: What should this behavior be or should it even be considered?
   //       //  A track with no speed data may just need it calculated or has no time stamps, in which case 'stationary' is not a valid criteria.
   //       //  A valid case would be a track with speeds where some points cannot have speed calculated (perhaps due to an error?).
@@ -1972,7 +2940,7 @@ describe('##PolylineTrack', () => {
   //       expect(track.points().length).toEqual(5);
   //     });
 
-  //     it('should remove coordinates in a noise cloud at the beginning of the path, leaving an average pause/resume node in place', () => {
+  //     it('should remove coords in a noise cloud at the beginning of the path, leaving an average pause/resume node in place', () => {
   //       const coords = [
   //         // Times are accelerated such that the points aren't marked as stationary
   //         // Distances are such that based on assume min timestamps, they are too close
@@ -2008,7 +2976,7 @@ describe('##PolylineTrack', () => {
   //       expect(resultCoords[0].timeStamp).toEqual('2023-07-04T20:00:50Z');
   //     });
 
-  //     it('should remove coordinates in a noise cloud at the end of the path, leaving an average pause/resume node in place', () => {
+  //     it('should remove coords in a noise cloud at the end of the path, leaving an average pause/resume node in place', () => {
   //       const coords = [
   //         // Times are accelerated such that the points aren't marked as stationary
   //         // Distances are such that based on assume min timestamps, they are too close
@@ -2148,7 +3116,7 @@ describe('##PolylineTrack', () => {
   //   });
 
   //   describe('#smoothByElevationSpeed', () => {
-  //     it('should do nothing for coordinates with no DEM elevation', () => {
+  //     it('should do nothing for coords with no DEM elevation', () => {
   //       const coords = [
   //         new TrackPoint(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
   //         new TrackPoint(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:07:20Z'),
@@ -2169,7 +3137,7 @@ describe('##PolylineTrack', () => {
   //       expect(track.points().length).toEqual(5);
   //     });
 
-  //     it('should do nothing for coordinates with elevation changes below the specified limit', () => {
+  //     it('should do nothing for coords with elevation changes below the specified limit', () => {
   //       const coords = [
   //         new TrackPoint(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
   //         new TrackPoint(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:30Z'),
