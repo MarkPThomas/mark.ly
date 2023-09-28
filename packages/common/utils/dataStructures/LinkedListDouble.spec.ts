@@ -179,6 +179,50 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.head?.val).toEqual(6);
         expect(linkedList.tail?.val).toEqual(5);
       });
+
+      it('should add a linked set of nodes with the head provided', () => {
+        const head = new NodeDouble(6);
+        let currNode = head;
+        for (let i = 7; i < 10; i++) {
+          const newNode = new NodeDouble(i);
+          currNode.next = newNode;
+          newNode.prev = currNode;
+
+          currNode = currNode.next as NodeDouble<number>;
+        }
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        expect(linkedList.size()).toEqual(5);
+
+        linkedList.prepend(head);
+
+        expect(linkedList.size()).toEqual(9);
+        expect(linkedList.head?.val).toEqual(6);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
+
+      it('should add a linked set of nodes with the tail provided', () => {
+        const head = new NodeDouble(6);
+        let currNode = head;
+        for (let i = 7; i < 10; i++) {
+          const newNode = new NodeDouble(i);
+          currNode.next = newNode;
+          newNode.prev = currNode;
+
+          currNode = currNode.next as NodeDouble<number>;
+        }
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        expect(linkedList.size()).toEqual(5);
+
+        linkedList.prepend(currNode);
+
+        expect(linkedList.size()).toEqual(9);
+        expect(linkedList.head?.val).toEqual(6);
+        expect(linkedList.tail?.val).toEqual(5);
+      });
     });
 
     describe('#append', () => {
@@ -227,6 +271,50 @@ describe('##LinkedListDouble', () => {
         expect(linkedList.size()).toEqual(6);
         expect(linkedList.head?.val).toEqual(1);
         expect(linkedList.tail?.val).toEqual(6);
+      });
+
+      it('should add a linked set of nodes with the head provided', () => {
+        const head = new NodeDouble(6);
+        let currNode = head;
+        for (let i = 7; i < 10; i++) {
+          const newNode = new NodeDouble(i);
+          currNode.next = newNode;
+          newNode.prev = currNode;
+
+          currNode = currNode.next as NodeDouble<number>;
+        }
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        expect(linkedList.size()).toEqual(5);
+
+        linkedList.append(head);
+
+        expect(linkedList.size()).toEqual(9);
+        expect(linkedList.head?.val).toEqual(1);
+        expect(linkedList.tail?.val).toEqual(9);
+      });
+
+      it('should add a linked set of nodes with the tail provided', () => {
+        const head = new NodeDouble(6);
+        let currNode = head;
+        for (let i = 7; i < 10; i++) {
+          const newNode = new NodeDouble(i);
+          currNode.next = newNode;
+          newNode.prev = currNode;
+
+          currNode = currNode.next as NodeDouble<number>;
+        }
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListDouble<number>(values);
+
+        expect(linkedList.size()).toEqual(5);
+
+        linkedList.append(currNode);
+
+        expect(linkedList.size()).toEqual(9);
+        expect(linkedList.head?.val).toEqual(1);
+        expect(linkedList.tail?.val).toEqual(9);
       });
     });
 
@@ -2570,8 +2658,8 @@ describe('##LinkedListDouble', () => {
         });
 
         it(`should remove nodes from the next node after the start node
-      through the last node before the end node,
-      if the start and end values are found in order, non-adjacent`, () => {
+          through the last node before the end node,
+          if the start and end values are found in order, non-adjacent`, () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
           const returnListCount = true;
@@ -3001,7 +3089,7 @@ describe('##LinkedListDouble', () => {
 
           it(`should replace nodes from the next node after the start node
             through the last node before the end node,
-            if the start and end values are found in order, non-adjacent`, () => {
+            if the start and end values are found in order`, () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListDouble<number>(values);
 
@@ -3477,7 +3565,7 @@ describe('##LinkedListDouble', () => {
       });
 
       describe('with an array of nodes', () => {
-        it('should replace the start node through the end node if the start and end values are found in order, non-adjacent', () => {
+        it('should replace the start node through the end node if the start and end values are found in order', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
 

@@ -18,28 +18,35 @@ export class LinkedList<N extends NodeSingle<V>, V>
   // === Single Item Operations ===
   prepend(valueOrNode: V | N) {
     const node = this.getAsNode(valueOrNode);
-    node.next = this._head;
-    this._head = node as N;
+    let nodeHead: N = node;
 
-    if (this._tail === null) {
-      this._tail = node as N;
+    let nodeTail: N = node;
+    while (nodeTail.next) {
+      nodeTail = nodeTail.next as N;
     }
+    nodeTail.next = this._head;
+
+    if (!this._tail) {
+      this._tail = nodeTail;
+    }
+    this._head = nodeHead;
 
     this._lengthDirty = true;
   }
 
   append(valueOrNode: V | N) {
-    const node = this.getAsNode(valueOrNode);
-    let currNode = this._head;
-    while (currNode && currNode.next) {
-      currNode = currNode.next as N;
-    }
-    if (currNode) {
-      currNode.next = node;
+    let node = this.getAsNode(valueOrNode);
+
+    if (!this._tail) {
+      this._head = node;
     } else {
-      this._head = node as N;
+      this._tail.next = node;
     }
-    this._tail = node as N;
+
+    while (node.next) {
+      node = node.next as N;
+    }
+    this._tail = node;
 
     this._lengthDirty = true;
   }

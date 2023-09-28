@@ -8,13 +8,6 @@ export interface ISegmentProperties {
    * @memberof ISegment
    */
   length: number;
-  /**
-   * Angle in radians, measured the Cartesian/Polar origin, or from due East, projected onto a 2D plane.
-   *
-   * @type {number}
-   * @memberof ISegment
-   */
-  angle: number;
 }
 
 export interface ISegment
@@ -26,34 +19,19 @@ export interface ISegment
 
 export class Segment implements ISegment {
   length: number;
-  angle: number;
 
-  constructor(length?: number, angle?: number,) {
-    this.angle = angle;
+  constructor(length?: number) {
     this.length = length;
   }
 
   // === Common Interfaces ===
   clone(): Segment {
-    const segment = new Segment(this.length, this.angle);
+    const segment = new Segment(this.length);
 
     return segment;
   }
 
   equals(segment: ISegmentProperties): boolean {
-    return this.length === segment.length
-      && this.angle === segment.angle;
-  }
-
-
-  // === Calc Methods ===
-
-  static calcPathRotationRad(segI: ISegmentProperties, segJ: ISegmentProperties) {
-    return (segJ?.angle === undefined || segJ.angle === null
-      || segI?.angle === undefined || segI.angle === null
-      || isNaN(segJ.angle - segI.angle)
-    )
-      ? null
-      : segJ.angle - segI.angle;
+    return this.length === segment.length;
   }
 }
