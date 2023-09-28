@@ -960,6 +960,8 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       this.insertListBefore(refNode, items);
       if (returnListCount) {
         count = items.size();
+      } else {
+        count = 1;
       }
     }
     return count;
@@ -991,6 +993,8 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
       this.insertListAfter(refNode, items);
       if (returnListCount) {
         count = items.size();
+      } else {
+        count = 1;
       }
     }
     return count;

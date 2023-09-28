@@ -2658,8 +2658,8 @@ describe('##LinkedListDouble', () => {
         });
 
         it(`should remove nodes from the next node after the start node
-      through the last node before the end node,
-      if the start and end values are found in order, non-adjacent`, () => {
+          through the last node before the end node,
+          if the start and end values are found in order, non-adjacent`, () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
           const returnListCount = true;
@@ -3089,7 +3089,7 @@ describe('##LinkedListDouble', () => {
 
           it(`should replace nodes from the next node after the start node
             through the last node before the end node,
-            if the start and end values are found in order, non-adjacent`, () => {
+            if the start and end values are found in order`, () => {
             const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const linkedList = new LinkedListDouble<number>(values);
 
@@ -3565,7 +3565,7 @@ describe('##LinkedListDouble', () => {
       });
 
       describe('with an array of nodes', () => {
-        it('should replace the start node through the end node if the start and end values are found in order, non-adjacent', () => {
+        it('should replace the start node through the end node if the start and end values are found in order', () => {
           const values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           const linkedList = new LinkedListDouble<number>(values);
 

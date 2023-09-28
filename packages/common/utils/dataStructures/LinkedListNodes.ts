@@ -127,6 +127,16 @@ export class NodeDouble<V> extends Node<V> implements INodeDouble<V>{
     }
     return isRemoved;
   }
+
+
+  clone(): NodeDouble<V> {
+    let val = this.val;
+    if (val && typeof val === "object" && 'clone' in val) {
+      val = (val as unknown as ICloneable<V>).clone();
+    }
+
+    return new NodeDouble(val);
+  }
 }
 
 
