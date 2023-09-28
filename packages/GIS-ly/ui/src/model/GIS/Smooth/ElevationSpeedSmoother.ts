@@ -1,4 +1,4 @@
-import { CoordinateNode } from "../../Geometry/Polyline";
+import { VertexNode } from "../../Geometry/Polyline";
 import { EvaluatorArgs, Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
 import { TrackSegment } from "../Track/TrackSegment";
@@ -29,12 +29,12 @@ export class ElevationSpeedSmoother extends Smoother {
 
   protected isExceedingElevationSpeedLimit(
     { maxAscentRateMPS, maxDescentRateMPS }: EvaluatorArgs,
-    coord: CoordinateNode<TrackPoint, TrackSegment>
+    coord: VertexNode<TrackPoint, TrackSegment>
   ): boolean {
     maxDescentRateMPS = maxDescentRateMPS ?? maxAscentRateMPS;
-    if (coord.val?._path) {
-      return coord.val._path.ascentRate > maxAscentRateMPS
-        || coord.val._path.descentRate > maxDescentRateMPS;
+    if (coord.val?.path) {
+      return coord.val.path.ascentRate > maxAscentRateMPS
+        || coord.val.path.descentRate > maxDescentRateMPS;
     }
 
     return false;

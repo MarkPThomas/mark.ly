@@ -1,4 +1,4 @@
-import { CoordinateNode } from "../../Geometry/Polyline";
+import { VertexNode } from "../../Geometry/Polyline";
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
 import { TrackSegment } from "../Track/TrackSegment";
@@ -13,7 +13,7 @@ export class StationarySmoother extends Smoother {
     return nodesSmoothed.length;
   }
 
-  protected isStationary(limit: number, coord: CoordinateNode<TrackPoint, TrackSegment>) {
-    return coord.val?.speedAvg && coord.val.speedAvg < limit;
+  protected isStationary(limit: number, coord: VertexNode<TrackPoint, TrackSegment>) {
+    return coord.val?.path.speed && coord.val.path.speed < limit;
   }
 }
