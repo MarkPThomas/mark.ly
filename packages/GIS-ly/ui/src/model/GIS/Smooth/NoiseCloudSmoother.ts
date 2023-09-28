@@ -1,6 +1,6 @@
 import config from '../config';
 
-import { CoordinateNode } from "../../Geometry/Polyline";
+import { VertexNode } from "../../Geometry/Polyline";
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
 import { TrackSegment } from "../Track/TrackSegment";
@@ -13,40 +13,45 @@ export class NoiseCloudSmoother extends Smoother {
   public smoothNoiseClouds(minSpeedMS: number, iterate?: boolean) {
     const minRadiusMeters = minSpeedMS * config.GPS_INTERVAL_MIN_SEC;
 
-    const totalRemovedNodes: CoordinateNode<TrackPoint, TrackSegment>[][] = [];
+    const totalRemovedNodes: VertexNode<TrackPoint, TrackSegment>[][] = [];
 
     let startCoordNode = this._smoothManager.track.firstPoint;
-    let nextCoordNode = startCoordNode?.next as CoordinateNode<TrackPoint, TrackSegment>;
+    let nextCoordNode = startCoordNode?.next as VertexNode<TrackPoint, TrackSegment>;
     while (startCoordNode && nextCoordNode) {
       if (this.isInCloud(startCoordNode, nextCoordNode, minRadiusMeters)) {
-        const smoothingResults = this.smoothNextNoiseCloud(startCoordNode, nextCoordNode, minRadiusMeters);
+        const smoothingResults = this.smoothNextNoiseCloud(startCoordNode, nextCoordNode, minRadiusMeters, iterate);
         totalRemovedNodes.push(smoothingResults.removedNodes);
 
         if (iterate) {
-          startCoordNode = smoothingResults.nextNode as CoordinateNode<TrackPoint, TrackSegment>;
-          nextCoordNode = startCoordNode?.next as CoordinateNode<TrackPoint, TrackSegment>;
+          startCoordNode = smoothingResults.nextNode as VertexNode<TrackPoint, TrackSegment>;
+          nextCoordNode = startCoordNode?.next as VertexNode<TrackPoint, TrackSegment>;
         } else {
           break;
         }
       } else {
-        startCoordNode = startCoordNode.next as CoordinateNode<TrackPoint, TrackSegment>;
-        nextCoordNode = nextCoordNode?.next as CoordinateNode<TrackPoint, TrackSegment>;
+        startCoordNode = startCoordNode.next as VertexNode<TrackPoint, TrackSegment>;
+        nextCoordNode = nextCoordNode?.next as VertexNode<TrackPoint, TrackSegment>;
       }
+    }
+
+    if (iterate) {
+      this._smoothManager.track.updateGeoJsonTrack(totalRemovedNodes.length);
     }
 
     return { nodes: totalRemovedNodes.flat().length, clouds: totalRemovedNodes.length };
   }
 
   protected smoothNextNoiseCloud(
-    startCoordNode: CoordinateNode<TrackPoint, TrackSegment>,
-    nextCoordNode: CoordinateNode<TrackPoint, TrackSegment>,
-    minRadiusMeters: number) {
+    startCoordNode: VertexNode<TrackPoint, TrackSegment>,
+    nextCoordNode: VertexNode<TrackPoint, TrackSegment>,
+    minRadiusMeters: number,
+    iterate?: boolean) {
     const presumedPauseNode = startCoordNode;
 
     const removedNodes = [presumedPauseNode];
     let totalLat = presumedPauseNode.val.lat;
     let totalLng = presumedPauseNode.val.lng;
-    let prevCoordNode: CoordinateNode<TrackPoint, TrackSegment>;
+    let prevCoordNode: VertexNode<TrackPoint, TrackSegment>;
     while (nextCoordNode && this.isInCloud(presumedPauseNode, nextCoordNode, minRadiusMeters)) {
       totalLat += nextCoordNode.val.lat;
       totalLng += nextCoordNode.val.lng;
@@ -54,7 +59,7 @@ export class NoiseCloudSmoother extends Smoother {
 
       removedNodes.push(nextCoordNode);
 
-      nextCoordNode = nextCoordNode.next as CoordinateNode<TrackPoint, TrackSegment>;
+      nextCoordNode = nextCoordNode.next as VertexNode<TrackPoint, TrackSegment>;
     }
 
     const presumedResumeNode = prevCoordNode;
@@ -63,23 +68,23 @@ export class NoiseCloudSmoother extends Smoother {
     // Generate new nodes
     const smoothedPauseCoord = averageCoord.clone() as TrackPoint;
     (smoothedPauseCoord as TrackPoint).timestamp = presumedPauseNode.val.timestamp;
-    const smoothedPauseNode = new CoordinateNode<TrackPoint, TrackSegment>(smoothedPauseCoord);
+    const smoothedPauseNode = new VertexNode<TrackPoint, TrackSegment>(smoothedPauseCoord);
 
     const smoothedResumeCoord = averageCoord.clone() as TrackPoint;
     (smoothedResumeCoord as TrackPoint).timestamp = presumedResumeNode.val.timestamp;
-    const smoothedResumeNode = new CoordinateNode<TrackPoint, TrackSegment>(smoothedResumeCoord);
+    const smoothedResumeNode = new VertexNode<TrackPoint, TrackSegment>(smoothedResumeCoord);
 
     // Remove cloud nodes & connect new ones
-    const lastNodeKept = removedNodes[0].prev as CoordinateNode<TrackPoint, TrackSegment>;
-    const nextNodeKept = removedNodes[removedNodes.length - 1].next as CoordinateNode<TrackPoint, TrackSegment>;
-    this._smoothManager.track.replaceNodesBetween(lastNodeKept, nextNodeKept, [smoothedPauseNode, smoothedResumeNode]);
+    const lastNodeKept = removedNodes[0].prev as VertexNode<TrackPoint, TrackSegment>;
+    const nextNodeKept = removedNodes[removedNodes.length - 1].next as VertexNode<TrackPoint, TrackSegment>;
+    this._smoothManager.track.replacePointsBetween(lastNodeKept, nextNodeKept, [smoothedPauseNode, smoothedResumeNode], iterate);
 
     return { removedNodes, nextNode: nextNodeKept };
   }
 
   protected isInCloud(
-    startCoord: CoordinateNode<TrackPoint, TrackSegment>,
-    nextCoord: CoordinateNode<TrackPoint, TrackSegment>,
+    startCoord: VertexNode<TrackPoint, TrackSegment>,
+    nextCoord: VertexNode<TrackPoint, TrackSegment>,
     minRadiusM: number
   ) {
     return startCoord.val.distanceTo(nextCoord.val) < minRadiusM;

@@ -1,4 +1,4 @@
-import { CoordinateNode } from "../../Geometry/Polyline";
+import { VertexNode } from "../../Geometry/Polyline";
 import { TrackPoint } from "../Track/TrackPoint";
 import { TrackSegment } from "../Track/TrackSegment";
 import { EvaluatorArgs, Track } from "../Track/Track";
@@ -11,16 +11,16 @@ export interface ISmoothManager {
    *
    * @protected
    * @param {number} target
-   * @param {(target: number, coord: CoordinateNode<TrackPoint, TrackSegment>) => boolean} evaluator
+   * @param {(target: number, coord: VertexNode<TrackPoint, TrackSegment>) => boolean} evaluator
    * @param {boolean} iterate If true, smoothing operation is repeated until no additional coordinates are removed.
    * @return {*}  {CoordinateNode<TrackPoint, TrackSegment>[]} Coordinates removed in the smoothing operation.
    * @memberof ISmoothManager
    */
   smooth(
     target: number | EvaluatorArgs,
-    evaluator: (target: number | EvaluatorArgs, coord: CoordinateNode<TrackPoint, TrackSegment>) => boolean,
+    evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean,
     iterate: boolean
-  ): CoordinateNode<TrackPoint, TrackSegment>[]
+  ): VertexNode<TrackPoint, TrackSegment>[]
 }
 
 export class SmoothManager implements ISmoothManager {
@@ -35,16 +35,20 @@ export class SmoothManager implements ISmoothManager {
 
   smooth(
     target: number | EvaluatorArgs,
-    evaluator: (target: number | EvaluatorArgs, coord: CoordinateNode<TrackPoint, TrackSegment>) => boolean,
+    evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean,
     iterate: boolean = false
-  ): CoordinateNode<TrackPoint, TrackSegment>[] {
-    let smoothCoordsCurrent: CoordinateNode<TrackPoint, TrackSegment>[];
-    let smoothCoords: CoordinateNode<TrackPoint, TrackSegment>[] = [];
+  ): VertexNode<TrackPoint, TrackSegment>[] {
+    let smoothCoordsCurrent: VertexNode<TrackPoint, TrackSegment>[];
+    let smoothCoords: VertexNode<TrackPoint, TrackSegment>[] = [];
     do {
-      smoothCoordsCurrent = this._track.getNodesBy(target, evaluator);
+      smoothCoordsCurrent = this._track.getPointsBy(target, evaluator);
       smoothCoords.push(...smoothCoordsCurrent);
-      this._track.removeNodes(smoothCoordsCurrent);
+      this._track.removePoints(smoothCoordsCurrent, iterate);
     } while (iterate && smoothCoordsCurrent.length)
+
+    if (iterate) {
+      this._track.updateGeoJsonTrack(smoothCoords.length);
+    }
 
     return smoothCoords;
   }

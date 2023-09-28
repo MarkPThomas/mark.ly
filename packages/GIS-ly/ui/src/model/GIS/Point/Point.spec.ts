@@ -1,3 +1,5 @@
+import { LatLng } from "leaflet";
+
 import { Point, Position } from "../../GeoJSON";
 import { PPoint } from "./Point";
 
@@ -225,6 +227,83 @@ describe('##PPoint', () => {
       });
     });
   });
+
+  // describe('#distanceTo', () => {
+  //   // cases:
+  //   // lat = 0, lng = -180 to +180
+  //   // lng = 0, lat = -90 to +90
+  //   // lng = -90, lat = -90, to lng = +90, lat = +90
+
+  //   it('should calc errors from Leaflet', () => {
+  //     const log = [];
+  //     let maxError = 0;
+
+  //     for (let lat = -90; lat <= 90; lat += 10) {
+  //       for (let lng = -180; lng <= 180; lng += 10) {
+  //         const startPt = {
+  //           lat: 0,
+  //           lng: 0
+  //         };
+
+  //         const startPtLeaflet = new LatLng(0, 0);
+
+  //         const nextPt = {
+  //           lat,
+  //           lng
+  //         };
+
+  //         const distance = PPoint.calcDistanceBetween(startPt, nextPt);
+  //         const distanceLeaflet = startPtLeaflet.distanceTo(nextPt);
+  //         const error = distance - distanceLeaflet;
+
+  //         maxError = error > maxError ? error : maxError;
+
+  //         log.push(`GIS-Leaflet error to Lat: ${lat} Lng:${lng} : ${error}`);
+  //       }
+  //     }
+
+  //     console.log(log);
+  //     console.log('Max Error: ', maxError);
+  //     //       Max Error:  3.725290298461914e-9
+
+  //     // lat = 0, lng = -180 to +180
+  //     let coordStart = { lat: 0, lng: -180 };
+  //     let coordEnd = { lat: 0, lng: 180 };
+
+  //     let startPtLeaflet = new LatLng(coordStart.lat, coordStart.lng)
+
+  //     let distance = PPoint.calcDistanceBetween(coordStart, coordEnd);
+  //     let distanceLeaflet = startPtLeaflet.distanceTo(coordEnd);
+  //     let error = distance - distanceLeaflet;
+  //     console.log(`GIS-Leaflet error (Lat: ${coordStart.lat} Lng:${coordStart.lng}) to (Lat: ${coordEnd.lat} Lng:${coordEnd.lng}) : ${error}`);
+
+  //     // lng = 0, lat = -90 to +90
+  //     coordStart = { lat: -90, lng: 0 };
+  //     coordEnd = { lat: 90, lng: 0 };
+
+  //     startPtLeaflet = new LatLng(coordStart.lat, coordStart.lng)
+
+  //     distance = PPoint.calcDistanceBetween(coordStart, coordEnd);
+  //     distanceLeaflet = startPtLeaflet.distanceTo(coordEnd);
+  //     error = distance - distanceLeaflet;
+  //     console.log(`GIS-Leaflet error (Lat: ${coordStart.lat} Lng:${coordStart.lng}) to (Lat: ${coordEnd.lat} Lng:${coordEnd.lng}) : ${error}`);
+
+  //     // lng = -90, lat = -90, to lng = +90, lat = +90
+  //     coordStart = { lat: -90, lng: -90 };
+  //     coordEnd = { lat: 90, lng: 90 };
+
+  //     startPtLeaflet = new LatLng(coordStart.lat, coordStart.lng)
+
+  //     distance = PPoint.calcDistanceBetween(coordStart, coordEnd);
+  //     distanceLeaflet = startPtLeaflet.distanceTo(coordEnd);
+  //     error = distance - distanceLeaflet;
+  //     console.log(`GIS-Leaflet error (Lat: ${coordStart.lat} Lng:${coordStart.lng}) to (Lat: ${coordEnd.lat} Lng:${coordEnd.lng}) : ${error}`);
+  //   });
+
+  //   it('should ', () => {
+
+  //   });
+  // });
 
   describe('Static Methods', () => {
     describe('#calcSegmentDistanceMeters', () => {

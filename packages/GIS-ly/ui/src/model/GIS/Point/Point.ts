@@ -1,8 +1,7 @@
-import { LatLng } from "leaflet";
-
 import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 import { Point, Position } from "../../GeoJSON";
 import { IDirection } from "../Direction";
+import { Vertex } from "../../Geometry/Vertex";
 
 export interface IPointProperties {
   lat: number;
@@ -32,21 +31,22 @@ export interface IPoint
 export type Points = PPoint | PPoint[] | PPoint[][] | PPoint[][][];
 
 export class PPoint
-  extends LatLng    // TODO: Factor out this leaflet dependency
+  extends Vertex    // TODO: Factor out this leaflet dependency
   implements IPoint {
 
-  // lat: number;
-  // lng: number;
-  // alt?: number | undefined;
+  lat: number;
+  lng: number;
+  alt?: number | undefined;
   elevation?: number | undefined;
 
   constructor(lat: number, lng: number, altitude?: number) {
-    super(lat, lng, altitude);
-    // this.lat = lat;
-    // this.lng = lng;
-    // if (altitude) {
-    //   this.alt = altitude;
-    // }
+    super();
+
+    this.lat = lat;
+    this.lng = lng;
+    if (altitude) {
+      this.alt = altitude;
+    }
   }
 
   toPosition(): Position {
@@ -65,9 +65,21 @@ export class PPoint
         : Point.fromLngLat(this.lng, this.lat);
   }
 
-  distanceTo(otherLatLng: IPointProperties): number {
-    // TODO: Replace this with local method to avoid Leaflet dependency
-    return super.distanceTo(otherLatLng);
+  distanceTo(pointJ: IPointProperties): number {
+    return PPoint.calcDistanceBetween(this, pointJ);
+  }
+
+  static calcDistanceBetween(pointI: IPointProperties, pointJ: IPointProperties) {
+    const toRads = Math.PI / 180;
+
+    const latI = pointI.lat * toRads;
+    const latJ = pointJ.lat * toRads;
+    const lngI = pointI.lng * toRads;
+    const lngJ = pointJ.lng * toRads;
+
+    const radius = 6371; // km
+
+    return Math.acos(Math.sin(latI) * Math.sin(latJ) + Math.cos(latI) * Math.cos(latJ) * Math.cos(lngJ - lngI)) * radius * 1000;
   }
 
   // === Common Interfaces ===

@@ -82,7 +82,7 @@ export class RoutePoint
 
   equals(routePoint: IRoutePointProperties): boolean {
     return super.equals(routePoint)
-      && (this._path && this._path.equals(routePoint.path));
+      && this.path.equals(routePoint.path);
   }
 }
 

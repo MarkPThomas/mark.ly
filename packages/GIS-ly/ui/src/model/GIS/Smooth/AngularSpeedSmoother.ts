@@ -1,4 +1,4 @@
-import { CoordinateNode } from "../../Geometry/Polyline";
+import { VertexNode } from "../../Geometry/Polyline";
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
 import { TrackSegment } from "../Track/TrackSegment";
@@ -21,7 +21,7 @@ export class AngularSpeedSmoother extends Smoother {
     return nodesSmoothed.length;
   }
 
-  protected isExceedingAngularSpeedLimit(limit: number, coord: CoordinateNode<TrackPoint, TrackSegment>) {
-    return coord.val?._path && Math.abs(coord.val._path.rotationRate) > limit;
+  protected isExceedingAngularSpeedLimit(limit: number, coord: VertexNode<TrackPoint, TrackSegment>) {
+    return coord.val?.path && Math.abs(coord.val.path.rotationRate) > limit;
   }
 }

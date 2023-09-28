@@ -5,7 +5,7 @@ import {
 } from '../../../../../../common/utils/dataStructures';
 
 import {
-  CoordinateNode,
+  VertexNode,
   SegmentNode
 } from '../../Geometry/Polyline';
 
@@ -18,7 +18,7 @@ import { ITrackSegment, ITrackSegmentLimits, TrackSegment, TrackSegmentData } fr
 import { TimeStamp } from './TimeStamp';
 import { IPolylineRoute, IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
 
-type CoordNode = CoordinateNode<TrackPoint, TrackSegment>;
+type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 type SegNode = SegmentNode<TrackPoint, TrackSegment>;
 
 export interface IPolylineTrackMethods
@@ -33,11 +33,12 @@ export interface IPolylineTrackMethods
 
 export interface IPolylineTrack
   extends
-  IPolylineTrackMethods,//,
-  // IClippable,
-  ISplittable<PolylineTrack>,
-  // IQuery,
-  ICloneable<PolylineTrack> {
+  IPolylineTrackMethods//,
+// IClippable,
+// ISplittable<PolylineTrack>,
+// IQuery,
+// ICloneable<PolylineTrack>
+{
 
   // Property Methods
   // /**
@@ -111,22 +112,6 @@ export class PolylineTrack
 
   protected _pointsByTimestamp: Map<string, CoordNode>;
 
-  // get firstPoint() {
-  //   return this._vertices.head;
-  // }
-
-  // get firstSegment() {
-  //   return this._segments.head;
-  // }
-
-  // get lastPoint() {
-  //   return this._vertices.tail;
-  // }
-
-  // get lastSegment() {
-  //   return this._segments.tail;
-  // }
-
   constructor(coords: TrackPoint[]) {
     super(coords);
 
@@ -157,15 +142,17 @@ export class PolylineTrack
     this._pointsByTimestamp.delete(node.val.timestamp);
   }
 
-  clone(): PolylineTrack {
-    return this.copyRangeByTimestamp('', '');
-  }
+  // clone(): PolylineTrack {
+  //   const track = this.copyRangeByTimestamp('', '') as PolylineTrack;
+
+  //   return track ?? new PolylineTrack([]);
+  // }
 
   copyRangeByTimestamp(startTime: string, endTime: string): PolylineTrack | null {
     let startNode = this.getNodeByTimestamp(startTime);
 
     if (!startNode) {
-      startNode = this.firstPoint;
+      startNode = this.firstVertex;
       if (!startNode) {
         return null;
       }
@@ -209,8 +196,8 @@ export class PolylineTrack
         segmentClone.prev = prevSegmentClone;
         prevSegmentClone.next = segmentClone;
       }
-      segmentClone.prevCoord = currNodeClone;
-      segmentClone.nextCoord = nextNodeClone;
+      segmentClone.prevVert = currNodeClone;
+      segmentClone.nextVert = nextNodeClone;
 
       currNodeClone.nextSeg = segmentClone;
       nextNodeClone.prevSeg = segmentClone;
@@ -232,7 +219,7 @@ export class PolylineTrack
   }
   // ===
 
-  protected updateProperties(numberNodesAffected: number) {
+  protected updateAllSegmentsAndProperties(numberNodesAffected: number) {
     if (numberNodesAffected) {
       // regenerate all segments
       this.buildSegments();
@@ -255,102 +242,28 @@ export class PolylineTrack
   protected addPropertiesToNodes() {
     super.addPropertiesToNodes();
     this.addPathPropertiesToCoords();
-
-    // let coord = this._vertices.head as CoordNode;
-    // while (coord) {
-    //   coord.val.path.addPropertiesFromPath(coord.prevSeg?.val, coord.nextSeg?.val);
-
-    //   coord = coord.next as CoordNode;
-    // }
   }
 
-  // protected addPropertiesToSegments() {
-  //   let coord = this._vertices.head?.next as CoordNode;
-  //   while (coord) {
-  //     const prevCoord = coord.prev as CoordNode;
-  //     const segment = this.getSegment(prevCoord.val, coord.val);
-  //     coord.nextSeg.val = segment;
+  addElevationProperties() {
+    super.addElevationProperties();
 
-  //     coord = coord.next as CoordNode;
-  //   }
-  // }
+    let currNode = this._vertices.head;
+    while (currNode) {
+      currNode.val.path.addElevationSpeedsFromPath(currNode.prevSeg?.val, currNode.nextSeg?.val);
+      currNode = currNode.next as CoordNode;
+    }
+  }
 
-  protected getSegment(prevCoord: TrackPoint, nextCoord: TrackPoint): TrackSegment {
+  protected updatePointProperties(point: CoordNode) {
+    point.val.path.addPropertiesFromPath(point.prevSeg?.val, point.nextSeg?.val);
+    if (point.val.elevation) {
+      point.val.path.addElevationSpeedsFromPath(point.prevSeg?.val, point.nextSeg?.val);
+    }
+  }
+
+  protected createSegmentValue(prevCoord: TrackPoint, nextCoord: TrackPoint): TrackSegment {
     return TrackSegment.fromTrackPoints(prevCoord, nextCoord);
   }
-
-  // /**
-  //  * Adds elevation-derived properties from nodes to segments.
-  //  * Adds further elevation-derived properties from segments back to nodes.
-  //  *
-  //  * Does nothing if nodes do not have elevation properties.
-  //  *
-  //  * @memberof PolylineTrack
-  //  */
-  // addElevationProperties() {
-  //   this.addElevationDataToSegments();
-
-  //   let coord = this._vertices.head as CoordNode;
-  //   while (coord) {
-  //     coord.val.path.addElevationSpeedsFromPath(coord.prevSeg?.val, coord.nextSeg?.val);
-
-  //     coord = coord.next as CoordNode;
-  //   }
-  // }
-
-
-  // addElevations(elevations: Map<string, number>) {
-  //   this.addNodeElevations(elevations);
-  //   this.addElevationProperties();
-  // }
-
-  // protected addNodeElevations(elevations: Map<string, number>) {
-  //   console.log('Adding elevations to points...')
-  //   let coord = this._vertices.head as CoordNode;
-  //   while (coord) {
-  //     const elevation = elevations.get(JSON.stringify({ lat: coord.val.lat, lng: coord.val.lng }));
-  //     if (elevation) {
-  //       coord.val.elevation = elevation;
-  //     }
-
-  //     coord = coord.next as CoordNode;
-  //   }
-  // }
-
-  // addElevationsFromApi() {
-  //   const coords = this._vertices.toArray();
-  //   const boundingBox = BoundingBox.fromPoints(coords);
-  //   console.log(`Getting elevations for ${coords.length} coords`);
-
-  //   const elevationsApi = new ElevationRequestApi();
-  //   elevationsApi.getElevations(coords, boundingBox)
-  //     // TODO: How does this work with requests 100 at a time?
-  //     .then((result) => {
-  //       if (result.elevations) {
-  //         console.log(`Received elevations for ${result.elevations.size} coords`);
-  //         console.log('Result: ', result);
-
-  //         this.addElevations(result.elevations);
-  //       } else {
-  //         console.log('No elevations received');
-  //       }
-  //     });
-  // }
-
-  // protected addElevationDataToSegments() {
-  //   console.log('Deriving elevation data for segments...')
-  //   let coord = this._vertices.head?.next as CoordNode;
-  //   while (coord) {
-  //     const prevCoord = coord.prev as CoordNode;
-  //     const prevSegment = prevCoord.nextSeg?.val;
-
-  //     if (prevSegment) {
-  //       prevSegment.addElevationData(prevCoord.val, coord.val);
-  //     }
-
-  //     coord = coord.next as CoordNode;
-  //   }
-  // }
 
   // === Consider moving these to PolyLine base class?
   getNodeByTimestamp(timestamp: string): CoordNode {
@@ -361,99 +274,12 @@ export class PolylineTrack
       }
       return null;
     } else {
-      return this.getNodes(
+      return this.vertexNodesBy(
         timestamp,
         (timestamp: string, coord: CoordNode) => coord.val.timestamp === timestamp
       )[0]
     }
   }
-
-  // getNodes(
-  //   target: string | number | EvaluatorArgs,
-  //   evaluator: (target: string | number | EvaluatorArgs, coord: CoordinateNode<TrackPoint, TrackSegment>) => boolean
-  // ): CoordinateNode<TrackPoint, TrackSegment>[] {
-  //   const nodes: CoordinateNode<TrackPoint, TrackSegment>[] = [];
-
-  //   let node = this._vertices.head as CoordinateNode<TrackPoint, TrackSegment>;
-  //   while (node) {
-  //     if (evaluator(target, node)) {
-  //       nodes.push(node);
-  //     }
-
-  //     node = node.next as CoordinateNode<TrackPoint, TrackSegment>;
-  //   }
-
-  //   return nodes;
-  // }
-
-  // removeNodes(nodes: CoordNode[]): number {
-  //   let count = 0;
-
-  //   nodes.forEach((node) => {
-  //     if (this._vertices.remove(node)) {
-  //       count++;
-  //       this.removeNodeFromMap(node)
-  //     }
-  //   });
-
-  //   this.updateProperties(count);
-
-  //   return count;
-  // }
-
-  // insertNodesBefore(
-  //   node: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number {
-  //   const count = this._vertices.insertManyBefore(node, nodes);
-
-  //   this.addNodesToMap(count, nodes);
-  //   this.updateProperties(count);
-
-  //   return count;
-  // }
-
-  // insertNodesAfter(
-  //   node: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number {
-  //   const count = this._vertices.insertManyAfter(node, nodes);
-
-  //   this.addNodesToMap(count, nodes);
-  //   this.updateProperties(count);
-
-  //   return count;
-  // }
-
-  // protected isSpecified(node: any) {
-  //   return node !== undefined && node !== null;
-  // }
-
-  // replaceNodesBetween(
-  //   startNode: CoordNode,
-  //   endNode: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number {
-  //   const results = this._vertices.replaceBetween(startNode, endNode, nodes);
-  //   const nodesAffected = results.insertedCount + results.removedCount;
-
-  //   this.updateProperties(nodesAffected);
-
-  //   return nodesAffected;
-  // }
-
-  // replaceNodesFromTo(
-  //   startNode: CoordNode,
-  //   endNode: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number {
-  //   const results = this._vertices.replaceFromTo(startNode, endNode, nodes);
-  //   const nodesAffected = results.insertedCount + results.removedCount;
-
-  //   this.updateProperties(nodesAffected);
-
-  //   return nodesAffected;
-  // }
 
   // === IQuery
   // getSegmentBeforeTime(timestamp: string): ITrackSegmentLimits {
@@ -563,54 +389,108 @@ export class PolylineTrack
   //    Overall result is comparable once state is saved, but for active modification,
   //       these methods might be better done on the PolylineTrack proxy until state is saved.
 
-  trimBeforeTime(timestamp: string): void {
-    // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
-    // const nodeIncluded = nodeExcluded.prev;
+  // trimBeforeTime(timestamp: string): void {
+  //   // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
+  //   // const nodeIncluded = nodeExcluded.prev;
 
-    this.trimByTimes(timestamp, null);
-    // this.trimByTimes2(nodeExcluded.val.timestamp, nodeIncluded.val.timestamp)[1];
+  //   this.trimByTimes(timestamp, null);
+  //   // this.trimByTimes2(nodeExcluded.val.timestamp, nodeIncluded.val.timestamp)[1];
+  // }
+
+  // trimAfterTime(timestamp: string): void {
+  //   // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
+  //   // const nodeIncluded = nodeExcluded.prev;
+
+  //   this.trimByTimes(null, timestamp);
+  //   // this.trimByTimes2(nodeIncluded.val.timestamp, nodeExcluded.val.timestamp)[0];
+  // }
+
+
+  // trimByTimes(timestampStart: string, timestampEnd: string): void {
+  //   if (timestampStart === timestampEnd) {
+  //     return;
+  //   }
+
+  //   const vertexStart = this._pointsByTimestamp.get(timestampStart);
+  //   const vertexEnd = this._pointsByTimestamp.get(timestampEnd);
+
+  //   this._vertices.trim(vertexStart, vertexEnd);
+  //   this._segments.trim(vertexStart.nextSeg, vertexEnd.prevSeg);
+
+  //   if (vertexStart) {
+  //     vertexStart.prevSeg.nextCoord = null;
+  //     vertexStart.prevSeg = null;
+
+  //     vertexStart.val.path.addPropertiesFromPath(null, vertexStart.nextSeg.val);
+
+  //     const segmentStart = vertexStart.nextSeg.val;
+  //     segmentStart.addElevationData(vertexStart.val, vertexStart.next.val);
+  //   }
+
+  //   if (vertexEnd) {
+  //     vertexEnd.nextSeg.prevCoord = null;
+  //     vertexEnd.nextSeg = null;
+  //     vertexEnd.val.path.addPropertiesFromPath(vertexEnd.prevSeg.val, null);
+
+  //     vertexEnd.val.path.addPropertiesFromPath(vertexEnd.nextSeg.val, null);
+
+  //     const segmentEnd = vertexEnd.prevSeg.val;
+  //     segmentEnd.addElevationData(vertexEnd.prev.val, vertexEnd.val);
+  //   }
+  // }
+
+  trimBeforeTime(
+    time: string,
+    returnListCount: boolean = false
+  ): number {
+    const point = this._pointsByTimestamp.get(time);
+    if (!point) {
+      return 0;
+    }
+
+    const trimCount = super.trimBefore(point, returnListCount);
+
+    if (trimCount) {
+      this.updatePointProperties(point);
+    }
+
+    return trimCount;
   }
 
-  trimAfterTime(timestamp: string): void {
-    // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
-    // const nodeIncluded = nodeExcluded.prev;
+  trimAfterTime(
+    time: string,
+    returnListCount: boolean = false
+  ): number {
+    const point = this._pointsByTimestamp.get(time);
+    if (!point) {
+      return 0;
+    }
 
-    this.trimByTimes(null, timestamp);
-    // this.trimByTimes2(nodeIncluded.val.timestamp, nodeExcluded.val.timestamp)[0];
+    const trimCount = super.trimAfter(point, returnListCount)
+
+    if (trimCount) {
+      this.updatePointProperties(point);
+    }
+
+    return trimCount;
   }
 
+  trimToTimes(
+    timeStart: string,
+    timeEnd: string,
+    returnListCount: boolean = false
+  ): number {
+    const headTrim = this.trimBeforeTime(timeStart, returnListCount);
+    const tailTrim = this.trimAfterTime(timeEnd, returnListCount);
 
-  trimByTimes(timestampStart: string, timestampEnd: string): void {
-    if (timestampStart === timestampEnd) {
-      return;
-    }
+    return headTrim + tailTrim;
+  }
 
-    const vertexStart = this._pointsByTimestamp.get(timestampStart);
-    const vertexEnd = this._pointsByTimestamp.get(timestampEnd);
-
-    this._vertices.trim(vertexStart, vertexEnd);
-    this._segments.trim(vertexStart.nextSeg, vertexEnd.prevSeg);
-
-    if (vertexStart) {
-      vertexStart.prevSeg.nextCoord = null;
-      vertexStart.prevSeg = null;
-
-      vertexStart.val.path.addPropertiesFromPath(null, vertexStart.nextSeg.val);
-
-      const segmentStart = vertexStart.nextSeg.val;
-      segmentStart.addElevationData(vertexStart.val, vertexStart.next.val);
-    }
-
-    if (vertexEnd) {
-      vertexEnd.nextSeg.prevCoord = null;
-      vertexEnd.nextSeg = null;
-      vertexEnd.val.path.addPropertiesFromPath(vertexEnd.prevSeg.val, null);
-
-      vertexEnd.val.path.addPropertiesFromPath(vertexEnd.nextSeg.val, null);
-
-      const segmentEnd = vertexEnd.prevSeg.val;
-      segmentEnd.addElevationData(vertexEnd.prev.val, vertexEnd.val);
-    }
+  trimToTimeSegment(
+    segment: ITrackSegmentLimits,
+    returnListCount: boolean = false
+  ): number {
+    return this.trimToTimes(segment.startTime, segment.endTime, returnListCount)
   }
 
   // trimByTimes2(timestampStop: string, timestampResume: string): void {
@@ -688,7 +568,7 @@ export class PolylineTrack
     return this.copyRangeByTimestamp(segment.startTime, segment.endTime);
   }
 
-  splitBySegments(segmentLimits: ITrackSegmentLimits[]): PolylineTrack[] {
+  splitBySubPolylines(segmentLimits: ITrackSegmentLimits[]): PolylineTrack[] {
     const tracks: PolylineTrack[] = [];
 
     let splitTrack = this.copyRangeByTimestamp('', segmentLimits[0].startTime);

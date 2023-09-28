@@ -12,7 +12,7 @@ export interface ICruftManager {
     segmentKeep: ITrackSegmentLimits;
   };
   splitTrackSegmentByCruft(triggerDistanceKM: number): Track[];
-  clipTrackSegmentByCruft(triggerDistanceKM: number): void;
+  trimTrackSegmentCruft(triggerDistanceKM: number): void;
 }
 
 export class CruftManager implements ICruftManager {
@@ -91,7 +91,7 @@ export class CruftManager implements ICruftManager {
     return tracks.length ? tracks : [this._track.clone()];
   }
 
-  clipTrackSegmentByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track {
+  trimTrackSegmentCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track {
     const { segments, segmentKeep } = this.getTrackSegmentsByCruft(triggerDistanceKM);
 
     return segments.length === 1 ? this._track.clone() : this._track.splitToSegment(segmentKeep);
