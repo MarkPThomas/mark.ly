@@ -1,3 +1,5 @@
+import { IEquatable } from '../../interfaces';
+
 import { Node } from './LinkedListNodes';
 
 // TODO: Not used yet. Consider if to be used, & flesh out documentation better.
@@ -677,7 +679,11 @@ export interface ILinkedList<N extends Node<V>, V> {
   // orderBy(cb: ComparisonCallback<V>): void;
 }
 
-export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N, V> {
+export abstract class LinkedList<N extends Node<V>, V>
+  implements
+  ILinkedList<N, V>,
+  IEquatable<ILinkedList<N, V>>
+{
   protected _length: number = 0;
   protected _lengthDirty: boolean = false;
 
@@ -696,6 +702,20 @@ export abstract class LinkedList<N extends Node<V>, V> implements ILinkedList<N,
     for (let i = items.length - 1; 0 <= i; i--) {
       this.prepend(items[i]);
     }
+  }
+
+  equals(linkedList: LinkedList<N, V>): boolean {
+    let currNode = linkedList.head;
+    let currNodeLocal = this.head;
+    while (currNode && currNodeLocal) {
+      if (!currNode.equals(currNodeLocal.val)) {
+        return false;
+      }
+      currNode = currNode.next as N;
+      currNodeLocal = currNodeLocal.next as N;
+    }
+
+    return (!currNode && !currNodeLocal);
   }
 
   // === Single Item Operations ===

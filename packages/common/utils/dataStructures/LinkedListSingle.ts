@@ -1,3 +1,4 @@
+import { ICloneable, IEquatable } from '../../interfaces';
 import {
   EqualityCallbackOptions,
   ILinkedList,
@@ -6,14 +7,23 @@ import {
 } from './LinkedList';
 import { LinkedListDouble } from './LinkedListDouble';
 
-export interface ILinkedListSingle<N extends NodeSingle<V>, V> extends ILinkedList<N, V> {
+export interface ILinkedListSingle<N extends NodeSingle<V>, V>
+  extends ILinkedList<N, V>,
+  IEquatable<ILinkedList<N, V>>,
+  ICloneable<LinkedList<N, V>> {
   toLinkedListDouble(): LinkedListDouble<V>;
 }
 
 export class LinkedList<N extends NodeSingle<V>, V>
   extends LinkedListBase<N, V>
-  implements ILinkedListSingle<N, V> {
-
+  implements
+  ILinkedListSingle<N, V>,
+  ICloneable<LinkedList<N, V>>
+{
+  clone(): LinkedList<N, V> {
+    const linkedList = new LinkedList<N, V>(this.toArray());
+    return linkedList as LinkedList<N, V>;
+  }
 
   // === Single Item Operations ===
   prepend(valueOrNode: V | N) {

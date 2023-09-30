@@ -54,6 +54,59 @@ describe('##LinkedListSingle', () => {
     });
   });
 
+  describe('Common Interfaces', () => {
+    describe('#clone', () => {
+      it('should clone the linked list', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList = new LinkedListSingle<number>(values);
+
+        const linkedListClone = linkedList.clone();
+
+        expect(linkedList.equals(linkedListClone)).toBeTruthy();
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return False for linked lists with differing node values', () => {
+        const values1 = [1, 2, 3, 4, 5];
+        const linkedList1 = new LinkedListSingle<number>(values1);
+
+        const values2 = [6, 7, 8, 9, 10];
+        const linkedList2 = new LinkedListSingle<number>(values2);
+
+        const result = linkedList1.equals(linkedList2);
+
+        expect(result).toBeFalsy();
+      });
+
+      it('should return False for linked lists with differing node lengths', () => {
+        const values1 = [1, 2, 3, 4, 5];
+        const linkedList1 = new LinkedListSingle<number>(values1);
+
+        const values2 = [6, 7, 8];
+        const linkedList2 = new LinkedListSingle<number>(values2);
+
+        const result1 = linkedList1.equals(linkedList2);
+
+        expect(result1).toBeFalsy();
+
+        const result2 = linkedList2.equals(linkedList1);
+
+        expect(result2).toBeFalsy();
+      });
+
+      it('should return True for linked lists with identical node values', () => {
+        const values = [1, 2, 3, 4, 5];
+        const linkedList1 = new LinkedListSingle<number>(values);
+        const linkedList2 = new LinkedListSingle<number>(values);
+
+        const result = linkedList1.equals(linkedList2);
+
+        expect(result).toBeTruthy();
+      });
+    });
+  });
+
 
   describe('Single Item Operations', () => {
     describe('#find', () => {
