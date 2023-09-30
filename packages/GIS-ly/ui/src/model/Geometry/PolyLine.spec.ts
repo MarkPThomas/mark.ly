@@ -272,6 +272,174 @@ describe('##PolyLine', () => {
         expect(polyline.lastSegment.prevVert).toEqual(polyline.lastVertex.prev);
       });
     });
+
+    describe('#cloneFromTo', () => {
+      it('should return null for an empty polyline', () => {
+        const polyline = new Polyline([]);
+
+        const polylineCopy = polyline.cloneFromTo();
+
+        expect(polylineCopy).toBeNull();
+      });
+
+      it('should copy the Polyline from the head to tail if no vertices are given', () => {
+        const coordinates = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline = new Polyline(coordinates);
+
+        const polylineCopy = polyline.cloneFromTo();
+
+        expect(polylineCopy.vertices()).toEqual([
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ]);
+      });
+
+      it('should copy the Polyline from the head to the end vertex if only the end vertex is given', () => {
+        const coordinates = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline = new Polyline(coordinates);
+
+        const startVertex = null;
+        const endVertex = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
+        const polylineCopy = polyline.cloneFromTo(startVertex, endVertex);
+
+        expect(polylineCopy.vertices()).toEqual([
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex
+        ]);
+      });
+
+      it('should copy the Polyline from the start vertex to the tail if only the start vertex is given', () => {
+        const coordinates = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline = new Polyline(coordinates);
+
+        const startVertex = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
+        const polylineCopy = polyline.cloneFromTo(startVertex);
+
+        expect(polylineCopy.vertices()).toEqual([
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ]);
+      });
+
+      it('should copy the Polyline from the start vertex to the end vertex', () => {
+        const coordinates = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline = new Polyline(coordinates);
+
+        const startVertex = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
+        const endVertex = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
+        const polylineCopy = polyline.cloneFromTo(startVertex, endVertex);
+
+        expect(polylineCopy.vertices()).toEqual([
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+        ]);
+      });
+    });
+  });
+
+  describe('Common Interfaces', () => {
+    describe('#clone', () => {
+      it('should clone the Polyline', () => {
+        const coordinates = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline = new Polyline(coordinates);
+
+        const polylineClone = polyline.clone();
+
+        expect(polyline.equals(polylineClone)).toBeTruthy();
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return False for Polylines with differing vertices', () => {
+        const coordinates1 = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline1 = new Polyline(coordinates1);
+
+        const coordinates2 = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [4, -120] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline2 = new Polyline(coordinates2);
+
+        const result = polyline1.equals(polyline2);
+
+        expect(result).toBeFalsy();
+      });
+
+      it('should return True for Polylines with identical vertices', () => {
+        const coordinates = [
+          [1, -110] as TestVertex,
+          [2, -120] as TestVertex,
+          [3, -130] as TestVertex,
+          [4, -140] as TestVertex,
+          [5, -150] as TestVertex,
+          [6, -160] as TestVertex,
+        ];
+        const polyline1 = new Polyline(coordinates);
+        const polyline2 = new Polyline(coordinates);
+
+        const result = polyline1.equals(polyline2);
+
+        expect(result).toBeTruthy();
+      });
+    });
   });
 
   describe('Methods', () => {
