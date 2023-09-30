@@ -1,4 +1,4 @@
-import { ICloneable } from '../../../../../common/interfaces';
+import { ICloneable, IEquatable } from '../../../../../common/interfaces';
 import {
   LinkedListDoubleGeneric as List,
   NodeDouble,
@@ -37,7 +37,9 @@ export interface IVertexNode<TVertex, TSegment> extends INodeDouble<TVertex> {
 
 export class VertexNode<TVertex, TSegment>
   extends NodeDouble<TVertex>
-  implements IVertexNode<TVertex, TSegment>
+  implements
+  IVertexNode<TVertex, TSegment>,
+  ICloneable<VertexNode<TVertex, TSegment>>
 {
   nextSeg: SegmentNode<TVertex, TSegment> | null = null;
   prevSeg: SegmentNode<TVertex, TSegment> | null = null;
@@ -52,7 +54,7 @@ export class VertexNode<TVertex, TSegment>
     this.nextSeg = nextSeg;
   }
 
-  override clone(): VertexNode<TVertex, TSegment> {
+  clone(): VertexNode<TVertex, TSegment> {
     let val = this.val;
     if (val && typeof val === "object" && 'clone' in val) {
       val = (val as unknown as ICloneable<TVertex>).clone();
@@ -73,7 +75,9 @@ export interface ISegmentNode<TVertex, TSegment> extends INodeDouble<TSegment> {
 
 export class SegmentNode<TVertex, TSegment>
   extends NodeDouble<TSegment>
-  implements ISegmentNode<TVertex, TSegment>
+  implements
+  ISegmentNode<TVertex, TSegment>,
+  ICloneable<SegmentNode<TVertex, TSegment>>
 {
   nextVert: VertexNode<TVertex, TSegment>;
   prevVert: VertexNode<TVertex, TSegment>;
@@ -111,11 +115,11 @@ export interface IPolylineSize {
 
 export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   // Properties
-  firstVertex: IVertexNode<TVertex, TSegment>;
-  firstSegment: ISegmentNode<TVertex, TSegment>;
+  firstVertex: VertexNode<TVertex, TSegment>;
+  firstSegment: SegmentNode<TVertex, TSegment>;
 
-  lastVertex: IVertexNode<TVertex, TSegment>;
-  lastSegment: ISegmentNode<TVertex, TSegment>;
+  lastVertex: VertexNode<TVertex, TSegment>;
+  lastSegment: SegmentNode<TVertex, TSegment>;
 
   // Property Methods
   /**
@@ -220,7 +224,10 @@ export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
 }
 
 export class Polyline<TVertex extends Vertex, TSegment extends Segment>
-  implements IPolyline<TVertex, TSegment>
+  implements
+  IPolyline<TVertex, TSegment>,
+  IEquatable<Polyline<TVertex, TSegment>>,
+  ICloneable<Polyline<TVertex, TSegment>>
 {
   protected _vertices: List<VertexNode<TVertex, TSegment>, TVertex> = new List<VertexNode<TVertex, TSegment>, TVertex>();
   protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
@@ -362,19 +369,76 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
-
   equals(polyline: Polyline<TVertex, TSegment>): boolean {
-    let currNode = polyline.firstVertex;
-    let currNodeLocal = this.firstVertex;
-    while (currNode && currNodeLocal) {
-      if (!currNode.equals(currNodeLocal.val)) {
-        return false;
-      }
-      currNode = currNode.next as VertexNode<TVertex, TSegment>;
-      currNodeLocal = currNodeLocal.next as VertexNode<TVertex, TSegment>;
+    return this._vertices.equals(polyline._vertices);
+  }
+
+  clone(): Polyline<TVertex, TSegment> {
+    return this.cloneFromTo();
+    // const polylineRoute = new Polyline([]);
+
+    // let vertexI = this.firstVertex;
+    // polylineRoute._vertices.append(vertexI.clone());
+
+    // let vertexJ = vertexI.next as VertexNode<TVertex, TSegment>;
+    // let segment = this.firstSegment as SegmentNode<TVertex, TSegment>;
+    // while (vertexJ) {
+    //   polylineRoute._vertices.append(vertexJ.clone());
+    //   polylineRoute._segments.append(segment.clone());
+
+    //   vertexI.nextSeg = segment;
+    //   vertexJ.prevSeg = segment;
+    //   segment.prevVert = vertexI;
+    //   segment.nextVert = vertexJ;
+
+    //   vertexI = vertexJ as VertexNode<TVertex, TSegment>;
+    //   vertexJ = vertexJ.next as VertexNode<TVertex, TSegment>;
+    //   segment = segment.next as SegmentNode<TVertex, TSegment>;
+    // }
+
+    // polylineRoute._vertices.clone()
+    // polylineRoute._segments.clone()
+
+    // return polylineRoute as Polyline<TVertex, TSegment>;
+  }
+
+  cloneFromTo(
+    startVertex: VertexNode<TVertex, TSegment> | null = null,
+    endVertex: VertexNode<TVertex, TSegment> | null = null
+  ): Polyline<TVertex, TSegment> | null {
+    startVertex = startVertex ?? this.firstVertex;
+    if (!startVertex) {
+      return null;
     }
 
-    return (!currNode && !currNodeLocal);
+    endVertex = endVertex ?? this.lastVertex;
+
+    const polylineRoute = new Polyline([]);
+
+    let vertexI = startVertex;
+    polylineRoute._vertices.append(vertexI.clone());
+
+    let vertexJ = vertexI.next as VertexNode<TVertex, TSegment>;
+    let segment = this.firstSegment as SegmentNode<TVertex, TSegment>;
+
+    while (vertexJ && vertexI !== endVertex) {
+      polylineRoute._vertices.append(vertexJ.clone());
+      polylineRoute._segments.append(segment.clone());
+
+      vertexI.nextSeg = segment;
+      vertexJ.prevSeg = segment;
+      segment.prevVert = vertexI;
+      segment.nextVert = vertexJ;
+
+      vertexI = vertexJ as VertexNode<TVertex, TSegment>;
+      vertexJ = vertexJ.next as VertexNode<TVertex, TSegment>;
+      segment = segment.next as SegmentNode<TVertex, TSegment>;
+    }
+
+    polylineRoute._vertices.clone()
+    polylineRoute._segments.clone()
+
+    return polylineRoute as Polyline<TVertex, TSegment>;
   }
 
   // Property Methods
