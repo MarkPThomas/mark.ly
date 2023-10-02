@@ -31,7 +31,7 @@ export interface IPoint
 export type Points = PPoint | PPoint[] | PPoint[][] | PPoint[][][];
 
 export class PPoint
-  extends Vertex    // TODO: Factor out this leaflet dependency
+  extends Vertex
   implements IPoint {
 
   lat: number;
