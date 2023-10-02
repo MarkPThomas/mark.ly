@@ -1,4 +1,10 @@
-import { VertexNode, EvaluatorArgs, IPolylineSize, Polyline, SegmentNode } from "./Polyline";
+import {
+  VertexNode,
+  EvaluatorArgs,
+  IPolylineSize,
+  Polyline,
+  SegmentNode
+} from "./Polyline";
 import { Segment } from "./Segment";
 import { IVertexProperties, Vertex } from "./Vertex";
 
@@ -15,7 +21,20 @@ class TestSegment extends Segment {
   }
 }
 
+
 describe('##PolyLine', () => {
+  const sizeOf = (start: VertexNode<TestVertex, TestSegment>): number => {
+    let count = 0;
+
+    let currNode = start;
+    while (currNode) {
+      count++;
+      currNode = currNode.next as VertexNode<TestVertex, TestSegment>;
+    }
+
+    return count;
+  }
+
   let coordinates: TestVertex[];
   beforeEach(() => {
     coordinates = [
@@ -600,7 +619,7 @@ describe('##PolyLine', () => {
 
           const trimCount = polyline.trimBefore(vertex);
 
-          expect(trimCount).toEqual(0);
+          expect(trimCount).toBeNull();
           expect(polyline.size().vertices).toEqual(0);
           expect(polyline.size().segments).toEqual(0);
           expect(polyline.firstVertex).toEqual(originalVertexHead);
@@ -620,7 +639,7 @@ describe('##PolyLine', () => {
 
           const trimCount = polyline.trimBefore(vertex);
 
-          expect(trimCount).toEqual(0);
+          expect(trimCount).toBeNull();
           expect(polyline.firstVertex).toEqual(originalVertexHead);
           expect(polyline.firstSegment).toEqual(originalSegmentHead);
           expect(polyline.lastVertex).toEqual(originalVertexTail);
@@ -681,15 +700,6 @@ describe('##PolyLine', () => {
           expect(trimmedSegmentTail.next).toBeNull();
           expect(trimmedSegmentTail.nextVert).toBeNull();
         });
-
-        it('should return the number of vertices if requested', () => {
-          const vertex = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
-          const returnListCount = true;
-
-          const trimCount = polyline.trimBefore(vertex, returnListCount);
-
-          expect(trimCount).toEqual(2);
-        });
       });
 
       describe('#trimAfterVertex', () => {
@@ -705,7 +715,7 @@ describe('##PolyLine', () => {
 
           const trimCount = polyline.trimAfter(vertex);
 
-          expect(trimCount).toEqual(0);
+          expect(trimCount).toBeNull();
           expect(polyline.size().vertices).toEqual(0);
           expect(polyline.size().segments).toEqual(0);
           expect(polyline.firstVertex).toEqual(originalVertexHead);
@@ -725,7 +735,7 @@ describe('##PolyLine', () => {
 
           const trimCount = polyline.trimAfter(vertex);
 
-          expect(trimCount).toEqual(0);
+          expect(trimCount).toBeNull();
           expect(polyline.firstVertex).toEqual(originalVertexHead);
           expect(polyline.firstSegment).toEqual(originalSegmentHead);
           expect(polyline.lastVertex).toEqual(originalVertexTail);
@@ -786,15 +796,6 @@ describe('##PolyLine', () => {
           expect(trimmedSegmentHead.prev).toBeNull();
           expect(trimmedSegmentHead.prevVert).toBeNull();
         });
-
-        it('should return the number of vertices if requested', () => {
-          const vertex = polyline.lastVertex.prev.prev as VertexNode<TestVertex, TestSegment>;
-          const returnListCount = true;
-
-          const trimCount = polyline.trimAfter(vertex, returnListCount);
-
-          expect(trimCount).toEqual(2);
-        });
       });
 
       describe('#trimToVertices', () => {
@@ -811,7 +812,7 @@ describe('##PolyLine', () => {
 
           const trimCount = polyline.trimTo(vertex1, vertex2);
 
-          expect(trimCount).toEqual(0);
+          expect(trimCount).toEqual([null, null]);
           expect(polyline.size().vertices).toEqual(0);
           expect(polyline.size().segments).toEqual(0);
           expect(polyline.firstVertex).toEqual(originalVertexHead);
@@ -832,7 +833,7 @@ describe('##PolyLine', () => {
 
           const trimCount = polyline.trimTo(vertex1, vertex2);
 
-          expect(trimCount).toEqual(0);
+          expect(trimCount).toEqual([null, null]);
           expect(polyline.firstVertex).toEqual(originalVertexHead);
           expect(polyline.firstSegment).toEqual(originalSegmentHead);
           expect(polyline.lastVertex).toEqual(originalVertexTail);
@@ -1097,16 +1098,6 @@ describe('##PolyLine', () => {
           expect(trimmedSegmentHead.prev).toBeNull();
           expect(trimmedSegmentHead.prevVert).toBeNull();
         });
-
-        it('should return the number of vertices if requested', () => {
-          const vertex1 = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
-          const vertex2 = polyline.lastVertex.prev.prev as VertexNode<TestVertex, TestSegment>;
-          const returnListCount = true;
-
-          const trimCount = polyline.trimTo(vertex1, vertex2, returnListCount);
-
-          expect(trimCount).toEqual(4);
-        });
       });
     });
 
@@ -1296,9 +1287,9 @@ describe('##PolyLine', () => {
           const vertex1 = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertex2 = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeAtAny([vertex1, vertex2]);
+          const removedVertices = polyline.removeAtAny([vertex1, vertex2]);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices.length).toEqual(0);
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(0);
@@ -1309,9 +1300,9 @@ describe('##PolyLine', () => {
           const vertex1 = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertex2 = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeAtAny([vertex1, vertex2]);
+          const removedVertices = polyline.removeAtAny([vertex1, vertex2]);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices.length).toEqual(0);
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
@@ -1322,9 +1313,9 @@ describe('##PolyLine', () => {
           const vertex1 = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertex2 = polyline.firstVertex.next.next.next as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeAtAny([vertex1, vertex2]);
+          const removedVertices = polyline.removeAtAny([vertex1, vertex2]);
 
-          expect(removedVerticesCount).toEqual(2);
+          expect(removedVertices.length).toEqual(2);
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 2);
@@ -1342,9 +1333,9 @@ describe('##PolyLine', () => {
           const vertex1 = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertex2 = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeAtAny([vertex1, vertex2]);
+          const removedVertices = polyline.removeAtAny([vertex1, vertex2]);
 
-          expect(removedVerticesCount).toEqual(1);
+          expect(removedVertices.length).toEqual(1);
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 1);
@@ -1367,9 +1358,9 @@ describe('##PolyLine', () => {
           const vetexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertexEnd = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeBetween(vetexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vetexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(0);
@@ -1380,9 +1371,9 @@ describe('##PolyLine', () => {
           const vertexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertexEnd = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
@@ -1393,9 +1384,9 @@ describe('##PolyLine', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = vertexStart;
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
@@ -1406,9 +1397,9 @@ describe('##PolyLine', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = vertexStart.next as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
@@ -1419,9 +1410,9 @@ describe('##PolyLine', () => {
           const vertexStart = new VertexNode<TestVertex, TestSegment>(coordinates[1]);
           const vertexEnd = polyline.lastVertex.prev.prev as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 3);
@@ -1438,9 +1429,9 @@ describe('##PolyLine', () => {
         it('should remove up to the end vertex if the start vertex null', () => {
           const vertexEnd = polyline.lastVertex.prev.prev as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeBetween(null, vertexEnd);
+          const removedVertices = polyline.removeBetween(null, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 3);
@@ -1456,9 +1447,9 @@ describe('##PolyLine', () => {
           const vertexStart = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = new VertexNode<TestVertex, TestSegment>(coordinates[2]);
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 3);
@@ -1473,9 +1464,9 @@ describe('##PolyLine', () => {
         it('should remove from the start vertex to the end of the polyline if the end vertex is null', () => {
           const vertexStart = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, null);
+          const removedVertices = polyline.removeBetween(vertexStart, null);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 3);
@@ -1529,16 +1520,6 @@ describe('##PolyLine', () => {
           expect(vertexEnd.prevSeg).toEqual(segmentStart);
         });
 
-        it('should return the number of vertices removed if requested', () => {
-          const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
-          const vertexEnd = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
-          const returnListCount = true;
-
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd, returnListCount);
-
-          expect(removedVerticesCount).toEqual(2);
-        });
-
         it('should remove all vertices between the start vertex & end of the polyline if the end vertex specified corresponds with the end of the polyline', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = polyline.lastVertex as VertexNode<TestVertex, TestSegment>;
@@ -1546,9 +1527,9 @@ describe('##PolyLine', () => {
           const removedVertexHead = vertexStart.next as VertexNode<TestVertex, TestSegment>;
           const removedSegmentTail = polyline.lastSegment;
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 3);
@@ -1587,9 +1568,9 @@ describe('##PolyLine', () => {
           const removedVertexHead = vertexStart.next as VertexNode<TestVertex, TestSegment>;
           const removedSegmentTail = polyline.lastSegment;
 
-          const removedVerticesCount = polyline.removeBetween(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeBetween(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(2);
@@ -1629,9 +1610,9 @@ describe('##PolyLine', () => {
           const vetexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertexEnd = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeFromTo(vetexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vetexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(0);
@@ -1642,9 +1623,9 @@ describe('##PolyLine', () => {
           const vertexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertexEnd = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(0);
+          expect(removedVertices).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
@@ -1655,9 +1636,10 @@ describe('##PolyLine', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = vertexStart;
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(1);
+          expect(removedVertices).toBeTruthy();
+          expect(removedVertices.next).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 1);
@@ -1670,9 +1652,10 @@ describe('##PolyLine', () => {
 
           const originalVerticesCount = polyline.size().vertices;
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toEqual(originalVerticesCount);
+          const removedCount = sizeOf(removedVertices);
+          expect(removedCount).toEqual(originalVerticesCount);
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(0);
@@ -1683,9 +1666,9 @@ describe('##PolyLine', () => {
           const vertexStart = new VertexNode<TestVertex, TestSegment>(coordinates[1]);
           const vertexEnd = polyline.lastVertex.prev.prev as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 4);
@@ -1701,9 +1684,9 @@ describe('##PolyLine', () => {
         it('should remove up to the end vertex if the start vertex null', () => {
           const vertexEnd = polyline.lastVertex.prev.prev as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeFromTo(null, vertexEnd);
+          const removedVertices = polyline.removeFromTo(null, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 4);
@@ -1718,9 +1701,9 @@ describe('##PolyLine', () => {
           const vertexStart = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = new VertexNode<TestVertex, TestSegment>(coordinates[2]);
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 4);
@@ -1734,9 +1717,9 @@ describe('##PolyLine', () => {
         it('should remove from the start vertex to the end of the polyline if the end vertex is null', () => {
           const vertexStart = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, null);
+          const removedVertices = polyline.removeFromTo(vertexStart, null);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 4);
@@ -1751,9 +1734,9 @@ describe('##PolyLine', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
 
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd);
+          const removedVertices = polyline.removeFromTo(vertexStart, vertexEnd);
 
-          expect(removedVerticesCount).toBeTruthy();
+          expect(removedVertices).toBeTruthy();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length - 4);
@@ -1762,16 +1745,6 @@ describe('##PolyLine', () => {
             [1, -110] as TestVertex,
             [6, -160] as TestVertex
           ]);
-        });
-
-        it('should return the number of vertices removed if requested', () => {
-          const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
-          const vertexEnd = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
-          const returnListCount = true;
-
-          const removedVerticesCount = polyline.removeFromTo(vertexStart, vertexEnd, returnListCount);
-
-          expect(removedVerticesCount).toEqual(4);
         });
       });
     });
@@ -3364,22 +3337,20 @@ describe('##PolyLine', () => {
 
           // Insert after first segment, over second segment
           const targetNode = getVertexNode(coordinates[2]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceAt(targetNode, nodes, returnListCount);
+          const result = polyline.replaceAt(targetNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 1
-          });
+          expect(result.inserted).toBeTruthy();
+          expect(result.removed).toEqual(targetNode);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          const removedCount = sizeOf(result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
             [2, -120] as TestVertex,
@@ -3398,22 +3369,20 @@ describe('##PolyLine', () => {
 
           // Insert after first segment, over second segment
           const targetNode = getVertexNode(coordinates[0]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceAt(targetNode, nodes, returnListCount);
+          const result = polyline.replaceAt(targetNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 1
-          });
+          expect(result.inserted).toBeTruthy();
+          expect(result.removed).toEqual(targetNode);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          const removedCount = sizeOf(result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.firstVertex).toEqual(node1);
           expect(polyline.vertices()).toEqual([
             // [1, -110] as TestVertex,
@@ -3433,22 +3402,20 @@ describe('##PolyLine', () => {
 
           // Insert after first segment, over second segment
           const targetNode = getVertexNode(coordinates[coordinates.length - 1]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceAt(targetNode, nodes, returnListCount);
+          const result = polyline.replaceAt(targetNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 1
-          });
+          expect(result.inserted).toBeTruthy();
+          expect(result.removed).toEqual(targetNode);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          const removedCount = sizeOf(result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.lastVertex).toEqual(node3);
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
@@ -3517,19 +3484,17 @@ describe('##PolyLine', () => {
         it('should return # of nodes removed & only remove nodes in the start/end range if no nodes are provided to insert', () => {
           const startNode = getVertexNode(coordinates[0]);
           const endNode = getVertexNode(coordinates[3]);
-          const returnListCount = true;
 
           const initialLength = polyline.size();
 
-          const result = polyline.replaceBetween(startNode, endNode, [], returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, []);
 
-          expect(result).toEqual({
-            inserted: 0,
-            removed: 2
-          });
+          expect(result.inserted).toEqual(0);
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(2);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - removedCount);
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
             // [2, -120] as TestVertex,
@@ -3547,22 +3512,20 @@ describe('##PolyLine', () => {
 
           const startNode = null;
           const endNode = getVertexNode(coordinates[0]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceBetween(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 0
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(0);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.firstVertex.equals(node1.val)).toBeTruthy();
           expect(polyline.vertices()).toEqual([
             [99, 140] as TestVertex,
@@ -3595,22 +3558,20 @@ describe('##PolyLine', () => {
 
           const startNode = getVertexNode(coordinates[coordinates.length - 1]);
           const endNode = null;
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceBetween(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 0
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(0);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.firstVertex.equals(initialHead.val)).toBeTruthy();
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
@@ -3643,22 +3604,20 @@ describe('##PolyLine', () => {
           // Insert after first segment, over second segment
           const startNode = getVertexNode(coordinates[1]);
           const endNode = getVertexNode(coordinates[2]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceBetween(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 0
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(0);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
             [2, -120] as TestVertex,
@@ -3690,22 +3649,20 @@ describe('##PolyLine', () => {
 
           const startNode = null;
           const endNode = getVertexNode(coordinates[2]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceBetween(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 2
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(2);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.firstVertex.equals(node1.val)).toBeTruthy();
           expect(polyline.vertices()).toEqual([
             [99, 140] as TestVertex,
@@ -3726,22 +3683,20 @@ describe('##PolyLine', () => {
 
           const startNode = getVertexNode(coordinates[coordinates.length - 1 - 2]);
           const endNode = null;
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceBetween(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 2
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(2);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.lastVertex.equals(node3.val)).toBeTruthy();
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
@@ -3766,22 +3721,20 @@ describe('##PolyLine', () => {
           // Insert after first segment, over second segment
           const startNode = getVertexNode(coordinates[1]);
           const endNode = getVertexNode(coordinates[4]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceBetween(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 2
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(2);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
             [2, -120] as TestVertex,
@@ -3833,22 +3786,20 @@ describe('##PolyLine', () => {
           const initialLength = polyline.size();
           const startNode = getVertexNode(coordinates[0]);
           const endNode = getVertexNode(coordinates[coordinates.length - 1]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceFromTo(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceFromTo(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 6
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(6);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - removedCount);
           expect(polyline.firstVertex.equals(node1.val)).toBeTruthy();
           expect(polyline.lastVertex.equals(node3.val)).toBeTruthy();
           expect(polyline.vertices()).toEqual([
@@ -3864,22 +3815,20 @@ describe('##PolyLine', () => {
 
           const startNode = getVertexNode(coordinates[1]);
           const endNode = getVertexNode(coordinates[4]);
-          const returnListCount = true;
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
           const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
           const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
           const nodes = [node1, node2, node3];
 
-          const result = polyline.replaceFromTo(startNode, endNode, nodes, returnListCount);
+          const result = polyline.replaceFromTo(startNode, endNode, nodes);
 
-          expect(result).toEqual({
-            inserted: 3,
-            removed: 4
-          });
+          expect(result.inserted).toBeTruthy();
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(4);
 
-          expect(polyline.size().vertices).toEqual(initialLength.vertices + result.inserted - result.removed);
-          expect(polyline.size().segments).toEqual(initialLength.segments + result.inserted - result.removed);
+          expect(polyline.size().vertices).toEqual(initialLength.vertices + 3 - removedCount);
+          expect(polyline.size().segments).toEqual(initialLength.segments + 3 - removedCount);
           expect(polyline.vertices()).toEqual([
             [1, -110] as TestVertex,
             // [2, -120] as TestVertex,
