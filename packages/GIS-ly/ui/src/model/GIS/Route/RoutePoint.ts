@@ -65,6 +65,14 @@ export class RoutePoint
     return coordinate;
   }
 
+  static fromProperties(properties: IRoutePointProperties): RoutePoint {
+    const point = new RoutePoint(properties.lat, properties.lng, properties.alt);
+    point.elevation = properties.elevation;
+    point._path = properties.path;
+
+    return point;
+  }
+
   // === Common Interfaces ===
   clone(): RoutePoint {
     const routePoint = new RoutePoint(this.lat, this.lng, this.alt);

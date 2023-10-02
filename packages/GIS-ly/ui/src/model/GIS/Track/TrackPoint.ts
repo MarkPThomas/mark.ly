@@ -107,6 +107,14 @@ export class TrackPoint
     return trackPoint;
   }
 
+  static fromProperties(properties: ITrackPointProperties): TrackPoint {
+    const point = new TrackPoint(properties.lat, properties.lng, properties.alt, properties.timestamp);
+    point.elevation = properties.elevation;
+    point._path = properties.path;
+
+    return point;
+  }
+
   // === Common Interfaces ===
   clone(): TrackPoint {
     const trackPoint = new TrackPoint(this.lat, this.lng, this.alt, this.timestamp);
