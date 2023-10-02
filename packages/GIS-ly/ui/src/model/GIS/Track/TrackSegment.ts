@@ -210,7 +210,7 @@ export class TrackSegment
     prevSegment: ITrackSegmentProperties,
     nextSegment: ITrackSegmentProperties
   ) {
-    const pathRotationRad = Segment.calcPathRotationRad(prevSegment, nextSegment);
+    const pathRotationRad = RouteSegment.calcPathRotationRad(prevSegment, nextSegment);
     const pathDurationSec = (prevSegment?.duration === undefined || nextSegment?.duration === undefined)
       ? null
       : prevSegment.duration + nextSegment.duration;
