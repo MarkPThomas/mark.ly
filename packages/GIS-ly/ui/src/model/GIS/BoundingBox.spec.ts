@@ -1,11 +1,9 @@
 import { BBox as SerialBBox } from 'geojson';
 
-import { GeoJsonConstants } from '../../GeoJSON/GeoJsonConstants';
+import { GeoJsonConstants } from '../GeoJSON/GeoJsonConstants';
 
-import { TrackBoundingBox } from "./TrackBoundingBox";
-import { TrackPoint } from "./TrackPoint";
-import { LatLng, TrackPoints } from '../types';
-import { BoundingBox } from '../../GeoJSON';
+import { BoundingBox } from "./BoundingBox";
+import { TrackPoint } from "./Track/TrackPoint";
 
 describe('##TrackBoundingBox', () => {
   let pointBBoxJson: SerialBBox;
@@ -50,7 +48,7 @@ describe('##TrackBoundingBox', () => {
       it('should make a TrackBoundingBox object from the provided BoundingBox', () => {
         const boundingBoxExpected = BoundingBox.fromJson(pointBBoxJson);
 
-        const boundingBox = TrackBoundingBox.fromBoundingBox(boundingBoxExpected);
+        const boundingBox = BoundingBox.fromBoundingBox(boundingBoxExpected);
 
         expect(boundingBox).toEqual(boundingBoxExpected);
       });
@@ -58,23 +56,23 @@ describe('##TrackBoundingBox', () => {
 
     describe('#fromTrackPoint', () => {
       it('should make an object from the specified bounding Point with no altitude', () => {
-        const boundingBoxExpected = TrackBoundingBox.fromJson(pointBBoxJson) as TrackBoundingBox;
+        const boundingBoxExpected = BoundingBox.fromJson(pointBBoxJson) as BoundingBox;
 
-        const boundingBox = TrackBoundingBox.fromTrackPoint(trackPoints[0]);
+        const boundingBox = BoundingBox.fromTrackPoint(trackPoints[0]);
 
         expect(boundingBox).toEqual(boundingBoxExpected);
       });
 
       it('should make an object from the specified bounding Point with an altitude specified', () => {
-        const boundingBoxExpected = TrackBoundingBox.fromJson(pointBBoxWithAltitudeJson) as TrackBoundingBox;
+        const boundingBoxExpected = BoundingBox.fromJson(pointBBoxWithAltitudeJson) as BoundingBox;
 
-        const boundingBox = TrackBoundingBox.fromTrackPoint(trackPointsWithAltitude[0]);
+        const boundingBox = BoundingBox.fromTrackPoint(trackPointsWithAltitude[0]);
 
         expect(boundingBox).toEqual(boundingBoxExpected);
       });
 
       it('should make an object from the specified bounding Point a buffer specified', () => {
-        const boundingBox = TrackBoundingBox.fromTrackPoint(trackPoints[0], 1);
+        const boundingBox = BoundingBox.fromTrackPoint(trackPoints[0], 1);
 
         expect(boundingBox.west).toEqual(0);
         expect(boundingBox.south).toEqual(1);
@@ -85,25 +83,25 @@ describe('##TrackBoundingBox', () => {
 
     describe('#fromTrackPoints', () => {
       it('should make an object from the specified Points with no altitude', () => {
-        const boundingBoxExpected = TrackBoundingBox.fromJson(bboxJson) as TrackBoundingBox;
+        const boundingBoxExpected = BoundingBox.fromJson(bboxJson) as BoundingBox;
 
-        const boundingBox = TrackBoundingBox.fromTrackPoints(trackPoints);
+        const boundingBox = BoundingBox.fromTrackPoints(trackPoints);
 
         expect(boundingBox).toEqual(boundingBoxExpected);
       });
 
       it('should make an object from the specified Points with an altitude specified', () => {
-        const boundingBoxExpected = TrackBoundingBox.fromJson(bboxWithAltitudeJson) as TrackBoundingBox;
+        const boundingBoxExpected = BoundingBox.fromJson(bboxWithAltitudeJson) as BoundingBox;
 
-        const boundingBox = TrackBoundingBox.fromTrackPoints(trackPointsWithAltitude);
+        const boundingBox = BoundingBox.fromTrackPoints(trackPointsWithAltitude);
 
         expect(boundingBox).toEqual(boundingBoxExpected);
       });
 
       it('should make an object from the array with a single specified bounding Point as a single Point', () => {
-        const boundingBoxExpected = TrackBoundingBox.fromJson(pointBBoxJson) as TrackBoundingBox;
+        const boundingBoxExpected = BoundingBox.fromJson(pointBBoxJson) as BoundingBox;
 
-        const boundingBox = TrackBoundingBox.fromTrackPoints([trackPoints[0]]);
+        const boundingBox = BoundingBox.fromTrackPoints([trackPoints[0]]);
 
         expect(boundingBox).toEqual(boundingBoxExpected);
       });
@@ -117,7 +115,7 @@ describe('##TrackBoundingBox', () => {
           [2, 1],
           [4, 3]
         ];
-        const boundingBox = TrackBoundingBox.fromJson(bboxJson) as TrackBoundingBox;
+        const boundingBox = BoundingBox.fromJson(bboxJson) as BoundingBox;
 
         const result = boundingBox.toCornerLatLng();
 
@@ -129,7 +127,7 @@ describe('##TrackBoundingBox', () => {
           [2, 1, 5],
           [4, 3, 6]
         ];
-        const boundingBox = TrackBoundingBox.fromJson(bboxWithAltitudeJson);
+        const boundingBox = BoundingBox.fromJson(bboxWithAltitudeJson);
 
         const result = boundingBox.toCornerLatLng();
 

@@ -1,14 +1,14 @@
 import { BBox as SerialBBox } from "geojson";
 
-import { BoundingBox, IBoundingBox, IPoint, PointProperties } from "../../GeoJSON";
-import { LatLngBounds, LatLngs, TrackPoints } from "../types";
-import { TrackPoint } from "./TrackPoint";
+import { BoundingBox as GeoBoundingBox, IBoundingBox as IGeoBoundingBox } from "../GeoJSON";
+import { LatLngBounds } from "./types";
+import { TrackPoint } from "./Track//TrackPoint";
 
-export interface ITrackBoundingBox extends IBoundingBox {
+export interface ITrackBoundingBox extends IGeoBoundingBox {
   toCornerLatLng(): LatLngBounds;
 }
 
-export class TrackBoundingBox extends BoundingBox {
+export class BoundingBox extends GeoBoundingBox {
   protected constructor() { super() }
 
 
@@ -18,8 +18,8 @@ export class TrackBoundingBox extends BoundingBox {
       : [[this.south, this.west], [this.north, this.east]];
   }
 
-  static fromBoundingBox(boundingBox: BoundingBox): TrackBoundingBox {
-    const trackBoundingBox = new TrackBoundingBox();
+  static fromBoundingBox(boundingBox: GeoBoundingBox | BoundingBox): BoundingBox {
+    const trackBoundingBox = new BoundingBox();
 
     trackBoundingBox.west = boundingBox.west;
     trackBoundingBox.south = boundingBox.south;
@@ -34,27 +34,27 @@ export class TrackBoundingBox extends BoundingBox {
     return trackBoundingBox;
   }
 
-  static fromTrackPoint(trackPoint: TrackPoint, bufferDegree?: number): TrackBoundingBox {
+  static fromTrackPoint(trackPoint: TrackPoint, bufferDegree?: number): BoundingBox {
     const point = trackPoint.toPoint();
     const bbox = BoundingBox.fromPoint(point, bufferDegree);
-    return TrackBoundingBox.fromBoundingBox(bbox);
+    return BoundingBox.fromBoundingBox(bbox);
   }
 
-  static fromTrackPoints(trackPoints: TrackPoint[]): TrackBoundingBox {
+  static fromTrackPoints(trackPoints: TrackPoint[]): BoundingBox {
     if (trackPoints.length === 1) {
-      return TrackBoundingBox.fromTrackPoint(trackPoints[0]);
+      return BoundingBox.fromTrackPoint(trackPoints[0]);
     }
 
     const trackPointsFlat = trackPoints.flat(Infinity);
     const pointsFlat = trackPointsFlat.map((trackPoint) => trackPoint.toPoint());
 
     const bbox = BoundingBox.fromPoints(pointsFlat);
-    return TrackBoundingBox.fromBoundingBox(bbox);
+    return BoundingBox.fromBoundingBox(bbox);
   }
 
-  static fromJson(json: SerialBBox): TrackBoundingBox {
+  static fromJson(json: SerialBBox): BoundingBox {
     const bbox = BoundingBox.fromJson(json);
-    return TrackBoundingBox.fromBoundingBox(bbox);
+    return BoundingBox.fromBoundingBox(bbox);
   }
 
   // TODO: Might be irrelevant, even as a convenience method. See after refactoring is more complete.
