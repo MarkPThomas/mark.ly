@@ -1,5 +1,5 @@
-import { ISegmentProperties } from '../../Geometry/Segment';
-import { RoutePathProps, IRoutePathProps, IRoutePathPropsProperties } from './RoutePathProps';
+import { RoutePathProps } from './RoutePathProps';
+import { IRouteSegmentProperties } from './RouteSegment';
 
 describe('##RoutePathProps', () => {
   describe('Creation', () => {
@@ -60,12 +60,12 @@ describe('##RoutePathProps', () => {
   describe('Add Data Methods', () => {
     describe('#addPropertiesFromPath', () => {
       it('should determine the path rotation about a Point from the adjacent Segments', () => {
-        const prevSegment: ISegmentProperties = {
+        const prevSegment: IRouteSegmentProperties = {
           length: 0,
           angle: Math.PI / 4
         };
 
-        const nextSegment: ISegmentProperties = {
+        const nextSegment: IRouteSegmentProperties = {
           length: 0,
           angle: - Math.PI / 4
         };

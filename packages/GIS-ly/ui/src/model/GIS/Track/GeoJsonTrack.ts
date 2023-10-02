@@ -19,7 +19,7 @@ import {
 } from './TrackProperty';
 import { TrackPoint } from './TrackPoint';
 import { GeoJsonManager } from '../GeoJsonManager';
-import { TrackBoundingBox } from './TrackBoundingBox';
+import { BoundingBox } from '../BoundingBox';
 
 export interface IGeoJsonTrack
   extends
@@ -31,7 +31,7 @@ export interface IGeoJsonTrack
 
   trackMetaData: IBaseTrackProperty;
 
-  boundingBox(): TrackBoundingBox;
+  boundingBox(): BoundingBox;
 
   trackPoints(): TrackPoint[];
 
@@ -79,8 +79,8 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return { ...this._baseTrackProperty };
   }
 
-  boundingBox(): TrackBoundingBox {
-    return TrackBoundingBox.fromBoundingBox(this._geoJson.bbox());
+  boundingBox(): BoundingBox {
+    return BoundingBox.fromBoundingBox(this._geoJson.bbox());
   }
 
 
