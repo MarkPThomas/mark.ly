@@ -152,21 +152,24 @@ export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   ): VertexNode<TVertex, TSegment>[];
 
   // Delete Methods
-  trimBefore(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment>;
-  trimAfter(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment>;
+  trimBefore(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment> | null;
+  trimAfter(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment> | null;
   trimTo(
     vertexStart: VertexNode<TVertex, TSegment>,
-    vertexEnd: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment>[];
+    vertexEnd: VertexNode<TVertex, TSegment>
+  ): (VertexNode<TVertex, TSegment> | null)[];
   clear(): void;
 
-  removeAt(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment>;
+  removeAt(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment> | null;
   removeAtAny(vertices: VertexNode<TVertex, TSegment>[]): VertexNode<TVertex, TSegment>[];
   removeBetween(
     vertexStart: VertexNode<TVertex, TSegment>,
-    vertexEnd: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment>;
+    vertexEnd: VertexNode<TVertex, TSegment>
+  ): VertexNode<TVertex, TSegment> | null;
   removeFromTo(
     vertexStart: VertexNode<TVertex, TSegment>,
-    vertexEnd: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment>;
+    vertexEnd: VertexNode<TVertex, TSegment>
+  ): VertexNode<TVertex, TSegment> | null;
 
   // Update Methods
   prepend(item: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>): void;
@@ -187,7 +190,7 @@ export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   ): {
     removed: VertexNode<TVertex, TSegment>,
     inserted: number
-  } | undefined;
+  } | null;
 
   replaceBetween(
     startVertex: VertexNode<TVertex, TSegment>,
@@ -196,7 +199,7 @@ export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   ): {
     removed: VertexNode<TVertex, TSegment>,
     inserted: number
-  } | undefined;
+  } | null;
 
   replaceFromTo(
     startVertex: VertexNode<TVertex, TSegment>,
@@ -205,7 +208,7 @@ export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   ): {
     removed: VertexNode<TVertex, TSegment>,
     inserted: number
-  } | undefined;
+  } | null;
 
   splitBy(
     marker: TVertex | VertexNode<TVertex, TSegment> | Polyline<TVertex, TSegment>
@@ -253,6 +256,15 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
+  /**
+   * Appends vertex/node to polyline.
+   *
+   * This method appropriately handes cases of the node being standalone or part of an existing linked list with or without associated segments.
+   *
+   * @protected
+   * @param {(TVertex | VertexNode<TVertex, TSegment>)} vertex
+   * @memberof Polyline
+   */
   protected appendVertex(vertex: TVertex | VertexNode<TVertex, TSegment>) {
     if (VertexNode.isVertexNode(vertex)) {
       let headNode = vertex as VertexNode<TVertex, TSegment>;
@@ -266,6 +278,17 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     this.lastVertex.nextSeg = null;
   }
 
+  /**
+   * Appends a vertex node to the list.
+   *
+   * If node is the head of another linked list of vertices, this entire set of vertices is appended.
+   *
+   * If linked list of vertices has associated segments, the entire set of segments is also appended.
+   *
+   * @protected
+   * @param {VertexNode<TVertex, TSegment>} vertex
+   * @memberof Polyline
+   */
   protected appendHeadVertexNode(vertex: VertexNode<TVertex, TSegment>) {
     this.appendSingleVertex(vertex);
     if (!vertex.nextSeg) {
@@ -280,6 +303,15 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
+  /**
+   * Appends provided vertex/node to the vertices list and generates/adds an associated segment node to the segments list.
+   *
+   * It is assumed that this vertex has no prior references to other vertex or segment nodes.
+   *
+   * @protected
+   * @param {(TVertex | VertexNode<TVertex, TSegment>)} vertex
+   * @memberof Polyline
+   */
   protected appendSingleVertex(vertex: TVertex | VertexNode<TVertex, TSegment>) {
     const vertexI = this.lastVertex;
 
@@ -294,6 +326,14 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
+  /**
+   * Creates a new segment node, with value properties, and appends it to the existing segments list.
+   *
+   * @protected
+   * @param {VertexNode<TVertex, TSegment>} vertexI
+   * @param {VertexNode<TVertex, TSegment>} vertexJ
+   * @memberof Polyline
+   */
   protected appendSegment(
     vertexI: VertexNode<TVertex, TSegment>,
     vertexJ: VertexNode<TVertex, TSegment>
@@ -304,6 +344,17 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
+  /**
+   * Adds a new segment node associated with the provided vertices.
+   *
+   * First-order segment properties derived from the nodes are also generated.
+   *
+   * @protected
+   * @param {VertexNode<TVertex, TSegment>} vertexI
+   * @param {(VertexNode<TVertex, TSegment> | null)} vertexJ
+   * @return {*}  {(SegmentNode<TVertex, TSegment> | null)}
+   * @memberof Polyline
+   */
   protected addSegment(
     vertexI: VertexNode<TVertex, TSegment>,
     vertexJ: VertexNode<TVertex, TSegment> | null
@@ -321,6 +372,15 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     return segmentInsert;
   }
 
+  /**
+   * Updates the segment value properties of the provided segment node based on the provided vertex values.
+   *
+   * @protected
+   * @param {SegmentNode<TVertex, TSegment>} segment
+   * @param {TVertex} vertexI
+   * @param {TVertex} vertexJ
+   * @memberof Polyline
+   */
   protected updateSegment(
     segment: SegmentNode<TVertex, TSegment>,
     vertexI: TVertex,
@@ -329,6 +389,23 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
     const updatedSegVal = this.createSegmentValue(vertexI, vertexJ);
     segment.val = updatedSegVal;
+  }
+
+  /**
+   * Sets/updates/derives segment value properties for all existing segments in the polyline based on their adjacent nodes.
+   *
+   * @protected
+   * @memberof Polyline
+   */
+  protected addPropertiesToSegments() {
+    let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
+    while (coord) {
+      const prevCoord = coord.prev as VertexNode<TVertex, TSegment>;
+      const segmentValue = this.createSegmentValue(prevCoord.val, coord.val);
+      coord.prevSeg.val = segmentValue;
+
+      coord = coord.next as VertexNode<TVertex, TSegment>;
+    }
   }
 
   /**
@@ -344,6 +421,29 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     return new Segment() as TSegment;
   }
 
+  /**
+   * Updates 2nd-order properties of the provided vertex.
+   *
+   * This is empty in the {@link Polyline} class and can be used by overrides in subclasses to hook update procedures into
+   * base class functionality.
+   *
+   * @protected
+   * @param {VertexNode<TVertex, TSegment>[]} vertices
+   * @memberof Polyline
+   */
+  protected updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
+    // TODO: Consider making abstract class so that this is abstracted
+  }
+
+  /**
+   * Lazy way to update segments & vertices.
+   *
+   * Updates ALL 1st-order segment values and ALL 2nd order vertex values.
+   *
+   * @protected
+   * @param {number} numberNodesAffected
+   * @memberof Polyline
+   */
   protected updateAllSegmentsAndProperties(numberNodesAffected: number) {
     if (numberNodesAffected) {
       this._segments = new List();
@@ -359,6 +459,12 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
       this.addProperties();
     }
+  }
+
+  protected createPolyline(coords: VertexNode<TVertex, TSegment>[] = []): Polyline<TVertex, TSegment> {
+    // TODO: Consider making abstract class so that this is abstracted
+
+    return new Polyline<TVertex, TSegment>(coords);
   }
 
   equals(polyline: Polyline<TVertex, TSegment>): boolean {
@@ -380,37 +486,40 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
     endVertex = endVertex ?? this.lastVertex;
 
-    const polylineRoute = new Polyline([]);
+    const polylineClone = this.createPolyline();
 
-    let vertexI = startVertex;
-    polylineRoute._vertices.append(vertexI.clone());
-
+    const vertexI = startVertex;
+    let vertexIClone = vertexI.clone();
     let vertexJ = vertexI.next as VertexNode<TVertex, TSegment>;
     let segment = this.firstSegment as SegmentNode<TVertex, TSegment>;
 
-    while (vertexJ && vertexI !== endVertex) {
-      polylineRoute._vertices.append(vertexJ.clone());
-      polylineRoute._segments.append(segment.clone());
+    polylineClone._vertices.append(vertexIClone);
 
-      vertexI.nextSeg = segment;
-      vertexJ.prevSeg = segment;
-      segment.prevVert = vertexI;
-      segment.nextVert = vertexJ;
+    while (vertexJ && vertexJ.prev !== endVertex) {
+      const vertexJClone = vertexJ.clone();
+      const segmentClone = segment.clone();
 
-      vertexI = vertexJ as VertexNode<TVertex, TSegment>;
+      vertexIClone.nextSeg = segmentClone;
+      vertexJClone.prevSeg = segmentClone;
+      segmentClone.prevVert = vertexIClone;
+      segmentClone.nextVert = vertexJClone;
+
+      polylineClone._vertices.append(vertexJClone);
+      polylineClone._segments.append(segmentClone);
+
+      vertexIClone = vertexJClone;
       vertexJ = vertexJ.next as VertexNode<TVertex, TSegment>;
       segment = segment.next as SegmentNode<TVertex, TSegment>;
     }
 
-    polylineRoute._vertices.clone();
-    polylineRoute._segments.clone();
+    if (startVertex !== this.firstVertex) {
+      polylineClone.updatePathProperties([polylineClone.firstVertex as VertexNode<TVertex, TSegment>]);
+    }
+    if (endVertex !== this.lastVertex) {
+      polylineClone.updatePathProperties([polylineClone.lastVertex as VertexNode<TVertex, TSegment>]);
+    }
 
-    this.updatePathProperties([
-      startVertex as VertexNode<TVertex, TSegment>,
-      endVertex as VertexNode<TVertex, TSegment>
-    ]);
-
-    return polylineRoute as Polyline<TVertex, TSegment>;
+    return polylineClone as Polyline<TVertex, TSegment>;
   }
 
   // Property Methods
@@ -422,21 +531,6 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
   protected addPropertiesToNodes() {
     this.addPropertiesToSegments();
-  }
-
-  protected addPropertiesToSegments() {
-    let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
-    while (coord) {
-      const prevCoord = coord.prev as VertexNode<TVertex, TSegment>;
-      const segment = this.createSegmentValue(prevCoord.val, coord.val);
-      coord.prevSeg.val = segment;
-
-      coord = coord.next as VertexNode<TVertex, TSegment>;
-    }
-  }
-
-  protected updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
-
   }
 
   // Query Methods
@@ -624,7 +718,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   // Delete Methods
   trimBefore(
     vertex: VertexNode<TVertex, TSegment>
-  ): VertexNode<TVertex, TSegment> {
+  ): VertexNode<TVertex, TSegment> | null {
     const trimmedHead = this._vertices.trimHead(vertex);
 
     if (trimmedHead) {
@@ -634,7 +728,9 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       lastHeadSegment.nextVert = null;
       vertex.prevSeg = null;
 
-      this.updatePathProperties([vertex]);
+      if (vertex) {
+        this.updatePathProperties([vertex]);
+      }
 
       return trimmedHead;
     } else {
@@ -644,7 +740,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
   trimAfter(
     vertex: VertexNode<TVertex, TSegment>
-  ): VertexNode<TVertex, TSegment> {
+  ): VertexNode<TVertex, TSegment> | null {
     const trimmedTailHead = this._vertices.trimTail(vertex);
 
     if (trimmedTailHead) {
@@ -654,7 +750,9 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       firstTailSegment.prevVert = null;
       vertex.nextSeg = null;
 
-      this.updatePathProperties([vertex]);
+      if (vertex) {
+        this.updatePathProperties([vertex]);
+      }
 
       return trimmedTailHead;
     } else {
@@ -665,11 +763,16 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   trimTo(
     vertexStart: VertexNode<TVertex, TSegment>,
     vertexEnd: VertexNode<TVertex, TSegment>
-  ): VertexNode<TVertex, TSegment>[] {
+  ): (VertexNode<TVertex, TSegment> | null)[] {
     const headTrim = vertexStart ? this.trimBefore(vertexStart) : null;
     const tailTrim = vertexEnd ? this.trimAfter(vertexEnd) : null;
 
-    this.updatePathProperties([vertexStart, vertexEnd]);
+    if (vertexStart) {
+      this.updatePathProperties([vertexStart]);
+    }
+    if (vertexEnd) {
+      this.updatePathProperties([vertexEnd]);
+    }
 
     return [headTrim, tailTrim];
   }
@@ -680,7 +783,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   }
 
 
-  removeAt(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment> {
+  removeAt(vertex: VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment> | null {
     if (!vertex || this.polylineIsEmpty() || this.isNotInPolyline(vertex)) {
       return null;
     } else if (this.isOnlyVertexInPolyline(vertex)) {
@@ -734,7 +837,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   removeBetween(
     vertexStart: VertexNode<TVertex, TSegment>,
     vertexEnd: VertexNode<TVertex, TSegment>
-  ): VertexNode<TVertex, TSegment> {
+  ): VertexNode<TVertex, TSegment> | null {
     if (this.polylineIsEmpty()
       || this.areNotInPolyline(vertexStart, vertexEnd)
       || this.areAdjacent(vertexStart, vertexEnd)
@@ -794,7 +897,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   removeFromTo(
     vertexStart: VertexNode<TVertex, TSegment>,
     vertexEnd: VertexNode<TVertex, TSegment>
-  ): VertexNode<TVertex, TSegment> {
+  ): VertexNode<TVertex, TSegment> | null {
     if (vertexStart === vertexEnd) {
       return this.removeAt(vertexStart) ? vertexStart : null;
     }
@@ -900,39 +1003,41 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
   replaceAt(
     target: VertexNode<TVertex, TSegment>,
-    item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>
+    item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>,
+    returnListCount: boolean = false
   ): {
     removed: VertexNode<TVertex, TSegment>,
     inserted: number
-  } | undefined {
+  } | null {
     if (this.polylineIsEmpty() || !target || this.isNotInPolyline(target)) {
-      return undefined;
+      return null;
     }
 
     const startVertex = target.prev as VertexNode<TVertex, TSegment>;
     const endVertex = target.next as VertexNode<TVertex, TSegment>;
 
-    return this.replaceBetween(startVertex, endVertex, item);
+    return this.replaceBetween(startVertex, endVertex, item, returnListCount);
   }
 
   replaceBetween(
     startVertex: VertexNode<TVertex, TSegment>,
     endVertex: VertexNode<TVertex, TSegment>,
-    item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>
+    item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>,
+    returnListCount: boolean = false
   ): {
     removed: VertexNode<TVertex, TSegment>,
     inserted: number
-  } | undefined {
+  } | null {
     if (this.polylineIsEmpty()
       || (!startVertex && !endVertex)
       || this.areNotInPolyline(startVertex, endVertex)
       || startVertex === endVertex) {
-      return undefined;
+      return null;
     }
     const removedHead = this.removeBetween(startVertex, endVertex);
     const insertedCount = startVertex
-      ? this.insertAfter(startVertex, item)
-      : this.insertBefore(endVertex, item);
+      ? this.insertAfter(startVertex, item, returnListCount)
+      : this.insertBefore(endVertex, item, returnListCount);
 
     return {
       removed: removedHead,
@@ -943,13 +1048,14 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   replaceFromTo(
     startVertex: VertexNode<TVertex, TSegment>,
     endVertex: VertexNode<TVertex, TSegment>,
-    item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>
+    item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>,
+    returnListCount: boolean = false
   ): {
     removed: VertexNode<TVertex, TSegment>,
     inserted: number
-  } | undefined {
+  } | null {
     if (this.polylineIsEmpty() || (!startVertex && !endVertex) || this.areNotInPolyline(startVertex, endVertex)) {
-      return undefined;
+      return null;
     }
     const prevVertexStart = startVertex.prev as VertexNode<TVertex, TSegment>;
     const nextVertexEnd = endVertex.next as VertexNode<TVertex, TSegment>;
@@ -971,6 +1077,12 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
         const itemPolyline = item as Polyline<TVertex, TSegment>
         this._vertices = itemPolyline._vertices;
         this._segments = itemPolyline._segments;
+
+        if (returnListCount) {
+          insertedCount = itemPolyline.size().vertices;
+        } else {
+          insertedCount = 1;
+        }
       } else {
         return undefined;
       }
@@ -979,7 +1091,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
         inserted: insertedCount
       };
     } else {
-      return this.replaceBetween(prevVertexStart, nextVertexEnd, item);
+      return this.replaceBetween(prevVertexStart, nextVertexEnd, item, returnListCount);
     }
   }
 
@@ -1006,12 +1118,18 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     this.updatePriorSegmentProps(reference.segments.prev);
 
     if (numberInsertedVertices) {
-      this.updatePathProperties([
-        reference.vertices.prev as VertexNode<TVertex, TSegment>,
-        reference.vertices.next as VertexNode<TVertex, TSegment>,
-        itemRange.vertices.start as VertexNode<TVertex, TSegment>,
-        itemRange.vertices.end as VertexNode<TVertex, TSegment>
-      ]);
+      if (reference.vertices.prev) {
+        this.updatePathProperties([reference.vertices.prev as VertexNode<TVertex, TSegment>]);
+      }
+      if (reference.vertices.next) {
+        this.updatePathProperties([reference.vertices.next as VertexNode<TVertex, TSegment>]);
+      }
+      if (itemRange.vertices.start) {
+        this.updatePathProperties([itemRange.vertices.start as VertexNode<TVertex, TSegment>]);
+      }
+      if (itemRange.vertices.end) {
+        this.updatePathProperties([itemRange.vertices.end as VertexNode<TVertex, TSegment>]);
+      }
     }
 
     return numberInsertedVertices;
@@ -1082,7 +1200,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   splitBy(
     marker: TVertex | VertexNode<TVertex, TSegment> | Polyline<TVertex, TSegment>
   ): Polyline<TVertex, TSegment>[] {
-    if (!this.isValidSplitPolyline()) {
+    if (!this.isValidSplitPolyline() || !marker) {
       return [this];
     }
 
@@ -1110,8 +1228,12 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     } else if (Polyline.isPolyline(markers)) {
       return this.splitBySubPolylines(markers as Polyline<TVertex, TSegment>[]);
     } else if (Array.isArray(markers)) {
-      const markerReferences = markers.map((marker) => this.vertexNodesByVertex(marker)[0]) as VertexNode<TVertex, TSegment>[];
-      return this.splitByVertices(markerReferences);
+      if (VertexNode.isVertexNode(markers[0])) {
+        return this.splitByVertices(markers as VertexNode<TVertex, TSegment>[]);
+      } else {
+        const markerReferences = markers.map((marker) => this.vertexNodesByVertex(marker)[0]) as VertexNode<TVertex, TSegment>[];
+        return this.splitByVertices(markerReferences);
+      }
     } else {
       return [this];
     }
@@ -1209,12 +1331,12 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     nextSeg.prev = null
 
     // Regenerate
-    const polylineI = new Polyline(this.firstVertex);
-    const polylineJ = new Polyline(cloneVert);
+    const polylineI = this.createPolyline([this.firstVertex]);
+    const polylineJ = this.createPolyline([cloneVert]);
 
     this.updatePathProperties([
-      vertex as VertexNode<TVertex, TSegment>,
-      cloneVert as VertexNode<TVertex, TSegment>
+      polylineI.lastVertex,
+      polylineJ.firstVertex
     ]);
 
     return [polylineI, polylineJ];

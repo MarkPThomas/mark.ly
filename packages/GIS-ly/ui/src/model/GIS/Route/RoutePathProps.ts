@@ -22,7 +22,7 @@ export class RoutePathProps
   rotation: number = 0;
 
   constructor(rotation?: number) {
-    this.rotation = rotation;
+    this.rotation = rotation ?? null;
   }
 
   clone(): RoutePathProps {

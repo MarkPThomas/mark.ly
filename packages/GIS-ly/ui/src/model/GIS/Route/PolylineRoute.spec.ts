@@ -1,12 +1,22 @@
 import { VertexNode, SegmentNode } from "../../Geometry/Polyline";
-import { Segment } from "../../Geometry/Segment";
 import { GeoJsonManager } from "../GeoJsonManager";
-import { ITrackPropertyProperties } from "../Track/TrackProperty";
 import { PolylineRoute } from "./PolylineRoute";
 import { RoutePoint } from "./RoutePoint";
 import { RouteSegment } from "./RouteSegment";
 
 describe('##PolylineRoute', () => {
+  const sizeOf = (start: VertexNode<RoutePoint, RouteSegment>): number => {
+    let count = 0;
+
+    let currNode = start;
+    while (currNode) {
+      count++;
+      currNode = currNode.next as VertexNode<RoutePoint, RouteSegment>;
+    }
+
+    return count;
+  }
+
   let lineStringRoute;
   beforeEach(() => {
     lineStringRoute = {
@@ -18,10 +28,10 @@ describe('##PolylineRoute', () => {
             type: 'LineString',
             coords: [
               [100.0, 0.0, 100],
-              [101.0, 1.0, 200],
-              [102.0, 2.0, 300],
+              [99.0, -1.0, 200],
+              [103.5, 2.5, 300],
               [103.0, 3.0, 400],
-              [104.0, 4.0, 500],
+              [104.75, 3.75, 500],
               [105.0, 5.0, 600],
             ]
           },
@@ -30,29 +40,296 @@ describe('##PolylineRoute', () => {
     }
   });
 
-
-  // TODO: Test
   describe('Creation', () => {
     describe('#constructor', () => {
-      it('should ', () => {
+      let routePoints: RoutePoint[];
 
+      beforeEach(() => {
+        const coord1 = new RoutePoint(-8.957287, -77.777452);
+        const coord2 = new RoutePoint(-8.957069, -77.777400);
+        const coord3 = new RoutePoint(-8.956936, -77.777381);
+        const coord4 = new RoutePoint(-8.956758, -77.777211);
+
+        routePoints = [
+          coord1,
+          coord2,
+          coord3,
+          coord4
+        ];
+      });
+
+      it('should create a new PolyLineRoute object from the provided RoutePoints', () => {
+        const polylineRoute = new PolylineRoute(routePoints);
+
+        expect(polylineRoute.firstVertex.val).toEqual(routePoints[0]);
+        expect(polylineRoute.firstVertex.nextSeg).toEqual(polylineRoute.firstSegment);
+        expect(polylineRoute.firstSegment.prevVert.val).toEqual(routePoints[0]);
+        expect(polylineRoute.firstSegment.nextVert.val).toEqual(routePoints[1]);
+      });
+    });
+
+    describe('Duplication', () => {
+      let routePoints: RoutePoint[];
+      let polylineRoute: PolylineRoute<RoutePoint, RouteSegment>;
+
+      beforeEach(() => {
+        const coord1 = new RoutePoint(-8.957287, -77.777452);
+        const coord2 = new RoutePoint(-8.957069, -77.777400);
+        const coord3 = new RoutePoint(-8.956936, -77.777381);
+        const coord4 = new RoutePoint(-8.956758, -77.777211);
+        const coord5 = new RoutePoint(-8.956768, -77.777311);
+        const coord6 = new RoutePoint(-8.956778, -77.777411);
+
+        routePoints = [
+          coord1,
+          coord2,
+          coord3,
+          coord4,
+          coord5,
+          coord6
+        ];
+        polylineRoute = new PolylineRoute(routePoints);
+      });
+
+      describe('#cloneFromToPoints', () => {
+        beforeEach(() => {
+          // Add properties to have more to track for point/segment copying
+          polylineRoute.addProperties();
+        });
+
+        it('should return null for an empty Route', () => {
+          const polyline = new PolylineRoute([]);
+
+          const polylineCopy = polyline.cloneFromToPoints();
+
+          expect(polylineCopy).toBeNull();
+        });
+
+        it('should return null if the start Point does not exist in the Route', () => {
+          const nonExistingPoint = new RoutePoint(8.957287, 77.777452);
+
+          const polylineCopy = polylineRoute.cloneFromToPoints(nonExistingPoint, routePoints[2]);
+
+          expect(polylineCopy).toBeNull();
+        });
+
+        it('should return null if the end Point does not exist in the Route', () => {
+          const nonExistingPoint = new RoutePoint(8.957287, 77.777452);
+
+          const polylineCopy = polylineRoute.cloneFromToPoints(routePoints[2], nonExistingPoint);
+
+          expect(polylineCopy).toBeNull();
+        });
+
+        it('should copy the Route from the head to tail if no Points are given', () => {
+          const polylineCopy = polylineRoute.cloneFromToPoints();
+
+          expect(polylineCopy.size()).toEqual({
+            vertices: 6,
+            segments: 5
+          });
+          expect(polylineCopy.firstVertex.val.equals(routePoints[0])).toBeTruthy();
+          expect(polylineCopy.firstSegment.prevVert.val.equals(routePoints[0])).toBeTruthy();
+          expect(polylineCopy.firstSegment.nextVert.val.equals(routePoints[1])).toBeTruthy();
+          expect(polylineCopy.lastSegment.prevVert.val.equals(routePoints[4])).toBeTruthy();
+          expect(polylineCopy.lastSegment.nextVert.val.equals(routePoints[5])).toBeTruthy();
+          expect(polylineCopy.lastVertex.val.equals(routePoints[5])).toBeTruthy();
+        });
+
+        it('should copy the Route from the head to the end Point if only the end Point is given', () => {
+          const polylineCopy = polylineRoute.cloneFromToPoints(null, routePoints[2]);
+
+          expect(polylineCopy.size()).toEqual({
+            vertices: 3,
+            segments: 2
+          });
+          expect(polylineCopy.firstVertex.val.equals(routePoints[0])).toBeTruthy();
+          expect(polylineCopy.firstSegment.prevVert.val.equals(routePoints[0])).toBeTruthy();
+          expect(polylineCopy.firstSegment.nextVert.val.equals(routePoints[1])).toBeTruthy();
+          expect(polylineCopy.lastVertex.val.lat).toEqual(routePoints[2].lat);
+          expect(polylineCopy.lastVertex.val.lng).toEqual(routePoints[2].lng);
+        });
+
+        it('should copy the Route from the start Point to the tail if only the start Point is given', () => {
+          const polylineCopy = polylineRoute.cloneFromToPoints(routePoints[2]);
+
+          expect(polylineCopy.size()).toEqual({
+            vertices: 4,
+            segments: 3
+          });
+          expect(polylineCopy.firstVertex.val.lat).toEqual(routePoints[2].lat);
+          expect(polylineCopy.firstVertex.val.lng).toEqual(routePoints[2].lng);
+          expect(polylineCopy.firstSegment.prevVert.val.lat).toEqual(routePoints[2].lat);
+          expect(polylineCopy.firstSegment.prevVert.val.lng).toEqual(routePoints[2].lng);
+          expect(polylineCopy.firstSegment.nextVert.val.equals(routePoints[3])).toBeTruthy();
+          expect(polylineCopy.lastVertex.val.equals(routePoints[5])).toBeTruthy();
+        });
+
+        // TODO: Currently assumed that lat/long are not unique, allowing a route to revisit the same lat/lng
+        //   This will not clone correctly as it will always use the first occurrence.
+        //   Determine how/whether this can/should be supported, e.g. by having arguments that specify which # occurrence is to be chosen?
+        //  Make associated test if enabled.
+
+        it('should copy the Route from the start Point to the end Point', () => {
+          const startPoint = routePoints[2];
+          const endPoint = routePoints[4];
+
+          const polylineCopy = polylineRoute.cloneFromToPoints(startPoint, endPoint);
+
+          expect(polylineCopy.size()).toEqual({
+            vertices: 3,
+            segments: 2
+          });
+          expect(polylineCopy.firstVertex.val.lat).toEqual(routePoints[2].lat);
+          expect(polylineCopy.firstVertex.val.lng).toEqual(routePoints[2].lng);
+          expect(polylineCopy.firstSegment.prevVert.val.lat).toEqual(routePoints[2].lat);
+          expect(polylineCopy.firstSegment.prevVert.val.lng).toEqual(routePoints[2].lng);
+          expect(polylineCopy.firstSegment.nextVert.val.equals(routePoints[3])).toBeTruthy();
+          expect(polylineCopy.lastVertex.val.lat).toEqual(routePoints[4].lat);
+          expect(polylineCopy.lastVertex.val.lng).toEqual(routePoints[4].lng);
+        });
+
+        it('should copy Route by value rather than by reference', () => {
+          const startPoint = routePoints[0];
+          const endPoint = routePoints[2];
+
+          const polylineCopy = polylineRoute.cloneFromToPoints(startPoint, endPoint);
+
+          expect(polylineCopy.size()).toEqual({
+            vertices: 3,
+            segments: 2
+          });
+          expect(polylineCopy.firstVertex.val.equals(routePoints[0])).toBeTruthy();
+          expect(polylineCopy.firstSegment.prevVert.val.equals(routePoints[0])).toBeTruthy();
+          expect(polylineCopy.firstSegment.nextVert.val.equals(routePoints[1])).toBeTruthy();
+          expect(polylineCopy.lastVertex.val.lat).toEqual(routePoints[2].lat);
+          expect(polylineCopy.lastVertex.val.lng).toEqual(routePoints[2].lng);
+
+          // Make original polylineRoute different to ensure copy is by value and not by reference
+          let node = polylineRoute.firstVertex;
+
+          const coord1New = new RoutePoint(-9, -77.777452);
+          node.val = coord1New;
+          node = node.next as VertexNode<RoutePoint, RouteSegment>;
+
+          const coord2New = new RoutePoint(-8, -77.777400);
+          node.val = coord2New;
+          node = node.next as VertexNode<RoutePoint, RouteSegment>;
+
+          const coord3New = new RoutePoint(-7, -77.777381);
+          node.val = coord3New;
+          node = node.next as VertexNode<RoutePoint, RouteSegment>;
+
+          expect(polylineRoute.firstSegment.prevVert.val.equals(coord1New)).toBeTruthy();
+          expect(polylineRoute.firstSegment.nextVert.val.equals(coord2New)).toBeTruthy();
+          expect(polylineCopy.firstVertex.val.equals(polylineRoute.firstVertex.val)).toBeFalsy();
+          expect(polylineCopy.lastVertex.val.equals(polylineRoute.lastVertex.val)).toBeFalsy();
+        });
+
+        it(`should update the 2nd-order properties of the first and last Point of the copied Route`, () => {
+          const vertex1 = polylineRoute.vertexNodesByVertex(routePoints[2])[0];
+          const vertex2 = polylineRoute.vertexNodesByVertex(routePoints[4])[0];
+
+          expect(vertex1.val.path.rotation).toBeCloseTo(-0.6161, 4);
+          expect(vertex2.val.path.rotation).toBeCloseTo(0.0000037, 7);
+
+          const startPoint = routePoints[2];
+          const endPoint = routePoints[4];
+
+          const polylineCopy = polylineRoute.cloneFromToPoints(startPoint, endPoint);
+
+          expect(polylineCopy.firstVertex.val.path.rotation).toBeNull();
+          expect(polylineCopy.lastVertex.val.path.rotation).toBeNull();
+        });
       });
     });
   });
 
-  // TODO: Test
-  describe('Duplication', () => {
-    describe('#copyRangeByPoints', () => {
-      it('should ', () => {
-
-      });
-    });
-  });
-
-  // TODO: Test
   describe('Common Interfaces', () => {
+    let routePoints: RoutePoint[];
+    let polylineRoute: PolylineRoute<RoutePoint, RouteSegment>;
+
+    beforeEach(() => {
+      const coord1 = new RoutePoint(-8.957287, -77.777452);
+      const coord2 = new RoutePoint(-8.957069, -77.777400);
+      const coord3 = new RoutePoint(-8.956936, -77.777381);
+      const coord4 = new RoutePoint(-8.956758, -77.777211);
+      const coord5 = new RoutePoint(-8.956768, -77.777311);
+      const coord6 = new RoutePoint(-8.956778, -77.777411);
+
+      routePoints = [
+        coord1,
+        coord2,
+        coord3,
+        coord4,
+        coord5,
+        coord6
+      ];
+      polylineRoute = new PolylineRoute(routePoints);
+    });
+
     describe('#clone', () => {
-      // TODO: Test
+      it('should clone the Route Polyline', () => {
+        const polylineClone = polylineRoute.clone();
+
+        expect(polylineClone.equals(polylineRoute)).not.toBeTruthy();
+
+        expect(polylineClone.size()).toEqual({
+          vertices: 6,
+          segments: 5
+        });
+        expect(polylineClone.firstVertex.val.equals(routePoints[0])).toBeTruthy();
+        expect(polylineClone.firstSegment.prevVert.val.equals(routePoints[0])).toBeTruthy();
+        expect(polylineClone.firstSegment.nextVert.val.equals(routePoints[1])).toBeTruthy();
+        expect(polylineClone.lastSegment.prevVert.val.equals(routePoints[4])).toBeTruthy();
+        expect(polylineClone.lastSegment.nextVert.val.equals(routePoints[5])).toBeTruthy();
+        expect(polylineClone.lastVertex.val.equals(routePoints[5])).toBeTruthy();
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return False for Routes Polylines with differing RoutePoints', () => {
+        const coordinates1 = [
+          new RoutePoint(-8.957287, -77.777452),
+          new RoutePoint(-8.957069, -77.777400),
+          new RoutePoint(-8.956936, -77.777381),
+          new RoutePoint(-8.956758, -77.777211),
+          new RoutePoint(-8.956858, -77.777221),
+          new RoutePoint(-8.956958, -77.777231)
+        ];
+        const polyline1 = new PolylineRoute(coordinates1);
+
+        const coordinates2 = [
+          new RoutePoint(-8.957287, -77.777452),
+          new RoutePoint(-8.957069, -77.777400),
+          new RoutePoint(-8.956936, -77.777381),
+          new RoutePoint(-8.956936, -77.777381),
+          new RoutePoint(-8.956758, -77.777211),
+          new RoutePoint(-8.956758, -77.777211)
+        ];
+        const polyline2 = new PolylineRoute(coordinates2);
+
+        const result = polyline1.equals(polyline2);
+
+        expect(result).toBeFalsy();
+      });
+
+      it('should return True for Routes Polylines with identical RoutePoints', () => {
+        const coordinates = [
+          new RoutePoint(-8.957287, -77.777452),
+          new RoutePoint(-8.957069, -77.777400),
+          new RoutePoint(-8.956936, -77.777381),
+          new RoutePoint(-8.956758, -77.777211),
+          new RoutePoint(-8.956858, -77.777221),
+          new RoutePoint(-8.956958, -77.777231)
+        ];
+        const polyline1 = new PolylineRoute(coordinates);
+        const polyline2 = new PolylineRoute(coordinates);
+
+        const result = polyline1.equals(polyline2);
+
+        expect(result).toBeTruthy();
+      });
     });
   });
 
@@ -293,6 +570,7 @@ describe('##PolylineRoute', () => {
       });
     });
 
+    // Use mocks
     describe('#addElevationsFromApi', () => {
       it('should ', () => {
 
@@ -300,1182 +578,2389 @@ describe('##PolylineRoute', () => {
     });
   });
 
-  // TODO: Placeholder for future tests
-  // describe('Manipulating PolylineRoute', () => {
-  //   let routePoints: RoutePoint[];
-  //   let polylineRoute: PolylineRoute<RoutePoint, RouteSegment>;
-
-  //   beforeEach(() => {
-  //     const positions = lineStringRoute.features[0].geometry.coords;
-  //     const times = (lineStringRoute.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
-  //     routePoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
-  //     polylineRoute = new PolylineRoute(routePoints);
-  //   });
-
-  //   describe('Trim', () => {
-  //     describe('#trimBeforeVertex', () => {
-  //       it('should do nothing and return 0 on an empty polylineRoute', () => {
-  //         polylineRoute = new PolylineRoute([]);
-
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-
-  //         const trimCount = polylineRoute.trimBefore(vertex);
-
-  //         expect(trimCount).toEqual(0);
-  //         expect(polylineRoute.size().vertices).toEqual(0);
-  //         expect(polylineRoute.size().segments).toEqual(0);
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-  //         expect(polylineRoute.vertices()).toEqual([]);
-  //       });
-
-  //       it('should do nothing and return 0 when the specified vertex does not exist in the polylineRoute', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = new VertexNode<RoutePoint, RouteSegment>([6, -10] as TestVertex);
-
-  //         const trimCount = polylineRoute.trimBefore(vertex);
-
-  //         expect(trimCount).toEqual(0);
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-  //         expect(polylineRoute.size().vertices).toEqual(6);
-  //         expect(polylineRoute.size().segments).toEqual(5);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [1, -110] as TestVertex,
-  //           [2, -120] as TestVertex,
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex,
-  //           [5, -150] as TestVertex,
-  //           [6, -160] as TestVertex
-  //         ]);
-  //       });
-
-  //       it('should trim off vertices & segments before the specified point and return the a positive number to indicate success', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = polylineRoute.firstVertex.next.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentNext = vertex.nextSeg;
-  //         const trimmedVertexTail = vertex.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex.prev).not.toBeNull();
-  //         expect(vertex.prevSeg).not.toBeNull();
-  //         expect(segmentNext.prev).not.toBeNull();
-  //         expect(segmentNext.prevVert).not.toBeNull();
-
-
-  //         const trimCount = polylineRoute.trimBefore(vertex);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(4);
-  //         expect(polylineRoute.size().segments).toEqual(3);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex,
-  //           [5, -150] as TestVertex,
-  //           [6, -160] as TestVertex
-  //         ]);
-
-  //         expect(vertex.prev).toBeNull();
-  //         expect(vertex.prevSeg).toBeNull();
-  //         expect(segmentNext.prev).toBeNull();
-
-  //         expect(trimmedVertexTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.nextVert).toBeNull();
-  //       });
-
-  //       it('should return the number of vertices if requested', () => {
-  //         const vertex = polylineRoute.firstVertex.next.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const returnListCount = true;
-
-  //         const trimCount = polylineRoute.trimBefore(vertex, returnListCount);
-
-  //         expect(trimCount).toEqual(2);
-  //       });
-  //     });
-
-  //     describe('#trimAfterVertex', () => {
-  //       it('should do nothing and return 0 on an empty polylineRoute', () => {
-  //         polylineRoute = new PolylineRoute([]);
-
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-
-  //         const trimCount = polylineRoute.trimAfter(vertex);
-
-  //         expect(trimCount).toEqual(0);
-  //         expect(polylineRoute.size().vertices).toEqual(0);
-  //         expect(polylineRoute.size().segments).toEqual(0);
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-  //         expect(polylineRoute.vertices()).toEqual([]);
-  //       });
-
-  //       it('should do nothing and return 0 when the specified vertex does not exist in the polylineRoute', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = new VertexNode<RoutePoint, RouteSegment>([6, -10] as TestVertex);
-
-  //         const trimCount = polylineRoute.trimAfter(vertex);
-
-  //         expect(trimCount).toEqual(0);
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-  //         expect(polylineRoute.size().vertices).toEqual(6);
-  //         expect(polylineRoute.size().segments).toEqual(5);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [1, -110] as TestVertex,
-  //           [2, -120] as TestVertex,
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex,
-  //           [5, -150] as TestVertex,
-  //           [6, -160] as TestVertex
-  //         ]);
-  //       });
-
-  //       it('should trim off vertices & segments after the specified point and return the a positive number to indicate success', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = polylineRoute.lastVertex.prev.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentPrev = vertex.prevSeg;
-  //         const trimmedVertexHead = vertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex.next).not.toBeNull();
-  //         expect(vertex.nextSeg).not.toBeNull();
-  //         expect(segmentPrev.next).not.toBeNull();
-  //         expect(segmentPrev.nextVert).not.toBeNull();
-
-
-  //         const trimCount = polylineRoute.trimAfter(vertex);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(4);
-  //         expect(polylineRoute.size().segments).toEqual(3);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [1, -110] as TestVertex,
-  //           [2, -120] as TestVertex,
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex
-  //         ]);
-
-  //         expect(vertex.next).toBeNull();
-  //         expect(vertex.nextSeg).toBeNull();
-  //         expect(segmentPrev.next).toBeNull();
-
-  //         expect(trimmedVertexHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prevVert).toBeNull();
-  //       });
-
-  //       it('should return the number of vertices if requested', () => {
-  //         const vertex = polylineRoute.lastVertex.prev.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const returnListCount = true;
-
-  //         const trimCount = polylineRoute.trimAfter(vertex, returnListCount);
-
-  //         expect(trimCount).toEqual(2);
-  //       });
-  //     });
-
-  //     describe('#trimToVertices', () => {
-  //       it('should do nothing and return 0 on an empty polylineRoute', () => {
-  //         polylineRoute = new PolylineRoute([]);
-
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex1 = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-  //         const vertex2 = new VertexNode<RoutePoint, RouteSegment>(coords[3]);
-
-  //         const trimCount = polylineRoute.trimTo(vertex1, vertex2);
-
-  //         expect(trimCount).toEqual(0);
-  //         expect(polylineRoute.size().vertices).toEqual(0);
-  //         expect(polylineRoute.size().segments).toEqual(0);
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-  //         expect(polylineRoute.vertices()).toEqual([]);
-  //       });
-
-  //       it('should do nothing and return 0 when the specified vertex does not exist in the polylineRoute', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex1 = new VertexNode<RoutePoint, RouteSegment>([6, -10] as TestVertex);
-  //         const vertex2 = new VertexNode<RoutePoint, RouteSegment>([-6, 10] as TestVertex);
-
-  //         const trimCount = polylineRoute.trimTo(vertex1, vertex2);
-
-  //         expect(trimCount).toEqual(0);
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-  //         expect(polylineRoute.size().vertices).toEqual(6);
-  //         expect(polylineRoute.size().segments).toEqual(5);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [1, -110] as TestVertex,
-  //           [2, -120] as TestVertex,
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex,
-  //           [5, -150] as TestVertex,
-  //           [6, -160] as TestVertex
-  //         ]);
-  //       });
-
-  //       it('should trim off vertices & segments before & after the specified start & end point sand return the a positive number to indicate success', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         // Trim before state
-  //         const vertex1 = polylineRoute.firstVertex.next.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentNext = vertex1.nextSeg;
-  //         const trimmedVertexTail = vertex1.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex1.prev).not.toBeNull();
-  //         expect(vertex1.prevSeg).not.toBeNull();
-  //         expect(segmentNext.prev).not.toBeNull();
-  //         expect(segmentNext.prevVert).not.toBeNull();
-
-  //         // Trim after state
-  //         const vertex2 = polylineRoute.lastVertex.prev.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentPrev = vertex2.prevSeg;
-  //         const trimmedVertexHead = vertex2.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex2.next).not.toBeNull();
-  //         expect(vertex2.nextSeg).not.toBeNull();
-  //         expect(segmentPrev.next).not.toBeNull();
-  //         expect(segmentPrev.nextVert).not.toBeNull();
-
-
-  //         const trimCount = polylineRoute.trimTo(vertex1, vertex2);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(2);
-  //         expect(polylineRoute.size().segments).toEqual(1);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex
-  //         ]);
-
-  //         // New Head
-  //         expect(vertex1.prev).toBeNull();
-  //         expect(vertex1.prevSeg).toBeNull();
-  //         expect(segmentNext.prev).toBeNull();
-
-  //         expect(trimmedVertexTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.nextVert).toBeNull();
-
-  //         // New Tail
-  //         expect(vertex2.next).toBeNull();
-  //         expect(vertex2.nextSeg).toBeNull();
-  //         expect(segmentPrev.next).toBeNull();
-
-  //         expect(trimmedVertexHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prevVert).toBeNull();
-  //       });
-
-  //       it('should trim off vertices & segments before the specified start point if the end vertex is not specified', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = polylineRoute.firstVertex.next.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentNext = vertex.nextSeg;
-  //         const trimmedVertexTail = vertex.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex.prev).not.toBeNull();
-  //         expect(vertex.prevSeg).not.toBeNull();
-  //         expect(segmentNext.prev).not.toBeNull();
-  //         expect(segmentNext.prevVert).not.toBeNull();
-
-
-  //         const trimCount = polylineRoute.trimTo(vertex, null);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(4);
-  //         expect(polylineRoute.size().segments).toEqual(3);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex,
-  //           [5, -150] as TestVertex,
-  //           [6, -160] as TestVertex
-  //         ]);
-
-  //         expect(vertex.prev).toBeNull();
-  //         expect(vertex.prevSeg).toBeNull();
-  //         expect(segmentNext.prev).toBeNull();
-
-  //         expect(trimmedVertexTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.nextVert).toBeNull();
-  //       });
-
-  //       it('should trim off vertices & segments before the specified start point if the end vertex is not found', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = polylineRoute.firstVertex.next.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentNext = vertex.nextSeg;
-  //         const trimmedVertexTail = vertex.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentTail = segmentNext.prev as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex.prev).not.toBeNull();
-  //         expect(vertex.prevSeg).not.toBeNull();
-  //         expect(segmentNext.prev).not.toBeNull();
-  //         expect(segmentNext.prevVert).not.toBeNull();
-
-  //         const vertexNotExist = new VertexNode<RoutePoint, RouteSegment>([-6, 10] as TestVertex);
-
-
-  //         const trimCount = polylineRoute.trimTo(vertex, vertexNotExist);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(4);
-  //         expect(polylineRoute.size().segments).toEqual(3);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex,
-  //           [5, -150] as TestVertex,
-  //           [6, -160] as TestVertex
-  //         ]);
-
-  //         expect(vertex.prev).toBeNull();
-  //         expect(vertex.prevSeg).toBeNull();
-  //         expect(segmentNext.prev).toBeNull();
-
-  //         expect(trimmedVertexTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.next).toBeNull();
-  //         expect(trimmedSegmentTail.nextVert).toBeNull();
-  //       });
-
-  //       it('should trim off vertices & segments after the specified end point if the start vertex is not specified', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = polylineRoute.lastVertex.prev.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentPrev = vertex.prevSeg;
-  //         const trimmedVertexHead = vertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex.next).not.toBeNull();
-  //         expect(vertex.nextSeg).not.toBeNull();
-  //         expect(segmentPrev.next).not.toBeNull();
-  //         expect(segmentPrev.nextVert).not.toBeNull();
-
-
-  //         const trimCount = polylineRoute.trimTo(null, vertex);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(4);
-  //         expect(polylineRoute.size().segments).toEqual(3);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [1, -110] as TestVertex,
-  //           [2, -120] as TestVertex,
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex
-  //         ]);
-
-  //         expect(vertex.next).toBeNull();
-  //         expect(vertex.nextSeg).toBeNull();
-  //         expect(segmentPrev.next).toBeNull();
-
-  //         expect(trimmedVertexHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prevVert).toBeNull();
-  //       });
-
-  //       it('should trim off vertices & segments after the specified end point if the start vertex is not found', () => {
-  //         const originalVertexHead = polylineRoute.firstVertex;
-  //         const originalSegmentHead = polylineRoute.firstSegment;
-  //         const originalVertexTail = polylineRoute.lastVertex;
-  //         const originalSegmentTail = polylineRoute.lastSegment;
-
-  //         const vertex = polylineRoute.lastVertex.prev.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const segmentPrev = vertex.prevSeg;
-  //         const trimmedVertexHead = vertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const trimmedSegmentHead = segmentPrev.next as SegmentNode<TestVertex, Segment>;
-
-  //         expect(vertex.next).not.toBeNull();
-  //         expect(vertex.nextSeg).not.toBeNull();
-  //         expect(segmentPrev.next).not.toBeNull();
-  //         expect(segmentPrev.nextVert).not.toBeNull();
-
-  //         const vertexNotExist = new VertexNode<RoutePoint, RouteSegment>([-6, 10] as TestVertex);
-
-
-  //         const trimCount = polylineRoute.trimTo(vertexNotExist, vertex);
-
-
-  //         expect(trimCount).toBeTruthy();
-
-  //         expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
-  //         expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
-  //         expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
-  //         expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
-
-  //         expect(polylineRoute.size().vertices).toEqual(4);
-  //         expect(polylineRoute.size().segments).toEqual(3);
-  //         expect(polylineRoute.vertices()).toEqual([
-  //           [1, -110] as TestVertex,
-  //           [2, -120] as TestVertex,
-  //           [3, -130] as TestVertex,
-  //           [4, -140] as TestVertex
-  //         ]);
-
-  //         expect(vertex.next).toBeNull();
-  //         expect(vertex.nextSeg).toBeNull();
-  //         expect(segmentPrev.next).toBeNull();
-
-  //         expect(trimmedVertexHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prev).toBeNull();
-  //         expect(trimmedSegmentHead.prevVert).toBeNull();
-  //       });
-
-  //       it('should return the number of vertices if requested', () => {
-  //         const vertex1 = polylineRoute.firstVertex.next.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const vertex2 = polylineRoute.lastVertex.prev.prev as VertexNode<RoutePoint, RouteSegment>;
-  //         const returnListCount = true;
-
-  //         const trimCount = polylineRoute.trimTo(vertex1, vertex2, returnListCount);
-
-  //         expect(trimCount).toEqual(4);
-  //       });
-  //     });
-  //   });
-
-  //   describe('Remove', () => {
-  //     // // removeAtVertex(vertex: VertexNode<TVertex, TSegment>): boolean;
-  //     // describe('#removeAtVertex', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-
-  //     describe('#removeNodes', () => {
-  //       it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(-1, -2, undefined, '-1'));
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, 101, 200, '-2'));
-
-  //         const nodes = polylineRoute.removeAtAny([node1, node2]);
-
-  //         expect(nodes).toEqual(0);
-
-  //         const polylineTrackLength = polylineRoute.size();
-  //         expect(polylineTrackLength.vertices).toEqual(routePoints.length);
-  //         expect(polylineTrackLength.segments).toEqual(routePoints.length - 1);
-  //       });
-
-  //       it('should remove the nodes provided and return a count for the number removed', () => {
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(routePoints[0]);
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(routePoints[3]);
-
-  //         const nodes = polylineRoute.removeAtAny([node1, node2]);
-
-  //         expect(nodes).toEqual(2);
-
-  //         const polylineTrackLength = polylineRoute.size();
-  //         expect(polylineTrackLength.vertices).toEqual(routePoints.length - 2);
-  //         expect(polylineTrackLength.segments).toEqual(routePoints.length - 2 - 1);
-  //       });
-
-  //       it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(routePoints[0]);
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, 101, 200, '-2'));
-  //         const node3 = new VertexNode<RoutePoint, RouteSegment>(routePoints[3]);
-
-  //         const nodes = polylineRoute.removeAtAny([node1, node2, node3]);
-
-  //         expect(nodes).toEqual(2);
-
-  //         const polylineTrackLength = polylineRoute.size();
-  //         expect(polylineTrackLength.vertices).toEqual(routePoints.length - 2);
-  //         expect(polylineTrackLength.segments).toEqual(routePoints.length - 2 - 1);
-  //       });
-  //     });
-  //     // describe('#removeVertices', () => {
-  //     //   it('should do nothing for nodes provided that are not in the track and return a count of 0', () => {
-  //     //     const node1 = new VertexNode<RoutePoint, RouteSegment>([90, -208] as TestVertex);
-  //     //     const node2 = new VertexNode<RoutePoint, RouteSegment>([95, -208] as TestVertex);
+  describe('Query Methods', () => {
+    let routePoints: RoutePoint[];
+    let polylineRoute: PolylineRoute<RoutePoint, RouteSegment>;
+
+    beforeEach(() => {
+      const coord1 = new RoutePoint(-8.957287, -77.777452);
+      const coord2 = new RoutePoint(-8.957069, -77.777400);
+      const coord3 = new RoutePoint(-8.956936, -77.777381);
+      const coord4 = new RoutePoint(-8.956758, -77.777211);
+      const coord5 = new RoutePoint(-8.956768, -77.777311);
+      const coord6 = new RoutePoint(-8.956778, -77.777411);
+
+      routePoints = [
+        coord1,
+        coord2,
+        coord3,
+        coord4,
+        coord5,
+        coord6
+      ];
+      polylineRoute = new PolylineRoute(routePoints);
+    });
+
+    describe('#vertexNodesByPoint', () => {
+      it('should return an empty array if null is given for the vertex', () => {
+        const nodes = polylineRoute.vertexNodesByPoint(null);
+
+        expect(nodes.length).toEqual(0);
+      });
+
+      it('should return an empty array if the given vertex is not found', () => {
+        const nonExistingVertex = new RoutePoint(-1, 2);
+        const nodes = polylineRoute.vertexNodesByPoint(nonExistingVertex);
+
+        expect(nodes.length).toEqual(0);
+      });
+
+      it('should return the vertex nodes corresponding to vertices matching on values', () => {
+        const existingVertex = routePoints[2];
+        const nodes = polylineRoute.vertexNodesByPoint(existingVertex);
+
+        expect(nodes.length).toEqual(1);
+        expect(nodes[0].equals(routePoints[2])).toBeTruthy();
+      });
+    });
+
+    // TODO: Test
+    describe('#isPolylineRoute', () => {
+
+    });
+  });
+
+  describe('Manipulating Route', () => {
+    let routePoints: RoutePoint[];
+    let polylineRoute: PolylineRoute<RoutePoint, RouteSegment>;
+
+    beforeEach(() => {
+      const positions = lineStringRoute.features[0].geometry.coords;
+      routePoints = GeoJsonManager.PositionsToRoutePoints(positions);
+      polylineRoute = new PolylineRoute(routePoints);
+    });
+
+    describe('Trim', () => {
+      let point1: RoutePoint;
+      let point2: RoutePoint;
+
+      beforeEach(() => {
+        routePoints = [
+          new RoutePoint(39.74007868370209, -105.0076261841355, 0),
+          new RoutePoint(39.74005097339472, -104.9998123858178, 0),
+          new RoutePoint(39.73055300708892, -104.9990802128465, 0),
+          new RoutePoint(39.73993779411854, -104.9985377946692, 0),
+          new RoutePoint(39.73991441833991, -104.9917491337653, 0),
+          new RoutePoint(39.739914418342, -104.99174913377, 0)
+        ];
+        routePoints[0].elevation = 1000;
+        routePoints[1].elevation = 2000;
+        routePoints[2].elevation = 1500;
+        routePoints[3].elevation = 1600;
+        routePoints[4].elevation = 5000;
+        routePoints[5].elevation = 4000;
+
+        polylineRoute = new PolylineRoute(routePoints);
+        polylineRoute.addProperties();
+        polylineRoute.addElevationProperties();
+
+
+        point1 = routePoints[2];
+        point2 = routePoints[3];
+      });
+
+      describe('#trimBeforePoint', () => {
+        it('should do nothing and return null on an empty Route', () => {
+          polylineRoute = new PolylineRoute([]);
+
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+
+          const trimmedPoint = polylineRoute.trimBeforePoint(point1);
+
+          expect(trimmedPoint).toBeNull();
+          expect(polylineRoute.size().vertices).toEqual(0);
+          expect(polylineRoute.size().segments).toEqual(0);
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineRoute.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return null when the specified Point does not exist in the Route', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const nonExistingPoint = new RoutePoint(-39.74007868370209, 105.0076261841355, 0);
+          const trimmedPoint = polylineRoute.trimBeforePoint(nonExistingPoint);
+
+          expect(trimmedPoint).toBeNull();
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineRoute.size().vertices).toEqual(6);
+          expect(polylineRoute.size().segments).toEqual(5);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1])).toBeTruthy();
+        });
+
+        it('should trim off vertices & segments before the specified Point & return the head vertex node of the trimmed portion', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const vertex = polylineRoute.vertexNodesByPoint(point1)[0];
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+          const trimmedPoint = polylineRoute.trimBeforePoint(point1);
+
+          expect(trimmedPoint).toEqual(originalVertexHead);
+
+          expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(4);
+          expect(polylineRoute.size().segments).toEqual(3);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1])).toBeTruthy();
+
+          // New Head
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+        });
+
+        it(`should update the 2nd-order properties of the start Point after trimming`, () => {
+          const vertex = polylineRoute.vertexNodesByPoint(point1)[0];
+
+          expect(vertex.val.path.rotation).toBeCloseTo(3.038, 3);
+
+          polylineRoute.trimBeforePoint(point1);
+
+          expect(vertex.val.path.rotation).toBeNull();
+        });
+      });
+
+      describe('#trimAfterPoint', () => {
+        it('should do nothing and return null on an empty Route', () => {
+          polylineRoute = new PolylineRoute([]);
+
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+
+          const trimmedPoint = polylineRoute.trimAfterPoint(point2);
+
+          expect(trimmedPoint).toBeNull();
+          expect(polylineRoute.size().vertices).toEqual(0);
+          expect(polylineRoute.size().segments).toEqual(0);
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineRoute.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return null when the specified Point does not exist in the Route', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const nonExistingPoint = new RoutePoint(-39.74007868370209, 105.0076261841355, 0);
+          const trimmedPoint = polylineRoute.trimAfterPoint(nonExistingPoint);
+
+          expect(trimmedPoint).toBeNull();
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineRoute.size().vertices).toEqual(6);
+          expect(polylineRoute.size().segments).toEqual(5);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1])).toBeTruthy();
+        });
+
+        it(`should trim off vertices & segments after the specified Point & return the head vertex node of the trimmed portion`, () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const vertex = polylineRoute.vertexNodesByPoint(point2)[0];
+          const vertexTrimmed = vertex.next;
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+          const trimmedPoint = polylineRoute.trimAfterPoint(point2);
+
+          expect(trimmedPoint).toEqual(vertexTrimmed);
+
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(4);
+          expect(polylineRoute.size().segments).toEqual(3);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1 - 2])).toBeTruthy();
+
+          // New Tail
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+        });
+
+        it(`should update the 2nd-order properties of the end Point after trimming`, () => {
+          const vertex = polylineRoute.vertexNodesByPoint(point2)[0];
+
+          expect(vertex.val.path.rotation).toBeCloseTo(-1.531, 3);
+
+          polylineRoute.trimAfterPoint(point2);
+
+          expect(vertex.val.path.rotation).toBeNull();
+        });
+      });
+
+      describe('#trimToPoints', () => {
+        it('should do nothing and return a null tuple on an empty Route', () => {
+          polylineRoute = new PolylineRoute([]);
+
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const trimmedPoints = polylineRoute.trimToPoints(point1, point2);
+
+          expect(trimmedPoints).toEqual([null, null]);
+          expect(polylineRoute.size().vertices).toEqual(0);
+          expect(polylineRoute.size().segments).toEqual(0);
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineRoute.vertices()).toEqual([]);
+        });
+
+        it('should do nothing and return a null tuple when the specified Point does not exist in the Route', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const nonExistingPoint1 = new RoutePoint(-39.74007868370209, 105.0076261841355, 0);
+          const nonExistingPoint2 = new RoutePoint(40.74007868370209, 105.0076261841355, 0);
+          const trimmedPoints = polylineRoute.trimToPoints(nonExistingPoint1, nonExistingPoint2);
+
+          expect(trimmedPoints).toEqual([null, null]);
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+          expect(polylineRoute.size().vertices).toEqual(6);
+          expect(polylineRoute.size().segments).toEqual(5);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1])).toBeTruthy();
+        });
+
+        it(`should trim off vertices & segments before & after the specified start & end Points
+          & return the head vertex node of each of the trimmed portions`, () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          // Trim before state
+          const vertex1 = polylineRoute.vertexNodesByPoint(point1)[0];
+          const trimmed1 = polylineRoute.firstVertex;
+          const segmentNext = vertex1.nextSeg;
+          const trimmedVertexTail = vertex1.prev as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex1.prev).not.toBeNull();
+          expect(vertex1.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+          // Derived Properties
+          expect(vertex1.val.path.rotation).toBeCloseTo(3.038, 3);
+
+          // Trim after state
+          const vertex2 = polylineRoute.vertexNodesByPoint(point2)[0];
+          const trimmed2 = vertex2.next;
+          const segmentPrev = vertex2.prevSeg;
+          const trimmedVertexHead = vertex2.next as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex2.next).not.toBeNull();
+          expect(vertex2.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+          // Derived Properties
+          expect(vertex2.val.path.rotation).toBeCloseTo(-1.531, 3);
+
+
+          const trimmedPoints = polylineRoute.trimToPoints(point1, point2);
+
+          expect(trimmedPoints[0]).toEqual(trimmed1);
+          expect(trimmedPoints[1]).toEqual(trimmed2);
+
+          expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(2);
+          expect(polylineRoute.size().segments).toEqual(1);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1 - 2])).toBeTruthy();
+
+          // New Head
+          expect(vertex1.prev).toBeNull();
+          expect(vertex1.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+
+          // Derived Properties
+          expect(vertex1.val.path.rotation).toBeNull();
+
+
+          // New Tail
+          expect(vertex2.next).toBeNull();
+          expect(vertex2.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+
+          // Derived Properties
+          expect(vertex2.val.path.rotation).toBeNull();
+        });
+
+        it('should trim off vertices & segments before the specified start Point if the end Point is not specified', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const vertex = polylineRoute.vertexNodesByPoint(point1)[0];
+          const trimmed1 = polylineRoute.firstVertex;
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+
+          const trimmedPoints = polylineRoute.trimToPoints(point1, null);
+
+          expect(trimmedPoints[0]).toEqual(trimmed1);
+          expect(trimmedPoints[1]).toBeNull();
+
+          expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(4);
+          expect(polylineRoute.size().segments).toEqual(3);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1])).toBeTruthy();
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+        });
+
+        it('should trim off vertices & segments before the specified start Point if the end Point is not found', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const vertex = polylineRoute.vertexNodesByPoint(point1)[0];
+          const trimmed1 = polylineRoute.firstVertex;
+          const segmentNext = vertex.nextSeg;
+          const trimmedVertexTail = vertex.prev as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentTail = segmentNext.prev as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex.prev).not.toBeNull();
+          expect(vertex.prevSeg).not.toBeNull();
+          expect(segmentNext.prev).not.toBeNull();
+          expect(segmentNext.prevVert).not.toBeNull();
+
+          const nonExistingPoint = new RoutePoint(-39.74007868370209, 105.0076261841355, 0);
+          const trimmedPoints = polylineRoute.trimToPoints(point1, nonExistingPoint);
+
+          expect(trimmedPoints[0]).toEqual(trimmed1);
+          expect(trimmedPoints[1]).toBeNull();
+
+          expect(polylineRoute.firstVertex).not.toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).not.toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(4);
+          expect(polylineRoute.size().segments).toEqual(3);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[2])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1])).toBeTruthy();
+
+          expect(vertex.prev).toBeNull();
+          expect(vertex.prevSeg).toBeNull();
+          expect(segmentNext.prev).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+        });
+
+        it('should trim off vertices & segments after the specified end Point if the start Point is not specified', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const vertex = polylineRoute.vertexNodesByPoint(point2)[0];
+          const trimmed2 = vertex.next;
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+          const trimmedPoints = polylineRoute.trimToPoints(null, point2);
+
+          expect(trimmedPoints[0]).toBeNull();
+          expect(trimmedPoints[1]).toEqual(trimmed2);
+
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(4);
+          expect(polylineRoute.size().segments).toEqual(3);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1 - 2])).toBeTruthy();
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+        });
+
+        it('should trim off vertices & segments after the specified end Point if the start Point is not found', () => {
+          const originalVertexHead = polylineRoute.firstVertex;
+          const originalSegmentHead = polylineRoute.firstSegment;
+          const originalVertexTail = polylineRoute.lastVertex;
+          const originalSegmentTail = polylineRoute.lastSegment;
+
+          const vertex = polylineRoute.vertexNodesByPoint(point2)[0];
+          const trimmed2 = vertex.next;
+          const segmentPrev = vertex.prevSeg;
+          const trimmedVertexHead = vertex.next as VertexNode<RoutePoint, RouteSegment>;
+          const trimmedSegmentHead = segmentPrev.next as SegmentNode<RoutePoint, RouteSegment>;
+
+          expect(vertex.next).not.toBeNull();
+          expect(vertex.nextSeg).not.toBeNull();
+          expect(segmentPrev.next).not.toBeNull();
+          expect(segmentPrev.nextVert).not.toBeNull();
+
+
+          const nonExistingPoint = new RoutePoint(-39.74007868370209, 105.0076261841355, 0);
+          const trimmedPoints = polylineRoute.trimToPoints(nonExistingPoint, point2);
+
+          expect(trimmedPoints[0]).toBeNull();
+          expect(trimmedPoints[1]).toEqual(trimmed2);
+
+          expect(polylineRoute.firstVertex).toEqual(originalVertexHead);
+          expect(polylineRoute.firstSegment).toEqual(originalSegmentHead);
+          expect(polylineRoute.lastVertex).not.toEqual(originalVertexTail);
+          expect(polylineRoute.lastSegment).not.toEqual(originalSegmentTail);
+
+          expect(polylineRoute.size().vertices).toEqual(4);
+          expect(polylineRoute.size().segments).toEqual(3);
+
+          const vertices = polylineRoute.vertices();
+          expect(vertices[0].equals(routePoints[0])).toBeTruthy();
+          expect(vertices[vertices.length - 1].equals(routePoints[routePoints.length - 1 - 2])).toBeTruthy();
+
+          expect(vertex.next).toBeNull();
+          expect(vertex.nextSeg).toBeNull();
+          expect(segmentPrev.next).toBeNull();
+
+          expect(trimmedVertexHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prev).toBeNull();
+          expect(trimmedSegmentHead.prevVert).toBeNull();
+        });
+      });
+    });
+
+    describe('Remove', () => {
+      describe('#removeAtPoint', () => {
+        it('should do nothing & return null for an empty Route', () => {
+          const existingPoint = routePoints[0];
+          const polylineRoute = new PolylineRoute([]);
+
+          const pointRemoved = polylineRoute.removeAtPoint(existingPoint);
+
+          expect(pointRemoved).toBeNull();
+
+          const polylineTrackLength = polylineRoute.size();
+          expect(polylineTrackLength.vertices).toEqual(0);
+          expect(polylineTrackLength.segments).toEqual(0);
+        });
+
+        it('should do nothing & return null for a Point provided that is not in the Route', () => {
+          const nonExistingPoint = new RoutePoint(-1, -2, undefined);
+
+          const pointRemoved = polylineRoute.removeAtPoint(nonExistingPoint);
+
+          expect(pointRemoved).toBeNull();
+
+          const polylineTrackLength = polylineRoute.size();
+          expect(polylineTrackLength.vertices).toEqual(routePoints.length);
+          expect(polylineTrackLength.segments).toEqual(routePoints.length - 1);
+        });
+
+        it('should remove & return the valid Point provided', () => {
+          const existingPoint = routePoints[1];
+
+          const pointRemoved = polylineRoute.removeAtPoint(existingPoint);
+          expect(pointRemoved.equals(existingPoint)).toBeTruthy();
+
+          const polylineTrackLength = polylineRoute.size();
+          expect(polylineTrackLength.vertices).toEqual(routePoints.length - 1);
+          expect(polylineTrackLength.segments).toEqual(routePoints.length - 1 - 1);
+        });
+
+        it(`should update the segment property spanning over the removed Point`, () => {
+          const existingPoint = routePoints[1];
+
+          const removedVertexNode = polylineRoute.vertexNodesByVertex(existingPoint)[0];
+          const prevSegmentNode = removedVertexNode.prevSeg;
+          expect(prevSegmentNode.val.angle).toBeCloseTo(-2.3562, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'S',
+            lng: 'W'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(157249.4, 1);
+
+          polylineRoute.removeAtPoint(existingPoint);
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6202, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(200, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(478166.9, 1);
+        });
+
+        it(`should update the 2nd-order properties of the Points just before and just after the removed Point`, () => {
+          polylineRoute.addProperties();
+          const existingPoint = routePoints[2];
+
+          const removedVertexNode = polylineRoute.vertexNodesByVertex(existingPoint)[0];
+          const prevVertexNode = removedVertexNode.prev;
+          expect(prevVertexNode.val.path.rotation).toBeCloseTo(3.0173, 4);
+          const nextVertexNode = removedVertexNode.next;
+          expect(nextVertexNode.val.path.rotation).toBeCloseTo(-1.9503, 4);
+
+          polylineRoute.removeAtPoint(existingPoint);
+
+          expect(prevVertexNode.val.path.rotation).toBeCloseTo(3.1417, 4);
+          expect(nextVertexNode.val.path.rotation).toBeCloseTo(-0.3801, 4);
+        });
+      });
+
+      describe('#removeAtAnyPoint', () => {
+        it('should do nothing & return null for Points provided that are not in the Route', () => {
+          const nonExistingPoint = new RoutePoint(-1, -2, undefined);
+
+          const pointsRemoved = polylineRoute.removeAtAnyPoint([nonExistingPoint]);
+
+          expect(pointsRemoved.length).toEqual(0);
+
+          const polylineTrackLength = polylineRoute.size();
+          expect(polylineTrackLength.vertices).toEqual(routePoints.length);
+          expect(polylineTrackLength.segments).toEqual(routePoints.length - 1);
+        });
+
+        it('should remove the Points provided & return the Points removed', () => {
+          const point1 = routePoints[0];
+          const point2 = routePoints[3];
+
+          const pointsRemoved = polylineRoute.removeAtAnyPoint([point1, point2]);
+
+          expect(pointsRemoved.length).toEqual(2);
+          expect(pointsRemoved[0].equals(point1)).toBeTruthy();
+          expect(pointsRemoved[1].equals(point2)).toBeTruthy();
+
+          const polylineTrackLength = polylineRoute.size();
+          expect(polylineTrackLength.vertices).toEqual(routePoints.length - 2);
+          expect(polylineTrackLength.segments).toEqual(routePoints.length - 2 - 1);
+        });
+
+        it(`should remove the valid Points provided, ignoring ones that are not found in the Route,
+        & return the actual Points removed`, () => {
+          const point1 = routePoints[0];
+          const point2 = new RoutePoint(-1, -2, undefined);
+          const point3 = routePoints[3];
+
+          const pointsRemoved = polylineRoute.removeAtAnyPoint([point1, point2, point3]);
+
+          expect(pointsRemoved.length).toEqual(2);
+          expect(pointsRemoved[0].equals(point1)).toBeTruthy();
+          expect(pointsRemoved[1].equals(point3)).toBeTruthy();
+
+          const polylineTrackLength = polylineRoute.size();
+          expect(polylineTrackLength.vertices).toEqual(routePoints.length - 2);
+          expect(polylineTrackLength.segments).toEqual(routePoints.length - 2 - 1);
+        });
+      });
+
+      describe('#removeBetweenPoints', () => {
+        it('should do nothing & return null if the head & tail Points are both unspecified', () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = null;
+          const endPoint = null;
+
+          const removedPointsHead = polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(removedPointsHead).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should do nothing & return null if only a tail Point is provided & tail Point is at the head of the Route`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = null;
+          const endPoint = routePoints[0];
+
+          const removedPointsHead = polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(removedPointsHead).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should do nothing & return null if only a head Point is provided & head Point is at the tail of the Route`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[routePoints.length - 1];
+          const endPoint = null;
+
+          const removedPointsHead = polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(removedPointsHead).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should do nothing & return null when the head/tail Points are the same`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[1];
+
+          const removedPointsHead = polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(removedPointsHead).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should do nothing & return null when the head/tail Points are adjacent`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[2];
+
+          const removedPointsHead = polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(removedPointsHead).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should remove the range of Points specified & return the head vertex node of the removed range
+          when the head/tail Points are not adjacent`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const removedPointsHead = polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          const removedPointsLength = sizeOf(removedPointsHead);
+          expect(removedPointsLength).toEqual(2);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - 2);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - 2);
+        });
+
+        it(`should update the segment property spanning over the removed Points`, () => {
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const startVertexNode = polylineRoute.vertexNodesByVertex(startPoint)[0];
+          const prevSegmentNode = startVertexNode.nextSeg;
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6611, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(633813.3, 1);
+
+          polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6905, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(300, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(829032.4, 1);
+        });
+
+        it(`should update the 2nd-order properties of the Points just before and just after the removed Points`, () => {
+          polylineRoute.addProperties();
+          const startPoint = routePoints[2];
+          const endPoint = routePoints[4];
+
+          const priorStartVertexNode = polylineRoute.vertexNodesByVertex(startPoint)[0];
+          expect(priorStartVertexNode.val.path.rotation).toBeCloseTo(1.6946, 4);
+          const priorEndVertexNode = polylineRoute.vertexNodesByVertex(endPoint)[0];
+          expect(priorEndVertexNode.val.path.rotation).toBeCloseTo(0.9684, 4);
+
+          polylineRoute.removeBetweenPoints(startPoint, endPoint);
+
+          expect(priorStartVertexNode.val.path.rotation).toBeCloseTo(0.1248, 4);
+          expect(priorEndVertexNode.val.path.rotation).toBeCloseTo(0.5879, 4);
+        });
+      });
+
+      describe('#removeFromToPoints', () => {
+        it('should do nothing & return null if the head & tail Points are both unspecified', () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = null;
+          const endPoint = null;
+
+          const removedPointsHead = polylineRoute.removeFromToPoints(startPoint, endPoint);
+
+          expect(removedPointsHead).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should remove and return the Point when the head/tail Points are the same`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[1];
+
+          const removedPointsHead = polylineRoute.removeFromToPoints(startPoint, endPoint);
+
+          const removedPointsLength = sizeOf(removedPointsHead);
+          expect(removedPointsLength).toEqual(1);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removedPointsLength);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removedPointsLength);
+        });
+
+        it(`should remove the range of Points specified & return the head vertex node of the removed range
+          when the head/tail Points are adjacent`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[2];
+
+          const removedPointsHead = polylineRoute.removeFromToPoints(startPoint, endPoint);
+
+          const removedPointsLength = sizeOf(removedPointsHead);
+          expect(removedPointsLength).toEqual(2);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removedPointsLength);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removedPointsLength);
+        });
+
+        it(`should remove the range of Points specified & return the head vertex node of the removed range
+          when the head/tail Points are not adjacent`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const removedPointsHead = polylineRoute.removeFromToPoints(startPoint, endPoint);
+
+          const removedPointsLength = sizeOf(removedPointsHead);
+          expect(removedPointsLength).toEqual(4);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removedPointsLength);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removedPointsLength);
+        });
+      });
+    });
+
+    describe('Insert', () => {
+      describe('#prependPoint', () => {
+        it(`should insert the Point at the head of the Route & return 1`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex;
+
+          const point = new RoutePoint(1.1, 101.5, 200);
+
+          const insertedCount = polylineRoute.prependPoints(point);
+
+          expect(insertedCount).toEqual(1);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+
+          expect(polylineRoute.firstVertex.val).toEqual(point);
+          expect(point).toEqual(polylineRoute.firstVertex.val);
+          expect(initialHead.prev.val).toEqual(point);
+        });
+
+        it(`should insert the Points at the head of the Route & return 1`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const insertedCount = polylineRoute.prependPoints(points);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(polylineRoute.firstVertex.val).toEqual(point1);
+          expect(point1).toEqual(polylineRoute.firstVertex.val);
+          expect(initialHead.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Points at the head of the Route & return the number of Points inserted if requested`, () => {
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.prependPoints(points, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+        });
+
+        it(`should update the 2nd-order properties of the Point just after the prepended Points`, () => {
+          polylineRoute.addProperties();
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const startVertexNode = polylineRoute.firstVertex;
+          expect(startVertexNode.val.path.rotation).toBeNull();
+
+          polylineRoute.prependPoints(points);
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(0.6017, 4);
+        });
+      });
+
+      describe('#prependRoute', () => {
+        it(`should insert the provided Route at the head of the Route & return 1`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const insertedCount = polylineRoute.prependRoute(insertedRoute);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(polylineRoute.firstVertex.val).toEqual(point1);
+          expect(point1).toEqual(polylineRoute.firstVertex.val);
+          expect(initialHead.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the provided Route at the head of the Route & return the number of Points inserted if requested`, () => {
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.prependRoute(insertedRoute, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+        });
+
+        it(`should update the 2nd-order properties of the last Point of the prepended Route and first Point of the original Route`, () => {
+          polylineRoute.addProperties();
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const startVertexNode = polylineRoute.firstVertex;
+          const insertEndVertexNode = insertedRoute.lastVertex;
+          expect(startVertexNode.val.path.rotation).toBeNull();
+          expect(insertEndVertexNode.val.path.rotation).toBeNull();
+
+          polylineRoute.prependRoute(insertedRoute);
+
+          expect(insertEndVertexNode.val.path.rotation).toBeCloseTo(-2.9779, 4);
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(0.6017, 4);
+        });
+      });
+
+      describe('#appendPoint', () => {
+        it(`should insert the Point at the tail of track & return 1`, () => {
+          const initialLength = polylineRoute.size();
+          const initialTail = polylineRoute.lastVertex;
+
+          const point = new RoutePoint(1.3, 107, 240);
+
+          const insertedCount = polylineRoute.appendPoints(point);
+
+          expect(insertedCount).toEqual(1);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+
+          expect(polylineRoute.lastVertex.val).toEqual(point);
+          expect(point).toEqual(polylineRoute.lastVertex.val);
+          expect(initialTail.next.val).toEqual(point);
+        });
+
+        it(`should insert the Points at the tail of track & return 1`, () => {
+          const initialLength = polylineRoute.size();
+          const initialTail = polylineRoute.lastVertex;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const insertedCount = polylineRoute.appendPoints(points);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(polylineRoute.lastVertex.val).toEqual(point3);
+          expect(point1).toEqual(initialTail.next.val);
+        });
+
+        it(`should insert the Points at the tail of track & return the number of Points inserted if requested`, () => {
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.appendPoints(points, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+        });
+
+        it(`should update the 2nd-order properties of the Point just before the appended Points`, () => {
+          polylineRoute.addProperties();
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const endVertexNode = polylineRoute.lastVertex;
+          expect(endVertexNode.val.path.rotation).toBeNull()
+
+          polylineRoute.appendPoints(points);
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-3.6741, 4);
+        });
+      });
+
+      describe('#appendRoute', () => {
+        it(`should insert the provided Route at the tail of the Route & return 1`, () => {
+          const initialLength = polylineRoute.size();
+          const initialTail = polylineRoute.lastVertex;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const insertedCount = polylineRoute.appendRoute(insertedRoute);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(polylineRoute.lastVertex.val).toEqual(point3);
+          expect(point1).toEqual(initialTail.next.val);
+        });
+
+        it(`should insert the provided Route at the tail of the Route & return the number of Points inserted if requested`, () => {
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.appendRoute(insertedRoute, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+        });
+
+        it(`should update the 2nd-order properties of the last Point of the prepended Route and first Point of the original Route`, () => {
+          polylineRoute.addProperties();
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const endVertexNode = polylineRoute.lastVertex;
+          const insertStartVertexNode = insertedRoute.firstVertex;
+          expect(endVertexNode.val.path.rotation).toBeNull();
+          expect(insertStartVertexNode.val.path.rotation).toBeNull();
+
+          polylineRoute.appendRoute(insertedRoute);
+
+          expect(insertStartVertexNode.val.path.rotation).toBeCloseTo(2.4977, 4);
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-3.6741, 4);
+        });
+      });
+
+      describe('#insertBeforePoint', () => {
+        it(`should do nothing & return 0 if the specified target Point does not exist in the Route`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = new RoutePoint(-1, -2, undefined);
+          const insertionPoint = new RoutePoint(1.1, 101.5, 200);
+
+          const insertedCount = polylineRoute.insertBeforePoint(targetPoint, insertionPoint);
+
+          expect(insertedCount).toEqual(0);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments);
+        });
+
+        it(`should insert the Point before the specified target Point & return 1`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+          const targetPointNode = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const originalPrevTargetPointNode = polylineRoute.vertexNodesByPoint(routePoints[1])[0];
+
+          const insertionPoint = new RoutePoint(1.1, 101.5, 200);
+
+          const insertedCount = polylineRoute.insertBeforePoint(targetPoint, insertionPoint);
+
+          expect(insertedCount).toEqual(1);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+
+          expect(originalPrevTargetPointNode.next.val).toEqual(insertionPoint);
+          expect(targetPointNode.prev.val).toEqual(insertionPoint);
+        });
+
+        it(`should insert the Points before the specified target Point & return 1`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+          const targetPointNode = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const originalPrevTargetPointNode = polylineRoute.vertexNodesByPoint(routePoints[1])[0];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const insertionPoints = [point1, point2, point3];
+
+          const insertedCount = polylineRoute.insertBeforePoint(targetPoint, insertionPoints);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(originalPrevTargetPointNode.next.val).toEqual(point1);
+          expect(targetPointNode.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Points before the specified target Point & return the number of Points inserted if requested`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const insertionPoints = [point1, point2, point3];
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.insertBeforePoint(targetPoint, insertionPoints, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+        });
+
+        it(`should insert the Route before the specified target Point & return 1`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+          const targetPointNode = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const originalPrevTargetPointNode = polylineRoute.vertexNodesByPoint(routePoints[1])[0];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const insertedCount = polylineRoute.insertBeforePoint(targetPoint, insertedRoute);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(originalPrevTargetPointNode.next.val).toEqual(point1);
+          expect(targetPointNode.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Route before the specified target Point & return the number of Points inserted if requested`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.insertBeforePoint(targetPoint, insertedRoute, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+        });
+
+        it(`should update the segment property spanning from the prior Point to the first inserted Point`, () => {
+          polylineRoute.addProperties();
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 205);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const targetVertex = polylineRoute.vertexNodesByVertex(targetPoint)[0];
+          const startVertexNode = targetVertex.prev as VertexNode<RoutePoint, RouteSegment>;
+          const prevSegmentNode = startVertexNode.nextSeg;
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6611, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(633813.3, 1);
+
+          polylineRoute.insertBeforePoint(targetPoint, insertedRoute);
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6987, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(5, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(363035.6, 1);
+        });
+
+        it(`should update the 2nd-order properties of the first & last inserted Points
+          & the Points just before & just after the inserted Points`, () => {
+          polylineRoute.addProperties();
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const targetVertex = polylineRoute.vertexNodesByVertex(targetPoint)[0];
+          const startVertexNode = targetVertex.prev as VertexNode<RoutePoint, RouteSegment>;
+          const insertStartVertexNode = insertedRoute.firstVertex;
+          const insertEndVertexNode = insertedRoute.lastVertex;
+          const endVertexNode = targetVertex;
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(3.0173, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeNull();
+          expect(insertEndVertexNode.val.path.rotation).toBeNull();
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(1.6946, 4);
+
+          polylineRoute.insertBeforePoint(targetPoint, insertedRoute);
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(3.0549, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeCloseTo(-0.5013, 4);
+          expect(insertEndVertexNode.val.path.rotation).toBeCloseTo(2.7912, 4);
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-0.4555, 4);
+        });
+      });
+
+      describe('#insertAfterPoint', () => {
+        it(`should do nothing & return 0 if the specified target Point does not exist in the Route`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = new RoutePoint(-1, -2, undefined);
+          const insertionPoint = new RoutePoint(1.1, 101.5, 200);
+
+          const insertedCount = polylineRoute.insertAfterPoint(targetPoint, insertionPoint);
+
+          expect(insertedCount).toEqual(0);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments);
+        });
 
-  //     //     const nodes = polylineRoute.removeVertices([node1, node2]);
-
-  //     //     expect(nodes).toEqual(0);
-
-  //     //     const polylineLength = polylineRoute.size();
-  //     //     expect(polylineLength.vertices).toEqual(coords.length);
-  //     //     expect(polylineLength.segments).toEqual(coords.length - 1);
-  //     //   });
-
-  //     //   it('should remove the nodes provided and return a count for the number removed', () => {
-  //     //     const node1 = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-  //     //     const node2 = new VertexNode<RoutePoint, RouteSegment>(coords[2]);
-
-  //     //     const nodes = polylineRoute.removeVertices([node1, node2]);
-
-  //     //     expect(nodes).toEqual(2);
-
-  //     //     const polylineLength = polylineRoute.size();
-  //     //     expect(polylineLength.vertices).toEqual(coords.length - 2);
-  //     //     expect(polylineLength.segments).toEqual(coords.length - 2 - 1);
-  //     //   });
-
-  //     //   it('should remove the nodes provided, ignoring ones that are not found in the track and return a count for the number removed', () => {
-  //     //     const node1 = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-  //     //     const node2 = new VertexNode<RoutePoint, RouteSegment>([95, -208] as TestVertex);
-
-  //     //     const nodes = polylineRoute.removeVertices([node1, node2]);
-
-  //     //     expect(nodes).toEqual(1);
-
-  //     //     const polylineLength = polylineRoute.size();
-  //     //     expect(polylineLength.vertices).toEqual(coords.length - 1);
-  //     //     expect(polylineLength.segments).toEqual(coords.length - 1 - 1);
-  //     //   });
-  //     // });
-
-  //     // // removeBetweenVertices(vertexStart: VertexNode<TVertex, TSegment>, vertexEnd: VertexNode<TVertex, TSegment>): number;
-  //     // describe('#removeBetweenVertices', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-
-  //     // // removeFromToVertices(vertexStart: VertexNode<TVertex, TSegment>, vertexEnd: VertexNode<TVertex, TSegment>): number;
-  //     // describe('#removeFromToVertices', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-  //   });
-
-  //   describe('Insert', () => {
-  //     // describe('Before', () => {
-  //     //   // insertVertexBefore(vertexTarget: VertexNode<TVertex, TSegment>, vertexInsert: VertexNode<TVertex, TSegment>): boolean;
-  //     //   describe('#insertVertexBefore', () => {
-  //     //     it('should ', () => {
-
-  //     //     });
-
-  //     //     it('should ', () => {
-
-  //     //     });
-  //     //   });
-
-  //     //   describe('#insertVerticesBefore', () => {
-  //     //     it('should ', () => {
-
-  //     //     });
-
-  //     //     it('should ', () => {
-
-  //     //     });
-  //     //   });
-  //     // });
-
-  //     // describe('After', () => {
-  //     //   // insertVertexAfter(vertexTarget: VertexNode<TVertex, TSegment>, vertexInsert: VertexNode<TVertex, TSegment>): boolean;
-  //     //   describe('#insertVertexAfter', () => {
-  //     //     it('should ', () => {
-
-  //     //     });
-
-  //     //     it('should ', () => {
-
-  //     //     });
-  //     //   });
-
-
-  //     //   describe('#insertVerticesAfter', () => {
-  //     //     it('should ', () => {
-
-  //     //     });
-
-  //     //     it('should ', () => {
-
-  //     //     });
-  //     //   });
-  //     // });
-  //   });
-
-  //   describe('Replace', () => {
-  //     // // replaceVertexAt(vertexTarget: VertexNode<TVertex, TSegment>, vertexReplacement: VertexNode<TVertex, TSegment>): boolean;
-  //     // describe('#replaceVertexAt', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-
-
-  //     describe('#replaceNodesBetween', () => {
-  //       const getNodeAtCount = (node: VertexNode<RoutePoint, RouteSegment>, count: number) => {
-  //         while (node) {
-  //           node = node.next as VertexNode<RoutePoint, RouteSegment>;
-  //           count--;
-  //         }
-
-  //         return node;
-  //       };
-
-  //       const getTailNode = (node: VertexNode<RoutePoint, RouteSegment>) => {
-  //         let tempNode: VertexNode<RoutePoint, RouteSegment>;
-  //         while (node) {
-  //           tempNode = node;
-  //           node = node.next as VertexNode<RoutePoint, RouteSegment>;
-  //         }
-
-  //         return tempNode;
-  //       }
-
-  //       it('should do nothing if the head & tail nodes are both unspecified', () => {
-  //         const initialLength = polylineRoute.size();
-
-  //         const startNode = null;
-  //         const endNode = null;
-
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.1, 101.5, 200));
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.2, 102, 210));
-  //         const node3 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.3, 107, 240));
-  //         const nodes = [node1, node2, node3];
-
-  //         const result = polylineRoute.replaceBetween(startNode, endNode, nodes);
-
-  //         expect(result).toEqual(0);
-  //         expect(polylineRoute.size()).toEqual(initialLength);
-  //       });
-
-  //       it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
-  //         const startNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[0]);
-  //         const endNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[3]);
-
-  //         const initialLength = polylineRoute.size();
-
-  //         const result = polylineRoute.replaceBetween(startNode, endNode, []);
-
-  //         expect(result).toEqual(2);
-  //         expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - 2);
-  //         expect(polylineRoute.size().segments).toEqual(initialLength.segments - 2);
-  //       });
-
-  //       it(`should insert the nodes at the head of track and return the number of nodes inserted
-  //         if only a tail node is provided and tail node is at the head of the track, `, () => {
-  //         const initialLength = polylineRoute.size();
-  //         const initialHead = polylineRoute.firstVertex;
-
-  //         // Use current tail node - by value to also test matching
-  //         const startNode = null;
-  //         const endNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[0]);
-
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.1, 101.5, 200));
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.2, 102, 210));
-  //         const node3 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.3, 107, 240));
-  //         const nodes = [node1, node2, node3];
-
-  //         const result = polylineRoute.replaceBetween(startNode, endNode, nodes);
-
-  //         expect(result).toEqual(3); // 3 inserted
-  //         expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-  //         expect(polylineRoute.size().segments).toEqual(initialLength.segments + result);
-  //         expect(polylineRoute.firstVertex.equals(node1.val)).toBeTruthy();
-
-  //         expect(node3.next.val).toEqual(endNode.val);
-
-  //         expect(node1).toEqual(polylineRoute.firstVertex);
-  //         expect(node1.prev).toBeNull();
-  //         expect(node1.next).toEqual(node2);
-
-  //         expect(node3.prev).toEqual(node2);
-  //         expect(node3.next).toEqual(initialHead);
-  //         expect(initialHead.prev).toEqual(node3);
-  //       });
-
-  //       it(`should insert the nodes at the tail of track and return the number of nodes inserted
-  //         if only a head node is provided and head node is at the tail of the track`, () => {
-  //         const initialLength = polylineRoute.size();
-  //         const initialHead = polylineRoute.firstVertex;
-  //         const initialTail = getTailNode(initialHead);
-
-  //         // Use current last node - by value to also test matching
-  //         const startNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[routePoints.length - 1]);
-  //         const endNode = null;
-
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.1, 101.5, 200, '2.1'));
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.2, 102, 210, '2.2'));
-  //         const node3 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.3, 107, 240, '2.3'));
-  //         const nodes = [node1, node2, node3];
-
-  //         const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //         expect(result).toEqual(3); // 3 inserted
-  //         expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-  //         expect(polylineRoute.size().segments).toEqual(initialLength.segments + result);
-  //         expect(polylineRoute.firstVertex.equals(initialHead.val)).toBeTruthy();
-
-  //         expect(node1.prev.val).toEqual(startNode.val);
-
-  //         expect(node1).not.toEqual(polylineRoute.firstVertex);
-  //         expect(node1).toEqual(initialTail.next);
-  //         expect(node1.prev).toEqual(initialTail);
-  //         expect(node1.next).toEqual(node2);
-
-  //         expect(node3.prev).toEqual(node2);
-  //         expect(node3.next).toBeNull();
-  //       });
-
-  //       it(`should insert the nodes between the two specified tail/head nodes in the track
-  //         and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
-  //         const initialLength = polylineRoute.size();
-  //         const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const initialTail = initialHead.next as VertexNode<RoutePoint, RouteSegment>;
-
-  //         // Insert after first segment, over second segment
-  //         const startNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[1]);
-  //         const endNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[2]);
-
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.1, 101.5, 200, '2.1'));
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.2, 102, 210, '2.2'));
-  //         const node3 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.3, 107, 240, '2.3'));
-  //         const nodes = [node1, node2, node3];
-
-  //         const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //         expect(result).toEqual(3); // 3 inserted
-  //         expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-  //         expect(polylineRoute.size().segments).toEqual(initialLength.segments + result);
-
-  //         expect(node1.prev.val).toEqual(startNode.val);
-  //         expect(node3.next.val).toEqual(endNode.val);
-
-  //         expect(node1).not.toEqual(polylineRoute.firstVertex);
-  //         expect(node1).toEqual(initialHead.next);
-  //         expect(node1.prev).toEqual(initialHead);
-  //         expect(node1.next).toEqual(node2);
-
-  //         expect(node3.prev).toEqual(node2);
-  //         expect(node3.next).toEqual(initialTail);
-  //         expect(initialTail.prev).toEqual(node3);
-  //       });
-
-  //       it(`should insert the nodes between the two specified tail/head nodes in the track,
-  //         remove the original set of nodes between these same two points,
-  //         and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
-  //         const initialLength = polylineRoute.size();
-  //         const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //         const initialTail = initialHead?.next?.next?.next as VertexNode<RoutePoint, RouteSegment>;
-
-  //         // Insert after first segment, over second segment
-  //         const startNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[1]);
-  //         const endNode = new VertexNode<RoutePoint, RouteSegment>(routePoints[4]);
-
-  //         const node1 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.1, 101.5, 200, '2.1'));
-  //         const node2 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.2, 102, 210, '2.2'));
-  //         const node3 = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1.3, 107, 240, '2.3'));
-  //         const nodes = [node1, node2, node3];
-
-  //         const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //         expect(result).toEqual(5); // 3 inserted, 2 removed
-  //         expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
-  //         expect(polylineRoute.size().segments).toEqual(initialLength.segments + 1);
-  //         expect(node1.prev.val).toEqual(startNode.val);
-  //         expect(node3.next.val).toEqual(endNode.val);
-
-  //         expect(node1).not.toEqual(polylineRoute.firstVertex);
-  //         expect(node1).toEqual(initialHead.next);
-  //         expect(node1.prev).toEqual(initialHead);
-  //         expect(node1.next).toEqual(node2);
-
-  //         expect(node3.prev).toEqual(node2);
-  //         expect(node3.next).toEqual(initialTail);
-  //         expect(initialTail.prev).toEqual(node3);
-  //       });
-  //     });
-  //     // describe('#replaceVerticesBetween', () => {
-  //     //     beforeEach(() => {
-  //     //       coords = [
-  //     //         [45, -110] as TestVertex,
-  //     //         [60, -109] as TestVertex,
-  //     //         [47, -108] as TestVertex,
-  //     //         [49, -110] as TestVertex,
-  //     //         [57, -101] as TestVertex,
-  //     //         [53, -107] as TestVertex,
-  //     //       ];
-  //     //     });
-
-  //     //     const getNodeAtCount = (node: VertexNode<RoutePoint, RouteSegment>, count: number) => {
-  //     //       while (node) {
-  //     //         node = node.next as VertexNode<RoutePoint, RouteSegment>;
-  //     //         count--;
-  //     //       }
-
-  //     //       return node;
-  //     //     };
-
-  //     //     const getTailNode = (node: VertexNode<RoutePoint, RouteSegment>) => {
-  //     //       let tempNode: VertexNode<RoutePoint, RouteSegment>;
-  //     //       while (node) {
-  //     //         tempNode = node;
-  //     //         node = node.next as VertexNode<RoutePoint, RouteSegment>;
-  //     //       }
-
-  //     //       return tempNode;
-  //     //     }
-
-  //     //     it('should do nothing if the head & tail nodes are both unspecified', () => {
-  //     //       const initialLength = polylineRoute.size();
-
-  //     //       const startNode = null;
-  //     //       const endNode = null;
-
-  //     //       const node1 = new VertexNode<RoutePoint, RouteSegment>([99, 140] as TestVertex);
-  //     //       const node2 = new VertexNode<RoutePoint, RouteSegment>([666, 69] as TestVertex);
-  //     //       const node3 = new VertexNode<RoutePoint, RouteSegment>([420, 171] as TestVertex);
-  //     //       const nodes = [node1, node2, node3];
-
-  //     //       const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //     //       expect(result).toEqual(0);
-  //     //       expect(polylineRoute.size()).toEqual(initialLength);
-  //     //     });
-
-  //     //     it('should only remove nodes in the start/end range if no nodes are provided to insert and return 0', () => {
-  //     //       const startNode = new VertexNode<RoutePoint, RouteSegment>(coords[0]);
-  //     //       const endNode = new VertexNode<RoutePoint, RouteSegment>(coords[3]);
-
-  //     //       const initialLength = polylineRoute.size();
-
-  //     //       const result = polylineRoute.replaceVerticesBetween(startNode, endNode, []);
-
-  //     //       expect(result).toEqual(2);
-  //     //       expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - 2);
-  //     //       expect(polylineRoute.size().segments).toEqual(initialLength.segments - 2);
-  //     //     });
-
-  //     //     it(`should insert the nodes at the head of track and return the number of nodes inserted
-  //     // if only a tail node is provided and tail node is at the head of the track, `, () => {
-  //     //       const initialLength = polylineRoute.size();
-  //     //       const initialHead = polylineRoute.firstVertex;
-
-  //     //       // Use current tail node - by value to also test matching
-  //     //       const startNode = null;
-  //     //       const endNode = new VertexNode<RoutePoint, RouteSegment>(coords[0]);
-
-  //     //       const node1 = new VertexNode<RoutePoint, RouteSegment>([99, 140] as TestVertex);
-  //     //       const node2 = new VertexNode<RoutePoint, RouteSegment>([666, 69] as TestVertex);
-  //     //       const node3 = new VertexNode<RoutePoint, RouteSegment>([420, 171] as TestVertex);
-  //     //       const nodes = [node1, node2, node3];
-
-  //     //       const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //     //       expect(result).toEqual(3); // 3 inserted
-  //     //       expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-  //     //       expect(polylineRoute.size().segments).toEqual(initialLength.segments + result);
-  //     //       expect(polylineRoute.firstVertex.equals(node1.val)).toBeTruthy();
-
-  //     //       expect(node3.next.val).toEqual(endNode.val);
-
-  //     //       expect(node1).toEqual(polylineRoute.firstVertex);
-  //     //       expect(node1.prev).toBeNull();
-  //     //       expect(node1.next).toEqual(node2);
-
-  //     //       expect(node3.prev).toEqual(node2);
-  //     //       expect(node3.next).toEqual(initialHead);
-  //     //       expect(initialHead.prev).toEqual(node3);
-  //     //     });
-
-  //     //     it(`should insert the nodes at the tail of track and return the number of nodes inserted
-  //     // if only a head node is provided and head node is at the tail of the track`, () => {
-  //     //       const initialLength = polylineRoute.size();
-  //     //       const initialHead = polylineRoute.firstVertex;
-  //     //       const initialTail = getTailNode(initialHead);
-
-  //     //       // Use current last node - by value to also test matching
-  //     //       const startNode = new VertexNode<RoutePoint, RouteSegment>(coords[coords.length - 1]);
-  //     //       const endNode = null;
-
-  //     //       const node1 = new VertexNode<RoutePoint, RouteSegment>([99, 140] as TestVertex);
-  //     //       const node2 = new VertexNode<RoutePoint, RouteSegment>([666, 69] as TestVertex);
-  //     //       const node3 = new VertexNode<RoutePoint, RouteSegment>([420, 171] as TestVertex);
-  //     //       const nodes = [node1, node2, node3];
-
-  //     //       const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //     //       expect(result).toEqual(3); // 3 inserted
-  //     //       expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-  //     //       expect(polylineRoute.size().segments).toEqual(initialLength.segments + result);
-  //     //       expect(polylineRoute.firstVertex.equals(initialHead.val)).toBeTruthy();
-
-  //     //       expect(node1.prev.val).toEqual(startNode.val);
-
-  //     //       expect(node1).not.toEqual(polylineRoute.firstVertex);
-  //     //       expect(node1).toEqual(initialTail.next);
-  //     //       expect(node1.prev).toEqual(initialTail);
-  //     //       expect(node1.next).toEqual(node2);
-
-  //     //       expect(node3.prev).toEqual(node2);
-  //     //       expect(node3.next).toBeNull();
-  //     //     });
-
-  //     //     it(`should insert the nodes between the two specified tail/head nodes in the track
-  //     // and return the number of nodes inserted when the head/tail nodes are adjacent`, () => {
-  //     //       const initialLength = polylineRoute.size();
-  //     //       const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //     //       const initialTail = initialHead.next as VertexNode<RoutePoint, RouteSegment>;
-
-  //     //       // Insert after first segment, over second segment
-  //     //       const startNode = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-  //     //       const endNode = new VertexNode<RoutePoint, RouteSegment>(coords[2]);
-
-  //     //       const node1 = new VertexNode<RoutePoint, RouteSegment>([99, 140] as TestVertex);
-  //     //       const node2 = new VertexNode<RoutePoint, RouteSegment>([666, 69] as TestVertex);
-  //     //       const node3 = new VertexNode<RoutePoint, RouteSegment>([420, 171] as TestVertex);
-  //     //       const nodes = [node1, node2, node3];
-
-  //     //       const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //     //       expect(result).toEqual(3); // 3 inserted
-  //     //       expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + result); // 3 inserted
-  //     //       expect(polylineRoute.size().segments).toEqual(initialLength.segments + result);
-
-  //     //       expect(node1.prev.val).toEqual(startNode.val);
-  //     //       expect(node3.next.val).toEqual(endNode.val);
-
-  //     //       expect(node1).not.toEqual(polylineRoute.firstVertex);
-  //     //       expect(node1).toEqual(initialHead.next);
-  //     //       expect(node1.prev).toEqual(initialHead);
-  //     //       expect(node1.next).toEqual(node2);
-
-  //     //       expect(node3.prev).toEqual(node2);
-  //     //       expect(node3.next).toEqual(initialTail);
-  //     //       expect(initialTail.prev).toEqual(node3);
-  //     //     });
-
-  //     //     it(`should insert the nodes between the two specified tail/head nodes in the track,
-  //     // remove the original set of nodes between these same two points,
-  //     // and return the number of nodes inserted+removed when the head/tail nodes are not adjacent`, () => {
-  //     //       const initialLength = polylineRoute.size();
-  //     //       const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
-  //     //       const initialTail = initialHead?.next?.next?.next as VertexNode<RoutePoint, RouteSegment>;
-
-  //     //       // Insert after first segment, over second segment
-  //     //       const startNode = new VertexNode<RoutePoint, RouteSegment>(coords[1]);
-  //     //       const endNode = new VertexNode<RoutePoint, RouteSegment>(coords[4]);
-
-  //     //       const node1 = new VertexNode<RoutePoint, RouteSegment>([99, 140] as TestVertex);
-  //     //       const node2 = new VertexNode<RoutePoint, RouteSegment>([666, 69] as TestVertex);
-  //     //       const node3 = new VertexNode<RoutePoint, RouteSegment>([420, 171] as TestVertex);
-  //     //       const nodes = [node1, node2, node3];
-
-  //     //       const result = polylineRoute.replaceVerticesBetween(startNode, endNode, nodes);
-
-  //     //       expect(result).toEqual(5); // 3 inserted, 2 removed
-  //     //       expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
-  //     //       expect(polylineRoute.size().segments).toEqual(initialLength.segments + 1);
-  //     //       expect(node1.prev.val).toEqual(startNode.val);
-  //     //       expect(node3.next.val).toEqual(endNode.val);
-
-  //     //       expect(node1).not.toEqual(polylineRoute.firstVertex);
-  //     //       expect(node1).toEqual(initialHead.next);
-  //     //       expect(node1.prev).toEqual(initialHead);
-  //     //       expect(node1.next).toEqual(node2);
-
-  //     //       expect(node3.prev).toEqual(node2);
-  //     //       expect(node3.next).toEqual(initialTail);
-  //     //       expect(initialTail.prev).toEqual(node3);
-  //     //     });
-  //     //   });
-
-  //     //   describe('#replaceVerticesFromTo', () => {
-  //     //     it('should ', () => {
-
-  //     //     });
-
-  //     //     it('should ', () => {
-
-  //     //     });
-  //     //   });
-  //   });
-
-  //   describe('Splice', () => {
-  //     // // prependPolyline(polylineRoute: IPolyline<TVertex, TSegment>): IPolyline<TVertex, TSegment>;
-  //     // describe('#prependPolyline', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-
-  //     // // appendPolyline(polylineRoute: IPolyline<TVertex, TSegment>): IPolyline<TVertex, TSegment>;
-  //     // describe('#appendPolyline', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-  //   });
-
-  //   describe('Split', () => {
-  //     // // splitAtVertex(vertex: VertexNode<TVertex, TSegment>): [IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>];
-  //     // describe('#splitAtVertex', () => {
-  //     //   it('should ', () => {
-  //     //     it('should ', () => {
-
-  //     //     });
-
-  //     //     it('should ', () => {
-
-  //     //     });
-  //     //   });
-  //     // });
-
-  //     // // splitByVertices(vertices: VertexNode<TVertex, TSegment>[]): IPolyline<TVertex, TSegment>[];
-  //     // describe('#splitByVertices', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-
-
-
-  //     // // splitAtSubPolyline(polylineRoute: IPolyline<TVertex, TSegment>): [IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>, IPolyline<TVertex, TSegment>];
-  //     // describe('#splitAtSubPolyline', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-
-  //     // // splitBySubPolylines(polylineRoute: IPolyline<TVertex, TSegment>[]): IPolyline<TVertex, TSegment>[];
-  //     // describe('#splitBySubPolylines', () => {
-  //     //   it('should ', () => {
-
-  //     //   });
-
-  //     //   it('should ', () => {
-
-  //     //   });
-  //     // });
-  //   });
-  // });
+        it(`should insert the Point after the specified target Point & return 1`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+          const targetPointNode = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const originalNextTargetPointNode = polylineRoute.vertexNodesByPoint(routePoints[3])[0];
+
+          const insertionPoint = new RoutePoint(1.1, 101.5, 200);
+
+          const insertedCount = polylineRoute.insertAfterPoint(targetPoint, insertionPoint);
+
+          expect(insertedCount).toEqual(1);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+
+          expect(targetPointNode.next.val).toEqual(insertionPoint);
+          expect(originalNextTargetPointNode.prev.val).toEqual(insertionPoint);
+        });
+
+        it(`should insert the Points after the specified target Point & return 1`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+          const targetPointNode = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const originalNextTargetPointNode = polylineRoute.vertexNodesByPoint(routePoints[3])[0];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const insertionPoints = [point1, point2, point3];
+
+          const insertedCount = polylineRoute.insertAfterPoint(targetPoint, insertionPoints);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(targetPointNode.next.val).toEqual(point1);
+          expect(originalNextTargetPointNode.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Points after the specified target Point & return the number of Points inserted if requested`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const insertionPoints = [point1, point2, point3];
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.insertAfterPoint(targetPoint, insertionPoints, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+        });
+
+        it(`should insert the Route after the specified target Point & return 1`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+          const targetPointNode = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const originalNextTargetPointNode = polylineRoute.vertexNodesByPoint(routePoints[3])[0];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const insertedCount = polylineRoute.insertAfterPoint(targetPoint, insertedRoute);
+
+          expect(insertedCount).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(targetPointNode.next.val).toEqual(point1);
+          expect(originalNextTargetPointNode.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Route after the specified target Point & return the number of Points inserted if requested`, () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const returnListCount = true;
+
+          const insertedCount = polylineRoute.insertAfterPoint(targetPoint, insertedRoute, returnListCount);
+
+          expect(insertedCount).toEqual(3);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + insertedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + insertedCount);
+        });
+
+        it(`should update the segment property spanning from the target Point to the first inserted Point`, () => {
+          polylineRoute.addProperties();
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const targetVertex = polylineRoute.vertexNodesByVertex(targetPoint)[0];
+          const startVertexNode = targetVertex as VertexNode<RoutePoint, RouteSegment>;
+          const prevSegmentNode = startVertexNode.nextSeg;
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(2.3557, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'W'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(78581.3, 1);
+
+          polylineRoute.insertAfterPoint(targetPoint, insertedRoute);
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(-2.5304, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'S',
+            lng: 'W'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(-100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(271367.0, 1);
+        });
+
+        it(`should update the 2nd-order properties of the first & last inserted Points
+          & the Points just before & just after the inserted Points`, () => {
+          polylineRoute.addProperties();
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const targetVertex = polylineRoute.vertexNodesByVertex(targetPoint)[0];
+          const startVertexNode = targetVertex as VertexNode<RoutePoint, RouteSegment>;
+          const insertStartVertexNode = insertedRoute.firstVertex;
+          const insertEndVertexNode = insertedRoute.lastVertex;
+          const endVertexNode = targetVertex.next;
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(1.6946, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeNull();
+          expect(insertEndVertexNode.val.path.rotation).toBeNull();
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-1.9503, 4);
+
+          polylineRoute.insertAfterPoint(targetPoint, insertedRoute);
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(-3.1915, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeCloseTo(2.7279, 4);
+          expect(insertEndVertexNode.val.path.rotation).toBeCloseTo(2.7196, 4);
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-2.3342, 4);
+        });
+      });
+    });
+
+    describe('Replace', () => {
+      it('should do nothing & return null if Route is empty', () => {
+        polylineRoute = new PolylineRoute([]);
+        const targetPoint = routePoints[2];;
+
+        const point1 = new RoutePoint(1.1, 101.5, 200);
+        const point2 = new RoutePoint(1.2, 102, 210);
+        const point3 = new RoutePoint(1.3, 107, 240);
+        const points = [point1, point2, point3];
+
+        const result = polylineRoute.replaceAtPoint(targetPoint, points);
+
+        expect(result).toBeNull();
+        expect(polylineRoute.size().vertices).toEqual(0);
+        expect(polylineRoute.size().segments).toEqual(0);
+      });
+
+      describe('#replaceAtPoint', () => {
+        it('should do nothing & return null if the target Point is not specified', () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = null;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceAtPoint(targetPoint, points);
+
+          expect(result).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it('should do nothing & return null if the target Point does not exist in the Route', () => {
+          const initialLength = polylineRoute.size();
+
+          const targetPoint = new RoutePoint(-1, -2, undefined);
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceAtPoint(targetPoint, points);
+
+          expect(result).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should replace the specified Point with the provided Point
+          & return the head of the removed range & a truthy number of Points inserted
+          when the start/end Points are the same`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.vertexNodesByPoint(routePoints[2])[0].prev;
+          const initialTail = polylineRoute.vertexNodesByPoint(routePoints[2])[0].next as VertexNode<RoutePoint, RouteSegment>;
+
+          const targetPoint = routePoints[2];
+
+          const point = new RoutePoint(1.1, 101.5, 200);
+
+          const result = polylineRoute.replaceAtPoint(targetPoint, point);
+
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy();
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + 1);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + 1);
+
+          expect(initialHead.next.val).toEqual(point);
+          expect(initialTail.prev.val).toEqual(point);
+        });
+
+        it(`should replace the specified target Point in the Route with the provided Points
+         & return the head of the removed range & a truthy number of Points inserted`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.vertexNodesByPoint(routePoints[2])[0].prev;
+          const initialTail = polylineRoute.vertexNodesByPoint(routePoints[2])[0].next as VertexNode<RoutePoint, RouteSegment>;
+
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceAtPoint(targetPoint, points);
+
+          // 3 inserted, 1 removed
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy();
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + 3);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should replace the specified target Point in the Route with the provided Route
+          & return the head of the removed range & a truthy number of Points inserted
+          when the start/end Points are the same`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.vertexNodesByPoint(routePoints[2])[0].prev;
+          const initialTail = polylineRoute.vertexNodesByPoint(routePoints[2])[0].next as VertexNode<RoutePoint, RouteSegment>;
+
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const result = polylineRoute.replaceAtPoint(targetPoint, insertedRoute);
+
+          // 3 inserted, 1 removed
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy();
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + 3);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should update the segment property spanning from the prior Point to the first inserted Point`, () => {
+          polylineRoute.addProperties();
+
+          const startPoint = routePoints[1];
+          const targetPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 205);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const startVertexNode = polylineRoute.vertexNodesByVertex(startPoint)[0] as VertexNode<RoutePoint, RouteSegment>;
+          const prevSegmentNode = startVertexNode.nextSeg;
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6611, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(633813.3, 1);
+
+          polylineRoute.replaceAtPoint(targetPoint, insertedRoute);
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6987, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(5, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(363035.6, 1);
+        });
+
+        it(`should update the 2nd-order properties of the first & last inserted Points
+          & the remaining Points just before & just after the inserted Points`, () => {
+          polylineRoute.addProperties();
+
+          const startPoint = routePoints[1];
+          const targetPoint = routePoints[2];
+          const endPoint = routePoints[3];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const startVertexNode = polylineRoute.vertexNodesByVertex(startPoint)[0] as VertexNode<RoutePoint, RouteSegment>;
+          const insertStartVertexNode = insertedRoute.firstVertex;
+          const insertEndVertexNode = insertedRoute.lastVertex;
+          const endVertexNode = polylineRoute.vertexNodesByVertex(endPoint)[0] as VertexNode<RoutePoint, RouteSegment>;
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(3.0173, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeNull();
+          expect(insertEndVertexNode.val.path.rotation).toBeNull();
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-1.9503, 4);
+
+          polylineRoute.replaceAtPoint(targetPoint, insertedRoute);
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(3.0549, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeCloseTo(-0.5013, 4);
+          expect(insertEndVertexNode.val.path.rotation).toBeCloseTo(2.7196, 4);
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-2.3342, 4);
+        });
+      });
+
+      describe('#replaceBetweenPoints', () => {
+        it('should do nothing & return null if the start/end Points are both unspecified', () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = null;
+          const endPoint = null;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points);
+
+          expect(result).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it('should do nothing & return null if the start/end Points are the same', () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[2];
+          const endPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points);
+
+          expect(result).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should only remove Points in the start/end range & return the head of the removed range
+          if no Points are provided to insert`, () => {
+          const startPoint = routePoints[0];
+          const endPoint = routePoints[3];
+
+          const initialLength = polylineRoute.size();
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, []);
+
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(2);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - 2);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - 2);
+        });
+
+        it(`should insert the Points at the start of the Route & return a truthy number of Points inserted
+          if only an end Point is provided and the end Point is at the start of the Route, `, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex;
+
+          const startPoint = null;
+          const endPoint = routePoints[0];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points);
+
+          expect(result.removed).toBeNull();
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(polylineRoute.firstVertex.val).toEqual(point1);
+          expect(initialHead.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Points at the end of the Route and return a truthy number of Points inserted
+          if only a start Point is provided and the start Point is at the end of the Route`, () => {
+          const initialLength = polylineRoute.size();
+          const initialTail = polylineRoute.lastVertex;
+
+          const startPoint = routePoints[routePoints.length - 1];
+          const endPoint = null;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points);
+
+          expect(result.removed).toBeNull();
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(initialTail.next.val).toEqual(point1);
+          expect(polylineRoute.lastVertex.val).toEqual(point3);
+        });
+
+        it(`should insert the Points between the specified start/end Points in the Route
+          & return a truthy number of points inserted when the start/end Points are adjacent`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+          const initialTail = initialHead.next as VertexNode<RoutePoint, RouteSegment>;
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points);
+
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 3);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the Points between the specified start/end Points in the Route,
+          remove the original set of Points between these same two Points,
+          & return the head of the removed range & a truthy number of Points inserted
+          when the start/end Points are not adjacent`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+          const initialTail = initialHead?.next?.next?.next as VertexNode<RoutePoint, RouteSegment>;
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points);
+
+          expect(result.inserted).toBeTruthy(); // 3 inserted, 2 removed
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 1);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the provided Route between the specified start/end Points in the Route,
+          remove the original set of Points between these same two Points,
+          & return the head of the removed range & a truthy number of Points inserted`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+          const initialTail = initialHead?.next?.next?.next as VertexNode<RoutePoint, RouteSegment>;
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, insertedRoute);
+
+          expect(result.inserted).toBeTruthy(); // 3 inserted, 2 removed
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 1);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should replace the Points within the specified target range & return the number of Points inserted if requested`, () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const returnListCount = true;
+
+          const result = polylineRoute.replaceBetweenPoints(startPoint, endPoint, points, returnListCount);
+
+          // 3 inserted, 2 removed
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(2);
+          expect(result.inserted).toEqual(3);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + result.inserted);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + result.inserted);
+        });
+
+        it(`should update the segment property spanning from the target Point to the first inserted Point`, () => {
+          polylineRoute.addProperties();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 205);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const startVertexNode = polylineRoute.vertexNodesByVertex(startPoint)[0] as VertexNode<RoutePoint, RouteSegment>;
+          const prevSegmentNode = startVertexNode.nextSeg;
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6611, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(100, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(633813.3, 1);
+
+          polylineRoute.replaceBetweenPoints(startPoint, endPoint, insertedRoute);
+
+          expect(prevSegmentNode.val.angle).toBeCloseTo(0.6987, 4);
+          expect(prevSegmentNode.val.direction).toEqual({
+            lat: 'N',
+            lng: 'E'
+          });
+          expect(prevSegmentNode.val.height).toBeCloseTo(5, 0);
+          expect(prevSegmentNode.val.length).toBeCloseTo(363035.6, 1);
+        });
+
+        it(`should update the 2nd-order properties of the first & last inserted Points
+          & the Points just before & just after the inserted Points`, () => {
+          polylineRoute.addProperties();
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const startVertexNode = polylineRoute.vertexNodesByVertex(startPoint)[0] as VertexNode<RoutePoint, RouteSegment>;
+          const insertStartVertexNode = insertedRoute.firstVertex;
+          const insertEndVertexNode = insertedRoute.lastVertex;
+          const endVertexNode = polylineRoute.vertexNodesByVertex(endPoint)[0] as VertexNode<RoutePoint, RouteSegment>;
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(3.0173, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeNull();
+          expect(insertEndVertexNode.val.path.rotation).toBeNull();
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(0.9684, 4);
+
+          polylineRoute.replaceBetweenPoints(startPoint, endPoint, insertedRoute);
+
+          expect(startVertexNode.val.path.rotation).toBeCloseTo(3.0549, 4);
+          expect(insertStartVertexNode.val.path.rotation).toBeCloseTo(-0.5013, 4);
+          expect(insertEndVertexNode.val.path.rotation).toBeCloseTo(2.2935, 4);
+          expect(endVertexNode.val.path.rotation).toBeCloseTo(-0.9397, 4);
+        });
+      });
+
+      describe('#replaceFromToPoints', () => {
+        it('should do nothing & return null if the start/end Points are both unspecified', () => {
+          const initialLength = polylineRoute.size();
+
+          const startPoint = null;
+          const endPoint = null;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, points);
+
+          expect(result).toBeNull();
+          expect(polylineRoute.size()).toEqual(initialLength);
+        });
+
+        it(`should only remove Points in the start/end range & return the head of the removed range
+          if no Points are provided to insert`, () => {
+          const startPoint = routePoints[0];
+          const endPoint = routePoints[3];
+
+          const initialLength = polylineRoute.size();
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, []);
+
+          const removedCount = sizeOf(result.removed);
+          expect(removedCount).toEqual(4);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removedCount);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removedCount);
+        });
+
+        it(`should replace the first Point in the Route & return a truthy number of Points inserted
+          if only an end Point is provided and the end Point is at the start of the Route, `, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+
+          // Use current tail node - by value to also test matching
+          const startPoint = null;
+          const endPoint = routePoints[0];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, points);
+
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(polylineRoute.firstVertex.val).toEqual(point1);
+          expect(initialHead.prev.val).toEqual(point3);
+        });
+
+        it(`should replace the last Point in the route & return a truthy number of Points inserted
+          if only a start Point is provided & the starty Node is at the end of the Route`, () => {
+          const initialLength = polylineRoute.size();
+          const initialTail = polylineRoute.lastVertex.prev;
+
+          // Use current last node - by value to also test matching
+          const startPoint = routePoints[routePoints.length - 1];
+          const endPoint = null;
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, points);
+
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + 3); // 3 inserted
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(initialTail.next.val).toEqual(point1);
+          expect(polylineRoute.lastVertex.val).toEqual(point3);
+        });
+
+        it(`should insert the provided Points at the specified start/end Point in the Route,
+        remove the Point & return the head of the removed range & a truthy number of Points inserted
+        when the start/end Points are the same`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.vertexNodesByPoint(routePoints[2])[0].prev;
+          const initialTail = polylineRoute.vertexNodesByPoint(routePoints[2])[0].next as VertexNode<RoutePoint, RouteSegment>;
+
+          const startPoint = routePoints[2];
+          const endPoint = routePoints[2];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, points);
+
+          // 3 inserted, 1 removed
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy();
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + 3);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the provided Points between the specified start/end Points in the Route,
+          remove the original set of Points between & including these same two Points,
+          & return the head of the removed range & a truthy number of Points inserted
+          when the head/tail Points are adjacent`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.vertexNodesByPoint(routePoints[2])[0].prev;
+          const initialTail = polylineRoute.vertexNodesByPoint(routePoints[3])[0].next as VertexNode<RoutePoint, RouteSegment>;
+
+          // Insert after first segment, over second segment
+          const startPoint = routePoints[2];
+          const endPoint = routePoints[3];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, points);
+
+          expect(result.inserted).toBeTruthy(); // 3 inserted, 2 removed
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices + 1); // 3 inserted - 2 removed
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments + 1);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should insert the provided Route between the specified start/end Points in the Route,
+          remove the original set of Points between & including these same two Points,
+          & return the head of the removed range & a truthy number of Points inserted`, () => {
+          const initialLength = polylineRoute.size();
+          const initialHead = polylineRoute.vertexNodesByPoint(routePoints[1])[0].prev;
+          const initialTail = polylineRoute.vertexNodesByPoint(routePoints[4])[0].next as VertexNode<RoutePoint, RouteSegment>;
+
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+          const insertedRoute = new PolylineRoute(points);
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, insertedRoute);
+
+          expect(result.inserted).toBeTruthy(); // 3 inserted, 2 removed
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - 1); // 3 inserted - 4 removed
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - 1);
+
+          expect(initialHead.next.val).toEqual(point1);
+          expect(initialTail.prev.val).toEqual(point3);
+        });
+
+        it(`should replace the Points within the specified target range & return the number of Points inserted if requested`, () => {
+          const initialLength = polylineRoute.size();
+
+          // Insert after first segment, over second segment
+          const startPoint = routePoints[1];
+          const endPoint = routePoints[4];
+
+          const point1 = new RoutePoint(1.1, 101.5, 200);
+          const point2 = new RoutePoint(1.2, 102, 210);
+          const point3 = new RoutePoint(1.3, 107, 240);
+          const points = [point1, point2, point3];
+
+          const returnListCount = true;
+
+          const result = polylineRoute.replaceFromToPoints(startPoint, endPoint, points, returnListCount);
+
+          // 3 inserted, 2 removed
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(4);
+          expect(result.inserted).toEqual(3);
+          expect(polylineRoute.size().vertices).toEqual(initialLength.vertices - removed + result.inserted);
+          expect(polylineRoute.size().segments).toEqual(initialLength.segments - removed + result.inserted);
+        });
+      });
+    });
+
+    describe('Split', () => {
+      it('should do nothing and return an empty array if the Route is empty', () => {
+        polylineRoute = new PolylineRoute([]);
+
+        const targetPoint = routePoints[3];
+
+        const splitRoutes = polylineRoute.splitByPoint(targetPoint);
+
+        expect(splitRoutes.length).toEqual(1);
+        const firstRouteSize = splitRoutes[0].size();
+        expect(firstRouteSize.vertices).toEqual(0);
+        expect(firstRouteSize.segments).toEqual(0);
+      });
+
+      describe('#splitByPoint', () => {
+        it(`should do nothing & return the original Route if the specified Point doesn't exist in the Route`, () => {
+          const initialSize = polylineRoute.size()
+
+          const targetPoint = new RoutePoint(-1, -2, undefined);
+
+          const splitRoutes = polylineRoute.splitByPoint(targetPoint);
+
+          expect(splitRoutes.length).toEqual(1);
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
+          expect(firstRouteSize.segments).toEqual(initialSize.segments);
+        });
+
+        it(`should do nothing & return the original Route if the specified Point is the start of the Route`, () => {
+          const initialSize = polylineRoute.size()
+
+          const targetPoint = routePoints[0];
+
+          const splitRoutes = polylineRoute.splitByPoint(targetPoint);
+
+          expect(splitRoutes.length).toEqual(1);
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
+          expect(firstRouteSize.segments).toEqual(initialSize.segments);
+        });
+
+        it(`should do nothing & return the original Route if the specified Point is the end of the Route`, () => {
+          const initialSize = polylineRoute.size()
+
+          const targetPoint = routePoints[routePoints.length - 1];
+
+          const splitRoutes = polylineRoute.splitByPoint(targetPoint);
+
+          expect(splitRoutes.length).toEqual(1);
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
+          expect(firstRouteSize.segments).toEqual(initialSize.segments);
+        });
+
+        it('should split the Route and return each split Route', () => {
+          const initialSize = polylineRoute.size()
+          const initialHeadVertex = polylineRoute.firstVertex;
+          const initialHeadSegment = polylineRoute.firstSegment;
+          const initialTailVertex = polylineRoute.lastVertex;
+          const initialTailSegment = polylineRoute.lastSegment;
+
+          const targetPoint = routePoints[3];
+          const initialSplitVertex = polylineRoute.vertexNodesByPoint(targetPoint)[0];
+          const initialSplitPrevVertex = initialSplitVertex.prev;
+          const initialSplitPrevSegment = initialSplitVertex.prevSeg;
+          const initialSplitNextVertex = initialSplitVertex.next;
+          const initialSplitNextSegment = initialSplitVertex.nextSeg;
+
+          const splitRoutes = polylineRoute.splitByPoint(targetPoint);
+
+          expect(splitRoutes.length).toEqual(2);
+
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(initialSize.vertices - 2);
+          expect(firstRouteSize.segments).toEqual(initialSize.segments - 2);
+
+          const secondRouteSize = splitRoutes[1].size();
+          expect(secondRouteSize.vertices).toEqual(initialSize.vertices - 3);
+          expect(secondRouteSize.segments).toEqual(initialSize.segments - 3);
+
+          expect(initialHeadVertex).toEqual(splitRoutes[0].firstVertex);
+          expect(initialHeadSegment).toEqual(splitRoutes[0].firstSegment);
+
+          expect(initialTailVertex).toEqual(splitRoutes[1].lastVertex);
+          expect(initialTailSegment).toEqual(splitRoutes[1].lastSegment);
+
+          expect(initialSplitVertex).toEqual(splitRoutes[0].lastVertex);
+          expect(initialSplitVertex).not.toEqual(splitRoutes[1].firstVertex);
+          expect(initialSplitVertex.val).toEqual(splitRoutes[1].firstVertex.val);
+
+          expect(initialSplitPrevVertex).toEqual(splitRoutes[0].lastVertex.prev);
+          expect(initialSplitPrevSegment).toEqual(splitRoutes[0].lastVertex.prevSeg);
+
+          expect(initialSplitNextVertex).toEqual(splitRoutes[1].firstVertex.next);
+          expect(initialSplitNextSegment).toEqual(splitRoutes[1].firstVertex.nextSeg);
+        });
+
+        it(`should update the 2nd-order properties of the last Point of the first split Route, and the first Point of the second split Route`, () => {
+          polylineRoute.addProperties();
+          const targetPoint = routePoints[3];
+
+          const vertex = polylineRoute.vertexNodesByVertex(routePoints[3])[0];
+          expect(vertex.val.path.rotation).toBeCloseTo(-1.9503, 4);
+
+          const splitRoutes = polylineRoute.splitByPoint(targetPoint);
+
+          expect(splitRoutes[0].lastVertex.val.path.rotation).toBeNull();
+          expect(splitRoutes[1].firstVertex.val.path.rotation).toBeNull();
+        });
+      });
+
+      describe('#splitByPoints', () => {
+        it(`should do nothing & return one entry of the original Route if the specified Points don't exist in the Route`, () => {
+          const initialSize = polylineRoute.size()
+
+          const targetPoint1 = new RoutePoint(-1, -2, undefined);
+          const targetPoint2 = new RoutePoint(-2, -3, undefined);
+          const targetPoint3 = new RoutePoint(-3, -4, undefined);
+          const targetPoints = [targetPoint1, targetPoint2, targetPoint3];
+
+          const splitRoutes = polylineRoute.splitByPoints(targetPoints);
+
+          expect(splitRoutes.length).toEqual(1);
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
+          expect(firstRouteSize.segments).toEqual(initialSize.segments);
+        });
+
+        it('should split the Route and return all sub-Routes demarcated by the provided Points', () => {
+          const targetPoint1 = routePoints[2];
+          const targetPoint2 = routePoints[3];
+          const targetPoints = [targetPoint1, targetPoint2];
+
+          const splitRoutes = polylineRoute.splitByPoints(targetPoints);
+
+          expect(splitRoutes.length).toEqual(3);
+
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(3);
+          expect(firstRouteSize.segments).toEqual(2);
+
+          const secondRouteSize = splitRoutes[1].size();
+          expect(secondRouteSize.vertices).toEqual(2);
+          expect(secondRouteSize.segments).toEqual(1);
+
+          const thirdRouteSize = splitRoutes[2].size();
+          expect(thirdRouteSize.vertices).toEqual(3);
+          expect(thirdRouteSize.segments).toEqual(2);
+        });
+
+        it('should split the Route and return all sub-Routes demarcated by the provided Points, ignoring invalid Points', () => {
+          const targetPoint1 = routePoints[2];
+          const targetPoint2 = new RoutePoint(-2, -3, undefined);
+          const targetPoint3 = routePoints[4];
+          const targetPoints = [targetPoint1, targetPoint2, targetPoint3];
+
+          const splitRoutes = polylineRoute.splitByPoints(targetPoints);
+
+          expect(splitRoutes.length).toEqual(3);
+
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(3);
+          expect(firstRouteSize.segments).toEqual(2);
+
+          const secondRouteSize = splitRoutes[1].size();
+          expect(secondRouteSize.vertices).toEqual(3);
+          expect(secondRouteSize.segments).toEqual(2);
+
+          const thirdRouteSize = splitRoutes[2].size();
+          expect(thirdRouteSize.vertices).toEqual(2);
+          expect(thirdRouteSize.segments).toEqual(1);
+        });
+
+        it('should not split the Route more than once by duplicate Points', () => {
+          const targetPoint1 = routePoints[3];
+          const targetPoint2 = routePoints[3];
+          const targetPoints = [targetPoint1, targetPoint2];
+
+          const splitRoutes = polylineRoute.splitByPoints(targetPoints);
+
+          expect(splitRoutes.length).toEqual(2);
+
+          const firstRouteSize = splitRoutes[0].size();
+          expect(firstRouteSize.vertices).toEqual(4);
+          expect(firstRouteSize.segments).toEqual(3);
+
+          const secondRouteSize = splitRoutes[1].size();
+          expect(secondRouteSize.vertices).toEqual(3);
+          expect(secondRouteSize.segments).toEqual(2);
+        });
+
+        it(`should update the 2nd-order properties of the first and last Point of the middle split Route`, () => {
+          polylineRoute.addProperties();
+          const targetPoint1 = routePoints[2];
+          const targetPoint2 = routePoints[4];
+          const targetPoints = [targetPoint1, targetPoint2];
+
+          const vertex1 = polylineRoute.vertexNodesByVertex(targetPoint1)[0];
+          const vertex2 = polylineRoute.vertexNodesByVertex(targetPoint2)[0];
+
+          expect(vertex1.val.path.rotation).toBeCloseTo(1.6946, 4);
+          expect(vertex2.val.path.rotation).toBeCloseTo(0.9684, 4);
+
+          const splitRoutes = polylineRoute.splitByPoints(targetPoints);
+
+          expect(splitRoutes.length).toEqual(3);
+
+          expect(splitRoutes[0].firstVertex.val.path.rotation).toBeNull();
+          expect(splitRoutes[0].lastVertex.val.path.rotation).toBeNull();
+
+          expect(splitRoutes[1].firstVertex.val.path.rotation).toBeNull();
+          expect(splitRoutes[1].lastVertex.val.path.rotation).toBeNull();
+
+          expect(splitRoutes[2].firstVertex.val.path.rotation).toBeNull();
+          expect(splitRoutes[2].lastVertex.val.path.rotation).toBeNull();
+        });
+      });
+
+      // TODO: After methods are built out for later ticket
+      describe('#splitByRoute', () => {
+        // Empty Route
+
+        // Determine whether Route must only match at start/end or at every Point, or consider different naming?
+        // VVVVVV
+        // Target doesn't exist
+        // Target is at start
+        // Target is at end
+        // ^^^^^^
+
+        // Valid Route
+      });
+
+      describe('#splitByRoutes', () => {
+        // Invalid Route
+        // Valid Route
+        // Mixed valid/invalid Routes
+      });
+    });
+  });
 });
