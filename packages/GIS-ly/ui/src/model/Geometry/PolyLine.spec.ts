@@ -322,6 +322,13 @@ describe('##PolyLine', () => {
           [5, -150] as TestVertex,
           [6, -160] as TestVertex,
         ]);
+
+        expect(polylineCopy.firstVertex.val).toEqual(coordinates[0]);
+        expect(polylineCopy.firstSegment.prevVert.val).toEqual(coordinates[0]);
+        expect(polylineCopy.firstSegment.nextVert.val).toEqual(coordinates[1]);
+        expect(polylineCopy.lastSegment.prevVert.val).toEqual(coordinates[4]);
+        expect(polylineCopy.lastSegment.nextVert.val).toEqual(coordinates[5]);
+        expect(polylineCopy.lastVertex.val).toEqual(coordinates[5]);
       });
 
       it('should copy the Polyline from the head to the end vertex if only the end vertex is given', () => {
@@ -392,6 +399,13 @@ describe('##PolyLine', () => {
           [4, -140] as TestVertex,
           [5, -150] as TestVertex,
         ]);
+
+        expect(polylineCopy.firstVertex.val).toEqual(coordinates[1]);
+        expect(polylineCopy.firstSegment.prevVert.val).toEqual(coordinates[1]);
+        expect(polylineCopy.firstSegment.nextVert.val).toEqual(coordinates[2]);
+        expect(polylineCopy.lastSegment.prevVert.val).toEqual(coordinates[3]);
+        expect(polylineCopy.lastSegment.nextVert.val).toEqual(coordinates[4]);
+        expect(polylineCopy.lastVertex.val).toEqual(coordinates[4]);
       });
     });
   });
@@ -607,7 +621,7 @@ describe('##PolyLine', () => {
 
     describe('Trim', () => {
       describe('#trimBeforeVertex', () => {
-        it('should do nothing and return 0 on an empty polyline', () => {
+        it('should do nothing and return null on an empty polyline', () => {
           polyline = new Polyline([]);
 
           const originalVertexHead = polyline.firstVertex;
@@ -629,7 +643,7 @@ describe('##PolyLine', () => {
           expect(polyline.vertices()).toEqual([]);
         });
 
-        it('should do nothing and return 0 when the specified vertex does not exist in the polyline', () => {
+        it('should do nothing and return null when the specified vertex does not exist in the polyline', () => {
           const originalVertexHead = polyline.firstVertex;
           const originalSegmentHead = polyline.firstSegment;
           const originalVertexTail = polyline.lastVertex;
@@ -656,7 +670,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should trim off vertices & segments before the specified point and return the a positive number to indicate success', () => {
+        it('should trim off vertices & segments before the specified point & return the head of the trimmed portion', () => {
           const originalVertexHead = polyline.firstVertex;
           const originalSegmentHead = polyline.firstSegment;
           const originalVertexTail = polyline.lastVertex;
@@ -703,7 +717,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#trimAfterVertex', () => {
-        it('should do nothing and return 0 on an empty polyline', () => {
+        it('should do nothing and return null on an empty polyline', () => {
           polyline = new Polyline([]);
 
           const originalVertexHead = polyline.firstVertex;
@@ -725,7 +739,7 @@ describe('##PolyLine', () => {
           expect(polyline.vertices()).toEqual([]);
         });
 
-        it('should do nothing and return 0 when the specified vertex does not exist in the polyline', () => {
+        it('should do nothing and return null when the specified vertex does not exist in the polyline', () => {
           const originalVertexHead = polyline.firstVertex;
           const originalSegmentHead = polyline.firstSegment;
           const originalVertexTail = polyline.lastVertex;
@@ -752,7 +766,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should trim off vertices & segments after the specified point and return the a positive number to indicate success', () => {
+        it('should trim off vertices & segments after the specified point & return the head of the trimmed portion', () => {
           const originalVertexHead = polyline.firstVertex;
           const originalSegmentHead = polyline.firstSegment;
           const originalVertexTail = polyline.lastVertex;
@@ -799,7 +813,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#trimToVertices', () => {
-        it('should do nothing and return 0 on an empty polyline', () => {
+        it('should do nothing and return null on an empty polyline', () => {
           polyline = new Polyline([]);
 
           const originalVertexHead = polyline.firstVertex;
@@ -822,7 +836,7 @@ describe('##PolyLine', () => {
           expect(polyline.vertices()).toEqual([]);
         });
 
-        it('should do nothing and return 0 when the specified vertex does not exist in the polyline', () => {
+        it('should do nothing and return null when the specified vertex does not exist in the polyline', () => {
           const originalVertexHead = polyline.firstVertex;
           const originalSegmentHead = polyline.firstSegment;
           const originalVertexTail = polyline.lastVertex;
@@ -850,7 +864,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should trim off vertices & segments before & after the specified start & end point sand return the a positive number to indicate success', () => {
+        it('should trim off vertices & segments before & after the specified start & end points & return the head of the 1st & 2nd trimmed portions', () => {
           const originalVertexHead = polyline.firstVertex;
           const originalSegmentHead = polyline.firstSegment;
           const originalVertexTail = polyline.lastVertex;
@@ -1103,26 +1117,26 @@ describe('##PolyLine', () => {
 
     describe('Remove', () => {
       describe('#removeAtVertex', () => {
-        it('should do nothing & return False for an empty polyline', () => {
+        it('should do nothing & return null for an empty polyline', () => {
           polyline = new Polyline([]);
 
           const vertex = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
 
           const result = polyline.removeAt(vertex);
 
-          expect(result).toBeFalsy();
+          expect(result).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(0);
           expect(polylineLength.segments).toEqual(0);
         });
 
-        it('should do nothing & return False for a vertex that does not exist in the polyline', () => {
+        it('should do nothing & return null for a vertex that does not exist in the polyline', () => {
           const vertex = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
 
           const result = polyline.removeAt(vertex);
 
-          expect(result).toBeFalsy();
+          expect(result).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
@@ -1130,17 +1144,17 @@ describe('##PolyLine', () => {
 
         });
 
-        it('should do nothing & return False for a null vertex', () => {
+        it('should do nothing & return null for a null vertex', () => {
           const result = polyline.removeAt(null);
 
-          expect(result).toBeFalsy();
+          expect(result).toBeNull();
 
           const polylineLength = polyline.size();
           expect(polylineLength.vertices).toEqual(coordinates.length);
           expect(polylineLength.segments).toEqual(coordinates.length - 1);
         });
 
-        it('should remove a vertex at the head & return True', () => {
+        it('should remove a vertex at the head & return the removed node', () => {
           const removedVertex = polyline.firstVertex;
           const removedSeg = polyline.firstSegment;
 
@@ -1178,7 +1192,7 @@ describe('##PolyLine', () => {
           expect(removedSeg.nextVert).toBeNull();
         });
 
-        it('should remove a vertex at the lastVertex & return True', () => {
+        it('should remove a vertex at the lastVertex & return the removed node', () => {
           const removedVertex = polyline.lastVertex;
           const removedSeg = polyline.lastSegment;
 
@@ -1216,7 +1230,7 @@ describe('##PolyLine', () => {
           expect(removedSeg.prevVert).toBeNull();
         });
 
-        it('should remove the only remaining vertex & return True', () => {
+        it('should remove the only remaining vertex & return the removed node', () => {
           coordinates = [
             [1, -110] as TestVertex
           ];
@@ -1234,7 +1248,7 @@ describe('##PolyLine', () => {
           expect(polyline.vertices()).toEqual([]);
         });
 
-        it('should remove the specified vertex & one adjacent segment & return True', () => {
+        it('should remove the specified vertex & one adjacent segment & return the removed node', () => {
           const removedVertex = polyline.firstVertex.next.next as VertexNode<TestVertex, TestSegment>;
           const removedSeg = removedVertex.nextSeg as SegmentNode<TestVertex, TestSegment>;
 
@@ -1281,7 +1295,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#removeVertices', () => {
-        it('should do nothing for vertices provided for an empty polyline & return a count of 0', () => {
+        it('should do nothing for vertices provided for an empty polyline & return an empty array', () => {
           polyline = new Polyline([]);
 
           const vertex1 = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
@@ -1296,7 +1310,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(0);
         });
 
-        it('should do nothing for vertices provided that are not in the polyline & return a count of 0', () => {
+        it('should do nothing for vertices provided that are not in the polyline & return an empty array', () => {
           const vertex1 = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertex2 = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
@@ -1309,7 +1323,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(coordinates.length - 1);
         });
 
-        it('should remove the vertices provided & return a count for the number removed', () => {
+        it('should remove the vertices provided & return an array of the nodes removed', () => {
           const vertex1 = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertex2 = polyline.firstVertex.next.next.next as VertexNode<TestVertex, TestSegment>;
 
@@ -1329,7 +1343,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should remove the vertices provided, ignoring ones that are not found in the polyline & return a count for the number removed', () => {
+        it('should remove the vertices provided, ignoring ones that are not found in the polyline & return an array of the nodes removed', () => {
           const vertex1 = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertex2 = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
@@ -1352,7 +1366,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#removeBetweenVertices', () => {
-        it('should do nothing for an empty polyline & return a count of 0', () => {
+        it('should do nothing & return null for an empty polyline', () => {
           polyline = new Polyline([]);
 
           const vetexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
@@ -1367,7 +1381,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(0);
         });
 
-        it('should do nothing for vertex range requested where neither start nor end are in the polyline & return a count of 0', () => {
+        it(`should do nothing & return null for vertex range requested where neither start nor end are in the polyline`, () => {
           const vertexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertexEnd = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
@@ -1380,7 +1394,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(coordinates.length - 1);
         });
 
-        it('should do nothing for vertex range requested where the start & end are the same & return a count of 0', () => {
+        it('should do nothing & return null for vertex range requested where the start & end are the same', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = vertexStart;
 
@@ -1393,7 +1407,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(coordinates.length - 1);
         });
 
-        it('should do nothing for vertex range requested where the start & end are adjacent & return a count of 0', () => {
+        it('should do nothing & return null for vertex range requested where the start & end are adjacent', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = vertexStart.next as VertexNode<TestVertex, TestSegment>;
 
@@ -1478,7 +1492,8 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should remove all vertices and corresponding segments between the start and end vertices provided, and return a count indicating success', () => {
+        it(`should remove all vertices & corresponding segments between the start and end vertices provided,
+          & return the head of the removed range`, () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
           const segmentStart = vertexStart.nextSeg;
@@ -1520,7 +1535,8 @@ describe('##PolyLine', () => {
           expect(vertexEnd.prevSeg).toEqual(segmentStart);
         });
 
-        it('should remove all vertices between the start vertex & end of the polyline if the end vertex specified corresponds with the end of the polyline', () => {
+        it(`should remove all vertices between the start vertex & end of the polyline
+          if the end vertex specified corresponds with the end of the polyline`, () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = polyline.lastVertex as VertexNode<TestVertex, TestSegment>;
           const segmentStart = vertexStart.nextSeg;
@@ -1604,7 +1620,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#removeFromToVertices', () => {
-        it('should do nothing & return a count of 0 for an empty polyline', () => {
+        it('should do nothing & return null for an empty polyline', () => {
           polyline = new Polyline([]);
 
           const vetexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
@@ -1619,7 +1635,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(0);
         });
 
-        it('should do nothing & return a count of 0 for when neither start nor end vertices are in the polyline', () => {
+        it('should do nothing & return null for when neither start nor end vertices are in the polyline', () => {
           const vertexStart = new VertexNode<TestVertex, TestSegment>([90, -208] as TestVertex);
           const vertexEnd = new VertexNode<TestVertex, TestSegment>([95, -208] as TestVertex);
 
@@ -1632,7 +1648,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(coordinates.length - 1);
         });
 
-        it('should remove a single vertex & return a count of 1 for when the start & end vertices are the same', () => {
+        it('should remove a single vertex & return the removed vertex when the start & end vertices are the same', () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = vertexStart;
 
@@ -1646,7 +1662,7 @@ describe('##PolyLine', () => {
           expect(polylineLength.segments).toEqual(coordinates.length - 1 - 1);
         });
 
-        it('should remove the entire list & return a count of the original list length when start & end are the start/end of the polyline', () => {
+        it('should remove the entire list & the head of the removed range when start & end are the start/end of the polyline', () => {
           const vertexStart = polyline.firstVertex as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = polyline.lastVertex as VertexNode<TestVertex, TestSegment>;
 
@@ -1730,7 +1746,8 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should remove all vertices and corresponding segments between the start and end vertices provided, and return a count indicating success', () => {
+        it(`should remove all vertices and corresponding segments between the start & end vertices provided
+          & return the head of the removed range`, () => {
           const vertexStart = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
           const vertexEnd = polyline.lastVertex.prev as VertexNode<TestVertex, TestSegment>;
 
@@ -2180,7 +2197,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#insertBefore', () => {
-        it('should do nothing and return false on an empty polyline', () => {
+        it('should do nothing and return 0 on an empty polyline', () => {
           const polyline = new Polyline([]);
 
           const refVertexNode = new VertexNode<TestVertex, TestSegment>([2, -120] as TestVertex);
@@ -2195,7 +2212,7 @@ describe('##PolyLine', () => {
           expect(polylineSize.segments).toEqual(0);
         });
 
-        it('should do nothing and return false if the reference value is not found', () => {
+        it('should do nothing and return 0 if the reference value is not found', () => {
           const refVertexNode = new VertexNode<TestVertex, TestSegment>([-2, -120] as TestVertex);
           const insertVertex = new VertexNode<TestVertex, TestSegment>([-1, 110] as TestVertex);
 
@@ -2714,7 +2731,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#insertAfter', () => {
-        it('should do nothing and return false on an empty polyline', () => {
+        it('should do nothing and return 0 on an empty polyline', () => {
           const polyline = new Polyline([]);
 
           const refVertexNode = new VertexNode<TestVertex, TestSegment>([2, -120] as TestVertex);
@@ -2729,7 +2746,7 @@ describe('##PolyLine', () => {
           expect(polylineSize.segments).toEqual(0);
         });
 
-        it('should do nothing and return false if the reference value is not found', () => {
+        it('should do nothing and return 0 if the reference value is not found', () => {
           const refVertexNode = new VertexNode<TestVertex, TestSegment>([-2, -120] as TestVertex);
           const insertVertex = new VertexNode<TestVertex, TestSegment>([-1, 110] as TestVertex);
 
@@ -3269,7 +3286,7 @@ describe('##PolyLine', () => {
         )[0];
       };
 
-      it('should return undefined & do nothing if the polyline is empty', () => {
+      it('should return null & do nothing if the polyline is empty', () => {
         const startNode = getVertexNode(coordinates[0]);
         const endNode = getVertexNode(coordinates[3]);
 
@@ -3283,7 +3300,7 @@ describe('##PolyLine', () => {
 
         const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-        expect(result).toBeUndefined();
+        expect(result).toBeNull();
 
         const resultingLength = polyline.size();
         expect(resultingLength.vertices).toEqual(initialLength.vertices);
@@ -3313,7 +3330,7 @@ describe('##PolyLine', () => {
       // Just check that this correctly calls replaceVerticesBetween
       // replaceVertexAt(vertexTarget: VertexNode<TVertex, TSegment>, vertexReplacement: VertexNode<TVertex, TSegment>): boolean;
       describe('#replaceVertexAt', () => {
-        it('should return undefined & do nothing if the target node is not specified', () => {
+        it('should return null & do nothing if the target node is not specified', () => {
           const initialLength = polyline.size();
 
           const targetNode = null;
@@ -3325,14 +3342,14 @@ describe('##PolyLine', () => {
 
           const result = polyline.replaceAt(targetNode, nodes);
 
-          expect(result).toBeUndefined();
+          expect(result).toBeNull();
 
           const resultingLength = polyline.size();
           expect(resultingLength.vertices).toEqual(initialLength.vertices);
           expect(resultingLength.segments).toEqual(initialLength.segments);
         });
 
-        it('should return the # of vertices inserted+1 & replace the target vertex with the new vertices provided', () => {
+        it('should return the # of vertices inserted, the removed vertex, & replace the target vertex with the new vertices provided', () => {
           const initialLength = polyline.size();
 
           // Insert after first segment, over second segment
@@ -3364,7 +3381,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should return the # of vertices inserted+1 & replace the target head vertex with the new vertices provided', () => {
+        it('should return the # of vertices inserted, the removed vertex, & replace the target head vertex with the new vertices provided', () => {
           const initialLength = polyline.size();
 
           // Insert after first segment, over second segment
@@ -3397,7 +3414,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should return the # of vertices inserted+1 replace the target tail vertex with the new vertices provided', () => {
+        it('should return the # of vertices inserted, the removed vertex, & replace the target tail vertex with the new vertices provided', () => {
           const initialLength = polyline.size();
 
           // Insert after first segment, over second segment
@@ -3433,7 +3450,7 @@ describe('##PolyLine', () => {
 
       // Main set of tests
       describe('#replaceVerticesBetween', () => {
-        it('should return undefined & do nothing if the start & end nodes are both unspecified', () => {
+        it('should return null & do nothing if the start & end nodes are both unspecified', () => {
           const initialLength = polyline.size();
 
           const startNode = null;
@@ -3446,14 +3463,14 @@ describe('##PolyLine', () => {
 
           const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toBeUndefined();
+          expect(result).toBeNull();
 
           const resultingLength = polyline.size();
           expect(resultingLength.vertices).toEqual(initialLength.vertices);
           expect(resultingLength.segments).toEqual(initialLength.segments);
         });
 
-        it('should return undefined & do nothing when the start/end nodes are the same node', () => {
+        it('should return null & do nothing when the start/end nodes are the same node', () => {
           const initialLength = polyline.size();
 
           const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
@@ -3466,7 +3483,7 @@ describe('##PolyLine', () => {
 
           const result = polyline.replaceBetween(startNode, endNode, nodes);
 
-          expect(result).toBeUndefined();
+          expect(result).toBeNull();
 
           const resultingLength = polyline.size();
           expect(resultingLength.vertices).toEqual(initialLength.vertices);
@@ -3481,7 +3498,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it('should return # of nodes removed & only remove nodes in the start/end range if no nodes are provided to insert', () => {
+        it('should return the head of the removed nodes range & only remove nodes in the start/end range if no nodes are provided to insert', () => {
           const startNode = getVertexNode(coordinates[0]);
           const endNode = getVertexNode(coordinates[3]);
 
@@ -3643,7 +3660,7 @@ describe('##PolyLine', () => {
           expect(initialTail.prev).toEqual(node3);
         });
 
-        it(`should return # of nodes inserted+removed & replace the nodes from the head of track to the end vertex
+        it(`should return # of nodes inserted, head of the removed range, & replace the nodes from the head of track to the end vertex
           if only an end vertex is provided.`, () => {
           const initialLength = polyline.size();
 
@@ -3677,7 +3694,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it(`should return # of nodes inserted+removed & replace the nodes to the tail of track from the start vertex
+        it(`should return # of nodes inserted, head of the removed range, & replace the nodes to the tail of track from the start vertex
           if only a start vertex is provided`, () => {
           const initialLength = polyline.size();
 
@@ -3711,7 +3728,7 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it(`should return # of nodes inserted+removed,
+        it(`should return # of nodes inserted, head of the removed range,
          insert the nodes between the two specified start/end nodes in the track,
          & remove the original set of nodes between these same two nodes`, () => {
           const initialLength = polyline.size();
@@ -3762,7 +3779,7 @@ describe('##PolyLine', () => {
       });
 
       describe('#replaceVerticesFromTo', () => {
-        it('should return undefined & do nothing if the start & end nodes are both unspecified', () => {
+        it('should return null & do nothing if the start & end nodes are both unspecified', () => {
           const initialLength = polyline.size();
 
           const startNode = null;
@@ -3775,7 +3792,7 @@ describe('##PolyLine', () => {
 
           const result = polyline.replaceFromTo(startNode, endNode, nodes);
 
-          expect(result).toBeUndefined();
+          expect(result).toBeNull();
 
           const resultingLength = polyline.size();
           expect(resultingLength.vertices).toEqual(initialLength.vertices);
@@ -3809,8 +3826,8 @@ describe('##PolyLine', () => {
           ]);
         });
 
-        it(`should return # nodes inserted+removed & replace the start node through the end node
-        if the start & end nodes are found in order`, () => {
+        it(`should return # nodes inserted, head of the removed range
+          & replace the start node through the end node if the start & end nodes are found in order`, () => {
           const initialLength = polyline.size();
 
           const startNode = getVertexNode(coordinates[1]);
@@ -3898,6 +3915,19 @@ describe('##PolyLine', () => {
 
       describe('#splitBy', () => {
         describe('Vertex', () => {
+          it('should return only the original polyline & do nothing if the supplied vertex is null or undefined', () => {
+            const originalSize = polyline.size();
+
+            const result = polyline.splitBy(null);
+
+            expect(result.length).toEqual(1);
+            expect(result[0]).toEqual(polyline);
+
+            const resultSize = polyline.size();
+            expect(originalSize.vertices).toEqual(resultSize.vertices);
+            expect(originalSize.segments).toEqual(resultSize.segments);
+          });
+
           it('should return only the original polyline & do nothing if the supplied vertex is not found', () => {
             const originalSize = polyline.size();
 
