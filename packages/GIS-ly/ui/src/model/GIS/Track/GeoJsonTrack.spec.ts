@@ -16,7 +16,7 @@ import { ITrackPropertyProperties, TrackProperty } from './TrackProperty';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { GeoJsonTrack } from './GeoJsonTrack';
-import { ITrackSegmentLimits } from './TrackSegment';
+import { ITimeRange } from './TrackSegment';
 import { TrackPoint } from './TrackPoint';
 
 const testData = {
@@ -916,7 +916,7 @@ describe('##GeoJsonTrack', () => {
 
       describe('#splitToSegment', () => {
         it('should return the specified segment at the start of the track', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '1',
             endTime: '2',
           }
@@ -935,7 +935,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return the specified segment at the end of the track', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '5',
             endTime: '6',
           }
@@ -954,7 +954,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return the specified segment at the middle of the track', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '3',
             endTime: '4',
           }
@@ -973,7 +973,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return nothing if the specified segment is not found', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '3.1',
             endTime: '4.1',
           }
@@ -984,7 +984,7 @@ describe('##GeoJsonTrack', () => {
 
       describe('#splitBySegments', () => {
         it('should return two track segments split by a single segment found in a GeoJSON object', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '3',
             endTime: '4',
           }
@@ -1057,12 +1057,12 @@ describe('##GeoJsonTrack', () => {
 
           const geoJsonTrack = new GeoJsonTrack(featureCollection);
 
-          const segment1: ITrackSegmentLimits = {
+          const segment1: ITimeRange = {
             startTime: '3',
             endTime: '4',
           }
 
-          const segment2: ITrackSegmentLimits = {
+          const segment2: ITimeRange = {
             startTime: '7',
             endTime: '8',
           }
@@ -1107,11 +1107,11 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return two track segments split by 1 segment found in a GeoJSON object with 2 segment provided', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '3',
             endTime: '4'
           }
-          const segmentInvalid: ITrackSegmentLimits = {
+          const segmentInvalid: ITimeRange = {
             startTime: '5.1',
             endTime: '6.1'
           }
@@ -1143,7 +1143,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return the track segment unchanged when the segment is not found in a GeoJSON object', () => {
-          const segmentInvalid: ITrackSegmentLimits = {
+          const segmentInvalid: ITimeRange = {
             startTime: '5.1',
             endTime: '6.1'
           }
@@ -1155,7 +1155,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return only the remaining track when a segment matches the first track segment', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '1',
             endTime: '3',
           }
@@ -1178,7 +1178,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return only the remaining track when a segment matches the second track segment', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '2',
             endTime: '4',
           }
@@ -1200,7 +1200,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return only the initial track when a segment matches the last track segment', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '4',
             endTime: '6'
           }
@@ -1223,7 +1223,7 @@ describe('##GeoJsonTrack', () => {
         });
 
         it('should return only the initial track when a segment matches the second-to-last track segment', () => {
-          const segment: ITrackSegmentLimits = {
+          const segment: ITimeRange = {
             startTime: '3',
             endTime: '5',
           }

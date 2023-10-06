@@ -11,7 +11,7 @@ import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
 
-import { ITrackSegmentLimits, TrackSegmentData } from './TrackSegment';
+import { ITimeRange, TrackSegmentData } from './TrackSegment';
 
 import {
   ITrackPropertyProperties,
@@ -349,7 +349,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return trimmedTracks;
   }
 
-  splitToSegment(segment: ITrackSegmentLimits): FeatureCollection | undefined {
+  splitToSegment(segment: ITimeRange): FeatureCollection | undefined {
     const splitSegments = this.splitByTimes([segment.startTime, segment.endTime]);
 
     return this.trimSingleNodeSegments(
@@ -362,13 +362,13 @@ export class GeoJsonTrack implements IGeoJsonTrack {
    * or returns a new list with the split segment as the sole item if found.
    *
    * @protected
-   * @param {ITrackSegmentLimits} segment
+   * @param {ITimeRange} segment
    * @param {FeatureCollection[]} splitSegments
    * @return {*}
    * @memberof GeoJsonTrackManager
    */
   protected addSplittingSegment(
-    segment: ITrackSegmentLimits,
+    segment: ITimeRange,
     splitSegments: FeatureCollection[]
   ): FeatureCollection[] {
     const tracks: FeatureCollection[] = [];
@@ -396,7 +396,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   }
 
 
-  splitBySegments(segmentLimits: ITrackSegmentLimits[]): FeatureCollection[] {
+  splitBySegments(segmentLimits: ITimeRange[]): FeatureCollection[] {
     const splitTimes = [];
     for (const segment of segmentLimits) {
       splitTimes.push(segment.startTime);
@@ -416,13 +416,13 @@ export class GeoJsonTrack implements IGeoJsonTrack {
    * Returns a reduced list of split segments that does not contain the segments defined in the segment limits.
    *
    * @protected
-   * @param {ITrackSegmentLimits[]} segmentLimits
+   * @param {ITimeRange[]} segmentLimits
    * @param {FeatureCollection[]} splitSegments
    * @return {*}  {FeatureCollection[]}
    * @memberof GeoJsonTrack
    */
   protected addSplittedSegments(
-    segmentLimits: ITrackSegmentLimits[],
+    segmentLimits: ITimeRange[],
     splitSegments: FeatureCollection[]
   ): FeatureCollection[] {
     const tracks: FeatureCollection[] = [];
@@ -466,11 +466,11 @@ export class GeoJsonTrack implements IGeoJsonTrack {
    *
    * @protected
    * @param {string[]} times
-   * @param {ITrackSegmentLimits} segment
+   * @param {ITimeRange} segment
    * @return {*}  {boolean}
    * @memberof GeoJsonTrackManager
    */
-  protected isTargetSplitSegment(times: string[], segment: ITrackSegmentLimits): boolean {
+  protected isTargetSplitSegment(times: string[], segment: ITimeRange): boolean {
     return (times[0] === segment.startTime
       || times[times.length] === segment.endTime);
   }
