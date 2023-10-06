@@ -12,7 +12,7 @@ import { IPointProperties, PPoint } from '../Point/Point';
 import { RoutePoint } from './RoutePoint';
 
 /**
- * Basic data of {@link Point}s and corresponding timestamps that lie within the segment.
+ * Basic data of {@link Point}s that lie within the segment.
  *
  * @export
  * @interface RouteSegmentData
