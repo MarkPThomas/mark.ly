@@ -10,6 +10,7 @@ import {
   MultiPoint,
   Position
 } from '../GeoJSON';
+import { RoutePoint } from './Route/RoutePoint';
 
 import { TrackPoint } from './Track/TrackPoint';
 
@@ -165,6 +166,16 @@ export class GeoJsonManager implements IGeoJsonManager {
     const points: Point[] = positions.map((position) => Point.fromPosition(position));
 
     return points;
+  };
+
+  static PositionToRoutePoint(position: Position) {
+    return RoutePoint.fromPosition(position);
+  }
+
+  static PositionsToRoutePoints(positions: Position[]): RoutePoint[] {
+    const coordinates: RoutePoint[] = positions.map((position) => this.PositionToRoutePoint(position));
+
+    return coordinates;
   };
 
   static PositionToTrackPoint(position: Position, time: string) {
