@@ -1,4 +1,4 @@
-import { ITrackSegmentLimits } from "./TrackSegment";
+import { ITimeRange } from "./TrackSegment";
 
 /**
  *  Track objects that implement this interface are able to split tracks into sub-tracks.
@@ -27,11 +27,11 @@ export interface ISplittable<TTrack> {
    *
    * If no valid split is found, returns undefined.
    *
-   * @param {ITrackSegmentLimits} segment
+   * @param {ITimeRange} segment
    * @return {*}  {TTrack} The a copy of the track that lies within the specified limits.
    * @memberof ISplittable
    */
-  splitToSegment(segment: ITrackSegmentLimits): TTrack | undefined;
+  splitToSegment(segment: ITimeRange): TTrack | undefined;
 
   /**
    * Splits track at each of the given segment limits to return portions of the track that do not
@@ -39,9 +39,9 @@ export interface ISplittable<TTrack> {
    *
    * The original track is not modified.
    *
-   * @param {ITrackSegmentLimits[]} segments
+   * @param {ITimeRange[]} segments
    * @return {*}  {TTrack[]} Duplicated sub-tracks that are copies of each track portion that lies within each specified pairs of limits.
    * @memberof ISplittable
    */
-  splitBySegments(segments: ITrackSegmentLimits[]): TTrack[];
+  splitBySegments(segments: ITimeRange[]): TTrack[];
 }

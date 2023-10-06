@@ -93,11 +93,15 @@ export class PPoint
     return point;
   }
 
-  equals(trackPoint: IPointProperties): boolean {
-    return trackPoint.lat === this.lat
-      && trackPoint.lng === this.lng
-      && ((!this.alt && !trackPoint.alt) || trackPoint.alt === this.alt)
-      && ((!this.elevation && !trackPoint.elevation) || trackPoint.elevation === this.elevation)
+  protected equalsBase(point: IPointProperties): boolean {
+    return point.lat === this.lat
+      && point.lng === this.lng
+      && ((!this.alt && !point.alt) || point.alt === this.alt)
+      && ((!this.elevation && !point.elevation) || point.elevation === this.elevation);
+  }
+
+  equals(point: IPointProperties): boolean {
+    return this.equalsBase(point);
   }
 
   // == Factory Methods

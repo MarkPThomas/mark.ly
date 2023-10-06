@@ -807,11 +807,13 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       segment.nextVert = null;
 
       // Update segment & 2nd order properties
-      if (segPrev && vertNext) {
-        const updatedSegVal = this.createSegmentValue(vertPrev.val, vertNext.val);
-        segPrev.val = updatedSegVal;
-      }
-      this.updatePathProperties([vertPrev, vertNext]);
+      // if (segPrev && vertNext) {
+      //   const updatedSegVal = this.createSegmentValue(vertPrev.val, vertNext.val);
+      //   segPrev.val = updatedSegVal;
+      // }
+      this.updatePriorSegmentProps(segPrev);
+      // this.updatePathProperties([vertPrev, vertNext]);
+      this.updatePathProperties([segPrev.prevVert, segPrev.nextVert]);
 
       return vertex;
     }
@@ -879,19 +881,16 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       removedSegmentTail.nextVert = null;
     }
 
-    this.updateSegment(segPrev, vertPrev.val, vertNext.val);
-    this.updatePathProperties([vertPrev, vertNext]);
+    // this.updateSegment(segPrev, vertPrev.val, vertNext.val);
+    // this.updatePathProperties([vertPrev, vertNext]);
+    this.updatePriorSegmentProps(segPrev);
+    this.updatePathProperties([segPrev.prevVert, segPrev.nextVert]);
 
     if (removedVertexHead) {
       return removedVertexHead;
     } else {
       return null;
     }
-    // if (removedVertexHead) {
-    //   return returnListCount ? List.sizeOf(removedVertexHead) : 1;
-    // } else {
-    //   return 0;
-    // }
   }
 
   removeFromTo(
