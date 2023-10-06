@@ -1,126 +1,162 @@
-import { ICloneable } from '../../../../../../common/interfaces';
-
-import {
-  LinkedListDoubleGeneric as List,
-} from '../../../../../../common/utils/dataStructures';
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import {
   VertexNode,
-  SegmentNode
-} from '../../Geometry/Polyline';
+  SegmentNode,
+  Polyline
+} from '../../Geometry';
 
-import { ITrimmable } from './ITrimmable';
-import { IQuery } from './IQuery';
-import { ISplittable } from './ISplittable';
-
-import { TrackPoint } from './TrackPoint';
-import { ITrackSegment, ITrackSegmentLimits, TrackSegment, TrackSegmentData } from './TrackSegment';
-import { TimeStamp } from './TimeStamp';
-import { IPolylineRoute, IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
+import { ITrackPointProperties, TrackPoint } from './TrackPoint';
+import { TrackSegment } from './TrackSegment';
+import { ITimeRange } from './TimeRange';
+import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
-type SegNode = SegmentNode<TrackPoint, TrackSegment>;
+// TODO: For any 'TimeRange' methods, create & test overloads for providing a Track instead of a time range.
+
 
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
   // Misc Methods
   generateTimestampMap(): void;
-  copyRangeByTimestamp(startTime: string, endTime: string): PolylineTrack | null;
+  cloneFromToTimes(startTime: string, endTime: string): PolylineTrack | null;
 
   // Query Methods
-  getNodeByTimestamp(timestamp: string): CoordNode;
+  // Use optional enum for these options?
+  // vertexNodeClosestToTime
+  // vertexNodeBeforeTime
+  // vertexNodeAfterTime
+  vertexNodeByTime(timestamp: string): CoordNode | null | undefined;
+
+  // vertexNodesByTimeRange
+  // use boolean for the following?
+  // vertexNodesFromToTime
+  // vertexNodesBetweenTime
+  // use boolean for exact vs. bounds
+
+  // these can all be used in all methods. Testing need only be done here, just method signatures changed.
+
+  // Delete Methods
+  trimBeforeTime(time: string): CoordNode;
+  trimAfterTime(time: string): CoordNode;
+  trimToTimes(
+    timeStart: string,
+    timeEnd: string
+  ): CoordNode[];
+  trimToTimeRange(segment: ITimeRange): CoordNode[];
+
+  removeAtTime(time: string): CoordNode;
+  removeAtAnyTime(times: string[]): CoordNode[];
+  removeBetweenTimes(
+    timeStart: string,
+    timeEnd: string
+  ): CoordNode;
+  removeFromToTimes(
+    timeStart: string,
+    timeEnd: string
+  ): CoordNode;
+  removeTimeRange(segment: ITimeRange): CoordNode;
+
+  // Update Methods
+
+  // TODO: Add & test the following capabilities:
+  //  1. Timestamp validation - must lie between start/end values, etc. This may be what requires non-string timestamps.
+  //    1.a. Perhaps failure is a thrown error w/ a message that can be relayed to used.
+  //    1.b. User could opt to override timestamps, which first calls a method to clear timestamps of insertion before trying again.
+  //  2. For each inserted item where timestamp is missing, add timestamp interpolated between prior & next point times and relative distances between them.
+  insertBeforeTime(
+    targetTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean
+  ): number;
+  insertAfterTime(
+    targetTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean
+  ): number;
+
+  replaceAtTime(
+    targetTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null;
+  replaceBetweenTimes(
+    startTime: string,
+    endTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null;
+  replaceFromToTimes(
+    startTime: string,
+    endTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null;
+  replaceTimeRange(
+    segment: ITimeRange,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null;
+
+  // Split Methods
+  splitByTime(
+    time: string,
+    includeTimeStampMap: boolean
+  ): PolylineTrack[];
+  splitByTimes(
+    times: string[],
+    includeTimeStampMap: boolean
+  ): PolylineTrack[];
+  splitByTimeRange(
+    segment: ITimeRange, // | PolylineTrack
+    includeTimeStampMap: boolean
+  ): PolylineTrack[];
+
+  // TODO: Implement later
+  //  Create method. Before calling child methods, it should handle interval-merge operations/validations on the time ranges
+  // splitByTimeRanges
 }
 
 export interface IPolylineTrack
   extends
-  IPolylineTrackMethods//,
-// IClippable,
-// ISplittable<PolylineTrack>,
-// IQuery,
-// ICloneable<PolylineTrack>
-{
+  IPolylineTrackMethods,
+  ICloneable<PolylineTrack> {
 
-  // Property Methods
-  // /**
-  //  * Adds derived properties to {@link TrackSegment}s and {@link TrackPoint}s based on initial properties in the {@link TrackPoint}s.
-  //  *
-  //  * @memberof ITrack
-  //  */
-  // addProperties(): void;
-
-  // /**
-  //  * Adds elevation data to the track for matching lat/long points.
-  //  *
-  //  * @param {Map<string, number>} elevations Elevations accessed by a lat/long string key of the `LatLngLiteral`
-  //  * form { lat: number, lng: number } as a JSON string.
-  //  * @memberof Track
-  //  */
-  // addElevations(elevations: Map<string, number>): void;
-
-  // /**
-  //  * Adds derived elevation properties to {@link TrackSegment}s and {@link TrackPoint}s based on elevation data in the {@link TrackPoint}s.
-  //  *
-  //  * @memberof ITrack
-  //  */
-  // addElevationProperties(): void;
-
-  // /**
-  //  * Queries an API to add mapped elevation data to the track.
-  //  *
-  //  * @memberof Track
-  //  */
-  // addElevationsFromApi(): void;
-
-  // getNodes(
-  //   target: string | number | EvaluatorArgs,
-  //   evaluator: (target: string | number | EvaluatorArgs, coord: CoordNode) => boolean
-  // ): CoordNode[];
-
-
-  // Modifying Methods
-
-  // TODO: For any methods modifying nodes & tracks:
-  //   work out how to modify derived properties on nodes & segments kept
-  //        Currently handled in remove/insert/replace by  this.updateTrack(nodesAffected); being called at end
-  //   Including: ISplittable, IClippable methods
-  //   Including copyRangeByTimestamp when not copying the full track
-  //
-
-  // removeNodes(nodes: CoordNode[]): number;
-
-  // insertNodesBefore(
-  //   node: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number;
-
-  // insertNodesAfter(
-  //   node: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number;
-
-  // replaceNodesBetween(
-  //   tempHeadNode: CoordNode,
-  //   tempTailNode: CoordNode,
-  //   nodes: CoordNode[]
-  // ): number;
 }
 
 export class PolylineTrack
-  // extends Polyline<TrackPoint, TrackSegment>
   extends PolylineRoute<TrackPoint, TrackSegment>
   implements IPolylineTrack {
 
   protected _pointsByTimestamp: Map<string, CoordNode>;
 
-  constructor(coords: TrackPoint[]) {
+  constructor(
+    coords: VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | TrackPoint[],
+    includeTimeStampMap: boolean = true
+  ) {
     super(coords);
 
-    // TODO: Consider adding a constructor flag so that this isn't always called. May be lazy invokation.
-    this.generateTimestampMap();
+    if (includeTimeStampMap) {
+      this.generateTimestampMap();
+    }
   }
 
-  // TODO: handle Replace operations with Map.
-  // May need to pass in a callback to separately handle removal vs. insertion.
+  protected override createPolyline(coords: VertexNode<TrackPoint, TrackSegment>[] = []): PolylineTrack {
+    return new PolylineTrack(coords);
+  }
+
   generateTimestampMap() {
     this._pointsByTimestamp = new Map();
     let currNode = this._vertices.head;
@@ -130,121 +166,109 @@ export class PolylineTrack
     }
   }
 
-  protected addNodesToMap(count: number, nodes: CoordNode[]) {
-    if (count) {
-      nodes.forEach((node) => {
-        this._pointsByTimestamp.set(node.val.timestamp, node);
-      })
-    }
-  }
-
-  protected removeNodeFromMap(node: CoordNode) {
-    this._pointsByTimestamp.delete(node.val.timestamp);
-  }
-
-  // clone(): PolylineTrack {
-  //   const track = this.copyRangeByTimestamp('', '') as PolylineTrack;
-
-  //   return track ?? new PolylineTrack([]);
-  // }
-
-  copyRangeByTimestamp(startTime: string, endTime: string): PolylineTrack | null {
-    let startNode = this.getNodeByTimestamp(startTime);
-
-    if (!startNode) {
-      startNode = this.firstVertex;
-      if (!startNode) {
-        return null;
-      }
-    }
-
-    const startNodeClone = startNode.clone() as CoordNode;
-
-    // Duplicate vertices
-    let currNode = startNode;
-    let currNodeClone = startNodeClone;
-    while (currNode && currNode.next) {
-      // Duplicate next & connect
-      const nextNode = currNode.next as CoordNode;
-      const nextNodeClone = nextNode.clone() as CoordNode;
-
-      currNodeClone.next = nextNodeClone;
-      nextNodeClone.prev = currNodeClone;
-
-      if (nextNode.val.timestamp === endTime) {
-        break;
+  protected addNodesToMap(count: number, nodes: CoordNode | CoordNode[]) {
+    if (count && nodes) {
+      if (Array.isArray(nodes)) {
+        nodes.forEach((node) => {
+          if (node) {
+            this._pointsByTimestamp.set(node.val.timestamp, node);
+          }
+        });
       } else {
-        currNodeClone = nextNodeClone;
-        currNode = nextNode;
+        this._pointsByTimestamp.set(nodes.val.timestamp, nodes);
       }
     }
+  }
 
-    // Duplicate segments
-    let startSegmentClone: SegNode;
-    let prevSegmentClone: SegNode;
-    currNode = startNode;
-    currNodeClone = startNodeClone;
-    while (currNode && currNode.next) {
-      const currSegment = currNode.nextSeg;
-      const nextNode = currNode.next as CoordNode;
-      const nextNodeClone = currNodeClone.next as CoordNode;
+  protected addAllNodesToMap(node: CoordNode) {
+    let currNode = node;
+    while (currNode && !this._pointsByTimestamp.has(currNode.val.timestamp)) {
+      this._pointsByTimestamp.set(currNode.val.timestamp, currNode);
 
-      const segmentClone = currSegment.clone() as SegNode;
-      if (!startSegmentClone) {
-        startSegmentClone = segmentClone;
+      currNode = currNode.next as CoordNode;
+    }
+  }
+
+  protected removeNodesFromMap(nodes: CoordNode | CoordNode[]) {
+    if (nodes) {
+      if (Array.isArray(nodes)) {
+        nodes.forEach((node) => {
+          if (node) {
+            this._pointsByTimestamp.delete(node.val.timestamp);
+          }
+        });
       } else {
-        segmentClone.prev = prevSegmentClone;
-        prevSegmentClone.next = segmentClone;
-      }
-      segmentClone.prevVert = currNodeClone;
-      segmentClone.nextVert = nextNodeClone;
-
-      currNodeClone.nextSeg = segmentClone;
-      nextNodeClone.prevSeg = segmentClone;
-
-      if (nextNode.val.timestamp === endTime) {
-        break;
-      } else {
-        prevSegmentClone = segmentClone;
-        currNode = nextNode;
-        currNodeClone = nextNodeClone;
+        this._pointsByTimestamp.delete(nodes.val.timestamp);
       }
     }
-
-    const polylineTrack = new PolylineTrack([]);
-    polylineTrack._vertices = List.fromHead<CoordNode, TrackPoint>(startNodeClone);
-    polylineTrack._segments = List.fromHead<SegNode, TrackSegment>(startSegmentClone);
-
-    return polylineTrack;
   }
-  // ===
 
-  protected updateAllSegmentsAndProperties(numberNodesAffected: number) {
-    if (numberNodesAffected) {
-      // regenerate all segments
-      this.buildSegments();
-      //    optimize: replace segment
-      //     // coord.prevSeg
-      //     // coord.nextSeg
+  protected removeAllNodesFromMap(node: CoordNode) {
+    let currNode = node;
+    while (currNode) {
+      this._pointsByTimestamp.delete(currNode.val.timestamp);
 
-      // update segment properties
-      this.addProperties();
-      //    optimize: update new segment properties and adjacent node properties
+      currNode = currNode.next as CoordNode;
     }
   }
 
+  override clone(): PolylineTrack {
+    const clone = super.clone() as unknown as PolylineTrack;
 
+    if (this._pointsByTimestamp.size) {
+      clone.generateTimestampMap();
+    }
 
-  addProperties() {
-    this.addPropertiesToNodes();
+    return clone;
   }
 
-  protected addPropertiesToNodes() {
-    super.addPropertiesToNodes();
-    this.addPathPropertiesToCoords();
+  cloneFromToTimes(
+    startTime: string | null = null,
+    endTime: string | null = null,
+    includeTimeStampMap: boolean = true
+  ): PolylineTrack | null {
+    let startVertex: VertexNode<TrackPoint, TrackSegment> | null;
+    let endVertex: VertexNode<TrackPoint, TrackSegment> | null;
+
+    startVertex = startTime === null ? null : this.vertexNodeByTime(startTime);
+    endVertex = endTime === null ? null : this.vertexNodeByTime(endTime);
+
+    if (startVertex === undefined || endVertex === undefined) {
+      return null;
+    }
+
+    const clone = super.cloneFromTo(startVertex, endVertex) as PolylineTrack;
+
+    if (clone && includeTimeStampMap) {
+      clone.generateTimestampMap();
+    }
+
+    return clone;
   }
 
-  addElevationProperties() {
+  protected override initializePoint(point: ITrackPointProperties): TrackPoint {
+    return TrackPoint.fromProperties(point);
+  }
+
+  protected initializeVertex(point: ITrackPointProperties): VertexNode<TrackPoint, TrackSegment> {
+    return new VertexNode<TrackPoint, TrackSegment>(this.initializePoint(point));
+  }
+
+  // === Property Methods
+  protected override updatePathProperties(vertices: CoordNode[]) {
+    vertices.forEach((vertex) => {
+      vertex.val.path.addPropertiesFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
+      if (vertex.val.elevation || vertex.val.alt) {
+        vertex.val.path.addElevationSpeedsFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
+      }
+    });
+  }
+
+  protected override createSegmentValue(prevCoord: TrackPoint, nextCoord: TrackPoint): TrackSegment {
+    return TrackSegment.fromTrackPoints(prevCoord, nextCoord);
+  }
+
+  override addElevationProperties() {
     super.addElevationProperties();
 
     let currNode = this._vertices.head;
@@ -254,355 +278,404 @@ export class PolylineTrack
     }
   }
 
-  protected updatePointProperties(point: CoordNode) {
-    point.val.path.addPropertiesFromPath(point.prevSeg?.val, point.nextSeg?.val);
-    if (point.val.elevation) {
-      point.val.path.addElevationSpeedsFromPath(point.prevSeg?.val, point.nextSeg?.val);
-    }
-  }
 
-  protected createSegmentValue(prevCoord: TrackPoint, nextCoord: TrackPoint): TrackSegment {
-    return TrackSegment.fromTrackPoints(prevCoord, nextCoord);
-  }
-
-  // === Consider moving these to PolyLine base class?
-  getNodeByTimestamp(timestamp: string): CoordNode {
-    if (this._pointsByTimestamp) {
+  // === Query Methods
+  vertexNodeByTime(timestamp: string): CoordNode | null | undefined {
+    if (!timestamp) {
+      return undefined;
+    } else if (this._pointsByTimestamp) {
       // Use optimization
       if (this._pointsByTimestamp.has(timestamp)) {
         return this._pointsByTimestamp.get(timestamp);
       }
-      return null;
+      return undefined;
     } else {
       return this.vertexNodesBy(
         timestamp,
         (timestamp: string, coord: CoordNode) => coord.val.timestamp === timestamp
-      )[0]
+      )[0];
     }
   }
 
-  // === IQuery
-  // getSegmentBeforeTime(timestamp: string): ITrackSegmentLimits {
-  // }
-
-  // getSegmentAfterTime(timestamp: string): ITrackSegmentLimits {
-
-  // }
-
-  // getSegmentBetweenTimes(
-  //   startTimestamp: string,
-  //   endTimestampt: string
-  // ): ITrackSegmentLimits {
-
-  // }
-
-  // getSegmentsSplitByTimes(timestamp: string[]) {
-
-  // }
-
-  // getSegmentBeforeTime(coord: LatLngGPS) {
-  //   let currentCoord = this._points.head as CoordinateNode<TrackPoint, TrackSegment>;
-  //   while (currentCoord) {
-  //     if (evaluator(target, coord)) {
-  //       currentCoord.push(coord);
-  //     }
-
-  //     currentCoord = coord.currentCoord as CoordinateNode<TrackPoint, TrackSegment>;
-  //   }
-
-
-  //   const trackPoints = (geoJson.features[0].geometry as LineString).points;
-  //   const coordinateIndex = coordinatesIndexAt(coord, trackPoints);
-
-  //   if (coordinateIndex) {
-  //     const coordinatesSegment = trackPoints.slice(0, coordinateIndex + 1);
-  //     const timeStampsSegment: string[] = geoJson.features[0].properties?.coordinateProperties?.times.slice(0, coordinateIndex + 1);
-
-  //     return { coordinatesSegment, timeStampsSegment };
-  //   }
-  // }
-
-  // getSegmentAfterTime(coord: LatLngGPS) {
-  //   const coordinates = (geoJson.features[0].geometry as LineString).coordinates;
-  //   const coordinateIndex = coordinatesIndexAt(coord, coordinates);
-
-  //   if (coordinateIndex) {
-  //     const coordinatesSegment = coordinates.slice(coordinateIndex);
-  //     const timeStampsSegment: string[] = geoJson.features[0].properties?.coordinateProperties?.times.slice(coordinateIndex);
-
-  //     return { coordinatesSegment, timeStampsSegment };
-  //   }
-  // }
-
-  // // Inclusive with coords
-  // getSegmentBetweenTimes(
-  //   coordStart: LatLngGPS,
-  //   coordEnd: LatLngGPS
-  // ) {
-  //   const coordinates = (geoJson.features[0].geometry as LineString).coordinates;
-  //   const coordinateStartIndex = coordinatesIndexAt(coordStart, coordinates);
-  //   const coordinateEndIndex = coordinatesIndexAt(coordEnd, coordinates);
-
-  //   if (coordinateStartIndex && coordinateEndIndex) {
-  //     const coordinatesSegment = coordinates.slice(coordinateStartIndex, coordinateEndIndex + 1);
-  //     const timeStampsSegment: string[] =
-  //       geoJson.features[0].properties?.coordinateProperties?.times.slice(coordinateStartIndex, coordinateEndIndex + 1);
-
-  //     return { coordinatesSegment, timeStampsSegment };
-  //   }
-  // }
-
-  // // Coord is duplicated between tracks, ignored if end coord. Coords assumed to be in order along track.
-  // getSegmentsSplitByTimes(coords: LatLngGPS[]) {
-  //   const coordinatesSegments = [];
-  //   const timeStampsSegments = [];
-
-  //   let coordinates = (geoJson.features[0].geometry as LineString).coordinates;
-  //   let timeStamps: string[] = geoJson.features[0].properties?.coordinateProperties?.times;
-  //   coords.forEach((coord) => {
-  //     const coordinateIndex = coordinatesIndexAt(coord, coordinates);
-  //     if (coordinateIndex && coordinateIndex < coordinates.length - 1) {
-  //       const segment = coordinates.slice(0, coordinateIndex + 1);
-  //       if (segment.length) {
-  //         coordinatesSegments.push(segment);
-  //         coordinates = coordinates.slice(coordinateIndex);
-
-
-  //         if (timeStamps) {
-  //           timeStampsSegments.push(timeStamps.slice(0, coordinateIndex + 1));
-  //           timeStamps = timeStamps.slice(coordinateIndex);
-  //         }
-  //       }
-  //     }
-  //   });
-  //   if (coordinates.length) {
-  //     coordinatesSegments.push(coordinates);
-  //     timeStampsSegments.push(timeStamps);
-  //   }
-
-  //   return { coordinatesSegments, timeStampsSegments };
-  // }
-
-  // === IClippable
-  // TODO: Consider modifying existing Polyine vs. duplicating it to keep it immutable
-  //    Duplication is slower than operating on GeoJsonTrack, Modification is faster
-  //    Overall result is comparable once state is saved, but for active modification,
-  //       these methods might be better done on the PolylineTrack proxy until state is saved.
-
-  // trimBeforeTime(timestamp: string): void {
-  //   // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
-  //   // const nodeIncluded = nodeExcluded.prev;
-
-  //   this.trimByTimes(timestamp, null);
-  //   // this.trimByTimes2(nodeExcluded.val.timestamp, nodeIncluded.val.timestamp)[1];
-  // }
-
-  // trimAfterTime(timestamp: string): void {
-  //   // const nodeExcluded = this._pointsByTimestamp.get(timestamp);
-  //   // const nodeIncluded = nodeExcluded.prev;
-
-  //   this.trimByTimes(null, timestamp);
-  //   // this.trimByTimes2(nodeIncluded.val.timestamp, nodeExcluded.val.timestamp)[0];
-  // }
-
-
-  // trimByTimes(timestampStart: string, timestampEnd: string): void {
-  //   if (timestampStart === timestampEnd) {
-  //     return;
-  //   }
-
-  //   const vertexStart = this._pointsByTimestamp.get(timestampStart);
-  //   const vertexEnd = this._pointsByTimestamp.get(timestampEnd);
-
-  //   this._vertices.trim(vertexStart, vertexEnd);
-  //   this._segments.trim(vertexStart.nextSeg, vertexEnd.prevSeg);
-
-  //   if (vertexStart) {
-  //     vertexStart.prevSeg.nextCoord = null;
-  //     vertexStart.prevSeg = null;
-
-  //     vertexStart.val.path.addPropertiesFromPath(null, vertexStart.nextSeg.val);
-
-  //     const segmentStart = vertexStart.nextSeg.val;
-  //     segmentStart.addElevationData(vertexStart.val, vertexStart.next.val);
-  //   }
-
-  //   if (vertexEnd) {
-  //     vertexEnd.nextSeg.prevCoord = null;
-  //     vertexEnd.nextSeg = null;
-  //     vertexEnd.val.path.addPropertiesFromPath(vertexEnd.prevSeg.val, null);
-
-  //     vertexEnd.val.path.addPropertiesFromPath(vertexEnd.nextSeg.val, null);
-
-  //     const segmentEnd = vertexEnd.prevSeg.val;
-  //     segmentEnd.addElevationData(vertexEnd.prev.val, vertexEnd.val);
-  //   }
-  // }
-
-  trimBeforeTime(
-    time: string,
-    returnListCount: boolean = false
-  ): number {
-    const point = this._pointsByTimestamp.get(time);
-    if (!point) {
-      return 0;
-    }
-
-    const trimCount = super.trimBefore(point, returnListCount);
-
-    if (trimCount) {
-      this.updatePointProperties(point);
-    }
-
-    return trimCount;
+  // TODO: What is a unique property. By node value?
+  static isPolylineRoute(polyline: any) {
+    return polyline instanceof PolylineTrack || '_pointsByTimestamp' in polyline;
   }
 
-  trimAfterTime(
-    time: string,
-    returnListCount: boolean = false
-  ): number {
+  // === Delete Methods
+  trimBeforeTime(time: string): CoordNode {
     const point = this._pointsByTimestamp.get(time);
     if (!point) {
-      return 0;
+      return null;
     }
 
-    const trimCount = super.trimAfter(point, returnListCount)
+    const trimmedHead = super.trimBefore(point);
+    this.removeNodesFromMap(trimmedHead);
+    return trimmedHead;
+  }
 
-    if (trimCount) {
-      this.updatePointProperties(point);
+  trimAfterTime(time: string): CoordNode {
+    const point = this._pointsByTimestamp.get(time);
+    if (!point) {
+      return null;
     }
 
-    return trimCount;
+    const trimmedHead = super.trimAfter(point);
+    this.removeNodesFromMap(trimmedHead);
+    return trimmedHead;
   }
 
   trimToTimes(
     timeStart: string,
-    timeEnd: string,
-    returnListCount: boolean = false
-  ): number {
-    const headTrim = this.trimBeforeTime(timeStart, returnListCount);
-    const tailTrim = this.trimAfterTime(timeEnd, returnListCount);
+    timeEnd: string
+  ): CoordNode[] {
+    const headTrim = this.trimBeforeTime(timeStart);
+    const tailTrim = this.trimAfterTime(timeEnd);
 
-    return headTrim + tailTrim;
+    this.removeNodesFromMap([headTrim, tailTrim]);
+
+    return [headTrim, tailTrim];
   }
 
-  trimToTimeSegment(
-    segment: ITrackSegmentLimits,
-    returnListCount: boolean = false
-  ): number {
-    return this.trimToTimes(segment.startTime, segment.endTime, returnListCount)
+  trimToTimeRange(segment: ITimeRange): CoordNode[] {
+    return this.trimToTimes(segment.startTime, segment.endTime);
   }
 
-  // trimByTimes2(timestampStop: string, timestampResume: string): void {
-  //   // Get Key Vertices & Segments
-  //   const trackIEndNode = this._pointsByTimestamp.get(timestampStop);
-  //   let trackJStartNode = this._pointsByTimestamp.get(timestampResume);
-
-  //   if (trackIEndNode === trackJStartNode) {
-  //     trackJStartNode = trackJStartNode.clone() as CoordNode;
-  //     trackJStartNode.next = trackIEndNode.next;
-  //     trackJStartNode.nextSeg = trackIEndNode.nextSeg;
-  //   }
-
-  //   // Remove any joining segments
-  //   this.splitAdjacentNodes(trackIEndNode, trackIEndNode.next as CoordNode, trackIEndNode.nextSeg);
-  //   this.splitAdjacentNodes(trackJStartNode.prev as CoordNode, trackJStartNode, trackJStartNode.prevSeg);
-
-  //   // TODO: Here is where derived properties can be updated for start/end nodes of each track
-  // }
-
-  // protected splitAdjacentNodes(nodeI: CoordNode, nodeJ: CoordNode, segIJ: SegNode) {
-  //   if (nodeI) {
-  //     nodeI.next = null;
-  //     nodeI.nextSeg = null;
-  //   }
-
-  //   if (nodeJ) {
-  //     nodeJ.prev = null;
-  //     nodeJ.prevSeg = null;
-  //   }
-
-  //   if (segIJ) {
-  //     segIJ.next = null;
-  //     segIJ.nextCoord = null;
-
-  //     segIJ.prev = null;
-  //     segIJ.prevCoord = null;
-  //   }
-  // }
-
-
-  // === ISplittable
-  //  Modifies track
-  // splitAtTime(timestamp: string) {
-  //   return this.clipBetweenTimes(timestamp, timestamp);
-  // }
-
-  // splitByTimes(timestamps: string[]) {
-  //   return timestamps.map((timestamp) => this.splitAtTime(timestamp));
-  // };
-
-  // Duplicates track
-  splitAtTime(timestamp: string) {
-    const trackI = this.copyRangeByTimestamp('', timestamp);
-    const trackJ = this.copyRangeByTimestamp(timestamp, '');
-
-    return [trackI, trackJ];
-  }
-
-  splitByTimes(timestamps: string[]): PolylineTrack[] {
-    const tracks: PolylineTrack[] = [];
-
-    for (let i = 0; i <= timestamps.length; i++) {
-      const startTime = i === 0 ? '' : timestamps[i - 1];
-      const endTime = i === timestamps.length ? '' : timestamps[i];
-
-      const splitTrack = this.copyRangeByTimestamp(startTime, endTime);
-      tracks.push(splitTrack);
+  removeAtTime(time: string): CoordNode {
+    const point = this._pointsByTimestamp.get(time);
+    if (!point) {
+      return null;
     }
 
-    return tracks;
+    const removedHead = this.removeAt(point);
+    this.removeNodesFromMap(removedHead);
+    return removedHead;
   }
 
-  splitToSegment(segment: ITrackSegmentLimits): PolylineTrack | undefined {
-    return this.copyRangeByTimestamp(segment.startTime, segment.endTime);
+  removeAtAnyTime(times: string[]): CoordNode[] {
+    const vertices = [];
+
+    times.forEach(
+      (time) => {
+        const vertex = this.vertexNodeByTime(time) as CoordNode;
+        if (vertex) {
+          vertices.push(vertex);
+        }
+      }
+    );
+
+    const removedHeads = this.removeAtAny(vertices);
+    this.removeNodesFromMap(removedHeads);
+    return removedHeads;
   }
 
-  splitBySubPolylines(segmentLimits: ITrackSegmentLimits[]): PolylineTrack[] {
-    const tracks: PolylineTrack[] = [];
+  removeBetweenTimes(
+    timeStart: string,
+    timeEnd: string
+  ): CoordNode {
+    const startVertex = this._pointsByTimestamp.get(timeStart);
+    const endVertex = this._pointsByTimestamp.get(timeEnd);
 
-    let splitTrack = this.copyRangeByTimestamp('', segmentLimits[0].startTime);
-    tracks.push(splitTrack);
+    const removedHead = this.removeBetween(startVertex, endVertex);
 
-    for (let i = 0; i < segmentLimits.length - 1; i++) {
-      const limitsPrev = segmentLimits[i];
-      const limitsNext = segmentLimits[i + 1];
+    this.removeNodesFromMap(removedHead);
 
-      const startTime = limitsPrev.endTime;
-      const endTime = limitsNext.startTime;
+    return removedHead;
+  }
 
-      splitTrack = this.copyRangeByTimestamp(startTime, endTime);
-      tracks.push(splitTrack);
+  removeFromToTimes(
+    timeStart: string,
+    timeEnd: string
+  ): CoordNode {
+    const startVertex = this._pointsByTimestamp.get(timeStart);
+    const endVertex = this._pointsByTimestamp.get(timeEnd);
+
+    const removedHead = this.removeFromTo(startVertex, endVertex);
+    this.removeNodesFromMap(removedHead);
+    return removedHead;
+  }
+
+  removeTimeRange(segment: ITimeRange): CoordNode {
+    return this.removeFromToTimes(segment.startTime, segment.endTime);
+  }
+
+  // === Update Methods
+  insertBeforeTime(
+    targetTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean = false
+  ): number {
+    const targetPoint = this._pointsByTimestamp.get(targetTime);
+    if (!targetPoint) {
+      return 0;
     }
 
-    splitTrack = this.copyRangeByTimestamp(segmentLimits[segmentLimits.length].endTime, '');
-    tracks.push(splitTrack);
+    let insertCount = 0;
 
-    return tracks;
+    if (Array.isArray(items)) {
+      const insertionVertices = items.map((point) => this.initializeVertex(point));
+      insertCount = this.insertBefore(targetPoint, insertionVertices, returnListCount);
 
+      this.addNodesToMap(insertCount, insertionVertices);
+    } else if (items instanceof PolylineTrack || items instanceof PolylineRoute || items instanceof Polyline) {
+      insertCount = this.insertBefore(targetPoint, items, returnListCount);
 
-    // const splitTimes = [];
-    // for (const segment of segmentLimits) {
-    //   splitTimes.push(segment.startTime);
-    //   splitTimes.push(segment.endTime);
-    // }
+      this.addAllNodesToMap(items.firstVertex);
+    } else {
+      const insertionVertex = this.initializeVertex(items);
+      insertCount = this.insertBefore(targetPoint, insertionVertex, returnListCount);
 
-    // const splitSegments = this.splitByTimes(splitTimes);
+      this.addNodesToMap(insertCount, insertionVertex);
+    }
 
-    // const tracks: PolylineTrack[] = this.addSplittedSegments(segmentLimits, splitSegments);
+    return insertCount;
+  }
 
-    // const finalTracks = this.trimSingleSegmentSegments(tracks);
+  insertAfterTime(
+    targetTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean = false
+  ): number {
+    const targetPoint = this._pointsByTimestamp.get(targetTime);
+    if (!targetPoint) {
+      return 0;
+    }
 
-    // return finalTracks.length ? finalTracks : [this.clone()];
+    let insertCount = 0;
+
+    if (Array.isArray(items)) {
+      const insertionVertices = items.map((point) => this.initializeVertex(point));
+      insertCount = this.insertAfter(targetPoint, insertionVertices, returnListCount);
+
+      this.addNodesToMap(insertCount, insertionVertices);
+    } else if (items instanceof PolylineTrack || items instanceof PolylineRoute || items instanceof Polyline) {
+      insertCount = this.insertAfter(targetPoint, items, returnListCount);
+
+      this.addAllNodesToMap(items.firstVertex);
+    } else {
+      const insertionVertex = this.initializeVertex(items);
+      insertCount = this.insertAfter(targetPoint, insertionVertex, returnListCount);
+
+      this.addNodesToMap(insertCount, insertionVertex);
+    }
+
+    return insertCount;
+  }
+
+  replaceAtTime(
+    targetTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean = false
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null {
+    const targetPoint = this._pointsByTimestamp.get(targetTime);
+    if (!targetPoint) {
+      return null;
+    }
+
+    let result: {
+      removed: CoordNode;
+      inserted: number;
+    };
+
+    if (Array.isArray(items)) {
+      const replacementVertices = items.map((point) => this.initializeVertex(point));
+      result = this.replaceAt(targetPoint, replacementVertices, returnListCount);
+
+      if (result) {
+        this.removeNodesFromMap(result.removed);
+        this.addNodesToMap(result.inserted, replacementVertices);
+      }
+    } else if (items instanceof PolylineTrack || items instanceof PolylineRoute || items instanceof Polyline) {
+      result = this.replaceAt(targetPoint, items, returnListCount);
+
+      if (result) {
+        this.removeAllNodesFromMap(result.removed);
+        this.addAllNodesToMap(items.firstVertex);
+      }
+    } else {
+      const replacementVertex = this.initializeVertex(items);
+      result = this.replaceAt(targetPoint, replacementVertex, returnListCount);
+
+      if (result) {
+        this.removeNodesFromMap(result.removed);
+        this.addNodesToMap(result.inserted, replacementVertex);
+      }
+    }
+
+    return result;
+  }
+
+  replaceBetweenTimes(
+    startTime: string,
+    endTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean = false
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null {
+    const startVertex = this._pointsByTimestamp.get(startTime);
+    const endVertex = this._pointsByTimestamp.get(endTime);
+
+    let result: {
+      removed: CoordNode;
+      inserted: number;
+    };
+
+    if (Array.isArray(items)) {
+      const replacementVertices = items.map((point) => this.initializeVertex(point));
+      result = this.replaceBetween(startVertex, endVertex, replacementVertices, returnListCount);
+
+      if (result) {
+        this.removeNodesFromMap(result.removed);
+        this.addNodesToMap(result.inserted, replacementVertices);
+      }
+    } else if (items instanceof PolylineTrack || items instanceof PolylineRoute || items instanceof Polyline) {
+      result = this.replaceBetween(startVertex, endVertex, items, returnListCount);
+
+      if (result) {
+        this.removeAllNodesFromMap(result.removed);
+        this.addAllNodesToMap(items.firstVertex);
+      }
+    } else {
+      const replacementVertex = this.initializeVertex(items);
+      result = this.replaceBetween(startVertex, endVertex, replacementVertex, returnListCount);
+
+      if (result) {
+        this.removeNodesFromMap(result.removed);
+        this.addNodesToMap(result.inserted, replacementVertex);
+      }
+    }
+
+    return result;
+  }
+
+  replaceFromToTimes(
+    startTime: string,
+    endTime: string,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean = false
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null {
+
+    if (!startTime && !endTime) {
+      return null;
+    }
+
+    const startVertex = this._pointsByTimestamp.get(startTime) ?? null;
+    const endVertex = this._pointsByTimestamp.get(endTime) ?? null;
+
+    if (startTime === null && endVertex.val === this.firstVertex.val) {
+      return this.replaceBetweenTimes(startTime, endVertex.next.val.timestamp, items, returnListCount);
+    }
+
+    if (endTime === null && startVertex.val === this.lastVertex.val) {
+      return this.replaceBetweenTimes(startVertex.prev.val.timestamp, endTime, items, returnListCount);
+    }
+
+    let result: {
+      removed: CoordNode;
+      inserted: number;
+    };
+
+    if (Array.isArray(items)) {
+      const replacementVertices = items.map((point) => this.initializeVertex(point));
+      result = this.replaceFromTo(startVertex, endVertex, replacementVertices, returnListCount);
+
+      if (result) {
+        this.removeNodesFromMap(result.removed);
+        this.addNodesToMap(result.inserted, replacementVertices);
+      }
+    } else if (items instanceof PolylineTrack || items instanceof PolylineRoute || items instanceof Polyline) {
+      result = this.replaceFromTo(startVertex, endVertex, items, returnListCount);
+
+      if (result) {
+        this.removeAllNodesFromMap(result.removed);
+        this.addAllNodesToMap(items.firstVertex);
+      }
+    } else {
+      const replacementVertex = this.initializeVertex(items);
+      result = this.replaceFromTo(startVertex, endVertex, replacementVertex, returnListCount);
+
+      if (result) {
+        this.removeNodesFromMap(result.removed);
+        this.addNodesToMap(result.inserted, replacementVertex);
+      }
+    }
+
+    return result;
+  }
+
+  replaceTimeRange(
+    segment: ITimeRange,
+    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    returnListCount: boolean = false
+  ): {
+    removed: CoordNode,
+    inserted: number
+  } | null {
+    return this.replaceFromToTimes(segment.startTime, segment.endTime, items, returnListCount);
+  }
+
+  // === Split Methods
+  splitByTime(
+    time: string,
+    includeTimeStampMap: boolean = true
+  ): PolylineTrack[] {
+    const point = this._pointsByTimestamp.get(time);
+    if (!point) {
+      return [this];
+    }
+
+    const polylines = this.splitBy(point) as unknown as PolylineTrack[];
+
+    if (includeTimeStampMap) {
+      polylines.forEach((polyline) => {
+        polyline.generateTimestampMap();
+      })
+    }
+
+    return polylines;
+  }
+
+  splitByTimes(
+    times: string[],
+    includeTimeStampMap: boolean = true
+  ): PolylineTrack[] {
+
+    const points = [];
+    times.forEach(
+      (time) => {
+        const vertex = this._pointsByTimestamp.get(time);
+        if (vertex) {
+          points.push(vertex);
+        }
+      }
+    );
+    if (!points.length) {
+      return [this];
+    }
+
+    const polylines = this.splitByMany(points) as unknown as PolylineTrack[];
+
+    if (includeTimeStampMap) {
+      polylines.forEach((polyline) => {
+        polyline.generateTimestampMap();
+      })
+    }
+
+    return polylines;
+  }
+
+  splitByTimeRange(
+    segment: ITimeRange,
+    includeTimeStampMap: boolean = true
+  ): PolylineTrack[] {
+    return this.splitByTimes([segment.startTime, segment.endTime], includeTimeStampMap);
   }
 }

@@ -23,31 +23,6 @@ export interface TrackSegmentData extends RouteSegmentData {
   segTimestamps: string[];
 };
 
-// TODO: Add validation - at least that end time > start time, if not also format of timestamp
-/**
- * Simple data storage for how to determine sub-segments within an existing larger segment.
- *
- * @export
- * @interface ISegmentLimits
- * @template TCoord
- */
-export interface ITrackSegmentLimits {
-  /**
-   * First timestamp, indicating the start of a segment.
-   *
-   * @type {string}
-   * @memberof ITrackSegmentLimits
-   */
-  startTime: string,
-
-  /**
-   * Last timestamp, indicating the end of a segment.
-   *
-   * @type {(string | null)}
-   * @memberof ITrackSegmentLimits
-   */
-  endTime: string | null
-};
 
 export interface ITrackSegmentProperties extends IRouteSegmentProperties {
   /**

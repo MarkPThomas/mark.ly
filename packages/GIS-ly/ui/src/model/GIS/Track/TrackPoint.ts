@@ -2,11 +2,9 @@ import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import { Point, Position } from "../../GeoJSON";
 
-import { IDirection } from "../Direction";
 import { TimeStamp } from "./TimeStamp";
 import { ITrackPathProps, TrackPathProps } from "./TrackPathProps";
 import { IRoutePointProperties, RoutePoint } from "../Route/RoutePoint";
-import { ITrackSegmentProperties } from './TrackSegment';
 
 interface PositionProperties {
   position: Position;
@@ -131,7 +129,7 @@ export class TrackPoint
   }
 
   equals(trackPoint: ITrackPointProperties): boolean {
-    return super.equals(trackPoint)
+    return this.equalsBase(trackPoint)
       && ((!this.timestamp && !trackPoint.timestamp) || trackPoint.timestamp === this.timestamp)
       && this.path.equals(trackPoint.path);
 
