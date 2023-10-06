@@ -15,9 +15,9 @@ import { RouteSegment } from './RouteSegment';
 import { IPointProperties } from '../Point/Point';
 
 type CoordNode = VertexNode<RoutePoint, RouteSegment>;
-type SegNode = SegmentNode<RoutePoint, RouteSegment>;
 
 export interface IPolylineRouteMethods<TVertex extends RoutePoint, TSegment extends RouteSegment> {
+  // Misc Methods
   /**
      * Adds elevation data to the track for matching lat/long points.
      *
@@ -40,6 +40,96 @@ export interface IPolylineRouteMethods<TVertex extends RoutePoint, TSegment exte
    * @memberof Track
    */
   addElevationsFromApi(): void;
+
+  cloneFromToPoints(
+    startPoint: IPointProperties | null,
+    endPoint: IPointProperties | null
+  ): PolylineRoute<TVertex, TSegment> | null;
+
+  vertexNodesByPoint(point: IPointProperties): VertexNode<TVertex, TSegment>[];
+
+  // Delete Methods
+  trimBeforePoint(point: IPointProperties): VertexNode<TVertex, TSegment> | null;
+  trimAfterPoint(point: IPointProperties): VertexNode<TVertex, TSegment> | null;
+  trimToPoints(
+    startPoint: IPointProperties,
+    endPoint: IPointProperties
+  ): VertexNode<TVertex, TSegment>[];
+
+  removeAtPoint(point: IPointProperties): VertexNode<TVertex, TSegment>;
+  removeAtAnyPoint(points: IPointProperties[]): VertexNode<TVertex, TSegment>[];
+  removeBetweenPoints(
+    startPoint: IPointProperties,
+    endPoint: IPointProperties
+  ): VertexNode<TVertex, TSegment>;
+  removeFromToPoints(
+    startPoint: IPointProperties,
+    endPoint: IPointProperties
+  ): VertexNode<TVertex, TSegment>;
+
+  // Update Methods
+  prependPoints(
+    points: IRoutePointProperties | IRoutePointProperties[],
+    returnListCount: boolean
+  ): number;
+  prependRoute(
+    route: PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): number;
+  appendPoints(
+    points: IRoutePointProperties | IRoutePointProperties[],
+    returnListCount: boolean
+  ): number;
+  appendRoute(
+    route: PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): number;
+
+  insertBeforePoint(
+    targetPoint: IPointProperties,
+    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): number;
+  insertAfterPoint(
+    targetPoint: IPointProperties,
+    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): number;
+
+  replaceAtPoint(
+    targetPoint: IPointProperties,
+    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): {
+    removed: VertexNode<TVertex, TSegment>,
+    inserted: number
+  } | null;
+  replaceBetweenPoints(
+    startPoint: IPointProperties,
+    endPoint: IPointProperties,
+    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): {
+    removed: VertexNode<TVertex, TSegment>,
+    inserted: number
+  } | null;
+  replaceFromToPoints(
+    startPoint: IPointProperties,
+    endPoint: IPointProperties,
+    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    returnListCount: boolean
+  ): {
+    removed: VertexNode<TVertex, TSegment>,
+    inserted: number
+  } | null;
+
+  // Split Methods
+  splitByPoint(
+    point: IPointProperties
+  ): PolylineRoute<TVertex, TSegment>[];
+  splitByPoints(
+    points: IPointProperties[]
+  ): PolylineRoute<TVertex, TSegment>[];
 }
 
 export interface IPolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSegment>
@@ -202,7 +292,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   // === Query Methods
-  vertexNodesByPoint(point: IPointProperties) {
+  vertexNodesByPoint(point: IPointProperties): VertexNode<TVertex, TSegment>[] {
     return this.vertexNodesBy(
       point,
       (target: IPointProperties, vertexNode: VertexNode<TVertex, TSegment>) =>

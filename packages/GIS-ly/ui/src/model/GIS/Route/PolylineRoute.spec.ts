@@ -189,7 +189,7 @@ describe('##PolylineRoute', () => {
           expect(polylineCopy.lastVertex.val.lng).toEqual(routePoints[4].lng);
         });
 
-        it('should copy Route by value rather than by reference', () => {
+        it('should copy the Route by value rather than by reference', () => {
           const startPoint = routePoints[0];
           const endPoint = routePoints[2];
 
@@ -288,43 +288,27 @@ describe('##PolylineRoute', () => {
     });
 
     describe('#equals', () => {
-      it('should return False for Routes Polylines with differing RoutePoints', () => {
-        const coordinates1 = [
-          new RoutePoint(-8.957287, -77.777452),
-          new RoutePoint(-8.957069, -77.777400),
-          new RoutePoint(-8.956936, -77.777381),
-          new RoutePoint(-8.956758, -77.777211),
-          new RoutePoint(-8.956858, -77.777221),
-          new RoutePoint(-8.956958, -77.777231)
-        ];
-        const polyline1 = new PolylineRoute(coordinates1);
+      it('should return False for Route Polylines with differing RoutePoints', () => {
+        const polyline1 = new PolylineRoute(routePoints);
 
-        const coordinates2 = [
+        const routePointsDifferent = [
           new RoutePoint(-8.957287, -77.777452),
           new RoutePoint(-8.957069, -77.777400),
           new RoutePoint(-8.956936, -77.777381),
-          new RoutePoint(-8.956936, -77.777381),
-          new RoutePoint(-8.956758, -77.777211),
-          new RoutePoint(-8.956758, -77.777211)
+          new RoutePoint(-8.956658, -77.777111), // Only differs by lat/long
+          new RoutePoint(-8.956768, -77.777311),
+          new RoutePoint(-8.956778, -77.777411)
         ];
-        const polyline2 = new PolylineRoute(coordinates2);
+        const polyline2 = new PolylineRoute(routePointsDifferent);
 
         const result = polyline1.equals(polyline2);
 
         expect(result).toBeFalsy();
       });
 
-      it('should return True for Routes Polylines with identical RoutePoints', () => {
-        const coordinates = [
-          new RoutePoint(-8.957287, -77.777452),
-          new RoutePoint(-8.957069, -77.777400),
-          new RoutePoint(-8.956936, -77.777381),
-          new RoutePoint(-8.956758, -77.777211),
-          new RoutePoint(-8.956858, -77.777221),
-          new RoutePoint(-8.956958, -77.777231)
-        ];
-        const polyline1 = new PolylineRoute(coordinates);
-        const polyline2 = new PolylineRoute(coordinates);
+      it('should return True for Route Polylines with identical RoutePoints', () => {
+        const polyline1 = new PolylineRoute(routePoints);
+        const polyline2 = new PolylineRoute(routePoints);
 
         const result = polyline1.equals(polyline2);
 
@@ -2570,7 +2554,6 @@ describe('##PolylineRoute', () => {
           const initialLength = polylineRoute.size();
           const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
 
-          // Use current tail node - by value to also test matching
           const startPoint = null;
           const endPoint = routePoints[0];
 
@@ -2596,7 +2579,6 @@ describe('##PolylineRoute', () => {
           const initialLength = polylineRoute.size();
           const initialTail = polylineRoute.lastVertex.prev;
 
-          // Use current last node - by value to also test matching
           const startPoint = routePoints[routePoints.length - 1];
           const endPoint = null;
 
@@ -2653,7 +2635,6 @@ describe('##PolylineRoute', () => {
           const initialHead = polylineRoute.vertexNodesByPoint(routePoints[2])[0].prev;
           const initialTail = polylineRoute.vertexNodesByPoint(routePoints[3])[0].next as VertexNode<RoutePoint, RouteSegment>;
 
-          // Insert after first segment, over second segment
           const startPoint = routePoints[2];
           const endPoint = routePoints[3];
 
@@ -2701,7 +2682,6 @@ describe('##PolylineRoute', () => {
         it(`should replace the Points within the specified target range & return the number of Points inserted if requested`, () => {
           const initialLength = polylineRoute.size();
 
-          // Insert after first segment, over second segment
           const startPoint = routePoints[1];
           const endPoint = routePoints[4];
 
