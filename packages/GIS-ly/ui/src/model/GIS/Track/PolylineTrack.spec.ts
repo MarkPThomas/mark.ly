@@ -362,7 +362,7 @@ describe('##PolylineTrack', () => {
     });
 
     describe('#equals', () => {
-      it('should return False for Track Polylines with differing RoutePoints', () => {
+      it('should return False for Track Polylines with differing TrackPoints', () => {
         const polyline1 = new PolylineTrack(trackPoints);
 
         const trackPointsDifferent = [
@@ -380,7 +380,7 @@ describe('##PolylineTrack', () => {
         expect(result).toBeFalsy();
       });
 
-      it('should return True for Track Polylines with identical RoutePoints', () => {
+      it('should return True for Track Polylines with identical TrackPoints', () => {
         const polyline1 = new PolylineTrack(trackPoints);
         const polyline2 = new PolylineTrack(trackPoints);
 

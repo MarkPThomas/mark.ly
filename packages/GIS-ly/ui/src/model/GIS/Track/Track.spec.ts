@@ -92,7 +92,7 @@ describe('##Track', () => {
       });
     });
 
-    describe('#fromTrackPoints', () => {
+    describe('#fromPoints', () => {
       let trackPoints: TrackPoint[];
 
       beforeEach(() => {
@@ -124,6 +124,11 @@ describe('##Track', () => {
         expect(track.firstSegment.prevVert.val).toEqual(trackPoints[0]);
         expect(track.firstSegment.nextVert.val).toEqual(trackPoints[1]);
       });
+    });
+
+    // TODO: Test
+    describe('#fromPolylines', () => {
+
     });
   });
 
@@ -291,6 +296,88 @@ describe('##Track', () => {
       //       expect(updatedTrackPoints[4].alt).toEqual(500);
       //       expect(updatedTrackPoints[4].timestamp).toEqual('5');
       //     });
+    });
+  });
+
+
+
+  describe('Common Interfaces', () => {
+    let trackPoints: TrackPoint[];
+    let featureCollection: FeatureCollection;
+    let track: Track;
+
+    beforeEach(() => {
+      const coord1 = new TrackPoint(-8.957287, -77.777452, null, '2023-07-04T17:22:15Z');
+      const coord2 = new TrackPoint(-8.957069, -77.777400, null, '2023-07-04T17:22:35Z');
+      const coord3 = new TrackPoint(-8.956936, -77.777381, null, '2023-07-04T17:22:46Z');
+      const coord4 = new TrackPoint(-8.956758, -77.777211, null, '2023-07-04T17:23:08Z');
+      const coord5 = new TrackPoint(-8.956768, -77.777311, null, '2023-07-04T17:24:08Z');
+      const coord6 = new TrackPoint(-8.956778, -77.777411, null, '2023-07-04T17:24:28Z');
+
+      trackPoints = [
+        coord1,
+        coord2,
+        coord3,
+        coord4,
+        coord5,
+        coord6
+      ];
+
+      featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trackPoints);
+      track = Track.fromGeoJson(featureCollection);
+    });
+
+    describe('#clone', () => {
+      it('should clone the Track', () => {
+        const trackClone = track.clone();
+
+        expect(trackClone).not.toBe(track);
+
+        expect(trackClone.trackPoints().length).toEqual(6);
+        expect(trackClone.trackSegments().length).toEqual(5);
+
+        expect(trackClone.firstPoint.val.equals(trackPoints[0])).toBeTruthy();
+        expect(trackClone.firstSegment.prevVert.val.equals(trackPoints[0])).toBeTruthy();
+        expect(trackClone.firstSegment.nextVert.val.equals(trackPoints[1])).toBeTruthy();
+        expect(trackClone.lastSegment.prevVert.val.equals(trackPoints[4])).toBeTruthy();
+        expect(trackClone.lastSegment.nextVert.val.equals(trackPoints[5])).toBeTruthy();
+        expect(trackClone.lastPoint.val.equals(trackPoints[5])).toBeTruthy();
+      });
+    });
+
+    describe('#equals', () => {
+      it('should return False for Track with differing TrackPoints', () => {
+        const polyline1 = Track.fromPoints(trackPoints);
+
+        const trackPointsDifferent = [
+          new TrackPoint(-8.957287, -77.777452, null, '2023-07-04T17:22:15Z'),
+          new TrackPoint(-8.957069, -77.777400, null, '2023-07-04T17:22:35Z'),
+          new TrackPoint(-8.956936, -77.777381, null, '2023-07-04T17:22:46Z'),
+          new TrackPoint(-8.956758, -77.777211, null, '2023-07-04T17:23:28Z'),  // Only differs by timestamp
+          new TrackPoint(-8.956768, -77.777311, null, '2023-07-04T17:24:08Z'),
+          new TrackPoint(-8.956778, -77.777411, null, '2023-07-04T17:24:28Z')
+        ];
+        const polyline2 = Track.fromPoints(trackPointsDifferent);
+
+        const result = polyline1.equals(polyline2);
+
+        expect(result).toBeFalsy();
+      });
+
+      it('should return True for Track Polylines with identical TrackPoints', () => {
+        const polyline1 = Track.fromPoints(trackPoints);
+        const polyline2 = Track.fromPoints(trackPoints);
+
+        const result = polyline1.equals(polyline2);
+
+        expect(result).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Misc Methods', () => {
+    describe('#updateGeoJsonTrack', () => {
+
     });
   });
 
@@ -742,13 +829,10 @@ describe('##Track', () => {
     beforeEach(() => {
       const positions = lineStringTrack.features[0].geometry.coords;
       const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
+
       trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
       featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trackPoints);
       track = Track.fromGeoJson(featureCollection);
-
-      originalTrackPointLength = track.trackPoints().length;
-      originalGeoJsonPointLength = (featureCollection.features[0].geometry as LineString).points.length;
-      originalGeoJsonTimestampLength = featureCollection.features[0].properties.coordinateProperties.times.length;
     });
 
     describe('Trim', () => {
