@@ -23,7 +23,16 @@ export interface INode<V> extends ICloneable<INode<V>> {
    * @memberof INode
    */
   toObject(): any;
+
+  /**
+   * Returns the length from the current node to the last linked node.
+   *
+   * @return {*}  null
+   * @memberof INode
+   */
+  lengthNext(): number;
 }
+
 export class Node<V> implements INode<V>{
   val: V;
   next: Node<V> | null = null;
@@ -53,6 +62,16 @@ export class Node<V> implements INode<V>{
     }
 
     return new Node(val);
+  }
+
+  lengthNext(): number {
+    let count = 0;
+    let currNode: Node<V> = this;
+    while (currNode) {
+      count++;
+      currNode = currNode.next as Node<V>;
+    }
+    return count;
   }
 }
 
@@ -102,6 +121,13 @@ export class NodeKeyVal<K, V> extends Node<V> implements INodeKeyVal<K, V> {
 export interface INodeDouble<V> extends INode<V> {
   prev: NodeDouble<V> | null;
   removeNode(): boolean;
+  /**
+   * Returns the length from the current node to the first linked node.
+   *
+   * @return {*}  null
+   * @memberof INode
+   */
+  lengthPrev(): number;
 }
 
 export class NodeDouble<V> extends Node<V> implements INodeDouble<V>{
@@ -126,6 +152,18 @@ export class NodeDouble<V> extends Node<V> implements INodeDouble<V>{
       isRemoved = true;
     }
     return isRemoved;
+  }
+
+
+
+  lengthPrev(): number {
+    let count = 0;
+    let currNode: NodeDouble<V> = this;
+    while (currNode) {
+      count++;
+      currNode = currNode.prev as NodeDouble<V>;
+    }
+    return count;
   }
 
 

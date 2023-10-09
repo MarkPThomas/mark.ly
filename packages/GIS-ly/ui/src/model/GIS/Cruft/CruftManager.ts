@@ -1,6 +1,6 @@
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
-import { ITrackSegmentLimits } from "../Track/TrackSegment";
+import { ITimeRange } from "../Track/TimeRange";
 import config from '../config';
 
 
@@ -8,8 +8,8 @@ export interface ICruftManager {
   track: Track;
 
   getTrackSegmentsByCruft(triggerDistanceKM: number): {
-    segments: ITrackSegmentLimits[];
-    segmentKeep: ITrackSegmentLimits;
+    segments: ITimeRange[];
+    segmentKeep: ITimeRange;
   };
   splitTrackSegmentByCruft(triggerDistanceKM: number): Track[];
   trimTrackSegmentCruft(triggerDistanceKM: number): void;
@@ -28,22 +28,22 @@ export class CruftManager implements ICruftManager {
   getTrackSegmentsByCruft(
     triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM
   ): {
-    segments: ITrackSegmentLimits[];
-    segmentKeep: ITrackSegmentLimits;
+    segments: ITimeRange[];
+    segmentKeep: ITimeRange;
   } {
     const triggerDistanceMeters = triggerDistanceKM * 1000;
     const coordinates = this._track.trackPoints() as TrackPoint[];
 
     let maxSize = 0;
 
-    const segments: ITrackSegmentLimits[] = [];
-    let segmentKeep: ITrackSegmentLimits;
-    let segment: ITrackSegmentLimits = {
+    const segments: ITimeRange[] = [];
+    let segmentKeep: ITimeRange;
+    let segment: ITimeRange = {
       startTime: coordinates[0].timestamp,
       endTime: null
     };
 
-    const updateSegmentKeep = (segmentCheck: ITrackSegmentLimits, coordCount: number) => {
+    const updateSegmentKeep = (segmentCheck: ITimeRange, coordCount: number) => {
       segments.push(segmentCheck);
 
       // TODO: Add future weights to BB diagonal length as well in case noise cloud on clipped end

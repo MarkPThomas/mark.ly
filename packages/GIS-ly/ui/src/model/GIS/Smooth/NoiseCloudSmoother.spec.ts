@@ -15,7 +15,7 @@ describe('##NoiseCloudSmoother', () => {
         new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:15:00Z')
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -44,7 +44,7 @@ describe('##NoiseCloudSmoother', () => {
         new TrackPoint(39.87826264076499, -105.1354118952022, 0, '2023-07-04T20:01:10Z'),
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary, results in 3.35 meters or less between points
@@ -80,7 +80,7 @@ describe('##NoiseCloudSmoother', () => {
         // End noise cloud
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -117,7 +117,7 @@ describe('##NoiseCloudSmoother', () => {
         new TrackPoint(39.87821988064638, -105.1353883040605, 0, '2023-07-04T20:01:20Z'),
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -169,7 +169,7 @@ describe('##NoiseCloudSmoother', () => {
         new TrackPoint(39.87823789587544, -105.1350151021305, 0, '2023-07-04T20:02:40Z'),
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary

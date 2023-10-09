@@ -3,8 +3,7 @@ import { BoundingBox } from '../../GeoJSON/BoundingBox';
 import {
   VertexNode,
   IPolyline,
-  Polyline,
-  SegmentNode
+  Polyline
 } from '../../Geometry';
 
 // import { ElevationRequestApi } from '../../elevationDataApi';
@@ -200,6 +199,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     return RoutePoint.fromProperties(point);
   }
 
+  protected initializeVertex(point: IRoutePointProperties | VertexNode<TVertex, TSegment>): VertexNode<TVertex, TSegment> {
+    return VertexNode.isVertexNode(point)
+      ? point as VertexNode<TVertex, TSegment>
+      : new VertexNode<TVertex, TSegment>(this.initializePoint(point as IRoutePointProperties) as TVertex);
+  }
+
   // === Property Methods
   protected override addPropertiesToNodes() {
     super.addPropertiesToNodes();
@@ -244,7 +249,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   protected addNodeElevations(elevations: Map<string, number>) {
-    console.log('Adding elevations to points...')
+    // console.log('Adding elevations to points...')
     let coord = this._vertices.head as CoordNode;
     while (coord) {
       const elevation = elevations.get(JSON.stringify({ lat: coord.val.lat, lng: coord.val.lng }));
@@ -277,7 +282,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   protected addElevationDataToSegments() {
-    console.log('Deriving elevation data for segments...')
+    // console.log('Deriving elevation data for segments...')
     let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
     while (coord) {
       const prevCoord = coord.prev as VertexNode<TVertex, TSegment>;
@@ -416,7 +421,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   insertBeforePoint(
     targetPoint: IPointProperties,
-    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
   ): number {
     const targetVertex = this.vertexNodesByPoint(targetPoint)[0] as VertexNode<TVertex, TSegment>;
@@ -430,14 +435,14 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     } else if (items instanceof PolylineRoute || items instanceof Polyline) {
       return this.insertBefore(targetVertex, items, returnListCount);
     } else {
-      const insertionVertex = this.initializePoint(items) as TVertex;
+      const insertionVertex = this.initializeVertex(items as IRoutePointProperties);
       return this.insertBefore(targetVertex, insertionVertex, returnListCount);
     }
   }
 
   insertAfterPoint(
     targetPoint: IPointProperties,
-    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
   ): number {
     const targetVertex = this.vertexNodesByPoint(targetPoint)[0] as VertexNode<TVertex, TSegment>;
@@ -451,14 +456,14 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     } else if (items instanceof PolylineRoute || items instanceof Polyline) {
       return this.insertAfter(targetVertex, items, returnListCount);
     } else {
-      const insertionVertex = this.initializePoint(items) as TVertex;
+      const insertionVertex = this.initializeVertex(items as IRoutePointProperties);
       return this.insertAfter(targetVertex, insertionVertex, returnListCount);
     }
   }
 
   replaceAtPoint(
     targetPoint: IPointProperties,
-    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
   ): {
     removed: VertexNode<TVertex, TSegment>,
@@ -475,15 +480,15 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     } else if (items instanceof PolylineRoute || items instanceof Polyline) {
       return this.replaceAt(targetVertex, items, returnListCount);
     } else {
-      const replacementVertex = this.initializePoint(items) as TVertex;
-      return this.replaceAt(targetVertex, replacementVertex, returnListCount);
+      const insertionVertex = this.initializeVertex(items as IRoutePointProperties);
+      return this.replaceAt(targetVertex, insertionVertex, returnListCount);
     }
   }
 
   replaceBetweenPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties,
-    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
   ): {
     removed: VertexNode<TVertex, TSegment>,
@@ -498,15 +503,15 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     } else if (items instanceof PolylineRoute || items instanceof Polyline) {
       return this.replaceBetween(startVertex, endVertex, items, returnListCount);
     } else {
-      const replacementVertex = this.initializePoint(items) as TVertex;
-      return this.replaceBetween(startVertex, endVertex, replacementVertex, returnListCount);
+      const insertionVertex = this.initializeVertex(items as IRoutePointProperties);
+      return this.replaceBetween(startVertex, endVertex, insertionVertex, returnListCount);
     }
   }
 
   replaceFromToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties,
-    items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
+    items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
   ): {
     removed: VertexNode<TVertex, TSegment>,
@@ -534,8 +539,8 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     } else if (items instanceof PolylineRoute || items instanceof Polyline) {
       return this.replaceFromTo(startVertex, endVertex, items, returnListCount);
     } else {
-      const replacementVertex = this.initializePoint(items) as TVertex;
-      return this.replaceFromTo(startVertex, endVertex, replacementVertex, returnListCount);
+      const insertionVertex = this.initializeVertex(items as IRoutePointProperties);
+      return this.replaceFromTo(startVertex, endVertex, insertionVertex, returnListCount);
     }
   }
 

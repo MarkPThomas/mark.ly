@@ -16,7 +16,7 @@ import { ITrackPropertyProperties, TrackProperty } from './TrackProperty';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { GeoJsonTrack } from './GeoJsonTrack';
-import { ITimeRange } from './TrackSegment';
+import { ITimeRange } from './TimeRange';
 import { TrackPoint } from './TrackPoint';
 
 const testData = {
@@ -119,12 +119,14 @@ describe('##GeoJsonTrack', () => {
       });
 
       describe('#updateGeoJsonTrackFromTrackPoints', () => {
-        it('should do nothing if no trackpoints are given', () => {
+        it('should remove all trackpoints if no trackpoints are given', () => {
           const originalCollection = geoJsonTrack.toFeatureCollection();
 
           const updatedCollection = geoJsonTrack.updateGeoJsonTrackFromTrackPoints([]);
 
-          expect(updatedCollection.equals(originalCollection)).toBeTruthy();
+          expect(updatedCollection.equals(originalCollection)).toBeFalsy();
+          expect(updatedCollection.features[0].properties.coordinateProperties.times.length).toEqual(0);
+          expect((updatedCollection.features[0].geometry as LineString).points.length).toEqual(0);
         });
 
         it('should update the included FeatureCollection with the provided trackpoints', () => {

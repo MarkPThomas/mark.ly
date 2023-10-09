@@ -6,7 +6,6 @@ import {
 import { FeatureCollectionSerial } from '../types';
 
 import { Track } from "../Track/Track";
-import { TrackPoint } from "../Track/TrackPoint";
 
 import { CruftManager } from "./CruftManager";
 import { FeatureCollection } from '../../GeoJSON';

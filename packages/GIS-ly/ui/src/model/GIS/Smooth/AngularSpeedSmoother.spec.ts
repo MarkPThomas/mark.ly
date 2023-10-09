@@ -29,7 +29,7 @@ describe('##AngularSpeedSmoother', () => {
         coord5
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       const speedLimitRadpS = 0.1;
@@ -64,7 +64,7 @@ describe('##AngularSpeedSmoother', () => {
         coord5
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       const speedLimitRadpS = 0.1;
