@@ -2,7 +2,6 @@ import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import {
   VertexNode,
-  SegmentNode,
   Polyline
 } from '../../Geometry';
 

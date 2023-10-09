@@ -14,7 +14,7 @@ describe('##StationarySmoother', () => {
         new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T26:14:00Z')
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary

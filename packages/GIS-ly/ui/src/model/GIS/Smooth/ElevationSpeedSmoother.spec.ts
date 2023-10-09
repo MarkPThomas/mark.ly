@@ -14,7 +14,7 @@ describe('##ElevationSpeedSmoother', () => {
         new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:15:00Z')
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       // 0.254 meters/sec = 3000 feet/hour
@@ -44,7 +44,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: -5m/30sec = -0.16667m/s
       coords[4].elevation = 1000; // -0.16667 m/s
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 
@@ -75,7 +75,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: -5m/30sec = -0.16667m/s
       coords[4].elevation = 1005; // 0.16667 m/s
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 
@@ -107,7 +107,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: -10m/30sec = -0.3333/s
       coords[4].elevation = 1000; // -0.3333 m/s  // Remove
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 
@@ -138,7 +138,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: -20m/30sec = -0.6667/s
       coords[4].elevation = 1000; // -0.6667 m/s  // Remove
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 
@@ -170,7 +170,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: -5m/30sec = -0.16667m/s
       coords[4].elevation = 1015; // -0.16667 m/s
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 
@@ -202,7 +202,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: 5m/30sec = 0.16667m/s
       coords[4].elevation = 1000; // 0.16667 m/s
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 
@@ -234,7 +234,7 @@ describe('##ElevationSpeedSmoother', () => {
       // Seg: -5m/30sec = 0.16667m/s
       coords[4].elevation = 1000; // 0.16667 m/s
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
       track.addElevationProperties();
 

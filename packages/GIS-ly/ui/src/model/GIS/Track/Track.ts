@@ -100,13 +100,24 @@ export class Track implements ITrack {
     return track;
   }
 
-  static fromTrackPoints(trkPts: TrackPoint[]): Track {
+  static fromPoints(trkPts: TrackPoint[]): Track {
     const track = new Track();
 
     const featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trkPts);
 
     track._geoJsonTrack = new GeoJsonTrack(featureCollection);
     track._polylineTrack = new PolylineTrack(trkPts);
+
+    return track;
+  }
+
+  static fromPolyline(trkPolyline: PolylineTrack) {
+    const track = new Track();
+
+    const featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trkPolyline.vertices());
+    track._geoJsonTrack = new GeoJsonTrack(featureCollection);
+
+    track._polylineTrack = trkPolyline;
 
     return track;
   }
@@ -918,45 +929,45 @@ export class Track implements ITrack {
   }
 
   // ===== Split Methods =====
-  // splitBy(
-  //   target: string | IPointProperties | VertexNode<TrackPoint, TrackSegment> | Track,
-  //   iterating: boolean = false
-  // ): Track[] {
-  //   let splitResult: PolylineTrack[];
+  splitBy(
+    target: string | IPointProperties | VertexNode<TrackPoint, TrackSegment>
+  ): Track[] {
+    let splitResult: PolylineTrack[];
 
-  //   if (typeof target === 'string') {
-  //     splitResult = this._polylineTrack.splitByTime(target);
-  //   } else if (VertexNode.isVertexNode(target)) {
-  //     splitResult = this._polylineTrack.splitBy(target as VertexNode<TrackPoint, TrackSegment>);
-  //   } else {
-  //     splitResult = this._polylineTrack.splitByPoint(target as IPointProperties);
-  //   }
+    if (typeof target === 'string') {
+      splitResult = this._polylineTrack.splitByTime(target);
+    } else if (VertexNode.isVertexNode(target)) {
+      splitResult = this._polylineTrack.splitBy(target as VertexNode<TrackPoint, TrackSegment>) as PolylineTrack[];
+    } else {
+      splitResult = this._polylineTrack.splitByPoint(target as IPointProperties) as PolylineTrack[];
+    }
 
-  //   if (!iterating) {
-  //     this.updateGeoJsonTrack(splitResult.length);
-  //   }
-  //   return splitResult as PolylineTrack[];
-  // }
+    const splitTracks = splitResult.map((polylineTrack) =>
+      Track.fromPolyline(polylineTrack)
+    );
 
-  // splitByMany(
-  //   targets: string[] | IPointProperties[] | VertexNode<TrackPoint, TrackSegment>[] | Track[],
-  //   iterating: boolean = false
-  // ): Track[] {
-  //   let splitResult: PolylineTrack[];
+    return splitTracks;
+  }
 
-  //   if (typeof target === 'string') {
-  //     splitResult = this._polylineTrack.splitByManyTime(targets);
-  //   } else if (VertexNode.isVertexNode(targets[0])) {
-  //     splitResult = this._polylineTrack.splitByMany(targets as VertexNode<TrackPoint, TrackSegment>[]);
-  //   } else {
-  //     splitResult = this._polylineTrack.splitByManyPoint(targets as IPointProperties[]);
-  //   }
+  splitByMany(
+    targets: string[] | IPointProperties[] | VertexNode<TrackPoint, TrackSegment>[]
+  ): Track[] {
+    let splitResult: PolylineTrack[];
 
-  //   if (!iterating) {
-  //     this.updateGeoJsonTrack(splitResult.length);
-  //   }
-  //   return splitResult as PolylineTrack[];
-  // }
+    if (typeof targets[0] === 'string') {
+      splitResult = this._polylineTrack.splitByTimes(targets as string[]);
+    } else if (VertexNode.isVertexNode(targets[0])) {
+      splitResult = this._polylineTrack.splitByMany(targets as VertexNode<TrackPoint, TrackSegment>[]) as PolylineTrack[];
+    } else {
+      splitResult = this._polylineTrack.splitByPoints(targets as IPointProperties[]) as PolylineTrack[];
+    }
+
+    const splitTracks = splitResult.map((polylineTrack) =>
+      Track.fromPolyline(polylineTrack)
+    );
+
+    return splitTracks;
+  }
 
   // === ISplittable
   // TODO: These might be better on the Polyline and then updating the geoJson collection object

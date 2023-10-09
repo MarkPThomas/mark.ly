@@ -29,7 +29,7 @@ describe('##SpeedSmoother', () => {
         coord4
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       const speedLimitMpS = 2.2352; // 5 mph
@@ -67,7 +67,7 @@ describe('##SpeedSmoother', () => {
         coord4
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       const speedLimitMpS = 2.2352; // 5 mph
@@ -105,7 +105,7 @@ describe('##SpeedSmoother', () => {
         coord4
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       const speedLimitMpS = 3.129; // 7 mph
@@ -140,7 +140,7 @@ describe('##SpeedSmoother', () => {
         coord4
       ];
 
-      const track = Track.fromTrackPoints(coords);
+      const track = Track.fromPoints(coords);
       track.addProperties();
 
       const speedLimitMpS = 2.2352; // 5 mph

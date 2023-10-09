@@ -117,7 +117,7 @@ describe('##Track', () => {
       });
 
       it('should create a new PolyLine object from the provided TrackPoints', () => {
-        const track = Track.fromTrackPoints(trackPoints);
+        const track = Track.fromPoints(trackPoints);
 
         expect(track.firstPoint.val).toEqual(trackPoints[0]);
         expect(track.firstPoint.nextSeg).toEqual(track.firstSegment);
@@ -155,7 +155,7 @@ describe('##Track', () => {
         coord4
       ];
 
-      track = Track.fromTrackPoints(trackPoints);
+      track = Track.fromPoints(trackPoints);
 
       segmentData = {
         segPoints: [
@@ -349,7 +349,7 @@ describe('##Track', () => {
       });
 
       it('should add derived properties to segments', () => {
-        const track = Track.fromTrackPoints(coordinates);
+        const track = Track.fromPoints(coordinates);
 
         track.addProperties();
 
@@ -363,7 +363,7 @@ describe('##Track', () => {
       });
 
       it('should add derived properties to coordinates', () => {
-        const track = Track.fromTrackPoints(coordinates);
+        const track = Track.fromPoints(coordinates);
 
         track.addProperties();
 
@@ -396,7 +396,7 @@ describe('##Track', () => {
           new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:15:00Z')
         ];
 
-        const track = Track.fromTrackPoints(coords);
+        const track = Track.fromPoints(coords);
         track.addProperties();
 
         const elevations: Map<string, number> = new Map();
@@ -429,7 +429,7 @@ describe('##Track', () => {
           new TrackPoint(39.739914418342, -104.99174913377, 0, '2023-07-04T20:01:10Z')
         ];
 
-        const track = Track.fromTrackPoints(coords);
+        const track = Track.fromPoints(coords);
         track.addProperties();
 
         const elevations: Map<string, number> = new Map();
@@ -499,7 +499,7 @@ describe('##Track', () => {
           new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:15:00Z')
         ];
 
-        const track = Track.fromTrackPoints(coords);
+        const track = Track.fromPoints(coords);
         track.addProperties();
         track.addElevationProperties();
 
@@ -529,7 +529,7 @@ describe('##Track', () => {
         coords[4].elevation = 5000;
         coords[5].elevation = 4000;
 
-        const track = Track.fromTrackPoints(coords);
+        const track = Track.fromPoints(coords);
         track.addProperties();
 
         track.addElevationProperties();
@@ -739,10 +739,6 @@ describe('##Track', () => {
     let featureCollection: FeatureCollection;
     let track: Track;
 
-    let originalTrackPointLength: number;
-    let originalGeoJsonPointLength: number;
-    let originalGeoJsonTimestampLength: number;
-
     beforeEach(() => {
       const positions = lineStringTrack.features[0].geometry.coords;
       const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
@@ -817,7 +813,7 @@ describe('##Track', () => {
 
       describe('#trimBefore', () => {
         it('should do nothing and return null on an empty Route', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const trimmedPoint = track.trimBefore(vertex1);
           expect(trimmedPoint).toBeNull();
@@ -893,7 +889,7 @@ describe('##Track', () => {
 
       describe('#trimAfter', () => {
         it('should do nothing and return null on an empty Route', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const trimmedPoint = track.trimAfter(vertex2);
 
@@ -969,7 +965,7 @@ describe('##Track', () => {
 
       describe('#trimTo', () => {
         it('should do nothing and return a null tuple on an empty Route', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const trimmedPoints = track.trimTo(vertex1, vertex2);
 
@@ -1105,7 +1101,7 @@ describe('##Track', () => {
     describe('Remove', () => {
       describe('#removeAt', () => {
         it('should do nothing & return null for an empty track', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const vertex = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
 
@@ -1241,7 +1237,7 @@ describe('##Track', () => {
 
       describe('#removeAtAny', () => {
         it('should do nothing for vertices provided for an empty track & return an empty array', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const vertex1 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
           const vertex2 = new VertexNode<TrackPoint, TrackSegment>(trackPoints[3]);
@@ -1337,7 +1333,7 @@ describe('##Track', () => {
 
       describe('#removeBetween', () => {
         it('should do nothing & return null for an empty track', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const vetexStart = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
           const vertexEnd = new VertexNode<TrackPoint, TrackSegment>(trackPoints[2]);
@@ -1531,7 +1527,7 @@ describe('##Track', () => {
 
       describe('#removeFromTo', () => {
         it('should do nothing & return null for an empty track', () => {
-          track = Track.fromTrackPoints([]);
+          track = Track.fromPoints([]);
 
           const vetexStart = new VertexNode<TrackPoint, TrackSegment>(trackPoints[1]);
           const vertexEnd = new VertexNode<TrackPoint, TrackSegment>(trackPoints[2]);
@@ -2217,7 +2213,7 @@ describe('##Track', () => {
       });
 
       it('should do nothing & return null if Route is empty', () => {
-        track = Track.fromTrackPoints([]);
+        track = Track.fromPoints([]);
 
         const replacedResult = track.replaceAt(targetVertex, replacementPoints);
 
@@ -3053,218 +3049,158 @@ describe('##Track', () => {
       });
     });
 
-    // // Implement returning split as Track
-    // // describe('Split', () => {
-    // //   it('should do nothing and return an empty array if the Route is empty', () => {
-    // //     track = Track.fromTrackPoints([]);
+    describe('Split', () => {
+      let initialSize: number;
+      beforeEach(() => {
+        initialSize = track.trackPoints().length;
+      });
 
-    // //     const targetPoint = trackPoints[3];
+      it('should do nothing and return an empty array if the Route is empty', () => {
+        track = Track.fromPoints([]);
 
-    // //     const splitRoutes = track.splitBy(targetPoint);
+        const targetPoint = trackPoints[3];
 
-    // //     expect(splitRoutes.length).toEqual(1);
-    // //     const firstRouteSize = splitRoutes[0].size();
-    // //     expect(firstRouteSize.vertices).toEqual(0);
-    // //     expect(firstRouteSize.segments).toEqual(0);
-    // //   });
+        const splitTracks = track.splitBy(targetPoint);
 
-    // //   describe('#splitBy', () => {
-    // //     it(`should do nothing & return the original Route if the specified Point doesn't exist in the Route`, () => {
-    // //       const targetPoint = new TrackPoint(-1, -2, undefined);
+        expect(splitTracks.length).toEqual(1);
+        expect(splitTracks[0].trackPoints().length).toEqual(0);
+      });
 
-    // //       const splitRoutes = track.splitBy(targetPoint);
+      describe('#splitBy', () => {
+        it(`should do nothing & return the original Route if the specified Point doesn't exist in the Route`, () => {
+          const targetPoint = new TrackPoint(-1, -2, undefined);
 
-    // //       expect(splitRoutes.length).toEqual(1);
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
-    // //       expect(firstRouteSize.segments).toEqual(initialSize.segments);
-    // //     });
+          const splitTracks = track.splitBy(targetPoint);
 
-    // //     it(`should do nothing & return the original Route if the specified Point is the start of the Route`, () => {
-    // //       const targetPoint = trackPoints[0];
+          expect(splitTracks.length).toEqual(1);
+          expect(splitTracks[0].trackPoints().length).toEqual(initialSize);
+        });
 
-    // //       const splitRoutes = track.splitBy(targetPoint);
+        it(`should do nothing & return the original Route if the specified Point is the start of the Route`, () => {
+          const targetPoint = trackPoints[0];
 
-    // //       expect(splitRoutes.length).toEqual(1);
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
-    // //       expect(firstRouteSize.segments).toEqual(initialSize.segments);
-    // //     });
+          const splitTracks = track.splitBy(targetPoint);
 
-    // //     it(`should do nothing & return the original Route if the specified Point is the end of the Route`, () => {
-    // //       const targetPoint = trackPoints[trackPoints.length - 1];
+          expect(splitTracks.length).toEqual(1);
+          expect(splitTracks[0].trackPoints().length).toEqual(initialSize);
+        });
 
-    // //       const splitRoutes = track.splitBy(targetPoint);
+        it(`should do nothing & return the original Route if the specified Point is the end of the Route`, () => {
+          const targetPoint = trackPoints[trackPoints.length - 1];
 
-    // //       expect(splitRoutes.length).toEqual(1);
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
-    // //       expect(firstRouteSize.segments).toEqual(initialSize.segments);
-    // //     });
+          const splitTracks = track.splitBy(targetPoint);
 
-    // //     it('should split the Route and return each split Route', () => {
-    // //       const initialHeadVertex = track.firstPoint;
-    // //       const initialHeadSegment = track.firstSegment;
-    // //       const initialTailVertex = track.lastPoint;
-    // //       const initialTailSegment = track.lastSegment;
+          expect(splitTracks.length).toEqual(1);
+          expect(splitTracks[0].trackPoints().length).toEqual(initialSize);
+        });
 
-    // //       const targetPoint = trackPoints[3];
-    // //       const initialSplitVertex = track.vertexNodesByPoint(targetPoint)[0];
-    // //       const initialSplitPrevVertex = initialSplitVertex.prev;
-    // //       const initialSplitPrevSegment = initialSplitVertex.prevSeg;
-    // //       const initialSplitNextVertex = initialSplitVertex.next;
-    // //       const initialSplitNextSegment = initialSplitVertex.nextSeg;
+        it('should split the Track and return each split Route', () => {
+          const targetPoint = trackPoints[3];
 
-    // //       const splitRoutes = track.splitBy(targetPoint);
+          const splitTracks = track.splitBy(targetPoint);
 
-    // //       expect(splitRoutes.length).toEqual(2);
+          expect(splitTracks.length).toEqual(2);
 
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(initialSize.vertices - 2);
-    // //       expect(firstRouteSize.segments).toEqual(initialSize.segments - 2);
+          expect(splitTracks[0].trackPoints().length).toEqual(initialSize - 2);
+          expect(splitTracks[1].trackPoints().length).toEqual(initialSize - 3);
+        });
 
-    // //       const secondRouteSize = splitRoutes[1].size();
-    // //       expect(secondRouteSize.vertices).toEqual(initialSize.vertices - 3);
-    // //       expect(secondRouteSize.segments).toEqual(initialSize.segments - 3);
+        it(`should update the 2nd-order properties of the last Point of the first split Route, and the first Point of the second split Route`, () => {
+          track.addProperties();
+          const targetPoint = trackPoints[3];
 
-    // //       expect(initialHeadVertex).toEqual(splitRoutes[0].firstPoint);
-    // //       expect(initialHeadSegment).toEqual(splitRoutes[0].firstSegment);
+          const vertex = track.vertexNodesByPoint(trackPoints[3])[0];
+          expect(vertex.val.path.rotation).toBeCloseTo(-1.9503, 4);
 
-    // //       expect(initialTailVertex).toEqual(splitRoutes[1].lastPoint);
-    // //       expect(initialTailSegment).toEqual(splitRoutes[1].lastSegment);
+          const splitTracks = track.splitBy(targetPoint);
 
-    // //       expect(initialSplitVertex).toEqual(splitRoutes[0].lastPoint);
-    // //       expect(initialSplitVertex).not.toEqual(splitRoutes[1].firstPoint);
-    // //       expect(initialSplitVertex.val).toEqual(splitRoutes[1].firstPoint.val);
+          expect(splitTracks[0].lastPoint.val.path.rotation).toBeNull();
+          expect(splitTracks[1].firstPoint.val.path.rotation).toBeNull();
+        });
+      });
 
-    // //       expect(initialSplitPrevVertex).toEqual(splitRoutes[0].lastPoint.prev);
-    // //       expect(initialSplitPrevSegment).toEqual(splitRoutes[0].lastPoint.prevSeg);
+      describe('#splitByMany', () => {
+        it(`should do nothing & return one entry of the original Route if the specified Points don't exist in the Route`, () => {
+          const targetPoint1 = new TrackPoint(-1, -2, undefined);
+          const targetPoint2 = new TrackPoint(-2, -3, undefined);
+          const targetPoint3 = new TrackPoint(-3, -4, undefined);
+          const targetPoints = [targetPoint1, targetPoint2, targetPoint3];
 
-    // //       expect(initialSplitNextVertex).toEqual(splitRoutes[1].firstPoint.next);
-    // //       expect(initialSplitNextSegment).toEqual(splitRoutes[1].firstPoint.nextSeg);
-    // //     });
+          const splitTracks = track.splitByMany(targetPoints);
 
-    // //     it(`should update the 2nd-order properties of the last Point of the first split Route, and the first Point of the second split Route`, () => {
-    // //       track.addProperties();
-    // //       const targetPoint = trackPoints[3];
+          expect(splitTracks.length).toEqual(1);
+          expect(splitTracks[0].trackPoints().length).toEqual(initialSize);
+        });
 
-    // //       const vertex = track.vertexNodesByVertex(trackPoints[3])[0];
-    // //       expect(vertex.val.path.rotation).toBeCloseTo(-1.9503, 4);
+        it('should split the Route and return all sub-Routes demarcated by the provided Points', () => {
+          const targetPoint1 = trackPoints[2];
+          const targetPoint2 = trackPoints[3];
+          const targetPoints = [targetPoint1, targetPoint2];
 
-    // //       const splitRoutes = track.splitBy(targetPoint);
+          const splitTracks = track.splitByMany(targetPoints);
 
-    // //       expect(splitRoutes[0].lastPoint.val.path.rotation).toBeNull();
-    // //       expect(splitRoutes[1].firstPoint.val.path.rotation).toBeNull();
-    // //     });
-    // //   });
+          expect(splitTracks.length).toEqual(3);
 
-    // //   describe('#splitByMany', () => {
-    // //     it(`should do nothing & return one entry of the original Route if the specified Points don't exist in the Route`, () => {
-    // //       const initialSize = track.size()
+          expect(splitTracks[0].trackPoints().length).toEqual(3);
+          expect(splitTracks[1].trackPoints().length).toEqual(2);
+          expect(splitTracks[2].trackPoints().length).toEqual(3);
+        });
 
-    // //       const targetPoint1 = new TrackPoint(-1, -2, undefined);
-    // //       const targetPoint2 = new TrackPoint(-2, -3, undefined);
-    // //       const targetPoint3 = new TrackPoint(-3, -4, undefined);
-    // //       const targetPoints = [targetPoint1, targetPoint2, targetPoint3];
+        it('should split the Route and return all sub-Routes demarcated by the provided Points, ignoring invalid Points', () => {
+          const targetPoint1 = trackPoints[2];
+          const targetPoint2 = new TrackPoint(-2, -3, undefined);
+          const targetPoint3 = trackPoints[4];
+          const targetPoints = [targetPoint1, targetPoint2, targetPoint3];
 
-    // //       const splitRoutes = track.splitByMany(targetPoints);
+          const splitTracks = track.splitByMany(targetPoints);
 
-    // //       expect(splitRoutes.length).toEqual(1);
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(initialSize.vertices);
-    // //       expect(firstRouteSize.segments).toEqual(initialSize.segments);
-    // //     });
+          expect(splitTracks.length).toEqual(3);
 
-    // //     it('should split the Route and return all sub-Routes demarcated by the provided Points', () => {
-    // //       const targetPoint1 = trackPoints[2];
-    // //       const targetPoint2 = trackPoints[3];
-    // //       const targetPoints = [targetPoint1, targetPoint2];
+          expect(splitTracks[0].trackPoints().length).toEqual(3);
+          expect(splitTracks[1].trackPoints().length).toEqual(3);
+          expect(splitTracks[2].trackPoints().length).toEqual(2);
+        });
 
-    // //       const splitRoutes = track.splitByMany(targetPoints);
+        it('should not split the Route more than once by duplicate Points', () => {
+          const targetPoint1 = trackPoints[3];
+          const targetPoint2 = trackPoints[3];
+          const targetPoints = [targetPoint1, targetPoint2];
 
-    // //       expect(splitRoutes.length).toEqual(3);
+          const splitTracks = track.splitByMany(targetPoints);
 
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(3);
-    // //       expect(firstRouteSize.segments).toEqual(2);
+          expect(splitTracks.length).toEqual(2);
 
-    // //       const secondRouteSize = splitRoutes[1].size();
-    // //       expect(secondRouteSize.vertices).toEqual(2);
-    // //       expect(secondRouteSize.segments).toEqual(1);
+          expect(splitTracks[0].trackPoints().length).toEqual(4);
+          expect(splitTracks[1].trackPoints().length).toEqual(3);
+        });
 
-    // //       const thirdRouteSize = splitRoutes[2].size();
-    // //       expect(thirdRouteSize.vertices).toEqual(3);
-    // //       expect(thirdRouteSize.segments).toEqual(2);
-    // //     });
+        it(`should update the 2nd-order properties of the first and last Point of the middle split Route`, () => {
+          track.addProperties();
+          const targetPoint1 = trackPoints[2];
+          const targetPoint2 = trackPoints[4];
+          const targetPoints = [targetPoint1, targetPoint2];
 
-    // //     it('should split the Route and return all sub-Routes demarcated by the provided Points, ignoring invalid Points', () => {
-    // //       const targetPoint1 = trackPoints[2];
-    // //       const targetPoint2 = new TrackPoint(-2, -3, undefined);
-    // //       const targetPoint3 = trackPoints[4];
-    // //       const targetPoints = [targetPoint1, targetPoint2, targetPoint3];
+          const vertex1 = track.vertexNodesByPoint(targetPoint1)[0];
+          const vertex2 = track.vertexNodesByPoint(targetPoint2)[0];
 
-    // //       const splitRoutes = track.splitByMany(targetPoints);
+          expect(vertex1.val.path.rotation).toBeCloseTo(1.6946, 4);
+          expect(vertex2.val.path.rotation).toBeCloseTo(0.9684, 4);
 
-    // //       expect(splitRoutes.length).toEqual(3);
+          const splitTracks = track.splitByMany(targetPoints);
 
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(3);
-    // //       expect(firstRouteSize.segments).toEqual(2);
+          expect(splitTracks.length).toEqual(3);
 
-    // //       const secondRouteSize = splitRoutes[1].size();
-    // //       expect(secondRouteSize.vertices).toEqual(3);
-    // //       expect(secondRouteSize.segments).toEqual(2);
+          expect(splitTracks[0].firstPoint.val.path.rotation).toBeNull();
+          expect(splitTracks[0].lastPoint.val.path.rotation).toBeNull();
 
-    // //       const thirdRouteSize = splitRoutes[2].size();
-    // //       expect(thirdRouteSize.vertices).toEqual(2);
-    // //       expect(thirdRouteSize.segments).toEqual(1);
-    // //     });
+          expect(splitTracks[1].firstPoint.val.path.rotation).toBeNull();
+          expect(splitTracks[1].lastPoint.val.path.rotation).toBeNull();
 
-    // //     it('should not split the Route more than once by duplicate Points', () => {
-    // //       const targetPoint1 = trackPoints[3];
-    // //       const targetPoint2 = trackPoints[3];
-    // //       const targetPoints = [targetPoint1, targetPoint2];
-
-    // //       const splitRoutes = track.splitByMany(targetPoints);
-
-    // //       expect(splitRoutes.length).toEqual(2);
-
-    // //       const firstRouteSize = splitRoutes[0].size();
-    // //       expect(firstRouteSize.vertices).toEqual(4);
-    // //       expect(firstRouteSize.segments).toEqual(3);
-
-    // //       const secondRouteSize = splitRoutes[1].size();
-    // //       expect(secondRouteSize.vertices).toEqual(3);
-    // //       expect(secondRouteSize.segments).toEqual(2);
-    // //     });
-
-    // //     it(`should update the 2nd-order properties of the first and last Point of the middle split Route`, () => {
-    // //       track.addProperties();
-    // //       const targetPoint1 = trackPoints[2];
-    // //       const targetPoint2 = trackPoints[4];
-    // //       const targetPoints = [targetPoint1, targetPoint2];
-
-    // //       const vertex1 = track.vertexNodesByVertex(targetPoint1)[0];
-    // //       const vertex2 = track.vertexNodesByVertex(targetPoint2)[0];
-
-    // //       expect(vertex1.val.path.rotation).toBeCloseTo(1.6946, 4);
-    // //       expect(vertex2.val.path.rotation).toBeCloseTo(0.9684, 4);
-
-    // //       const splitRoutes = track.splitByMany(targetPoints);
-
-    // //       expect(splitRoutes.length).toEqual(3);
-
-    // //       expect(splitRoutes[0].firstPoint.val.path.rotation).toBeNull();
-    // //       expect(splitRoutes[0].lastPoint.val.path.rotation).toBeNull();
-
-    // //       expect(splitRoutes[1].firstPoint.val.path.rotation).toBeNull();
-    // //       expect(splitRoutes[1].lastPoint.val.path.rotation).toBeNull();
-
-    // //       expect(splitRoutes[2].firstPoint.val.path.rotation).toBeNull();
-    // //       expect(splitRoutes[2].lastPoint.val.path.rotation).toBeNull();
-    // //     });
-    // //   });
-    // // });
+          expect(splitTracks[2].firstPoint.val.path.rotation).toBeNull();
+          expect(splitTracks[2].lastPoint.val.path.rotation).toBeNull();
+        });
+      });
+    });
 
   });
 
