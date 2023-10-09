@@ -48,6 +48,17 @@ describe('##Track', () => {
     }
   });
 
+  // TODO: Test
+  describe('Static Methods', () => {
+    describe('#nodesToTrackPoints', () => {
+
+    });
+
+    describe('#nodeHeadToTrackPoints', () => {
+
+    });
+  });
+
   describe('Creation', () => {
     describe('#fromGeoJson', () => {
       let featureCollection: FeatureCollection;
@@ -132,8 +143,6 @@ describe('##Track', () => {
     });
   });
 
-
-  // TODO: Clone & Equals tests
   // TODO: updateGeoJsonTrack tests?
   describe('Duplication', () => {
     let trackPoints: TrackPoint[];
@@ -182,6 +191,7 @@ describe('##Track', () => {
 
     it('should Foo', () => { })
 
+    // TODO: Not used
     describe('#updateBySegment', () => {
       //     it('should add data to an empty track', () => {
       //       const track = Track.fromTrackPoints([]);
@@ -235,6 +245,7 @@ describe('##Track', () => {
       //     });
     });
 
+    // TODO: Not used once Split feature finished
     describe('#copyBySegment', () => {
       //     it('should return a new Track with the supplied data when called on an empty track', () => {
       //       const track = Track.fromTrackPoints([]);
@@ -377,6 +388,10 @@ describe('##Track', () => {
 
   describe('Misc Methods', () => {
     describe('#updateGeoJsonTrack', () => {
+
+    });
+
+    describe('#clear', () => {
 
     });
   });
@@ -819,9 +834,34 @@ describe('##Track', () => {
         expect(nodes.val.timestamp).toEqual(trackPoints[2].timestamp);
       });
     });
+
+    // TODO: Test
+    describe('#trackPoints', () => {
+      // TODO: optional overload with ITimeRange
+      // null, val = before time
+      // val, null = after time
+      // val, val = between times
+
+    });
+
+    // TODO: Test
+    describe('#trackSegments', () => {
+      // TODO: optional overload with ITimeRange
+      // null, val = before time
+      // val, null = after time
+      // val, val = between times
+    });
+
+    // TODO: Test
+    describe('#timestamps', () => {
+      // TODO: optional overload with ITimeRange
+      // null, val = before time
+      // val, null = after time
+      // val, val = between times
+    });
   });
 
-  describe('Manipulating PolylineTrack', () => {
+  describe('Manipulating Track', () => {
     let trackPoints: TrackPoint[];
     let featureCollection: FeatureCollection;
     let track: Track;
@@ -3286,6 +3326,9 @@ describe('##Track', () => {
       });
     });
 
+    describe('Time Range Convenience Methods', () => {
+      // TODO: Add/test convenience methods?
+    });
   });
 
   // describe('Smooth Methods', () => {

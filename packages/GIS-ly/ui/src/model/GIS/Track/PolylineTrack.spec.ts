@@ -391,6 +391,7 @@ describe('##PolylineTrack', () => {
     });
   });
 
+  // TODO: Test
   describe('Optimizations', () => {
     describe('#generateTimestampMap', () => {
 
