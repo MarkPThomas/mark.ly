@@ -2550,7 +2550,7 @@ describe('##PolylineRoute', () => {
         });
 
         it(`should replace the first Point in the Route & return a truthy number of Points inserted
-          if only an end Point is provided and the end Point is at the start of the Route, `, () => {
+          if only an end Point is provided and the end Point is at the start of the Route`, () => {
           const initialLength = polylineRoute.size();
           const initialHead = polylineRoute.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
 

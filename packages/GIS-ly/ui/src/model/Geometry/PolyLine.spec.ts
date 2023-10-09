@@ -620,7 +620,7 @@ describe('##PolyLine', () => {
     });
 
     describe('Trim', () => {
-      describe('#trimBeforeVertex', () => {
+      describe('#trimBefore', () => {
         it('should do nothing and return null on an empty polyline', () => {
           polyline = new Polyline([]);
 
@@ -634,6 +634,7 @@ describe('##PolyLine', () => {
           const trimCount = polyline.trimBefore(vertex);
 
           expect(trimCount).toBeNull();
+          expect(polyline.vertices().length).toEqual(0);
           expect(polyline.size().vertices).toEqual(0);
           expect(polyline.size().segments).toEqual(0);
           expect(polyline.firstVertex).toEqual(originalVertexHead);
@@ -716,7 +717,7 @@ describe('##PolyLine', () => {
         });
       });
 
-      describe('#trimAfterVertex', () => {
+      describe('#trimAfter', () => {
         it('should do nothing and return null on an empty polyline', () => {
           polyline = new Polyline([]);
 
@@ -730,6 +731,7 @@ describe('##PolyLine', () => {
           const trimCount = polyline.trimAfter(vertex);
 
           expect(trimCount).toBeNull();
+          expect(polyline.vertices().length).toEqual(0);
           expect(polyline.size().vertices).toEqual(0);
           expect(polyline.size().segments).toEqual(0);
           expect(polyline.firstVertex).toEqual(originalVertexHead);
@@ -812,7 +814,7 @@ describe('##PolyLine', () => {
         });
       });
 
-      describe('#trimToVertices', () => {
+      describe('#trimTo', () => {
         it('should do nothing and return null on an empty polyline', () => {
           polyline = new Polyline([]);
 
@@ -1116,7 +1118,7 @@ describe('##PolyLine', () => {
     });
 
     describe('Remove', () => {
-      describe('#removeAtVertex', () => {
+      describe('#removeAt', () => {
         it('should do nothing & return null for an empty polyline', () => {
           polyline = new Polyline([]);
 
@@ -1294,7 +1296,7 @@ describe('##PolyLine', () => {
         });
       });
 
-      describe('#removeVertices', () => {
+      describe('#removeAtAny', () => {
         it('should do nothing for vertices provided for an empty polyline & return an empty array', () => {
           polyline = new Polyline([]);
 
@@ -1365,7 +1367,7 @@ describe('##PolyLine', () => {
         });
       });
 
-      describe('#removeBetweenVertices', () => {
+      describe('#removeBetween', () => {
         it('should do nothing & return null for an empty polyline', () => {
           polyline = new Polyline([]);
 
@@ -1619,7 +1621,7 @@ describe('##PolyLine', () => {
         });
       });
 
-      describe('#removeFromToVertices', () => {
+      describe('#removeFromTo', () => {
         it('should do nothing & return null for an empty polyline', () => {
           polyline = new Polyline([]);
 
@@ -3329,7 +3331,7 @@ describe('##PolyLine', () => {
 
       // Just check that this correctly calls replaceVerticesBetween
       // replaceVertexAt(vertexTarget: VertexNode<TVertex, TSegment>, vertexReplacement: VertexNode<TVertex, TSegment>): boolean;
-      describe('#replaceVertexAt', () => {
+      describe('#replaceAt', () => {
         it('should return null & do nothing if the target node is not specified', () => {
           const initialLength = polyline.size();
 
@@ -3449,7 +3451,7 @@ describe('##PolyLine', () => {
       });
 
       // Main set of tests
-      describe('#replaceVerticesBetween', () => {
+      describe('#replaceBetween', () => {
         it('should return null & do nothing if the start & end nodes are both unspecified', () => {
           const initialLength = polyline.size();
 
@@ -3778,7 +3780,7 @@ describe('##PolyLine', () => {
         });
       });
 
-      describe('#replaceVerticesFromTo', () => {
+      describe('#replaceFromTo', () => {
         it('should return null & do nothing if the start & end nodes are both unspecified', () => {
           const initialLength = polyline.size();
 
@@ -3856,6 +3858,80 @@ describe('##PolyLine', () => {
             // [4, -140] as TestVertex,
             // [5, -150] as TestVertex,
             [6, -160] as TestVertex
+          ]);
+        });
+
+        it(`should replace the first Point in the Route & return a truthy number of Points inserted
+        if only an end Point is provided and the end Point is at the start of the Route`, () => {
+          const initialLength = polyline.size();
+          const initialHead = polyline.firstVertex.next as VertexNode<TestVertex, TestSegment>;
+
+          const startNode = null;
+          const endNode = getVertexNode(coordinates[0]);
+
+          const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
+          const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
+          const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
+          const nodes = [node1, node2, node3];
+
+          const result = polyline.replaceFromTo(startNode, endNode, nodes);
+
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polyline.size().vertices).toEqual(initialLength.vertices - removed + 3); // 3 inserted
+          expect(polyline.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(polyline.firstVertex.val).toEqual(node1.val);
+          expect(initialHead.prev.val).toEqual(node3.val);
+
+          expect(polyline.vertices()).toEqual([
+            [99, 140] as TestVertex,
+            [666, 69] as TestVertex,
+            [420, 171] as TestVertex,
+            // [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex
+          ]);
+        });
+
+        it(`should replace the last Point in the route & return a truthy number of Points inserted
+        if only a start Point is provided & the starty Node is at the end of the Route`, () => {
+          const initialLength = polyline.size();
+          const initialTail = polyline.lastVertex.prev;
+
+          const startNode = getVertexNode(coordinates[coordinates.length - 1]);
+          const endNode = null;
+
+          const node1 = new VertexNode<TestVertex, TestSegment>([99, 140] as TestVertex);
+          const node2 = new VertexNode<TestVertex, TestSegment>([666, 69] as TestVertex);
+          const node3 = new VertexNode<TestVertex, TestSegment>([420, 171] as TestVertex);
+          const nodes = [node1, node2, node3];
+
+          const result = polyline.replaceFromTo(startNode, endNode, nodes);
+
+          const removed = sizeOf(result.removed);
+          expect(removed).toEqual(1);
+          expect(result.inserted).toBeTruthy(); // 3 inserted
+          expect(polyline.size().vertices).toEqual(initialLength.vertices - removed + 3); // 3 inserted
+          expect(polyline.size().segments).toEqual(initialLength.segments - removed + 3);
+
+          expect(initialTail.next.val).toEqual(node1.val);
+          expect(polyline.lastVertex.val).toEqual(node3.val);
+
+          expect(polyline.vertices()).toEqual([
+            [1, -110] as TestVertex,
+            [2, -120] as TestVertex,
+            [3, -130] as TestVertex,
+            [4, -140] as TestVertex,
+            [5, -150] as TestVertex,
+            // [6, -160] as TestVertex,
+            [99, 140] as TestVertex,
+            [666, 69] as TestVertex,
+            [420, 171] as TestVertex,
           ]);
         });
       });

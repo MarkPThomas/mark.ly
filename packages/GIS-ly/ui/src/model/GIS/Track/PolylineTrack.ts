@@ -12,8 +12,6 @@ import { ITimeRange } from './TimeRange';
 import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
-// TODO: For any 'TimeRange' methods, create & test overloads for providing a Track instead of a time range.
-
 
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
@@ -250,8 +248,10 @@ export class PolylineTrack
     return TrackPoint.fromProperties(point);
   }
 
-  protected initializeVertex(point: ITrackPointProperties): VertexNode<TrackPoint, TrackSegment> {
-    return new VertexNode<TrackPoint, TrackSegment>(this.initializePoint(point));
+  protected override initializeVertex(point: ITrackPointProperties | VertexNode<TrackPoint, TrackSegment>): VertexNode<TrackPoint, TrackSegment> {
+    return VertexNode.isVertexNode(point)
+      ? point as VertexNode<TrackPoint, TrackSegment>
+      : new VertexNode<TrackPoint, TrackSegment>(this.initializePoint(point as ITrackPointProperties));
   }
 
   // === Property Methods
@@ -298,7 +298,7 @@ export class PolylineTrack
   }
 
   // TODO: What is a unique property. By node value?
-  static isPolylineRoute(polyline: any) {
+  static isPolylineTrack(polyline: any) {
     return polyline instanceof PolylineTrack || '_pointsByTimestamp' in polyline;
   }
 
@@ -402,7 +402,7 @@ export class PolylineTrack
   // === Update Methods
   insertBeforeTime(
     targetTime: string,
-    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    items: ITrackPointProperties | ITrackPointProperties[] | VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | PolylineTrack,
     returnListCount: boolean = false
   ): number {
     const targetPoint = this._pointsByTimestamp.get(targetTime);
@@ -421,8 +421,12 @@ export class PolylineTrack
       insertCount = this.insertBefore(targetPoint, items, returnListCount);
 
       this.addAllNodesToMap(items.firstVertex);
+    } else if (VertexNode.isVertexNode(items)) {
+      insertCount = this.insertBefore(targetPoint, items as VertexNode<TrackPoint, TrackSegment>, returnListCount);
+
+      this.addNodesToMap(insertCount, items as VertexNode<TrackPoint, TrackSegment>);
     } else {
-      const insertionVertex = this.initializeVertex(items);
+      const insertionVertex = this.initializeVertex(items as ITrackPointProperties);
       insertCount = this.insertBefore(targetPoint, insertionVertex, returnListCount);
 
       this.addNodesToMap(insertCount, insertionVertex);
@@ -433,7 +437,7 @@ export class PolylineTrack
 
   insertAfterTime(
     targetTime: string,
-    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    items: ITrackPointProperties | ITrackPointProperties[] | VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | PolylineTrack,
     returnListCount: boolean = false
   ): number {
     const targetPoint = this._pointsByTimestamp.get(targetTime);
@@ -464,7 +468,7 @@ export class PolylineTrack
 
   replaceAtTime(
     targetTime: string,
-    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    items: ITrackPointProperties | ITrackPointProperties[] | VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | PolylineTrack,
     returnListCount: boolean = false
   ): {
     removed: CoordNode,
@@ -511,7 +515,7 @@ export class PolylineTrack
   replaceBetweenTimes(
     startTime: string,
     endTime: string,
-    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    items: ITrackPointProperties | ITrackPointProperties[] | VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | PolylineTrack,
     returnListCount: boolean = false
   ): {
     removed: CoordNode,
@@ -556,7 +560,7 @@ export class PolylineTrack
   replaceFromToTimes(
     startTime: string,
     endTime: string,
-    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    items: ITrackPointProperties | ITrackPointProperties[] | VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | PolylineTrack,
     returnListCount: boolean = false
   ): {
     removed: CoordNode,
@@ -613,7 +617,7 @@ export class PolylineTrack
 
   replaceTimeRange(
     segment: ITimeRange,
-    items: ITrackPointProperties | ITrackPointProperties[] | PolylineTrack,
+    items: ITrackPointProperties | ITrackPointProperties[] | VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | PolylineTrack,
     returnListCount: boolean = false
   ): {
     removed: CoordNode,

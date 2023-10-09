@@ -11,7 +11,8 @@ import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';
 import { ISplittable } from './ISplittable';
 
-import { ITimeRange, TrackSegmentData } from './TrackSegment';
+import { TrackSegmentData } from './TrackSegment';
+import { ITimeRange } from './TimeRange';
 
 import {
   ITrackPropertyProperties,
@@ -43,13 +44,13 @@ export interface IGeoJsonTrack
   ): FeatureCollection;
 
   /**
-     * Updates the geoJson data in the manager, or the provided geoJson object.
-     *
-     * @param {TrackSegmentData} segData {@link Point}s and corresponding timestamps to update.
-     * @param {FeatureCollection} [geoJson] If provided, is updated. Otherwise, the geoJSon contained in the manager is updated.
-     * @return {*}  {FeatureCollection}
-     * @memberof IGeoJsonTrackManager
-     */
+   * Updates the geoJson data in the manager, or the provided geoJson object.
+   *
+   * @param {TrackSegmentData} segData {@link Point}s and corresponding timestamps to update.
+   * @param {FeatureCollection} [geoJson] If provided, is updated. Otherwise, the geoJSon contained in the manager is updated.
+   * @return {*}  {FeatureCollection}
+   * @memberof IGeoJsonTrackManager
+   */
   updateGeoJsonTrack(
     segData: TrackSegmentData,
     geoJson?: FeatureCollection
@@ -122,12 +123,10 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   ): FeatureCollection {
     geoJson = geoJson ?? this._geoJson;
 
-    if (trackPoints.length) {
-      const lineString = GeoJsonManager.LineStringFromTrackPoints(trackPoints);
-      const timestamps = trackPoints.map((trackPoint => trackPoint.timestamp));
+    const lineString = GeoJsonManager.LineStringFromTrackPoints(trackPoints);
+    const timestamps = trackPoints.map((trackPoint => trackPoint.timestamp));
 
-      this.update(lineString, timestamps, geoJson);
-    }
+    this.update(lineString, timestamps, geoJson);
     return geoJson;
   }
 
@@ -145,6 +144,15 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return geoJson;
   }
 
+  /**
+   * Updates the geometry and properties on the provided geoJSON.
+   *
+   * @protected
+   * @param {LineString} lineString
+   * @param {string[]} timestamps
+   * @param {FeatureCollection} geoJson
+   * @memberof GeoJsonTrack
+   */
   protected update(
     lineString: LineString,
     timestamps: string[],
@@ -210,16 +218,37 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     }
   }
 
+  /**
+   * Returns a reference to the Point coordinates.
+   *
+   * @protected
+   * @return {*}  {Point[]}
+   * @memberof GeoJsonTrack
+   */
   protected getPoints(): Point[] {
     const feature = this.getFeature();
     return (feature.geometry as LineString).points;
   }
 
+  /**
+   * Returns a reference to the Timestamp list.
+   *
+   * @protected
+   * @return {*}  {string[]}
+   * @memberof GeoJsonTrack
+   */
   protected getTimestamps(): string[] {
     const feature = this.getFeature();
     return (feature.properties as TrackProperty).coordinateProperties.times as string[];
   }
 
+  /**
+   * Returns a reference to the feature.
+   *
+   * @protected
+   * @return {*}
+   * @memberof GeoJsonTrack
+   */
   protected getFeature() {
     return this._geoJson.features[0];
   }
@@ -294,6 +323,11 @@ export class GeoJsonTrack implements IGeoJsonTrack {
 
 
   // === IClippable
+  trimByCount(countStart: number = 0, countEnd: number = undefined) {
+    const points = this.getPoints().slice(countStart - 1, -countEnd);
+    this.updateGeoJsonTrack
+  }
+
   trimBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
 

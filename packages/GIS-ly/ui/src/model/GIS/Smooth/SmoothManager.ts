@@ -41,9 +41,9 @@ export class SmoothManager implements ISmoothManager {
     let smoothCoordsCurrent: VertexNode<TrackPoint, TrackSegment>[];
     let smoothCoords: VertexNode<TrackPoint, TrackSegment>[] = [];
     do {
-      smoothCoordsCurrent = this._track.getPointsBy(target, evaluator);
+      smoothCoordsCurrent = this._track.vertexNodesBy(target, evaluator);
       smoothCoords.push(...smoothCoordsCurrent);
-      this._track.removePoints(smoothCoordsCurrent, iterate);
+      this._track.removeAtAny(smoothCoordsCurrent, iterate);
     } while (iterate && smoothCoordsCurrent.length)
 
     if (iterate) {

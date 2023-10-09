@@ -83,7 +83,7 @@ export class TrackPathProps
     prevSegment: ITrackSegmentProperties,
     nextSegment: ITrackSegmentProperties
   ) {
-    console.log('Deriving elevation data for points...')
+    // console.log('Deriving elevation data for points...')
     if (this.pointIsMaximaMinima(prevSegment, nextSegment)) {
       if (prevSegment.heightRate > 0) {
         this.ascentRate = prevSegment.heightRate
