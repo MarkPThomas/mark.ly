@@ -2,6 +2,8 @@ import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
 import { ITimeRange } from "../Track/TimeRange";
 import config from '../config';
+import { TrackSegment } from "../Track/TrackSegment";
+import { VertexNode } from "../../Geometry";
 
 
 export interface ICruftManager {
@@ -11,8 +13,8 @@ export interface ICruftManager {
     segments: ITimeRange[];
     segmentKeep: ITimeRange;
   };
-  splitTrackSegmentByCruft(triggerDistanceKM: number): Track[];
-  trimTrackSegmentCruft(triggerDistanceKM: number): void;
+  trimTrackSegmentCruft(triggerDistanceKM: number): Track;
+  // splitTrackSegmentByCruft(triggerDistanceKM: number): Track[];
 }
 
 export class CruftManager implements ICruftManager {
@@ -33,20 +35,20 @@ export class CruftManager implements ICruftManager {
   } {
     const triggerDistanceMeters = triggerDistanceKM * 1000;
     const coordinates = this._track.trackPoints() as TrackPoint[];
+    let point = this._track.firstPoint;
 
     let maxSize = 0;
 
     const segments: ITimeRange[] = [];
     let segmentKeep: ITimeRange;
     let segment: ITimeRange = {
-      startTime: coordinates[0].timestamp,
+      startTime: point.val.timestamp,
       endTime: null
     };
 
     const updateSegmentKeep = (segmentCheck: ITimeRange, coordCount: number) => {
       segments.push(segmentCheck);
 
-      // TODO: Add future weights to BB diagonal length as well in case noise cloud on clipped end
       if (coordCount > maxSize) {
         segmentKeep = segmentCheck;
         maxSize = coordCount;
@@ -54,49 +56,56 @@ export class CruftManager implements ICruftManager {
     }
 
     let coordCount = 0;
-    for (let i = 1; i < coordinates.length; i++) {
+    while (point.next) {
       coordCount++;
-      if (coordinates[i].distanceTo(coordinates[i - 1]) >= triggerDistanceMeters) {
-        segment.endTime = coordinates[i - 1].timestamp;
+      if (point.val.distanceTo(point.next.val) >= triggerDistanceMeters) {
+        segment.endTime = point.val.timestamp;
 
         updateSegmentKeep(segment, coordCount);
         coordCount = 0;
 
         segment = {
-          startTime: coordinates[i].timestamp,
+          startTime: point.next.val.timestamp,
           endTime: null
         };
       }
+
+      point = point.next as VertexNode<TrackPoint, TrackSegment>;
     }
+
+    coordCount++;
     segment.endTime = coordinates[coordinates.length - 1].timestamp;
     updateSegmentKeep(segment, coordCount);
 
     return { segments, segmentKeep };
   }
 
-  splitTrackSegmentByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track[] {
-    const { segments } = this.getTrackSegmentsByCruft(triggerDistanceKM);
-    if (segments.length === 1) {
-      return [this._track.clone()];
-    }
-
-    const tracks: Track[] = [];
-    segments.forEach((segment) => {
-      const track = this._track.splitToSegment(segment);
-      if (track) {
-        tracks.push(track);
-      }
-    });
-
-    return tracks.length ? tracks : [this._track.clone()];
-  }
-
   trimTrackSegmentCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track {
     const { segments, segmentKeep } = this.getTrackSegmentsByCruft(triggerDistanceKM);
 
-    return segments.length === 1 ? this._track.clone() : this._track.splitToSegment(segmentKeep);
+    if (segments.length > 1) {
+      this._track.trimToRange(segmentKeep)
+    };
+
+    return this._track;
   }
 
+  // splitTrackSegmentByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track[] {
+  //   const { segments } = this.getTrackSegmentsByCruft(triggerDistanceKM);
+  //   if (segments.length === 1) {
+  //     return [this._track.clone()];
+  //   }
+
+  //   const tracks: Track[] = [];
+  //   segments.forEach((segment) => {
+  //     const track = this._track.splitToSegment(segment);
+  //     if (track) {
+  //       tracks.push(track);
+  //     }
+  //   });
+
+  //   return tracks.length ? tracks : [this._track.clone()];
+  // }
 }
 
 
