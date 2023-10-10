@@ -75,9 +75,16 @@ export class NoiseCloudSmoother extends Smoother {
     const smoothedResumeNode = new VertexNode<TrackPoint, TrackSegment>(smoothedResumeCoord);
 
     // Remove cloud nodes & connect new ones
-    const lastNodeKept = removedNodes[0].prev as VertexNode<TrackPoint, TrackSegment>;
+    const prevNodeKept = removedNodes[0].prev as VertexNode<TrackPoint, TrackSegment>;
     const nextNodeKept = removedNodes[removedNodes.length - 1].next as VertexNode<TrackPoint, TrackSegment>;
-    this._smoothManager.track.replacePointsBetween(lastNodeKept, nextNodeKept, [smoothedPauseNode, smoothedResumeNode], iterate);
+
+    if (!prevNodeKept) {
+      this._smoothManager.track.replaceBetween(prevNodeKept, nextNodeKept, [smoothedResumeNode], iterate);
+    } else if (!nextNodeKept) {
+      this._smoothManager.track.replaceBetween(prevNodeKept, nextNodeKept, [smoothedPauseNode], iterate);
+    } else {
+      this._smoothManager.track.replaceBetween(prevNodeKept, nextNodeKept, [smoothedPauseNode, smoothedResumeNode], iterate);
+    }
 
     return { removedNodes, nextNode: nextNodeKept };
   }
