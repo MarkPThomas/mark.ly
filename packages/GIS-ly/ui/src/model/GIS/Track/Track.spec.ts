@@ -1220,6 +1220,116 @@ describe('##Track', () => {
           expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
         });
       });
+
+      describe('#trimToRange', () => {
+        it('should do nothing and return a null tuple when the specified Point does not exist in the Route', () => {
+          const timeRange: ITimeRange = {
+            startTime: 'Foo',
+            endTime: 'Bar'
+          }
+
+          const trimmedPoints = track.trimToRange(timeRange);
+
+          expect(trimmedPoints).toEqual([null, null]);
+
+          const expectedLength = trackPoints.length;
+          expect(track.trackPoints().length).toEqual(expectedLength);
+          expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
+          expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
+        });
+
+        it(`should trim off vertices & segments before & after the specified start & end Points
+              & return the head vertex node of each of the trimmed portions`, () => {
+          const trimmed1 = track.firstPoint;
+          const trimmed2 = vertex2.next;
+
+          const timeRange: ITimeRange = {
+            startTime: point1.timestamp,
+            endTime: point2.timestamp
+          }
+          const trimmedPoints = track.trimToRange(timeRange);
+
+          expect(trimmedPoints[0]).toEqual(trimmed1);
+          expect(trimmedPoints[1]).toEqual(trimmed2);
+
+          const expectedLength = trackPoints.length - trimmedPoints[0].lengthNext() - trimmedPoints[1].lengthNext();
+          expect(track.trackPoints().length).toEqual(expectedLength);
+          expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
+          expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
+        });
+
+        it('should trim off vertices & segments before the specified start Point if the end Point is not found', () => {
+          const trimmed1 = track.firstPoint;
+
+          const timeRange: ITimeRange = {
+            startTime: point1.timestamp,
+            endTime: 'Bar'
+          }
+          const trimmedPoints = track.trimToRange(timeRange);
+
+          expect(trimmedPoints[0]).toEqual(trimmed1);
+          expect(trimmedPoints[1]).toBeNull();
+
+          const expectedLength = trackPoints.length - trimmedPoints[0].lengthNext();
+          expect(track.trackPoints().length).toEqual(expectedLength);
+          expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
+          expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
+        });
+
+        it('should trim off vertices & segments after the specified end Point if the start Point is not found', () => {
+          const trimmed2 = vertex2.next;
+
+          const timeRange: ITimeRange = {
+            startTime: 'Foo',
+            endTime: point2.timestamp
+          }
+          const trimmedPoints = track.trimToRange(timeRange);
+
+          expect(trimmedPoints[0]).toBeNull();
+          expect(trimmedPoints[1]).toEqual(trimmed2);
+
+          const expectedLength = trackPoints.length - trimmedPoints[1].lengthNext();
+          expect(track.trackPoints().length).toEqual(expectedLength);
+          expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
+          expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
+        });
+
+        it('should trim off vertices & segments before the specified start Point if the end Point is not specified', () => {
+          const trimmed1 = track.firstPoint;
+
+          const timeRange: ITimeRange = {
+            startTime: point1.timestamp,
+            endTime: null
+          }
+          const trimmedPoints = track.trimToRange(timeRange);
+
+          expect(trimmedPoints[0]).toEqual(trimmed1);
+          expect(trimmedPoints[1]).toBeNull();
+
+          const expectedLength = trackPoints.length - trimmedPoints[0].lengthNext();
+          expect(track.trackPoints().length).toEqual(expectedLength);
+          expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
+          expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
+        });
+
+        it('should trim off vertices & segments after the specified end Point if the start Point is not specified', () => {
+          const trimmed2 = vertex2.next;
+
+          const timeRange: ITimeRange = {
+            startTime: null,
+            endTime: point2.timestamp
+          }
+          const trimmedPoints = track.trimToRange(timeRange);
+
+          expect(trimmedPoints[0]).toBeNull();
+          expect(trimmedPoints[1]).toEqual(trimmed2);
+
+          const expectedLength = trackPoints.length - trimmedPoints[1].lengthNext();
+          expect(track.trackPoints().length).toEqual(expectedLength);
+          expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
+          expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
+        });
+      });
     });
 
     describe('Remove', () => {
@@ -1649,6 +1759,10 @@ describe('##Track', () => {
         });
       });
 
+      describe('#removeBetweenRange', () => {
+        // TODO: Add/test convenience method?
+      });
+
       describe('#removeFromTo', () => {
         it('should do nothing & return null for an empty track', () => {
           track = Track.fromPoints([]);
@@ -1814,6 +1928,10 @@ describe('##Track', () => {
           expect((featureCollection.features[0].geometry as LineString).points.length).toEqual(expectedLength);
           expect(featureCollection.features[0].properties.coordinateProperties.times.length).toEqual(expectedLength);
         });
+      });
+
+      describe('#removeFromToRange', () => {
+        // TODO: Add/test convenience method?
       });
     });
 
@@ -2324,7 +2442,6 @@ describe('##Track', () => {
 
     describe('Replace', () => {
       let targetVertex: VertexNode<TrackPoint, TrackSegment>;
-
       let replacementPoints: TrackPoint[];
 
       beforeEach(() => {

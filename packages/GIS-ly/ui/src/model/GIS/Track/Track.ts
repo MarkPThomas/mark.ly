@@ -309,8 +309,17 @@ export class Track implements ITrack {
     return trimmedHeads;
   }
 
-  // TODO: Add/test convenience method?
-  // trimToRange()
+  trimToRange(
+    timeRange: ITimeRange,
+    iterating: boolean = false
+  ): (VertexNode<TrackPoint, TrackSegment> | null)[] {
+    const trimmedHeads = this._polylineTrack.trimToTimeRange(timeRange);
+
+    if (!iterating && trimmedHeads.length) {
+      this.updateGeoJsonTrack(!!trimmedHeads);
+    }
+    return trimmedHeads;
+  }
 
   // === Remove Methods ===
   removeAt(

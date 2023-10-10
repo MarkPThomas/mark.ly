@@ -303,7 +303,7 @@ export class PolylineTrack
 
   // === Delete Methods
   trimBeforeTime(time: string): CoordNode {
-    const point = this._pointsByTimestamp.get(time);
+    const point = time ? this._pointsByTimestamp.get(time) : null;
     if (!point) {
       return null;
     }
@@ -314,7 +314,7 @@ export class PolylineTrack
   }
 
   trimAfterTime(time: string): CoordNode {
-    const point = this._pointsByTimestamp.get(time);
+    const point = time ? this._pointsByTimestamp.get(time) : null;
     if (!point) {
       return null;
     }
