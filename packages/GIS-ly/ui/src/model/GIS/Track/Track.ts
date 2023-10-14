@@ -1,9 +1,8 @@
 import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
-import { FeatureCollection, Point } from '../../GeoJSON';
+
+import { FeatureCollection } from '../../GeoJSON';
 import { VertexNode, SegmentNode } from '../../Geometry';
 import { GeoJsonManager } from '../GeoJsonManager';
-
-import { IQuery } from './IQuery';
 
 import { TrackPoint } from './TrackPoint';
 import { TrackSegment, TrackSegmentData } from './TrackSegment';
@@ -18,7 +17,6 @@ export type EvaluatorArgs = { [name: string]: number };
 
 export interface ITrack
   extends
-  IQuery,
   ICloneable<Track>,
   IEquatable<Track> {
 

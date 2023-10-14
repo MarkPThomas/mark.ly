@@ -77,6 +77,9 @@ export class GeoJsonManager implements IGeoJsonManager {
   TrackFromGeoJson(): Track | null {
     if (this._geoJson?.features) {
       let type = this._geoJson.features[0].geometry.type;
+
+      // TODO: Determine if this should be automatically merged,
+      //    or just return an array of tracks, one for each line as a LineString
       if (type === GeoJsonTypes.MultiLineString) {
         this.mergeTrackLineStrings();
         // TODO: Consider making type a dynamic property that updates whenenver a modifying function is called.
