@@ -22,7 +22,7 @@ class TestSegment extends Segment {
 }
 
 
-describe('##PolyLine', () => {
+describe('##Polyline', () => {
   const sizeOf = (start: VertexNode<TestVertex, TestSegment>): number => {
     let count = 0;
 
@@ -477,7 +477,7 @@ describe('##PolyLine', () => {
 
   describe('Methods', () => {
     describe('#size', () => {
-      it('should return the number of vertices and segments in the PolyLine', () => {
+      it('should return the number of vertices and segments in the Polyline', () => {
         const polyline = new Polyline(coordinates);
 
         const expectedSize: IPolylineSize = {
@@ -490,7 +490,7 @@ describe('##PolyLine', () => {
     });
 
     describe('#vertices', () => {
-      it('should return the Vertices in the PolyLine', () => {
+      it('should return the Vertices in the Polyline', () => {
         const polyline = new Polyline(coordinates);
 
         const result = polyline.vertices();
@@ -502,7 +502,7 @@ describe('##PolyLine', () => {
     });
 
     describe('#segments', () => {
-      it('should return the Segments in the PolyLine', () => {
+      it('should return the Segments in the Polyline', () => {
         const polyline = new Polyline(coordinates);
 
         const result = polyline.segments();

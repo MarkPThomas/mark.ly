@@ -489,7 +489,7 @@ export abstract class PathSegment<T extends Curve> implements IPathSegment, IPat
   /// </summary>
   /// <param name="segment">Segment to chamfer with.</param>
   /// <param name="depth">The depth.</param>
-  /// <returns>PolyLine.</returns>
+  /// <returns>Polyline.</returns>
   public(segment: IPathSegment, depth: number): [IPathSegment, LineSegment, IPathSegment] {
     throw new NotImplementedException();
 
@@ -507,7 +507,7 @@ export abstract class PathSegment<T extends Curve> implements IPathSegment, IPat
   /// </summary>
   /// <param name="segment">Segment to fillet with.</param>
   /// <param name="radius">The radius.</param>
-  /// <returns>PolyLine.</returns>
+  /// <returns>Polyline.</returns>
   public Fillet(segment: IPathSegment, radius: number): [IPathSegment, IPathSegment, IPathSegment] {
     throw new NotImplementedException();
     // 1. Offset segment curves to acute side by radius

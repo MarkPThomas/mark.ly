@@ -9,7 +9,7 @@ export {
   EvaluatorArgs,
   Range,
   Reference
-} from './PolyLine';
+} from './Polyline';
 
 export {
   Segment,
