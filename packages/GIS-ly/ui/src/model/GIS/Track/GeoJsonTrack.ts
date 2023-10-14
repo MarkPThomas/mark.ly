@@ -9,7 +9,7 @@ import {
 
 
 import { TrackSegmentData } from './TrackSegment';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 
 import {
   ITrackPropertyProperties,

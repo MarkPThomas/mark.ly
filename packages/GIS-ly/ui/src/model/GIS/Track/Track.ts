@@ -6,7 +6,7 @@ import { GeoJsonManager } from '../GeoJsonManager';
 
 import { TrackPoint } from './TrackPoint';
 import { TrackSegment, TrackSegmentData } from './TrackSegment';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 import { GeoJsonTrack } from './GeoJsonTrack';
 import { PolylineTrack } from './PolylineTrack';
 import { BoundingBox } from '../BoundingBox';

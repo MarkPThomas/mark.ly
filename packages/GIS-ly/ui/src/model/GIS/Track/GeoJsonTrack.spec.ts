@@ -16,7 +16,7 @@ import { ITrackPropertyProperties, TrackProperty } from './TrackProperty';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { GeoJsonTrack } from './GeoJsonTrack';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 import { TrackPoint } from './TrackPoint';
 
 const testData = {

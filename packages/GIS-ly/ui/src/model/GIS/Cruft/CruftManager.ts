@@ -1,6 +1,6 @@
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
-import { ITimeRange } from "../Track/TimeRange";
+import { ITimeRange } from "../Time/TimeRange";
 import config from '../config';
 import { TrackSegment } from "../Track/TrackSegment";
 import { VertexNode } from "../../Geometry";

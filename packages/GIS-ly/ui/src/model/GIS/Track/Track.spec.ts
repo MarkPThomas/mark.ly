@@ -6,7 +6,7 @@ import { EvaluatorArgs, Track } from './Track';
 import { FeatureCollection, LineString, Point } from '../../GeoJSON';
 import { GeoJsonManager } from '../GeoJsonManager';
 import { ITrackPropertyProperties } from './TrackProperty';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 import { PolylineTrack } from './PolylineTrack';
 
 describe('##Track', () => {

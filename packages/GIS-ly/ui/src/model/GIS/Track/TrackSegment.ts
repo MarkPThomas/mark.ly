@@ -1,11 +1,10 @@
 import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
-import { Segment } from '../../Geometry/Segment';
 import { IDirection } from '../Direction';
-import { IPointProperties, PPoint } from '../Point/Point';
+import { IPointProperties } from '../Point/Point';
 
 import { RouteSegment, IRouteSegmentProperties, RouteSegmentData } from '../Route/RouteSegment';
-import { TimeStamp } from './TimeStamp';
-import { ITrackPointProperties, TrackPoint } from './TrackPoint';
+import { TimeStamp } from '../Time';
+import { TrackPoint } from './TrackPoint';
 
 /**
  * Basic data of {@link Point}s and corresponding timestamps that lie within the segment.

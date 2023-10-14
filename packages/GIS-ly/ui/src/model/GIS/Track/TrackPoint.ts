@@ -2,7 +2,7 @@ import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import { Point, Position } from "../../GeoJSON";
 
-import { TimeStamp } from "./TimeStamp";
+import { TimeStamp } from "../Time";
 import { ITrackPathProps, TrackPathProps } from "./TrackPathProps";
 import { IRoutePointProperties, RoutePoint } from "../Route/RoutePoint";
 

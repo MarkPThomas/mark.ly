@@ -4,7 +4,7 @@ import { GeoJsonManager } from '../GeoJsonManager';
 import { TrackPoint } from './TrackPoint';
 import { ITrackPropertyProperties } from './TrackProperty';
 import { TrackSegment } from './TrackSegment';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 
 import { PolylineTrack } from './PolylineTrack';
 
