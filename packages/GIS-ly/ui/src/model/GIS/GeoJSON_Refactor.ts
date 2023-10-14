@@ -15,7 +15,7 @@ import {
   GeoJSON as GeoJSONLeaflet
 } from 'leaflet';
 
-import { TrackPoint } from './TrackPoint';
+import { TrackPoint } from './Track';
 
 export type GeoJSONFeatureCollection = FeatureCollection<Geometry, { [name: string]: any; }>;
 

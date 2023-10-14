@@ -1,4 +1,9 @@
-import { geoJsonToGpx, geoJsonToKml, toGeoJsonByType } from '../../../server/services/gisFormatAdaptor';
+import {
+  geoJsonToGpx,
+  geoJsonToKml,
+  toGeoJsonByType
+} from '../../../server/services/gisFormatAdaptor';
+
 import { GeoJSON } from 'geojson';
 import { getFileExtension } from '../../../../common/utils';//'common/utils';
 

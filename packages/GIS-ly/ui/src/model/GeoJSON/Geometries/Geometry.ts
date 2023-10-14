@@ -4,7 +4,6 @@ import {
 } from "geojson";
 
 import { IGeoJson, GeoJson, GeoJsonProperties } from "../GeoJson";
-import { BoundingBox } from "../BoundingBox";
 import { BBoxState } from "../enums";
 
 export type GeometryType = Geometry<GeoJsonProperties, SerialGeometry>;

@@ -18,7 +18,10 @@ export class ElevationSpeedSmoother extends Smoother {
     * @return {number} Number of nodes smoothed.
     * @memberof Track
     */
-  public smoothByElevationSpeed(maxAscentRateMPS: number, maxDescentRateMPS?: number, iterate?: boolean): number {
+  public smoothByElevationSpeed(
+    maxAscentRateMPS: number,
+    maxDescentRateMPS?: number,
+    iterate?: boolean): number {
     const nodesSmoothed = this._smoothManager.smooth(
       { maxAscentRateMPS, maxDescentRateMPS },
       this.isExceedingElevationSpeedLimit,

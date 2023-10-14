@@ -11,6 +11,7 @@ import {
   Position
 } from '../GeoJSON';
 import { RoutePoint } from './Route/RoutePoint';
+import { Track } from './Track/Track';
 
 import { TrackPoint } from './Track/TrackPoint';
 
@@ -24,7 +25,8 @@ export interface IGeoJsonManager {
 
 
   /**
-   * Combines {@link Point} and {@link FeatureProperty} data from all {@link Point} GeoJson objects into a list of {@link TrackPoint}s.
+   * Combines {@link Point} and {@link FeatureProperty} data from all
+   * {@link Point} GeoJson objects into a list of {@link TrackPoint}s.
    *
    * @return {*}  {TrackPoint[]}
    * @memberof IGeoJsonTrackManager
@@ -32,7 +34,8 @@ export interface IGeoJsonManager {
   getTrackPointsFromPoints(): TrackPoint[];
 
   /**
-   * Combines {@link Point} and {@link FeatureProperty} data from all {@link LineString} GeoJson objects into a list of {@link TrackPoint}s.
+   * Combines {@link Point} and {@link FeatureProperty} data from all
+   * {@link LineString} GeoJson objects into a nested list of {@link TrackPoint}s.
    *
    * @return {*}  {TrackPoint[][]}
    * @memberof IGeoJsonTrackManager
@@ -40,14 +43,20 @@ export interface IGeoJsonManager {
   getTrackPointsFromLineStrings(): TrackPoint[][];
 
   /**
-   * Combines {@link Point} and {@link FeatureProperty} data from all {@link MultiLineString} GeoJson objects into a list of {@link TrackPoint}s.
+   * Combines {@link Point} and {@link FeatureProperty} data from all
+   * {@link MultiLineString} GeoJson objects into a nested list of {@link TrackPoint}s.
    *
    * @return {*}  {TrackPoint[][][]}
    * @memberof IGeoJsonTrackManager
    */
   getTrackPointsFromMultiLineStrings(): TrackPoint[][][];
 
-  mergeTrackSegments(): void;
+  /**
+   * Merges any {@link MultiLineString} to change the GeoJson object into a {@link LineString}.
+   *
+   * @memberof IGeoJsonManager
+   */
+  mergeTrackLineStrings(): void;
 }
 
 export class GeoJsonManager implements IGeoJsonManager {
@@ -56,12 +65,29 @@ export class GeoJsonManager implements IGeoJsonManager {
     return this._isSingleTrack;
   }
 
+
   protected _geoJson: FeatureCollection;
 
   constructor(geoJson: FeatureCollection) {
     this._geoJson = geoJson;
 
     this._isSingleTrack = this.getType();
+  }
+
+  TrackFromGeoJson(): Track | null {
+    if (this._geoJson?.features) {
+      let type = this._geoJson.features[0].geometry.type;
+      if (type === GeoJsonTypes.MultiLineString) {
+        this.mergeTrackLineStrings();
+        // TODO: Consider making type a dynamic property that updates whenenver a modifying function is called.
+        type = this._geoJson.features[0].geometry.type;
+      }
+
+      if (type === GeoJsonTypes.LineString) {
+        return Track.fromGeoJson(this._geoJson);
+      }
+    }
+    return null;
   }
 
   protected getType(): boolean {
@@ -136,10 +162,26 @@ export class GeoJsonManager implements IGeoJsonManager {
     return multiLineStringCoordinates;
   }
 
-  mergeTrackSegments() {
+  mergeRouteLineStrings() {
     const multiLineStringFeatures = this._geoJson.getFeaturesByType(GeoJsonGeometryTypes.MultiLineString);
 
-    multiLineStringFeatures.map((feature) => {
+    multiLineStringFeatures.forEach((feature) => {
+      const multiLineString = feature.geometry as MultiLineString;
+
+      const lineString = LineString.fromPoints(multiLineString.points.flat(1));
+
+      const lineStringFeature = Feature.fromGeometry(lineString);
+
+      this._geoJson.update(feature, lineStringFeature);
+    });
+
+    this._geoJson.save();
+  }
+
+  mergeTrackLineStrings() {
+    const multiLineStringFeatures = this._geoJson.getFeaturesByType(GeoJsonGeometryTypes.MultiLineString);
+
+    multiLineStringFeatures.forEach((feature) => {
       const multiLineString = feature.geometry as MultiLineString;
 
       const lineString = LineString.fromPoints(multiLineString.points.flat(1));
@@ -162,6 +204,7 @@ export class GeoJsonManager implements IGeoJsonManager {
     return positions;
   };
 
+
   static PositionsToPoints(positions: Position[]): Point[] {
     const points: Point[] = positions.map((position) => Point.fromPosition(position));
 
@@ -173,7 +216,9 @@ export class GeoJsonManager implements IGeoJsonManager {
   }
 
   static PositionsToRoutePoints(positions: Position[]): RoutePoint[] {
-    const coordinates: RoutePoint[] = positions.map((position) => this.PositionToRoutePoint(position));
+    const coordinates: RoutePoint[] = positions.map(
+      (position) => GeoJsonManager.PositionToRoutePoint(position)
+    );
 
     return coordinates;
   };
@@ -193,12 +238,13 @@ export class GeoJsonManager implements IGeoJsonManager {
     const coordinates: TrackPoint[] = positions.map(
       (position, index) => {
         const timesForPoint = times ? times[index] : undefined;
-        return this.PositionToTrackPoint(position, timesForPoint);
+        return GeoJsonManager.PositionToTrackPoint(position, timesForPoint);
       }
     );
 
     return coordinates;
   };
+
 
   static PointToTrackPoint(point: Point, time: string) {
     return time
@@ -215,23 +261,16 @@ export class GeoJsonManager implements IGeoJsonManager {
     const coordinates: TrackPoint[] = points.map(
       (point, index) => {
         const timesForPoint = times ? times[index] : undefined;
-        return this.PointToTrackPoint(point, timesForPoint);
+        return GeoJsonManager.PointToTrackPoint(point, timesForPoint);
       }
     );
-
-    // const coordinates: TrackPoint[] = [];
-
-    // points.forEach((point, pointIndex) => {
-    //   const timesForPoint = times ? times[pointIndex] : undefined;
-    //   const coordinate = this.PointToTrackPoint(point, timesForPoint);
-    //   coordinates.push(coordinate);
-    // });
 
     return coordinates;
   }
 
+
   static LineStringToTrackPoints(lineString: LineString, times: string[]) {
-    return this.PointsToTrackPoints(lineString.points, times);
+    return GeoJsonManager.PointsToTrackPoints(lineString.points, times);
   }
 
   static LineStringsToTrackPoints(lineStrings: LineString[], times: string[][]) {
@@ -239,7 +278,7 @@ export class GeoJsonManager implements IGeoJsonManager {
 
     lineStrings.forEach((lineString: LineString, lineStringIndex) => {
       const timesForLineString = times ? times[lineStringIndex] : undefined;
-      const coordinates: TrackPoint[] = this.LineStringToTrackPoints(
+      const coordinates: TrackPoint[] = GeoJsonManager.LineStringToTrackPoints(
         lineString,
         timesForLineString
       );
@@ -285,8 +324,9 @@ export class GeoJsonManager implements IGeoJsonManager {
     return feature;
   }
 
+
   static FeatureCollectionFromTrackPoints(trkPts: TrackPoint[]): FeatureCollection {
-    const lineStringFeature = this.LineStringFeatureFromTrackPoints(trkPts);
+    const lineStringFeature = GeoJsonManager.LineStringFeatureFromTrackPoints(trkPts);
 
     const featureCollection = FeatureCollection.fromFeatures([lineStringFeature]);
 

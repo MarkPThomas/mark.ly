@@ -1,7 +1,13 @@
 /**
+ * A Position is an array of coordinates.
+ * https://tools.ietf.org/html/rfc7946#section-3.1.1
+ *
  * JSON representation of a Position in the form of:
  *
+ * [x, y [, z] ] or
  * [longitude, latitude [, altitude] ]
+ *
+ * These coordinates are used to define any of the containing {@link Geometry} objects.
  *
  * @export
  * @type Position

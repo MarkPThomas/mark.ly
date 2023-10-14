@@ -1,11 +1,11 @@
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
+
 import {
   FeatureCollection,
   Feature,
   Point,
   LineString
 } from '../../GeoJSON';
-
-import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';

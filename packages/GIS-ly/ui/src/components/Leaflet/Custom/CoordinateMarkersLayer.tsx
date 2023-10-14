@@ -5,7 +5,7 @@ import {
 
 import { hashString } from '../../../../../../common/utils';
 
-import { TrackPoint } from '../../../model/GIS/TrackPoint';
+import { TrackPoint } from '../../../model/GIS/Track/TrackPoint';
 
 import { CoordinateMarker } from './CoordinateMarker';
 

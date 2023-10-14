@@ -3,9 +3,7 @@ import { FeatureCollection, Point } from '../../GeoJSON';
 import { VertexNode, SegmentNode } from '../../Geometry';
 import { GeoJsonManager } from '../GeoJsonManager';
 
-import { ITrimmable } from './ITrimmable';
 import { IQuery } from './IQuery';
-import { ISplittable } from './ISplittable';
 
 import { TrackPoint } from './TrackPoint';
 import { TrackSegment, TrackSegmentData } from './TrackSegment';
@@ -36,6 +34,7 @@ export interface ITrack
 
   trackPoints(): TrackPoint[]; // TODO: Add optional overload to limit range by ITrackSegmentLimits
   trackSegments(): TrackSegment[]; // TODO: Add optional overload to limit range by ITrackSegmentLimits
+  toJson();
 
   addProperties(): void;
   addElevationProperties(): void;
@@ -49,6 +48,7 @@ export interface ITrack
     target: number | EvaluatorArgs,
     evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean
   ): VertexNode<TrackPoint, TrackSegment>[];
+
 }
 
 export class Track implements ITrack {
@@ -79,6 +79,8 @@ export class Track implements ITrack {
     return this._polylineTrack.lastSegment;
   }
 
+  // TODO: Currently instantiates a new one each time.
+  // Make this lazy?
   boundingBox(): BoundingBox {
     return this._geoJsonTrack.boundingBox();
   }
@@ -148,6 +150,9 @@ export class Track implements ITrack {
     this._polylineTrack.addElevations(elevations);
   }
 
+  addElevationsFromApi() {
+    this._polylineTrack.addElevationsFromApi();
+  }
 
   timestamps(): string[] {
     return this.trackPoints().map((trackPoint) => trackPoint.timestamp);
@@ -159,6 +164,14 @@ export class Track implements ITrack {
 
   trackSegments(): TrackSegment[] {
     return this._polylineTrack.segments();
+  }
+
+  // TODO:
+  // Currently this is a copy that is NOT hooked into the track.
+  // Work out a reasonable & efficient way to maintain the hooked state while exposing
+  //    the geoJSON object for external hooking.
+  toJson() {
+    return this._geoJsonTrack.toFeatureCollection().toJson();
   }
 
   vertexNodeByTime(timestamp: string): VertexNode<TrackPoint, TrackSegment> | null | undefined {
