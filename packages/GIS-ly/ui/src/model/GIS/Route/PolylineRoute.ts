@@ -245,6 +245,10 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   addElevations(elevations: Map<string, number>) {
     this.addNodeElevations(elevations);
+    // TODO: What if route properties haven't been run?
+    //  Should this be manual like that?
+    //  Or should that be lazily triggered by this?
+    //  Or should both be manual?
     this.addElevationProperties();
   }
 
@@ -279,6 +283,8 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
           console.log('No elevations received');
         }
       });
+    // TODO: Only once the entire API payload is processed should this be called:
+    // this.addElevationProperties();
   }
 
   protected addElevationDataToSegments() {

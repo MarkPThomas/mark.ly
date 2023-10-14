@@ -6,7 +6,7 @@ import { EvaluatorArgs, Track } from './Track';
 import { FeatureCollection, LineString, Point } from '../../GeoJSON';
 import { GeoJsonManager } from '../GeoJsonManager';
 import { ITrackPropertyProperties } from './TrackProperty';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 import { PolylineTrack } from './PolylineTrack';
 
 describe('##Track', () => {
@@ -87,7 +87,7 @@ describe('##Track', () => {
         featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trackPoints);
       });
 
-      it('should create a new PolyLine object from the provided TrackPoints', () => {
+      it('should create a new Polyline object from the provided TrackPoints', () => {
         const track = Track.fromGeoJson(featureCollection);
 
         expect(track.firstPoint.val.lat).toEqual(trackPoints[0].lat);
@@ -127,7 +127,7 @@ describe('##Track', () => {
         ];
       });
 
-      it('should create a new PolyLine object from the provided TrackPoints', () => {
+      it('should create a new Polyline object from the provided TrackPoints', () => {
         const track = Track.fromPoints(trackPoints);
 
         expect(track.firstPoint.val).toEqual(trackPoints[0]);

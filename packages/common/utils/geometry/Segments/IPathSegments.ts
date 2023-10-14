@@ -137,7 +137,7 @@ export interface IPathSegment extends
   // /// </summary>
   // /// <param name="segment">Segment to chamfer with.</param>
   // /// <param name="depth">The depth.</param>
-  // /// <returns>PolyLine.</returns>
+  // /// <returns>Polyline.</returns>
   // Tuple<IPathSegment, LineSegment, IPathSegment> Chamfer(segment: IPathSegment, depth: number);
 
   // /// <summary>
@@ -146,6 +146,6 @@ export interface IPathSegment extends
   // /// </summary>
   // /// <param name="segment">Segment to fillet with.</param>
   // /// <param name="radius">The radius.</param>
-  // /// <returns>PolyLine.</returns>
+  // /// <returns>Polyline.</returns>
   // Tuple<IPathSegment, IPathSegment, IPathSegment> Fillet(segment: IPathSegment, radius: number);
 }

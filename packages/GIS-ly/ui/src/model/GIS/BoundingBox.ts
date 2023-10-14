@@ -11,11 +11,8 @@ export interface ITrackBoundingBox extends IGeoBoundingBox {
 export class BoundingBox extends GeoBoundingBox {
   protected constructor() { super() }
 
-
   toCornerLatLng(): LatLngBounds {
-    return this.southwestAltitude
-      ? [[this.south, this.west, this.southwestAltitude], [this.north, this.east, this.northeastAltitude]]
-      : [[this.south, this.west], [this.north, this.east]];
+    return [[this.south, this.west], [this.north, this.east]];
   }
 
   static fromBoundingBox(boundingBox: GeoBoundingBox | BoundingBox): BoundingBox {

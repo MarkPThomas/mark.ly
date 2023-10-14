@@ -4,7 +4,7 @@ import { GeoJsonManager } from '../GeoJsonManager';
 import { TrackPoint } from './TrackPoint';
 import { ITrackPropertyProperties } from './TrackProperty';
 import { TrackSegment } from './TrackSegment';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 
 import { PolylineTrack } from './PolylineTrack';
 
@@ -85,7 +85,7 @@ describe('##PolylineTrack', () => {
         ];
       });
 
-      it('should create a new PolyLine object from the provided TrackPoints', () => {
+      it('should create a new Polyline object from the provided TrackPoints', () => {
         const polylineTrack = new PolylineTrack(trackPoints);
 
         expect(polylineTrack.firstVertex.val).toEqual(trackPoints[0]);

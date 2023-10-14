@@ -1,3 +1,5 @@
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
+
 import {
   FeatureCollection,
   Feature,
@@ -5,14 +7,9 @@ import {
   LineString
 } from '../../GeoJSON';
 
-import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
-
-import { ITrimmable } from './ITrimmable';
-import { IQuery } from './IQuery';
-import { ISplittable } from './ISplittable';
 
 import { TrackSegmentData } from './TrackSegment';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 
 import {
   ITrackPropertyProperties,
@@ -24,9 +21,6 @@ import { BoundingBox } from '../BoundingBox';
 
 export interface IGeoJsonTrack
   extends
-  ITrimmable,
-  ISplittable<FeatureCollection>,
-  IQuery,
   ICloneable<GeoJsonTrack>,
   IEquatable<GeoJsonTrack> {
 
@@ -323,11 +317,6 @@ export class GeoJsonTrack implements IGeoJsonTrack {
 
 
   // === IClippable
-  trimByCount(countStart: number = 0, countEnd: number = undefined) {
-    const points = this.getPoints().slice(countStart - 1, -countEnd);
-    this.updateGeoJsonTrack
-  }
-
   trimBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
 
@@ -340,7 +329,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return this.updateGeoJsonTrack(segmentData);
   }
 
-  trimByTimes(timestampStart: string, timestampEnd: string) {
+  trimToTimes(timestampStart: string, timestampEnd: string) {
     const segmentData = this.getSegmentBetweenTimes(timestampStart, timestampEnd);
 
     return this.updateGeoJsonTrack(segmentData);

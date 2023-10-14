@@ -16,7 +16,7 @@ import { ITrackPropertyProperties, TrackProperty } from './TrackProperty';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { GeoJsonTrack } from './GeoJsonTrack';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 import { TrackPoint } from './TrackPoint';
 
 const testData = {
@@ -710,7 +710,7 @@ describe('##GeoJsonTrack', () => {
           const timestampStart = '2';
           const timestampEnd = '4';
 
-          const clippedTrack = geoJsonTrack.trimByTimes(timestampStart, timestampEnd)
+          const clippedTrack = geoJsonTrack.trimToTimes(timestampStart, timestampEnd)
 
           expect((clippedTrack.features[0].geometry as LineString).toPositions()).toEqual(
             [
@@ -726,7 +726,7 @@ describe('##GeoJsonTrack', () => {
           const timestampStart = '2.1';
           const timestampEnd = '4';
 
-          const segments = geoJsonTrack.trimByTimes(timestampStart, timestampEnd)
+          const segments = geoJsonTrack.trimToTimes(timestampStart, timestampEnd)
 
           expect(segments).toEqual(featureCollection);
         });
@@ -735,7 +735,7 @@ describe('##GeoJsonTrack', () => {
           const timestampStart = '3';
           const timestampEnd = '4.1';
 
-          const segments = geoJsonTrack.trimByTimes(timestampStart, timestampEnd)
+          const segments = geoJsonTrack.trimToTimes(timestampStart, timestampEnd)
 
           expect(segments).toEqual(featureCollection);
         });

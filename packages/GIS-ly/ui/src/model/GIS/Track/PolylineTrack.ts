@@ -7,7 +7,7 @@ import {
 
 import { ITrackPointProperties, TrackPoint } from './TrackPoint';
 import { TrackSegment } from './TrackSegment';
-import { ITimeRange } from './TimeRange';
+import { ITimeRange } from '../Time/TimeRange';
 import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
