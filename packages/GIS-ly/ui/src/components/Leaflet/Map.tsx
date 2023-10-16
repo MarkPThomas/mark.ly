@@ -17,16 +17,13 @@ import {
   toKmlFile
 } from '../../model/Files';
 
-import { FeatureCollection } from '../../model/GeoJSON';
-
 import {
   GeoJsonManager
 } from '../../model/GIS';
 
 import {
   Track,
-  TrackPoint,
-  TrackPoints
+  TrackPoint
 } from '../../model/GIS/Track';
 
 import {
@@ -54,35 +51,36 @@ export type MapProps = {
 
 export const Map = ({ initialPosition, initialLayers }: MapProps) => {
   const [position, setPosition] = useState(initialPosition);
-  const [layersProps, setLayersProps] = useState(initialLayers)
   const [bounds, setBounds] = useState<LatLngBoundsExpression | null>(null);
+  const [layersProps, setLayersProps] = useState(initialLayers)
 
-  const [layer, setLayer] = useState<GeoJSON>(null);
-  const [coords, setCoords] = useState<TrackPoints | null>(null);
+  // const [layer, setLayer] = useState<GeoJSON>(null);
+  // const [coords, setCoords] = useState<TrackPoints | null>(null);
   const [track, setTrack] = useState<Track | null>(null);
 
+
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
-  const updateFromGeoJson = (geoJson: FeatureCollectionSerial, newCoords: TrackPoint[]) => {
-    setLayer(geoJson);
-    setCoords(newCoords);
-    setLayersProps(updatedLayersProps(geoJson, newCoords));
-
-    console.log('geoJson: ', layer);
-    // TODO: Fixed boundingBox update. Not being marked as dirty
-    const newBounds = track.boundingBox().toCornerLatLng();
-    console.log('newBounds: ', newBounds);
-    setBounds(newBounds);
-  }
-
   const updateFromTrack = (track: Track) => {
+    console.log('updateFromTrack');
+
     console.log('Track: ', track);
 
     const newCoords = track.trackPoints();
-    // const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
-    // console.log('geoJson: ', geoJson);
-    // updateFromGeoJson(geoJson, newCoords);
+    console.log('newCoords: ', newCoords);
 
-    updateFromGeoJson(layer as FeatureCollectionSerial, newCoords);
+    const newGeoJson = track.toJson();
+    console.log('newGeoJson: ', newGeoJson);
+
+    const newBounds = track.boundingBox().toCornerLatLng();
+    console.log('newBounds: ', newBounds);
+    // updateFromGeoJson(newGeoJson, newCoords);
+
+    // TODO: How to update setLayer from original reference?
+    // setLayer(geoJson);
+    // console.log('layer: ', layer);
+    // setCoords(newCoords);
+    setLayersProps(updatedLayersProps(newGeoJson, newCoords));
+    setBounds(newBounds);
   }
 
   const handleFileSelection = async (event) => {
@@ -91,15 +89,13 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
     toGeoJson(file, [
       // save converted geojson to hook state
-      setLayer,
+      // setLayer,
       (geoJson: FeatureCollectionSerial) => {
-        console.log('Layer: ', geoJson)
+        console.log('geoJson/Layer: ', geoJson)
 
         // save converted geoJson to hook within Track
         // Generate track for CRUD that is reflected in geoJson via hooks
-        const featureCollection = FeatureCollection.fromJson(geoJson);
-        const geoJsonMngr = new GeoJsonManager(featureCollection);
-        const track = geoJsonMngr.TrackFromGeoJson();
+        const track = GeoJsonManager.TrackFromJson(geoJson);
 
         // TODO: Can withold this to when user selects to enter 'Trackly' mode for editing.
         track.addProperties();
@@ -109,31 +105,22 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
           const newCoords = track.trackPoints();
           console.log('newCoords: ', newCoords);
-          setCoords(newCoords);
+          // setCoords(newCoords);
           setLayersProps(updatedLayersProps(geoJson, newCoords));
 
           const newBounds = track.boundingBox().toCornerLatLng();
           console.log('newBounds: ', newBounds);
           setBounds(newBounds);
         }
-
-        // const newCoords = getCoords(geoJson);
-        // console.log('newCoords: ', newCoords);
-        // setCoords(newCoords);
-        // setLayersProps(updatedLayersProps(geoJson, newCoords));
-
-        // const newBounds = BoundingBox.fromPoints(newCoords).toCornerPoints();
-        // console.log('newBounds: ', newBounds);
-        // setBounds(newBounds);
       }]);
   };
 
   const handleGPXSaveFile = () => {
-    toGpxFile(layer);
+    toGpxFile(track.toJson());
   }
 
   const handleKMLSaveFile = () => {
-    toKmlFile(layer);
+    toKmlFile(track.toJson());
   }
 
   const animateRef = useRef(true);
@@ -173,24 +160,21 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleTrimCruft = () => {
     console.log('handleTrimCruft')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       const manager = new CruftManager(track);
 
       const triggerDistanceKM: number = 5;
-      const trimmedTrack = manager.trimTrackSegmentCruft(triggerDistanceKM);
+      const numberTrimmed = manager.trimTrackByCruft(triggerDistanceKM);
 
-      // TODO: Shim
-      // Remove once updating behavior is validated, e.g. is returned track needed?
-      const geoJson = trimmedTrack.toJson();
-      const newCoords = trimmedTrack.trackPoints();
+      console.log(`number nodes removed: ${numberTrimmed}`);
 
-      updateFromGeoJson(geoJson, newCoords);
+      updateFromTrack(track);
     }
   }
 
   const handleSmoothStationary = () => {
     console.log('handleSmoothStationary')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       const manager = new StationarySmoother(track);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -205,7 +189,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleSmoothBySpeed = () => {
     console.log('handleSmoothBySpeed')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       const manager = new SpeedSmoother(track);
 
       const speedLimitKph = Conversion.Speed.mphToKph(4);
@@ -220,7 +204,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleSmoothByAngularSpeed = () => {
     console.log('handleSmoothByAngularSpeed')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       const manager = new AngularSpeedSmoother(track);
 
       //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
@@ -235,7 +219,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       const manager = new NoiseCloudSmoother(track);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -250,7 +234,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleGetElevation = () => {
     console.log('handleGetElevation')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       track.addElevationsFromApi();
 
       updateFromTrack(track);
@@ -259,7 +243,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const handleSmoothByElevation = () => {
     console.log('handleSmoothByElevation')
-    if (layer as FeatureCollectionSerial && track) {
+    if (track) {
       const manager = new ElevationSpeedSmoother(track);
 
       //0.254 meters/second = 3000 ft / hr
@@ -275,7 +259,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
 
   const updatedLayersProps = (
     layer: FeatureCollectionSerial,
-    coords
+    coords: TrackPoint[]
   ): LayersControlProps =>
     layer ? {
       ...initialLayers,
@@ -296,7 +280,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
         center={position.point}
         zoom={position.zoom}
         scrollWheelZoom={false}
-        style={{ width: '100%', height: '900px' }}
+        style={{ width: '100%', height: '700px' }}
       >
         {initialLayers.baseLayers[0].item}
         <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
