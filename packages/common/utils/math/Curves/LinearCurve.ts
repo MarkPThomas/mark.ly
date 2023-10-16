@@ -103,7 +103,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns><c>true</c> if this instance is horizontal; otherwise, <c>false</c>.</returns>
   public IsHorizontal(): boolean {
-    return LinearCurve.IsHorizontal(this.ControlPointI, this.ControlPointJ, this.Tolerance);
+    return LinearCurve.PtsHorizontal(this.ControlPointI, this.ControlPointJ, this.Tolerance);
   }
 
   /// <summary>
@@ -111,7 +111,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns><c>true</c> if this instance is vertical; otherwise, <c>false</c>.</returns>
   public IsVertical(): boolean {
-    return LinearCurve.IsVertical(this.ControlPointI, this.ControlPointJ, this.Tolerance);
+    return LinearCurve.PtsVertical(this.ControlPointI, this.ControlPointJ, this.Tolerance);
   }
 
   /// <summary>
@@ -166,7 +166,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>System.Double.</returns>
   public Slope(): number {
-    return LinearCurve.SlopeByCoords(this.ControlPointI, this.ControlPointJ, this.Tolerance);
+    return LinearCurve.SlopeByPts(this.ControlPointI, this.ControlPointJ, this.Tolerance);
   }
 
   /// <summary>
@@ -182,7 +182,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>System.Double.</returns>
   public InterceptX(): number {
-    return LinearCurve.InterceptXByCoords(this.ControlPointI, this.ControlPointJ, this.Tolerance);
+    return LinearCurve.InterceptXByPts(this.ControlPointI, this.ControlPointJ, this.Tolerance);
   }
 
   /// <summary>
@@ -190,7 +190,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>System.Double.</returns>
   public InterceptY(): number {
-    return LinearCurve.InterceptYByCoords(this.ControlPointI, this.ControlPointJ, this.Tolerance);
+    return LinearCurve.InterceptYByPts(this.ControlPointI, this.ControlPointJ, this.Tolerance);
   }
 
   /// <summary>
@@ -198,7 +198,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>Vector.</returns>
   public TangentVector(): Vector {
-    return Vector.UnitTangentVector(this.ControlPointI, this.ControlPointJ);
+    return Vector.UnitTangentVectorByPts(this.ControlPointI, this.ControlPointJ);
   }
 
   /// <summary>
@@ -206,7 +206,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>Vector.</returns>
   public NormalVector(): Vector {
-    return Vector.UnitNormalVector(this.ControlPointI, this.ControlPointJ);
+    return Vector.UnitNormalVectorByPts(this.ControlPointI, this.ControlPointJ);
   }
 
 
@@ -299,7 +299,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>System.Double.</returns>
   public Length(): number {
-    return LinearCurve.Length(this.Range.Start.Limit, this.Range.End.Limit);
+    return LinearCurve.LengthBetweenPts(this.Range.Start.Limit, this.Range.End.Limit);
   }
 
   /// <summary>
@@ -421,7 +421,7 @@ export class LinearCurve extends Curve implements
   /// <param name="pointI">Point i.</param>
   /// <param name="pointJ">Point j.</param>
   /// <returns>System.Double.</returns>
-  public static Length(pointI: CartesianCoordinate, pointJ: CartesianCoordinate): number {
+  public static LengthBetweenPts(pointI: CartesianCoordinate, pointJ: CartesianCoordinate): number {
     return AlgebraLibrary.SRSS((pointJ.X - pointI.X), (pointJ.Y - pointI.Y));
   }
 
@@ -432,13 +432,13 @@ export class LinearCurve extends Curve implements
   /// <param name="ptJ">The point j.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the shape segment is horizontal, <c>false</c> otherwise.</returns>
-  public static IsHorizontal(
+  public static PtsHorizontal(
     ptI: CartesianCoordinate,
     ptJ: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(ptI, ptJ, tolerance);
-    return Numbers.AreEqual(ptI.Y, ptJ.Y, tolerance);;
+    return Numbers.AreEqual(ptI.Y, ptJ.Y, tolerance);
   }
 
   /// <summary>
@@ -446,7 +446,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <param name="slope">The slope.</param>
   /// <returns><c>true</c> if the specified slope is vertical; otherwise, <c>false</c>.</returns>
-  public static IsHorizontalBySlope(slope: number): boolean {
+  public static SlopeHorizontal(slope: number): boolean {
     return (Numbers.IsZeroSign(slope));
   }
 
@@ -457,13 +457,13 @@ export class LinearCurve extends Curve implements
   /// <param name="ptJ">The point j.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the segment is vertical, <c>false</c> otherwise.</returns>
-  public static IsVertical(
+  public static PtsVertical(
     ptI: CartesianCoordinate,
     ptJ: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(ptI, ptJ, tolerance);
-    return Numbers.IsEqualTo(ptI.X, ptJ.X, tolerance);;
+    return Numbers.IsEqualTo(ptI.X, ptJ.X, tolerance);
   }
 
   /// <summary>
@@ -471,7 +471,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <param name="slope">The slope.</param>
   /// <returns><c>true</c> if the specified slope is vertical; otherwise, <c>false</c>.</returns>
-  public static IsVerticalBySlope(slope: number): boolean {
+  public static SlopeVertical(slope: number): boolean {
     return (slope === Infinity || slope === -Infinity);
   }
 
@@ -482,7 +482,7 @@ export class LinearCurve extends Curve implements
   /// <param name="slope2">The slope2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the specified slope1 is parallel; otherwise, <c>false</c>.</returns>
-  public static IsParallel(
+  public static SlopesParallel(
     slope1: number,
     slope2: number,
     tolerance: number = Numbers.ZeroTolerance
@@ -499,7 +499,7 @@ export class LinearCurve extends Curve implements
   /// <param name="slope2">The slope2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the specified slope1 is perpendicular; otherwise, <c>false</c>.</returns>
-  public static IsPerpendicular(
+  public static SlopesPerpendicular(
     slope1: number,
     slope2: number,
     tolerance: number = Numbers.ZeroTolerance
@@ -546,7 +546,7 @@ export class LinearCurve extends Curve implements
   /// <param name="y2">Second y-coordinate.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static Slope(
+  public static SlopeByXY(
     x1: number,
     y1: number,
     x2: number,
@@ -567,7 +567,7 @@ export class LinearCurve extends Curve implements
   /// <param name="point2">Second point.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static SlopeByCoords(
+  public static SlopeByPts(
     point1: CartesianCoordinate,
     point2: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
@@ -611,7 +611,7 @@ export class LinearCurve extends Curve implements
   /// <param name="y2">Second y-coordinate.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static InterceptX(
+  public static InterceptXByXY(
     x1: number, y1: number,
     x2: number, y2: number,
     tolerance: number = Numbers.ZeroTolerance
@@ -619,7 +619,7 @@ export class LinearCurve extends Curve implements
     if (Numbers.IsZeroSign(y1, tolerance)) { return x1; }
     if (Numbers.IsZeroSign(y2, tolerance)) { return x2; }
     if (Numbers.AreEqual(y1, y2, tolerance)) { return Infinity; }
-    return (-y1 / LinearCurve.Slope(x1, y1, x2, y2, tolerance) + x1);
+    return (-y1 / LinearCurve.SlopeByXY(x1, y1, x2, y2, tolerance) + x1);
   }
 
   /// <summary>
@@ -629,12 +629,12 @@ export class LinearCurve extends Curve implements
   /// <param name="point2">Second point defining a line.</param>
   /// <param name="tolerance">&gt;Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static InterceptXByCoords(
+  public static InterceptXByPts(
     point1: CartesianCoordinate,
     point2: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
-    return LinearCurve.InterceptX(point1.X, point1.Y, point2.X, point2.Y, tolerance);
+    return LinearCurve.InterceptXByXY(point1.X, point1.Y, point2.X, point2.Y, tolerance);
   }
 
   /// <summary>
@@ -647,7 +647,7 @@ export class LinearCurve extends Curve implements
   /// <param name="y2">Second y-coordinate.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static InterceptY(
+  public static InterceptYByXY(
     x1: number, y1: number,
     x2: number, y2: number,
     tolerance: number = Numbers.ZeroTolerance
@@ -655,7 +655,7 @@ export class LinearCurve extends Curve implements
     if (Numbers.IsZeroSign(x1, tolerance)) { return y1; }
     if (Numbers.IsZeroSign(x2, tolerance)) { return y2; }
     if (Numbers.AreEqual(x1, x2, tolerance)) { return Infinity; }
-    return (-x1 * LinearCurve.Slope(x1, y1, x2, y2, tolerance) + y1);
+    return (-x1 * LinearCurve.SlopeByXY(x1, y1, x2, y2, tolerance) + y1);
   }
 
   /// <summary>
@@ -665,12 +665,12 @@ export class LinearCurve extends Curve implements
   /// <param name="point2">Second point defining a line.</param>
   /// <param name="tolerance">&gt;Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static InterceptYByCoords(
+  public static InterceptYByPts(
     point1: CartesianCoordinate,
     point2: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
-    return LinearCurve.InterceptY(point1.X, point1.Y, point2.X, point2.Y, tolerance);
+    return LinearCurve.InterceptYByXY(point1.X, point1.Y, point2.X, point2.Y, tolerance);
   }
 
 
@@ -689,7 +689,7 @@ export class LinearCurve extends Curve implements
     slope2: number,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    return (!LinearCurve.IsParallel(slope1, slope2, tolerance));
+    return (!LinearCurve.SlopesParallel(slope1, slope2, tolerance));
   }
 
   /// <summary>
@@ -708,7 +708,7 @@ export class LinearCurve extends Curve implements
     xIntercept2: number,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
-    if (LinearCurve.IsParallel(slope1, slope2, tolerance)) {
+    if (LinearCurve.SlopesParallel(slope1, slope2, tolerance)) {
       return Infinity;
     }
     if (xIntercept1 === Infinity ||
@@ -740,7 +740,7 @@ export class LinearCurve extends Curve implements
     yIntercept2: number,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
-    if (LinearCurve.IsParallel(slope1, slope2, tolerance)) {
+    if (LinearCurve.SlopesParallel(slope1, slope2, tolerance)) {
       return Infinity;
     }
     if (yIntercept1 === Infinity) {
@@ -770,19 +770,19 @@ export class LinearCurve extends Curve implements
   ): CartesianCoordinate {
     // check for vertical lines and handle those cases here
     // in sub-functions, throw exceptions
-    if (LinearCurve.IsVerticalBySlope(slope1) && !LinearCurve.IsVerticalBySlope(slope2)) {
+    if (LinearCurve.SlopeVertical(slope1) && !LinearCurve.SlopeVertical(slope2)) {
       const curve2 = LinearCurve.CurveByYIntercept(slope2, yIntercept2);
       return new CartesianCoordinate(xIntercept1, curve2.YatX(xIntercept1));
     }
-    if (!LinearCurve.IsVerticalBySlope(slope1) && LinearCurve.IsVerticalBySlope(slope2)) {
+    if (!LinearCurve.SlopeVertical(slope1) && LinearCurve.SlopeVertical(slope2)) {
       const curve2 = LinearCurve.CurveByYIntercept(slope1, yIntercept1);
       return new CartesianCoordinate(xIntercept2, curve2.YatX(xIntercept2));
     }
-    if (LinearCurve.IsHorizontalBySlope(slope1) && !LinearCurve.IsHorizontalBySlope(slope2)) {
+    if (LinearCurve.SlopeHorizontal(slope1) && !LinearCurve.SlopeHorizontal(slope2)) {
       const curve2 = LinearCurve.CurveByYIntercept(slope2, yIntercept2);
       return new CartesianCoordinate(curve2.XatY(yIntercept1), yIntercept1);
     }
-    if (!LinearCurve.IsHorizontalBySlope(slope1) && LinearCurve.IsHorizontalBySlope(slope2)) {
+    if (!LinearCurve.SlopeHorizontal(slope1) && LinearCurve.SlopeHorizontal(slope2)) {
       const curve2 = LinearCurve.CurveByYIntercept(slope1, yIntercept1);
       return new CartesianCoordinate(curve2.XatY(yIntercept2), yIntercept2);
     }

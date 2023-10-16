@@ -115,7 +115,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if [is collinear same direction] [the specified vector]; otherwise, <c>false</c>.</returns>
   public IsCollinearSameDirection(vector: Vector): boolean {
-    return Vector.IsCollinearSameDirection(this, vector);
+    return Vector.AreCollinearSameDirection(this, vector);
   }
 
   /// <summary>
@@ -124,7 +124,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if the specified vector is concave; otherwise, <c>false</c>.</returns>
   public IsConcave(vector: Vector): boolean {
-    return Vector.IsConcave(this, vector);
+    return Vector.AreConcave(this, vector);
   }
 
   /// <summary>
@@ -133,7 +133,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if the specified vector is orthogonal; otherwise, <c>false</c>.</returns>
   public IsOrthogonal(vector: Vector): boolean {
-    return Vector.IsOrthogonal(this, vector);
+    return Vector.AreOrthogonal(this, vector);
   }
 
   /// <summary>
@@ -142,7 +142,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if the specified vector is convex; otherwise, <c>false</c>.</returns>
   public IsConvex(vector: Vector): boolean {
-    return Vector.IsConvex(this, vector);
+    return Vector.AreConvex(this, vector);
   }
 
   /// <summary>
@@ -151,7 +151,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if [is collinear opposite direction] [the specified vector]; otherwise, <c>false</c>.</returns>
   public IsCollinearOppositeDirection(vector: Vector): boolean {
-    return Vector.IsCollinearOppositeDirection(this, vector);
+    return Vector.AreCollinearOppositeDirection(this, vector);
   }
 
 
@@ -162,7 +162,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
   public IsConcaveInside(vector: Vector): boolean {
-    return Vector.IsConcaveInside(this, vector);
+    return Vector.AreConcaveInside(this, vector);
   }
 
   /// <summary>
@@ -172,7 +172,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
   public IsConvexInside(vector: Vector): boolean {
-    return Vector.IsConvexInside(this, vector);
+    return Vector.AreConvexInside(this, vector);
   }
 
   /// <summary>
@@ -223,7 +223,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector">The vector.</param>
   /// <returns>System.Double.</returns>
   public toAngle(vector: Vector) {
-    return Vector.Angle(this, vector);
+    return Vector.AngleBetween(this, vector);
   }
 
   /// <summary>
@@ -302,7 +302,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="j">Second point.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns>Vector.</returns>
-  public static UnitTangentVector(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
+  public static UnitTangentVectorByPts(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
     tolerance = Generics.GetTolerance(i, j, tolerance);
     return Vector.UnitVector(i, j, tolerance);
   }
@@ -326,7 +326,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="j">Second point.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns>Vector.</returns>
-  public static UnitNormalVector(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
+  public static UnitNormalVectorByPts(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
     tolerance = Generics.GetTolerance(i, j, tolerance);
     const xComponent = this.getXComponent(i, j);
     const yComponent = this.getYComponent(i, j);
@@ -355,9 +355,9 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
-  public static Angle(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): number {
+  public static AngleBetween(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): number {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
-    return Math.acos(this.ConcavityCollinearity(vector1, vector2));
+    return Math.acos(Vector.ConcavityCollinearity(vector1, vector2));
   }
 
 
@@ -368,7 +368,11 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if [is collinear same direction] [the specified vector1]; otherwise, <c>false</c>.</returns>
-  public static IsCollinearSameDirection(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreCollinearSameDirection(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
     return Numbers.IsEqualTo(Vector.ConcavityCollinearity(vector1, vector2), 1, Generics.GetTolerance(vector1, vector2, tolerance));
   }
@@ -380,9 +384,13 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the specified vector1 is concave; otherwise, <c>false</c>.</returns>
-  public static IsConcave(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreConcave(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
-    const concavityCollinearity = this.ConcavityCollinearity(vector1, vector2);
+    const concavityCollinearity = Vector.ConcavityCollinearity(vector1, vector2);
     return Numbers.IsPositiveSign(concavityCollinearity, tolerance) && !Numbers.IsEqualTo(concavityCollinearity, 1, tolerance);
   }
 
@@ -393,7 +401,11 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the specified vector1 is orthogonal; otherwise, <c>false</c>.</returns>
-  public static IsOrthogonal(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreOrthogonal(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
     return Numbers.IsZeroSign(Vector.ConcavityCollinearity(vector1, vector2), tolerance);
   }
@@ -405,9 +417,13 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if the specified vector1 is convex; otherwise, <c>false</c>.</returns>
-  public static IsConvex(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreConvex(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
-    const concavityCollinearity = this.ConcavityCollinearity(vector1, vector2);
+    const concavityCollinearity = Vector.ConcavityCollinearity(vector1, vector2);
     return Numbers.IsNegativeSign(concavityCollinearity, tolerance) && !Numbers.IsEqualTo(concavityCollinearity, -1, tolerance);
   }
 
@@ -418,7 +434,11 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if [is collinear opposite direction] [the specified vector1]; otherwise, <c>false</c>.</returns>
-  public static IsCollinearOppositeDirection(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreCollinearOppositeDirection(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
     return Numbers.IsEqualTo(Vector.ConcavityCollinearity(vector1, vector2), -1, tolerance);
   }
@@ -432,7 +452,11 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if [is concave inside] [the specified vector1]; otherwise, <c>false</c>.</returns>
-  public static IsConcaveInside(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreConcaveInside(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
     return Numbers.IsPositiveSign(vector1.Area(vector2), tolerance);
   }
@@ -445,7 +469,11 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="vector2">The vector2.</param>
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns><c>true</c> if [is convex inside] [the specified vector1]; otherwise, <c>false</c>.</returns>
-  public static IsConvexInside(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): boolean {
+  public static AreConvexInside(
+    vector1: Vector,
+    vector2: Vector,
+    tolerance: number = Numbers.ZeroTolerance
+  ): boolean {
     tolerance = Generics.GetTolerance(vector1, vector2, tolerance);
     return Numbers.IsNegativeSign(vector1.Area(vector2), tolerance);
   }

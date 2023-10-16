@@ -27,7 +27,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsCollinearSameDirection(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreCollinearSameDirection(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
   /// <summary>
@@ -43,7 +43,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsConcave(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreConcave(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
   /// <summary>
@@ -59,7 +59,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsOrthogonal(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreOrthogonal(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
   /// <summary>
@@ -75,7 +75,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsConvex(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreConvex(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
   /// <summary>
@@ -91,7 +91,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsCollinearOppositeDirection(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreCollinearOppositeDirection(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
 
@@ -110,7 +110,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsConcaveInside(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreConcaveInside(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
   /// <summary>
@@ -127,7 +127,7 @@ export class GeometryLibrary {
     tolerance: number = this.ZeroTolerance
   ): boolean {
     tolerance = Generics.GetTolerance(line1, line2, tolerance);
-    return (Vector.IsConvexInside(line1.ToVector(), line2.ToVector(), tolerance));
+    return (Vector.AreConvexInside(line1.ToVector(), line2.ToVector(), tolerance));
   }
 
 

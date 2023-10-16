@@ -4,6 +4,7 @@ describe('#Encrypter', () => {
   let encrypter: Encrypter;
 
   beforeEach(() => {
+    // file deepcode ignore NoHardcodedPasswords: <please specify a reason of ignoring this>
     const password = 'contraseño';
     const salt = '$%&*&HH12'
     encrypter = new Encrypter(password, salt);

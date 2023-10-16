@@ -47,12 +47,12 @@ export class LineToLineIntersection {
         return 0;
       }
 
-      if (!this.PointIsLeftOfLineEndInclusive(coordinate.X, vertexI, vertexJ)) {
+      if (!LineToLineIntersection.PointIsLeftOfLineEndInclusive(coordinate.X, vertexI, vertexJ)) {
         // Pt is to the right of the line segment.
         continue;
       }
 
-      if (!this.PointIsWithinLineHeightInclusive(coordinate.Y, vertexI, vertexJ)) {
+      if (!LineToLineIntersection.PointIsWithinLineHeightInclusive(coordinate.Y, vertexI, vertexJ)) {
         // Pt is out of vertical bounds of the line segment.
         continue;
       }
@@ -102,8 +102,8 @@ export class LineToLineIntersection {
     vertexI: CartesianCoordinate,
     vertexJ: CartesianCoordinate
   ): number {
-    const xIntersection = this.IntersectionPointX(coordinate.Y, vertexI, vertexJ);
-    return this.PointIsLeftOfSegmentIntersection(coordinate.X, xIntersection, vertexI, vertexJ) ? 1 : 0;
+    const xIntersection = LineToLineIntersection.IntersectionPointX(coordinate.Y, vertexI, vertexJ);
+    return LineToLineIntersection.PointIsLeftOfSegmentIntersection(coordinate.X, xIntersection, vertexI, vertexJ) ? 1 : 0;
   }
 
   private static pointHorizontalProjectionIntersectsVertex(
@@ -349,7 +349,7 @@ export class LineToLineIntersection {
     ptJ: CartesianCoordinate
   ): boolean {
     return (xPtN < xIntersection &&
-      this.PointIsWithinLineWidthInclusive(xIntersection, ptI, ptJ));
+      LineToLineIntersection.PointIsWithinLineWidthInclusive(xIntersection, ptI, ptJ));
   }
 
   /// <summary>
@@ -367,7 +367,7 @@ export class LineToLineIntersection {
     ptJ: CartesianCoordinate
   ): boolean {
     return (yPtN < yIntersection &&
-      this.PointIsWithinLineHeightInclusive(yIntersection, ptI, ptJ));
+      LineToLineIntersection.PointIsWithinLineHeightInclusive(yIntersection, ptI, ptJ));
   }
 
   /// <summary>
@@ -382,7 +382,7 @@ export class LineToLineIntersection {
     ptI: CartesianCoordinate,
     ptJ: CartesianCoordinate
   ): number {
-    if (LinearCurve.IsHorizontal(ptI, ptJ)) {
+    if (LinearCurve.PtsHorizontal(ptI, ptJ)) {
       throw new ArgumentException("Segment is horizontal, so intersection point is either infinity or NAN.");
     }
 
@@ -402,7 +402,7 @@ export class LineToLineIntersection {
     ptI: CartesianCoordinate,
     ptJ: CartesianCoordinate
   ): number {
-    if (LinearCurve.IsVertical(ptI, ptJ)) {
+    if (LinearCurve.PtsVertical(ptI, ptJ)) {
       throw new ArgumentException("Segment is vertical, so intersection point is either infinity or NAN.");
     }
 

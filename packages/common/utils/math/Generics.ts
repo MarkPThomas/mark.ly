@@ -50,10 +50,10 @@ export class Generics {
   /// <param name="valueBound2">Second value bound.</param>
   /// <returns><c>true</c> if [is within inclusive] [the specified value]; otherwise, <c>false</c>.</returns>
   public static IsWithinInclusive<T extends IComparable<T>>(value: T, valueBound1: T, valueBound2: T): boolean {
-    const maxValue = this.Max(valueBound1, valueBound2);
-    const minValue = this.Min(valueBound1, valueBound2);
+    const maxValue = Generics.Max(valueBound1, valueBound2);
+    const minValue = Generics.Min(valueBound1, valueBound2);
 
-    return this.IsWithinExclusive(value, valueBound1, valueBound2) ||
+    return Generics.IsWithinExclusive(value, valueBound1, valueBound2) ||
       minValue.compareTo(value) == 0 ||
       maxValue.compareTo(value) == 0;
   }
@@ -67,8 +67,8 @@ export class Generics {
   /// <param name="valueBound2">Second value bound.</param>
   /// <returns><c>true</c> if [is within inclusive] [the specified value]; otherwise, <c>false</c>.</returns>
   public static IsWithinExclusive<T extends IComparable<T>>(value: T, valueBound1: T, valueBound2: T): boolean {
-    const maxValue = this.Max(valueBound1, valueBound2);
-    const minValue = this.Min(valueBound1, valueBound2);
+    const maxValue = Generics.Max(valueBound1, valueBound2);
+    const minValue = Generics.Min(valueBound1, valueBound2);
     return minValue.compareTo(value) < 0 && maxValue.compareTo(value) > 0;
   }
 

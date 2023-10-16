@@ -184,7 +184,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     const centeredCoordinate = coordinate.subtractBy(centerOfRotation);
 
     // Rotate coordinate
-    const rotatedCoordinate = this.Rotate(centeredCoordinate, angleRadians);
+    const rotatedCoordinate = CartesianCoordinate.Rotate(centeredCoordinate, angleRadians);
 
     // Move coordinate such that center of rotation is back at original coordinate
     return rotatedCoordinate.addTo(centerOfRotation);
@@ -222,7 +222,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     const centeredCoordinate = coordinate.subtractBy(referencePoint);
 
     // Scale coordinate
-    const rotatedCoordinate = this.Scale(centeredCoordinate, scale);
+    const rotatedCoordinate = CartesianCoordinate.Scale(centeredCoordinate, scale);
 
     // Move coordinate such that reference point is back at original coordinate
     return rotatedCoordinate.addTo(referencePoint);
@@ -258,7 +258,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     const lambdaX = magnitude.X / skewBoxOffset.Y;
     const lambdaY = magnitude.Y / skewBoxOffset.X;
 
-    return this.Skew(coordinate, lambdaX, lambdaY);
+    return CartesianCoordinate.Skew(coordinate, lambdaX, lambdaY);
   }
 
   // /// <summary>

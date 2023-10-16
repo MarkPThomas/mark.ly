@@ -84,7 +84,7 @@ export abstract class PathSegment<T extends Curve> implements IPathSegment, IPat
   /// </summary>
   /// <returns></returns>
   public TangentVector(): Vector {
-    return Vector.UnitTangentVector(this.I, this.J);
+    return Vector.UnitTangentVectorByPts(this.I, this.J);
   }
 
   /// <summary>
@@ -92,7 +92,7 @@ export abstract class PathSegment<T extends Curve> implements IPathSegment, IPat
   /// </summary>
   /// <returns></returns>
   public NormalVector(): Vector {
-    return Vector.UnitNormalVector(this.I, this.J);
+    return Vector.UnitNormalVectorByPts(this.I, this.J);
   }
 
   /// <summary>

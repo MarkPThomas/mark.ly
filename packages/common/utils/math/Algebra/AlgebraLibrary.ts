@@ -262,7 +262,7 @@ export class AlgebraLibrary {
     J: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
-    return this.IntersectionX(y, I.X, I.Y, J.X, J.Y, tolerance);
+    return AlgebraLibrary.IntersectionX(y, I.X, I.Y, J.X, J.Y, tolerance);
   }
 
 
