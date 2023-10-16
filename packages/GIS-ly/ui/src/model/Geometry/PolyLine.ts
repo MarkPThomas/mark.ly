@@ -588,7 +588,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected isOnlyVertexInPolyline(vertex: VertexNode<TVertex, TSegment>): boolean {
-    return !vertex.next && !vertex.prev && vertex === this.firstVertex;
+    return vertex && !vertex.next && !vertex.prev && vertex === this.firstVertex;
   }
 
   protected isOnlySegmentInPolyline(segment: SegmentNode<TVertex, TSegment>): boolean {
@@ -728,9 +728,11 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     if (trimmedHead) {
       this._segments.trimHead(vertex.nextSeg);
 
-      const lastHeadSegment = vertex.prevSeg;
-      lastHeadSegment.nextVert = null;
-      vertex.prevSeg = null;
+      if (vertex && vertex.prevSeg) {
+        const lastHeadSegment = vertex.prevSeg;
+        lastHeadSegment.nextVert = null;
+        vertex.prevSeg = null;
+      }
 
       if (vertex) {
         this.updatePathProperties([vertex]);
@@ -752,11 +754,15 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     const trimmedTailHead = this._vertices.trimTail(vertex);
 
     if (trimmedTailHead) {
-      this._segments.trimTail(vertex.prevSeg);
+      if (vertex.prevSeg) {
+        this._segments.trimTail(vertex.prevSeg);
+      }
 
-      const firstTailSegment = vertex.nextSeg;
-      firstTailSegment.prevVert = null;
-      vertex.nextSeg = null;
+      if (vertex.nextSeg) {
+        const firstTailSegment = vertex.nextSeg;
+        firstTailSegment.prevVert = null;
+        vertex.nextSeg = null;
+      }
 
       if (vertex) {
         this.updatePathProperties([vertex]);
@@ -958,20 +964,22 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   ): number {
     if (this.polylineIsEmpty() || !target || this.isNotInPolyline(target)) {
       return 0;
-    }
-
-    const reference = {
-      vertices: {
-        prev: target.prev as VertexNode<TVertex, TSegment>,
-        next: target
-      },
-      segments: {
-        prev: target.prevSeg,
-        next: target.nextSeg
+    } else if (target) {
+      const reference = {
+        vertices: {
+          prev: target.prev as VertexNode<TVertex, TSegment>,
+          next: target
+        },
+        segments: {
+          prev: target.prevSeg,
+          next: target.nextSeg
+        }
       }
-    }
 
-    return this.insert(item, reference, returnListCount);
+      return this.insert(item, reference, returnListCount);
+    } else {
+      return 0;
+    }
   }
 
   insertAfter(
@@ -981,22 +989,24 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   ): number {
     if (this.polylineIsEmpty() || !target || this.isNotInPolyline(target)) {
       return 0;
-    }
-
-    const reference = {
-      vertices: {
-        prev: target,
-        next: target.next as VertexNode<TVertex, TSegment>
-      },
-      segments: {
-        prev: target.nextSeg ?? target.prevSeg,
-        next: target.nextSeg
-          ? target.nextSeg.next as SegmentNode<TVertex, TSegment>
-          : null
+    } else if (target) {
+      const reference = {
+        vertices: {
+          prev: target,
+          next: target.next as VertexNode<TVertex, TSegment>
+        },
+        segments: {
+          prev: target!.nextSeg ?? target!.prevSeg,
+          next: target!.nextSeg
+            ? target!.nextSeg.next as SegmentNode<TVertex, TSegment>
+            : null
+        }
       }
-    }
 
-    return this.insert(item, reference, returnListCount);
+      return this.insert(item, reference, returnListCount);
+    } else {
+      return 0;
+    }
   }
 
   replaceAt(
@@ -1200,7 +1210,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
   protected updatePriorSegmentProps(segmentPrev: SegmentNode<TVertex, TSegment>) {
     if (segmentPrev) {
-      this.updateSegment(segmentPrev, segmentPrev.prevVert.val, segmentPrev.nextVert.val);
+      this.updateSegment(segmentPrev, segmentPrev.prevVert?.val, segmentPrev.nextVert?.val);
     }
   }
 
