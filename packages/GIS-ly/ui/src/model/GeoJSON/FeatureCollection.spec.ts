@@ -371,6 +371,23 @@ describe('##FeatureCollection', () => {
         expect(featureCollection.features.length).toEqual(2);
         expect(expectedCurrentFeature.equals(newFeature));
       });
+
+      it('should update the bounding box based on the feature provided', () => {
+        const currentFeature = featureCollection.getByIndex(1) as Feature;
+        expect(featureCollection.bbox().toCornerPositions()).toEqual(
+          [
+            [-1, -2], [3, 4]
+          ]
+        );
+
+        featureCollection.update(currentFeature, newFeature);
+
+        expect(featureCollection.bbox().toCornerPositions()).toEqual(
+          [
+            [-1, -2], [7, 8]
+          ]
+        );
+      });
     });
 
     describe('#save', () => {

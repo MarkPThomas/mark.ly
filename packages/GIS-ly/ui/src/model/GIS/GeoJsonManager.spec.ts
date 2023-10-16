@@ -1,4 +1,11 @@
 import {
+  FeatureCollection as SerialFeatureCollection,
+  LineString as SerialLineString,
+  MultiLineString as SerialMultiLineString,
+  Polygon as SerialPolygon
+} from 'geojson';
+
+import {
   FeatureCollection,
   Feature,
   Point,
@@ -8,12 +15,251 @@ import {
   Position
 } from '../GeoJSON';
 
-import { TrackPoint } from './Track/TrackPoint';
-import { ITrackPropertyProperties, TrackProperty } from './Track/TrackProperty';
+import {
+  ITrackPropertyProperties,
+  TrackPoint,
+  TrackProperty
+} from './Track';
 
 import { GeoJsonManager } from './GeoJsonManager';
 
 describe('##GeoJsonManager', () => {
+  // const testData = {
+  //   GeoJson: {
+  //     Point: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'Point',
+  //             coordinates: [100.0, 0.0]
+  //           }
+  //         }
+  //       ],
+  //     },
+  //     MultiPoint: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'MultiPoint',
+  //             coordinates: [
+  //               [100.0, 0.0],
+  //               [101.0, 0.0],
+  //               [101.0, 1.0],
+  //               [100.0, 1.0],
+  //               [100.0, 0.0]
+  //             ]
+  //           }
+  //         }
+  //       ],
+  //     },
+  //     LineString: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'LineString',
+  //             coordinates: [
+  //               [100.0, 0.0],
+  //               [101.0, 1.0],
+  //               [102.0, 2.0],
+  //               [103.0, 3.0]
+  //             ]
+  //           }
+  //         }
+  //       ],
+  //     },
+  //     MultiLineString: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'MultiLineString',
+  //             coordinates: [
+  //               [
+  //                 [100.0, 0.0],
+  //                 [101.0, 1.0]
+  //               ],
+  //               [
+  //                 [102.0, 2.0],
+  //                 [103.0, 3.0]
+  //               ]
+  //             ]
+  //           }
+  //         }
+  //       ],
+  //     },
+  //     Polygon: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'Polygon',
+  //             coordinates: [
+  //               [
+  //                 [100.0, 0.0],
+  //                 [101.0, 0.0],
+  //                 [101.0, 1.0],
+  //                 [100.0, 1.0],
+  //                 [100.0, 0.0]
+  //               ]
+  //             ]
+  //           }
+  //         }
+  //       ],
+  //     },
+  //     MultiPolygon: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'MultiPolygon',
+  //             coordinates: [
+  //               [
+  //                 [
+  //                   [102.0, 2.0],
+  //                   [103.0, 2.0],
+  //                   [103.0, 3.0],
+  //                   [102.0, 3.0],
+  //                   [102.0, 2.0]
+  //                 ]
+  //               ],
+  //               [
+  //                 [
+  //                   [100.0, 0.0],
+  //                   [101.0, 0.0],
+  //                   [101.0, 1.0],
+  //                   [100.0, 1.0],
+  //                   [100.0, 0.0]
+  //                 ],
+  //                 [
+  //                   [100.2, 0.2],
+  //                   [100.2, 0.8],
+  //                   [100.8, 0.8],
+  //                   [100.8, 0.2],
+  //                   [100.2, 0.2]
+  //                 ]
+  //               ]
+  //             ]
+  //           }
+  //         }
+  //       ],
+  //     },
+  //   },
+  //   GeoJsonFromTracks: {
+  //     Point: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'Point',
+  //             coordinates: [100.0, 0.0]
+  //           },
+  //           properties: {
+  //             _gpxType: 'trk',
+  //             name: 'FooBarTest',
+  //             time: 'timestamp',
+  //             coordinateProperties: {
+  //               times: ['1']
+  //             }
+  //           },
+  //         }
+  //       ],
+  //     },
+  //     MultiPoint: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'MultiPoint',
+  //             coordinates: [
+  //               [100.0, 0.0],
+  //               [101.0, 0.0],
+  //               [101.0, 1.0],
+  //               [100.0, 1.0],
+  //               [100.0, 0.0]
+  //             ]
+  //           },
+  //           properties: {
+  //             _gpxType: 'trk',
+  //             name: 'FooBarTest',
+  //             time: 'timestamp',
+  //             coordinateProperties: {
+  //               times: ['1', '2', '3', '4', '5']
+  //             }
+  //           },
+  //         }
+  //       ],
+  //     },
+  //     LineString: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'LineString',
+  //             coordinates: [
+  //               [100.0, 0.0, 100],
+  //               [101.0, 1.0, 200],
+  //               [102.0, 2.0, 300],
+  //               [103.0, 3.0, 400]
+  //             ]
+  //           },
+  //           properties: {
+  //             _gpxType: 'trk',
+  //             name: 'FooBarTest',
+  //             time: 'timestamp',
+  //             coordinateProperties: {
+  //               times: ['1', '2', '3', '4']
+  //             }
+  //           },
+  //         }
+  //       ],
+  //     },
+  //     MultiLineString: {
+  //       type: 'FeatureCollection',
+  //       features: [
+  //         {
+  //           type: 'Feature',
+  //           geometry: {
+  //             type: 'MultiLineString',
+  //             coordinates: [
+  //               [
+  //                 [100.0, 0.0, 100],
+  //                 [101.0, 1.0, 200]
+  //               ],
+  //               [
+  //                 [102.0, 2.0, 300],
+  //                 [103.0, 3.0, 400]
+  //               ]
+  //             ]
+  //           },
+  //           properties: {
+  //             _gpxType: 'trk',
+  //             name: 'FooBarTest',
+  //             time: 'timestamp',
+  //             coordinateProperties: {
+  //               times: [
+  //                 ['1', '2'],
+  //                 ['3', '4']
+  //               ]
+  //             }
+  //           },
+  //         }
+  //       ],
+  //     },
+  //   }
+  // }
+
   describe('Creation', () => {
     let propertiesJson: ITrackPropertyProperties;
     beforeEach(() => {
@@ -130,7 +376,7 @@ describe('##GeoJsonManager', () => {
     });
   });
 
-  describe('Methods', () => {
+  describe('get Methods', () => {
     let propertiesJson: ITrackPropertyProperties;
     beforeEach(() => {
       propertiesJson = {
@@ -431,114 +677,495 @@ describe('##GeoJsonManager', () => {
         expect(result213.timestamp).toEqual(propertiesJsonMulti.coordinateProperties.times[0][2]);
       });
     });
-
-    // describe('#mergeTackSegments', () => {
-    //   it('should merge all coordinates into one array from a MultiLineString', () => {
-    //     const geoJson: GeoJSONFeatureCollection = testData.GeoJson.MultiLineString as GeoJSONFeatureCollection;
-    //     const coordinatesOriginal = (geoJson.features[0].geometry as MultiLineString).coordinates;
-    //     expect(coordinatesOriginal).toEqual(
-    //       [[
-    //         [100.0, 0.0],
-    //         [101.0, 1.0]
-    //       ],
-    //       [
-    //         [102.0, 2.0],
-    //         [103.0, 3.0]
-    //       ]]
-    //     );
-
-    //     const mergedGeoJson = mergeTackSegments(geoJson);
-
-    //     expect(mergedGeoJson.features[0].geometry.type).toEqual('LineString');
-
-    //     const coordinatesResult = (mergedGeoJson.features[0].geometry as LineString).coordinates;
-    //     expect(coordinatesResult).toEqual(
-    //       [
-    //         [100.0, 0.0],
-    //         [101.0, 1.0],
-    //         [102.0, 2.0],
-    //         [103.0, 3.0]
-    //       ]
-    //     );
-    //   });
-
-    //   it('should merge all coordinates into one array, and all timestamps into another array, from a MultiLineString track', () => {
-    //     const geoJson: GeoJSONFeatureCollection = testData.GeoJsonFromTracks.MultiLineString as GeoJSONFeatureCollection;
-    //     const coordinatesOriginal = (geoJson.features[0].geometry as MultiLineString).coordinates;
-    //     expect(coordinatesOriginal).toEqual(
-    //       [[
-    //         [100.0, 0.0, 100],
-    //         [101.0, 1.0, 200]
-    //       ],
-    //       [
-    //         [102.0, 2.0, 300],
-    //         [103.0, 3.0, 400]
-    //       ]]
-    //     );
-
-    //     const timestampsOriginal = geoJson.features[0].properties.coordinateProperties.times;
-    //     expect(timestampsOriginal).toEqual(
-    //       [
-    //         ['1', '2'],
-    //         ['3', '4']
-    //       ]
-    //     );
-
-    //     const mergedGeoJson = mergeTackSegments(geoJson);
-
-    //     expect(mergedGeoJson.features[0].geometry.type).toEqual('LineString');
-
-    //     const coordinatesResult = (mergedGeoJson.features[0].geometry as LineString).coordinates;
-    //     expect(coordinatesResult).toEqual(
-    //       [
-    //         [100.0, 0.0, 100],
-    //         [101.0, 1.0, 200],
-    //         [102.0, 2.0, 300],
-    //         [103.0, 3.0, 400]
-    //       ]
-    //     );
-
-    //     const timestampsResult = mergedGeoJson.features[0].properties.coordinateProperties.times;
-    //     expect(timestampsResult).toEqual(
-    //       ['1', '2', '3', '4']
-    //     );
-    //   });
-
-    //   it('should do nothing for any types other than a MultiLineString', () => {
-    //     const geoJson: GeoJSONFeatureCollection = testData.GeoJson.Polygon as GeoJSONFeatureCollection;
-    //     const coordinatesOriginal = (geoJson.features[0].geometry as Polygon).coordinates;
-    //     expect(coordinatesOriginal).toEqual(
-    //       [
-    //         [
-    //           [100.0, 0.0],
-    //           [101.0, 0.0],
-    //           [101.0, 1.0],
-    //           [100.0, 1.0],
-    //           [100.0, 0.0]
-    //         ]
-    //       ]
-    //     );
-
-    //     const mergedGeoJson = mergeTackSegments(geoJson);
-
-    //     expect(mergedGeoJson.features[0].geometry.type).toEqual('Polygon');
-
-    //     const coordinatesResult = (mergedGeoJson.features[0].geometry as Polygon).coordinates;
-    //     expect(coordinatesResult).toEqual(
-    //       [
-    //         [
-    //           [100.0, 0.0],
-    //           [101.0, 0.0],
-    //           [101.0, 1.0],
-    //           [100.0, 1.0],
-    //           [100.0, 0.0]
-    //         ]
-    //       ]
-    //     );
-    //   })
-    // });
   });
 
+  describe('Merging Methods', () => {
+    let testData;
+    beforeEach(() => {
+      testData = {
+        GeoJson: {
+          Point: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [100.0, 0.0]
+                }
+              }
+            ],
+          },
+          MultiPoint: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'MultiPoint',
+                  coordinates: [
+                    [100.0, 0.0],
+                    [101.0, 0.0],
+                    [101.0, 1.0],
+                    [100.0, 1.0],
+                    [100.0, 0.0]
+                  ]
+                }
+              }
+            ],
+          },
+          LineString: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'LineString',
+                  coordinates: [
+                    [100.0, 0.0],
+                    [101.0, 1.0],
+                    [102.0, 2.0],
+                    [103.0, 3.0]
+                  ]
+                }
+              }
+            ],
+          },
+          MultiLineString: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'MultiLineString',
+                  coordinates: [
+                    [
+                      [100.0, 0.0],
+                      [101.0, 1.0]
+                    ],
+                    [
+                      [102.0, 2.0],
+                      [103.0, 3.0]
+                    ]
+                  ]
+                }
+              }
+            ],
+          },
+          Polygon: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: [
+                    [
+                      [100.0, 0.0],
+                      [101.0, 0.0],
+                      [101.0, 1.0],
+                      [100.0, 1.0],
+                      [100.0, 0.0]
+                    ]
+                  ]
+                }
+              }
+            ],
+          },
+          MultiPolygon: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'MultiPolygon',
+                  coordinates: [
+                    [
+                      [
+                        [102.0, 2.0],
+                        [103.0, 2.0],
+                        [103.0, 3.0],
+                        [102.0, 3.0],
+                        [102.0, 2.0]
+                      ]
+                    ],
+                    [
+                      [
+                        [100.0, 0.0],
+                        [101.0, 0.0],
+                        [101.0, 1.0],
+                        [100.0, 1.0],
+                        [100.0, 0.0]
+                      ],
+                      [
+                        [100.2, 0.2],
+                        [100.2, 0.8],
+                        [100.8, 0.8],
+                        [100.8, 0.2],
+                        [100.2, 0.2]
+                      ]
+                    ]
+                  ]
+                }
+              }
+            ],
+          },
+        },
+        GeoJsonFromTracks: {
+          Point: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [100.0, 0.0]
+                },
+                properties: {
+                  _gpxType: 'trk',
+                  name: 'FooBarTest',
+                  time: 'timestamp',
+                  coordinateProperties: {
+                    times: ['1']
+                  }
+                },
+              }
+            ],
+          },
+          MultiPoint: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'MultiPoint',
+                  coordinates: [
+                    [100.0, 0.0],
+                    [101.0, 0.0],
+                    [101.0, 1.0],
+                    [100.0, 1.0],
+                    [100.0, 0.0]
+                  ]
+                },
+                properties: {
+                  _gpxType: 'trk',
+                  name: 'FooBarTest',
+                  time: 'timestamp',
+                  coordinateProperties: {
+                    times: ['1', '2', '3', '4', '5']
+                  }
+                },
+              }
+            ],
+          },
+          LineString: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'LineString',
+                  coordinates: [
+                    [100.0, 0.0, 100],
+                    [101.0, 1.0, 200],
+                    [102.0, 2.0, 300],
+                    [103.0, 3.0, 400]
+                  ]
+                },
+                properties: {
+                  _gpxType: 'trk',
+                  name: 'FooBarTest',
+                  time: 'timestamp',
+                  coordinateProperties: {
+                    times: ['1', '2', '3', '4']
+                  }
+                },
+              }
+            ],
+          },
+          MultiLineString: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'MultiLineString',
+                  coordinates: [
+                    [
+                      [100.0, 0.0, 100],
+                      [101.0, 1.0, 200]
+                    ],
+                    [
+                      [102.0, 2.0, 300],
+                      [103.0, 3.0, 400]
+                    ]
+                  ]
+                },
+                properties: {
+                  _gpxType: 'trk',
+                  name: 'FooBarTest',
+                  time: 'timestamp',
+                  coordinateProperties: {
+                    times: [
+                      ['1', '2'],
+                      ['3', '4']
+                    ]
+                  }
+                },
+              }
+            ],
+          },
+        }
+      }
+    });
+
+    describe('#mergeRouteLineStrings', () => {
+      it('should merge all coordinates into one array from a MultiLineString', () => {
+        const geoJson: SerialFeatureCollection = testData.GeoJson.MultiLineString as SerialFeatureCollection;
+
+        const featureCollection = FeatureCollection.fromJson(geoJson);
+        const manager = new GeoJsonManager(featureCollection);
+
+        const coordinatesOriginal = (geoJson.features[0].geometry as SerialMultiLineString).coordinates;
+        expect(coordinatesOriginal).toEqual(
+          [[
+            [100.0, 0.0],
+            [101.0, 1.0]
+          ],
+          [
+            [102.0, 2.0],
+            [103.0, 3.0]
+          ]]
+        );
+
+
+        manager.mergeRouteLineStrings();
+
+
+        expect(geoJson.features[0].geometry.type).toEqual('LineString');
+
+        const coordinatesResult = (geoJson.features[0].geometry as SerialLineString).coordinates;
+        expect(coordinatesResult).toEqual(
+          [
+            [100.0, 0.0],
+            [101.0, 1.0],
+            [102.0, 2.0],
+            [103.0, 3.0]
+          ]
+        );
+      });
+
+      it('should merge all coordinates into one array from a MultiLineString, dropping any present timestamps', () => {
+        const geoJson: SerialFeatureCollection = testData.GeoJsonFromTracks.MultiLineString as SerialFeatureCollection;
+
+        const featureCollection = FeatureCollection.fromJson(geoJson);
+        const manager = new GeoJsonManager(featureCollection);
+
+        const coordinatesOriginal = (geoJson.features[0].geometry as SerialMultiLineString).coordinates;
+        expect(coordinatesOriginal).toEqual(
+          [[
+            [100.0, 0.0, 100],
+            [101.0, 1.0, 200]
+          ],
+          [
+            [102.0, 2.0, 300],
+            [103.0, 3.0, 400]
+          ]]
+        );
+
+        const timestampsOriginal = geoJson.features[0].properties.coordinateProperties.times;
+        expect(timestampsOriginal).toEqual(
+          [
+            ['1', '2'],
+            ['3', '4']
+          ]
+        );
+
+
+        manager.mergeRouteLineStrings();
+
+
+        expect(geoJson.features[0].geometry.type).toEqual('LineString');
+
+        const coordinatesResult = (geoJson.features[0].geometry as SerialLineString).coordinates;
+        expect(coordinatesResult).toEqual(
+          [
+            [100.0, 0.0, 100],
+            [101.0, 1.0, 200],
+            [102.0, 2.0, 300],
+            [103.0, 3.0, 400]
+          ]
+        );
+
+        expect(geoJson.features[0].properties.coordinateProperties?.times).toBeUndefined();
+      });
+
+      it('should do nothing for any types other than a MultiLineString', () => {
+        const geoJson: SerialFeatureCollection = testData.GeoJson.Polygon as SerialFeatureCollection;
+
+        const featureCollection = FeatureCollection.fromJson(geoJson);
+        const manager = new GeoJsonManager(featureCollection);
+
+        const coordinatesOriginal = (geoJson.features[0].geometry as SerialPolygon).coordinates;
+        expect(coordinatesOriginal).toEqual(
+          [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0]
+            ]
+          ]
+        );
+
+
+        manager.mergeRouteLineStrings();
+
+
+        expect(geoJson.features[0].geometry.type).toEqual('Polygon');
+
+        const coordinatesResult = (geoJson.features[0].geometry as SerialPolygon).coordinates;
+        expect(coordinatesResult).toEqual(
+          [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0]
+            ]
+          ]
+        );
+      });
+    });
+
+    describe('#mergeTrackLineStrings', () => {
+      it('should merge all coordinates into one array from a MultiLineString without timestamps', () => {
+        const geoJson: SerialFeatureCollection = testData.GeoJson.MultiLineString as SerialFeatureCollection;
+
+        const featureCollection = FeatureCollection.fromJson(geoJson);
+        const manager = new GeoJsonManager(featureCollection);
+
+        const coordinatesOriginal = (geoJson.features[0].geometry as SerialMultiLineString).coordinates;
+        expect(coordinatesOriginal).toEqual(
+          [[
+            [100.0, 0.0],
+            [101.0, 1.0]
+          ],
+          [
+            [102.0, 2.0],
+            [103.0, 3.0]
+          ]]
+        );
+
+
+        manager.mergeTrackLineStrings();
+
+
+        expect(geoJson.features[0].geometry.type).toEqual('LineString');
+
+        const coordinatesResult = (geoJson.features[0].geometry as SerialLineString).coordinates;
+        expect(coordinatesResult).toEqual(
+          [
+            [100.0, 0.0],
+            [101.0, 1.0],
+            [102.0, 2.0],
+            [103.0, 3.0]
+          ]
+        );
+      });
+
+      it('should merge all coordinates into one array, and all timestamps into another array, from a MultiLineString track', () => {
+        const geoJson: SerialFeatureCollection = testData.GeoJsonFromTracks.MultiLineString as SerialFeatureCollection;
+
+        const featureCollection = FeatureCollection.fromJson(geoJson);
+        const manager = new GeoJsonManager(featureCollection);
+
+        const coordinatesOriginal = (geoJson.features[0].geometry as SerialMultiLineString).coordinates;
+        expect(coordinatesOriginal).toEqual(
+          [[
+            [100.0, 0.0, 100],
+            [101.0, 1.0, 200]
+          ],
+          [
+            [102.0, 2.0, 300],
+            [103.0, 3.0, 400]
+          ]]
+        );
+
+        const timestampsOriginal = geoJson.features[0].properties.coordinateProperties.times;
+        expect(timestampsOriginal).toEqual(
+          [
+            ['1', '2'],
+            ['3', '4']
+          ]
+        );
+
+
+        manager.mergeTrackLineStrings();
+
+
+        expect(geoJson.features[0].geometry.type).toEqual('LineString');
+
+        const coordinatesResult = (geoJson.features[0].geometry as SerialLineString).coordinates;
+        expect(coordinatesResult).toEqual(
+          [
+            [100.0, 0.0, 100],
+            [101.0, 1.0, 200],
+            [102.0, 2.0, 300],
+            [103.0, 3.0, 400]
+          ]
+        );
+
+        const timestampsResult = geoJson.features[0].properties.coordinateProperties.times;
+        expect(timestampsResult).toEqual(
+          ['1', '2', '3', '4']
+        );
+      });
+
+      it('should do nothing for any types other than a MultiLineString', () => {
+        const geoJson: SerialFeatureCollection = testData.GeoJson.Polygon as SerialFeatureCollection;
+
+        const featureCollection = FeatureCollection.fromJson(geoJson);
+        const manager = new GeoJsonManager(featureCollection);
+
+        const coordinatesOriginal = (geoJson.features[0].geometry as SerialPolygon).coordinates;
+        expect(coordinatesOriginal).toEqual(
+          [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0]
+            ]
+          ]
+        );
+
+
+        manager.mergeTrackLineStrings();
+
+
+        expect(geoJson.features[0].geometry.type).toEqual('Polygon');
+
+        const coordinatesResult = (geoJson.features[0].geometry as SerialPolygon).coordinates;
+        expect(coordinatesResult).toEqual(
+          [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0]
+            ]
+          ]
+        );
+      });
+    });
+  });
+
+  // TODO: Finish testing static methods
   describe('Static', () => {
     describe('#PointToTrackPoint', () => {
       it('should return a TrackPoint correlated with the Point geometry provided', () => {

@@ -32,7 +32,7 @@ export interface IGeoJsonTrack
 
   toFeatureCollection(): FeatureCollection;
 
-  updateGeoJsonTrackFromTrackPoints(
+  updateFromTrackPoints(
     trackPoints: TrackPoint[],
     geoJson?: FeatureCollection
   ): FeatureCollection;
@@ -45,7 +45,7 @@ export interface IGeoJsonTrack
    * @return {*}  {FeatureCollection}
    * @memberof IGeoJsonTrackManager
    */
-  updateGeoJsonTrack(
+  updateFromTrackSegData(
     segData: TrackSegmentData,
     geoJson?: FeatureCollection
   ): FeatureCollection;
@@ -111,7 +111,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return trackPoints;
   }
 
-  updateGeoJsonTrackFromTrackPoints(
+  updateFromTrackPoints(
     trackPoints: TrackPoint[],
     geoJson?: FeatureCollection
   ): FeatureCollection {
@@ -124,7 +124,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return geoJson;
   }
 
-  updateGeoJsonTrack(
+  updateFromTrackSegData(
     segData: TrackSegmentData,
     geoJson?: FeatureCollection
   ): FeatureCollection {
@@ -167,7 +167,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
 
   copyBySegmentData(segData: TrackSegmentData): FeatureCollection {
     const geoJsonClone = this._geoJson.clone();
-    return this.updateGeoJsonTrack(segData, geoJsonClone);
+    return this.updateFromTrackSegData(segData, geoJsonClone);
   }
 
 
@@ -243,7 +243,7 @@ export class GeoJsonTrack implements IGeoJsonTrack {
    * @return {*}
    * @memberof GeoJsonTrack
    */
-  protected getFeature() {
+  protected getFeature(): Feature {
     return this._geoJson.features[0];
   }
 
@@ -320,19 +320,19 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   trimBeforeTime(timestamp: string) {
     const segmentData = this.getSegmentBeforeTime(timestamp);
 
-    return this.updateGeoJsonTrack(segmentData);
+    return this.updateFromTrackSegData(segmentData);
   }
 
   trimAfterTime(timestamp: string) {
     const segmentData = this.getSegmentAfterTime(timestamp);
 
-    return this.updateGeoJsonTrack(segmentData);
+    return this.updateFromTrackSegData(segmentData);
   }
 
   trimToTimes(timestampStart: string, timestampEnd: string) {
     const segmentData = this.getSegmentBetweenTimes(timestampStart, timestampEnd);
 
-    return this.updateGeoJsonTrack(segmentData);
+    return this.updateFromTrackSegData(segmentData);
   }
 
 

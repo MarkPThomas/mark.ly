@@ -67,6 +67,8 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     setCoords(newCoords);
     setLayersProps(updatedLayersProps(geoJson, newCoords));
 
+    console.log('geoJson: ', layer);
+    // TODO: Fixed boundingBox update. Not being marked as dirty
     const newBounds = track.boundingBox().toCornerLatLng();
     console.log('newBounds: ', newBounds);
     setBounds(newBounds);
@@ -79,7 +81,6 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     // const geoJson = updateGeoJsonTrackByCoords(layer as GeoJSONFeatureCollection, newCoords);
     // console.log('geoJson: ', geoJson);
     // updateFromGeoJson(geoJson, newCoords);
-    console.log('geoJson: ', layer);
 
     updateFromGeoJson(layer as FeatureCollectionSerial, newCoords);
   }

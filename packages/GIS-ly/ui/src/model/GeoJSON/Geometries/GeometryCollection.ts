@@ -127,8 +127,11 @@ export class GeometryCollection
     return this._collection.getGeometriesByType(type);
   }
 
-  update(target: GeometryType, replacement: GeometryType): void {
-    this._collection.updateItem(target, replacement);
+  update(target: GeometryType, replacement: GeometryType, updateBBox: boolean = false): void {
+    if (this._collection.updateItem(target, replacement)) {
+      this._collectionDirty = true;
+      this.updateBBox(updateBBox);
+    }
   }
 
   save(): void {
