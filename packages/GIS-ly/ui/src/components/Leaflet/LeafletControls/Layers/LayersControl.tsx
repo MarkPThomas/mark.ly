@@ -1,3 +1,4 @@
+import { GeoJsonObject } from 'geojson';
 import { ControlPosition } from 'leaflet';
 import {
   GeoJSON,
@@ -8,13 +9,16 @@ import {
 } from 'react-leaflet';
 import { ReactNode } from 'react';
 
+
 import { hashString } from '../../../../../../../common/utils';//'common/utils';
-import { GeoJsonObject } from 'geojson';
+
+import { TrackPoint } from '../../../../model/GIS/Track';
+
 import { CoordinateMarkersLayer } from '../../Custom/CoordinateMarkersLayer';
 
 type Overlay = {
   name: string,
-  items: ReactNode[],
+  items: TrackPoint[][] | ReactNode[],
   groupOptions?: FeatureGroupProps
   geoJSON?: GeoJsonObject
 }
@@ -58,8 +62,12 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                     key={hashString(JSON.stringify(overlay.items[0]))}
                     data={overlay.geoJSON}
                   >
-                    {overlay.items.map((item) =>
-                      <CoordinateMarkersLayer key={hashString(JSON.stringify(item))} coords={item} />
+                    {overlay.items.map((item: TrackPoint[] | ReactNode) =>
+                      item as TrackPoint[] ?
+                        <CoordinateMarkersLayer
+                          key={hashString(JSON.stringify(item))}
+                          coords={item as TrackPoint[]}
+                        /> : null
                     )}
                   </GeoJSON>
                   :

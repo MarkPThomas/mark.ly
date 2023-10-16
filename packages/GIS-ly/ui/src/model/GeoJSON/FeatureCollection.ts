@@ -119,9 +119,10 @@ export class FeatureCollection
     return this._collection.getGeometriesByType(type);
   }
 
-  update(target: Feature, replacement: Feature): void {
+  update(target: Feature, replacement: Feature, updateBBox: boolean = false): void {
     if (this._collection.updateItem(target, replacement)) {
       this._collectionDirty = true;
+      this.updateBBox(updateBBox);
     }
   }
 

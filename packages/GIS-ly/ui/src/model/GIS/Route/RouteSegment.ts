@@ -135,7 +135,7 @@ export class RouteSegment
   static calcPathRotationRad(segI: IRouteSegmentProperties, segJ: IRouteSegmentProperties) {
     return (segJ?.angle === undefined || segJ.angle === null
       || segI?.angle === undefined || segI.angle === null
-      || isNaN(segJ.angle - segI.angle)
+      || Number.isNaN(segJ.angle - segI.angle)
     )
       ? null
       : segJ.angle - segI.angle;

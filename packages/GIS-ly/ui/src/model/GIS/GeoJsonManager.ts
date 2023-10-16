@@ -1,4 +1,9 @@
 import {
+  FeatureCollection as SerialFeatureCollection
+} from 'geojson';
+
+
+import {
   FeatureCollection,
   Feature,
   FeatureProperty,
@@ -10,15 +15,16 @@ import {
   MultiPoint,
   Position
 } from '../GeoJSON';
-import { RoutePoint } from './Route/RoutePoint';
-import { Track } from './Track/Track';
 
-import { TrackPoint } from './Track/TrackPoint';
+import { RoutePoint } from './Route';
 
 import {
+  Track,
+  TrackPoint,
   getFeatureTimes,
-  TrackProperty
-} from './Track/TrackProperty';
+  TrackProperty,
+  ITrackPropertyProperties
+} from './Track';
 
 export interface IGeoJsonManager {
   isSingleTrack: boolean;
@@ -74,7 +80,14 @@ export class GeoJsonManager implements IGeoJsonManager {
     this._isSingleTrack = this.getType();
   }
 
-  TrackFromGeoJson(): Track | null {
+  static TrackFromJson(json: SerialFeatureCollection): Track | null {
+    const featureCollection = FeatureCollection.fromJson(json);
+    const geoJsonMngr = new GeoJsonManager(featureCollection);
+
+    return geoJsonMngr.toTrack();
+  }
+
+  toTrack(): Track | null {
     if (this._geoJson?.features) {
       let type = this._geoJson.features[0].geometry.type;
 
@@ -168,36 +181,55 @@ export class GeoJsonManager implements IGeoJsonManager {
   mergeRouteLineStrings() {
     const multiLineStringFeatures = this._geoJson.getFeaturesByType(GeoJsonGeometryTypes.MultiLineString);
 
-    multiLineStringFeatures.forEach((feature) => {
-      const multiLineString = feature.geometry as MultiLineString;
+    if (multiLineStringFeatures.length) {
+      multiLineStringFeatures.forEach((feature) => {
+        const multiLineString = feature.geometry as MultiLineString;
 
-      const lineString = LineString.fromPoints(multiLineString.points.flat(1));
+        const lineString = LineString.fromPoints(multiLineString.points.flat(1));
 
-      const lineStringFeature = Feature.fromGeometry(lineString);
+        const lineStringFeature = Feature.fromGeometry(lineString);
 
-      this._geoJson.update(feature, lineStringFeature);
-    });
+        this._geoJson.update(feature, lineStringFeature);
+      });
 
-    this._geoJson.save();
+      this._geoJson.save();
+    }
   }
 
   mergeTrackLineStrings() {
     const multiLineStringFeatures = this._geoJson.getFeaturesByType(GeoJsonGeometryTypes.MultiLineString);
 
-    multiLineStringFeatures.forEach((feature) => {
-      const multiLineString = feature.geometry as MultiLineString;
+    if (multiLineStringFeatures.length) {
+      multiLineStringFeatures.forEach((feature) => {
+        const multiLineString = feature.geometry as MultiLineString;
 
-      const lineString = LineString.fromPoints(multiLineString.points.flat(1));
+        const lineString = LineString.fromPoints(multiLineString.points.flat(1));
 
-      const timeStamps = (getFeatureTimes(feature) as string[][]).flat(2) as string[];
-      const properties = (feature.properties as TrackProperty).fromTimestamps(timeStamps);
+        let lineStringFeature: Feature;
+        const featureTimes = getFeatureTimes(feature) as string[][];
+        if (featureTimes) {
+          const timestamps = featureTimes.flat(2) as string[];
+          const json: ITrackPropertyProperties = {
+            _gpxType: feature.properties._gpxType,
+            name: feature.properties.name,
+            time: feature.properties.time,
+            coordinateProperties: {
+              times: timestamps
+            }
+          };
 
-      const lineStringFeature = Feature.fromGeometry(lineString, { properties });
+          const properties = TrackProperty.fromJson(json);
 
-      this._geoJson.update(feature, lineStringFeature);
-    });
+          lineStringFeature = Feature.fromGeometry(lineString, { properties });
+        } else {
+          lineStringFeature = Feature.fromGeometry(lineString);
+        }
 
-    this._geoJson.save();
+        this._geoJson.update(feature, lineStringFeature);
+      });
+
+      this._geoJson.save();
+    }
   }
 
   // === Static Methods

@@ -143,7 +143,6 @@ describe('##Track', () => {
     });
   });
 
-  // TODO: updateGeoJsonTrack tests?
   describe('Duplication', () => {
     let trackPoints: TrackPoint[];
     let track: Track;
@@ -190,6 +189,7 @@ describe('##Track', () => {
     });
 
     it('should Foo', () => { })
+
 
     // TODO: Not used
     describe('#updateBySegment', () => {
@@ -311,7 +311,6 @@ describe('##Track', () => {
   });
 
 
-
   describe('Common Interfaces', () => {
     let trackPoints: TrackPoint[];
     let featureCollection: FeatureCollection;
@@ -388,7 +387,120 @@ describe('##Track', () => {
 
   describe('Misc Methods', () => {
     describe('#updateGeoJsonTrack', () => {
+      let trackPoints: TrackPoint[];
+      let featureCollection: FeatureCollection;
+      let track: Track;
 
+      let vertex1: VertexNode<TrackPoint, TrackSegment>;
+
+      beforeEach(() => {
+        trackPoints = [
+          new TrackPoint(39.74007868370209, -105.0076261841355, 0, '2023-07-04T20:00:00Z'),
+          new TrackPoint(39.74005097339472, -104.9998123858178, 0, '2023-07-04T20:00:20Z'),
+          new TrackPoint(39.73055300708892, -104.9990802128465, 0, '2023-07-04T20:00:30Z'),
+          new TrackPoint(39.73993779411854, -104.9985377946692, 0, '2023-07-04T20:00:40Z'),
+          new TrackPoint(39.73991441833991, -104.9917491337653, 0, '2023-07-04T20:00:50Z'),
+          new TrackPoint(39.739914418342, -104.99174913377, 0, '2023-07-04T20:01:10Z')
+        ];
+
+        featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trackPoints);
+        track = Track.fromGeoJson(featureCollection);
+
+        vertex1 = track.vertexNodesByPoint(trackPoints[2])[0];
+      });
+
+      it('should NOT update the Track if the modifying method fails to change the track', () => {
+        const originalBoundingBox = track.boundingBox().toCornerPositions();
+        const originalTrack = track.toJson();
+
+        const nonExistingPoint = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1, 2));
+        const trimmedPoint = track.trimBefore(nonExistingPoint);
+
+        expect(trimmedPoint).toBeNull();
+
+        const currentBoundingBox = track.boundingBox().toCornerPositions();
+        expect(currentBoundingBox).toEqual(originalBoundingBox);
+
+        const notUpdatedTrack = track.toJson();
+        expect(notUpdatedTrack).toEqual(originalTrack);
+      });
+
+      it('should update the Track if the modifying method fails to change the track', () => {
+        const originalBoundingBox = track.boundingBox().toCornerPositions();
+        const originalTrack = track.toJson();
+
+        const originalVertexHead = track.firstPoint;
+
+        const trimmedPoint = track.trimBefore(vertex1);
+
+        expect(trimmedPoint).toEqual(originalVertexHead);
+
+        const currentBoundingBox = track.boundingBox().toCornerPositions();
+        expect(currentBoundingBox).not.toEqual(originalBoundingBox);
+
+        const updatedTrack = track.toJson();
+        expect(updatedTrack).not.toEqual(originalTrack);
+      });
+
+      it(`should not update the Track when manually called with a 'false' flag
+        if originally suppressed for iterations`, () => {
+        const originalBoundingBox = track.boundingBox().toCornerPositions();
+        const originalTrack = track.toJson();
+
+        const originalVertexHead = track.firstPoint;
+
+        const iterating = true;
+        const trimmedPoint = track.trimBefore(vertex1, iterating);
+
+        expect(trimmedPoint).toEqual(originalVertexHead);
+
+        // Should not be updated
+        const currentBoundingBox = track.boundingBox().toCornerPositions();
+        expect(currentBoundingBox).toEqual(originalBoundingBox);
+
+        const currentTrack = track.toJson();
+        expect(currentTrack).toEqual(originalTrack);
+
+        const trackChanged = false;
+        track.updateGeoJsonTrack(trackChanged);
+
+        // Should still not be updated
+        const notUpdatedBoundingBox = track.boundingBox().toCornerPositions();
+        expect(notUpdatedBoundingBox).toEqual(originalBoundingBox);
+
+        const notUpdatedTrack = track.toJson();
+        expect(notUpdatedTrack).toEqual(originalTrack);
+      });
+
+      it(`should update the Track when manually called with a 'true' flag
+        if originally suppressed for iterations`, () => {
+        const originalBoundingBox = track.boundingBox().toCornerPositions();
+        const originalTrack = track.toJson();
+
+        const originalVertexHead = track.firstPoint;
+
+        const iterating = true;
+        const trimmedPoint = track.trimBefore(vertex1, iterating);
+
+        expect(trimmedPoint).toEqual(originalVertexHead);
+
+        // Should not be updated
+        const currentBoundingBox = track.boundingBox().toCornerPositions();
+        expect(currentBoundingBox).toEqual(originalBoundingBox);
+
+        const currentTrack = track.toJson();
+        expect(currentTrack).toEqual(originalTrack);
+
+        const trackChanged = true;
+        track.updateGeoJsonTrack(trackChanged);
+
+        // Should be updated
+        const updatedBoundingBox = track.boundingBox().toCornerPositions();
+        expect(updatedBoundingBox).not.toEqual(originalBoundingBox);
+
+        const updatedTrack = track.toJson();
+        expect(updatedTrack).not.toEqual(originalTrack);
+      });
     });
 
     describe('#clear', () => {

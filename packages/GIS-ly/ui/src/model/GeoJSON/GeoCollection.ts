@@ -88,7 +88,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     return [...this._items];
   }
 
-  updateItem(target: TItem, replacement: TItem): boolean {
+  updateItem(target: TItem, replacement: TItem, updateBBox: boolean = false): boolean {
     const index = this.indexOf(target);
     if (index === -1) {
       console.log('Target item not found in collection. Target will not be updated with replacement');
@@ -96,6 +96,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
     } else {
       this._items[index] = replacement;
       this._itemsDirty[index] = true;
+      this.updateBBox(updateBBox);
       return true;
     }
   }
@@ -123,16 +124,16 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
   add(item: TItem, updateBBox: boolean = false): number {
     const oldLength = this._items.length;
     const newLength = this._items.push(item);
-    return this.addResult(oldLength, newLength, updateBBox, [item]);
+    return this.addResult(oldLength, newLength, updateBBox);
   }
 
   addItems(items: TItem[], updateBBox: boolean = false): number {
     const oldLength = this._items.length;
     const newLength = this._items.push(...items);
-    return this.addResult(oldLength, newLength, updateBBox, items);
+    return this.addResult(oldLength, newLength, updateBBox);
   }
 
-  protected addResult(oldLength: number, newLength: number, updateBBox: boolean, items: TItem[]): number {
+  protected addResult(oldLength: number, newLength: number, updateBBox: boolean): number {
     if (newLength > oldLength) {
       this._length = newLength;
       // TODO: Optimization - adjust current bbox based on bbox of item

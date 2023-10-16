@@ -191,7 +191,7 @@ export class Track implements ITrack {
   updateGeoJsonTrack(trackChanged: boolean | number) {
     if (trackChanged) {
       const trackPoints = this._polylineTrack.vertices();
-      this._geoJsonTrack.updateGeoJsonTrackFromTrackPoints(trackPoints);
+      this._geoJsonTrack.updateFromTrackPoints(trackPoints);
     }
   }
 

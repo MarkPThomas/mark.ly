@@ -9,6 +9,7 @@ import { Conversion } from '../../../../../../common/utils/units/conversion/Conv
 import { Angle } from '../../../../../../common/utils/math/Coordinates/Angle';
 
 import { TrackPoint } from '../../../model/GIS/Track/TrackPoint';
+
 import { LabelValue } from './LabelValueList';
 
 
@@ -32,22 +33,22 @@ export function CoordinateMarker({ coord }: CoordinateMarkerProps) {
   >
     <Popup>
       <span>
-        {coord.timestamp &&
-          <LabelValue label={'Timestamp'} value={coord.timestamp} />}
+        {coord.timestamp ?
+          <LabelValue label={'Timestamp'} value={coord.timestamp} /> : null}
         <LabelValue label={'Latitude'} value={coord.lat} />
         <LabelValue label={'Longitude'} value={coord.lng} />
-        {coord.elevation &&
-          <LabelValue label={'Elevation (DEM)'} value={elevationMappedMetersFeet} />}
-        {coord.alt &&
-          <LabelValue label={'Elevation (GPS)'} value={elevationMeasuredMetersFeet} />}
-        {coord.path && coord.path.ascentRate &&
-          <LabelValue label={'Elevation Rate'} value={elevationRateFeetPerHour} />}
-        {coord.path.speed &&
-          <LabelValue label={'Speed (average)'} value={speedMPH} />}
-        {coord.path && coord.path.rotation &&
-          <LabelValue label={'Rotation'} value={rotationDeg} />}
-        {coord.path && coord.path.rotationRate &&
-          <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} />}
+        {coord.elevation ?
+          <LabelValue label={'Elevation (DEM)'} value={elevationMappedMetersFeet} /> : null}
+        {coord.alt ?
+          <LabelValue label={'Elevation (GPS)'} value={elevationMeasuredMetersFeet} /> : null}
+        {(coord.path && coord.path.ascentRate) ?
+          <LabelValue label={'Elevation Rate'} value={elevationRateFeetPerHour} /> : null}
+        {coord.path.speed ?
+          <LabelValue label={'Speed (average)'} value={speedMPH} /> : null}
+        {(coord.path && coord.path.rotation) ?
+          <LabelValue label={'Rotation'} value={rotationDeg} /> : null}
+        {(coord.path && coord.path.rotationRate) ?
+          <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} /> : null}
       </span>
     </Popup>
   </Circle>

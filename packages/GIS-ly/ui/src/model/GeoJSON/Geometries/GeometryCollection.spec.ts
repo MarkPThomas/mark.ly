@@ -25,7 +25,6 @@ describe('##GeometryCollection', () => {
   let lineStringBBoxJsonProvided: SerialBBox;
   let lineStringBBoxJsonActual: SerialBBox;
   let lineStringJson: SerialLineString;
-  let lineStringPoints: Point[];
   let lineStringPositions: Position[];
 
   let geometryCollectionBBoxJsonProvided: SerialBBox;
@@ -51,11 +50,6 @@ describe('##GeometryCollection', () => {
       type: 'LineString',
       coordinates: lineStringPositions
     };
-
-    lineStringPoints = [
-      Point.fromPosition(lineStringPositions[0]),
-      Point.fromPosition(lineStringPositions[1])
-    ];
 
     geometryCollectionJson = {
       type: 'GeometryCollection',
@@ -361,6 +355,23 @@ describe('##GeometryCollection', () => {
         const expectedCurrentLineString = geometryCollection.getByIndex(1) as LineString;
         expect(geometryCollection.geometries.length).toEqual(2);
         expect(expectedCurrentLineString.equals(newLineString));
+      });
+
+      it('should update the bounding box based on the geometry provided', () => {
+        const currentGeometry = geometryCollection.getByIndex(1) as LineString;
+        expect(geometryCollection.bbox().toCornerPositions()).toEqual(
+          [
+            [-1, -2], [3, 4]
+          ]
+        );
+
+        geometryCollection.update(currentGeometry, newLineString);
+
+        expect(geometryCollection.bbox().toCornerPositions()).toEqual(
+          [
+            [-1, -2], [7, 8]
+          ]
+        );
       });
     });
 
