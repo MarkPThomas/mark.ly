@@ -9,15 +9,18 @@ import { VertexNode } from "../../Geometry";
 export interface ICruftManager {
   track: Track;
 
-  getTrackSegmentsByCruft(triggerDistanceKM: number): {
+  getTrackRangesByCruft(triggerDistanceKM: number): {
     segments: ITimeRange[];
     segmentKeep: ITimeRange;
   };
-  trimTrackSegmentCruft(triggerDistanceKM: number): Track;
+  trimTrackByCruft(triggerDistanceKM: number): number;
   // splitTrackSegmentByCruft(triggerDistanceKM: number): Track[];
 }
 
 export class CruftManager implements ICruftManager {
+  private _totalSize: number = 0;
+  private _maxSize: number = 0;
+
   private _track: Track;
   get track() {
     return this._track;
@@ -27,7 +30,7 @@ export class CruftManager implements ICruftManager {
     this._track = track;
   }
 
-  getTrackSegmentsByCruft(
+  getTrackRangesByCruft(
     triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM
   ): {
     segments: ITimeRange[];
@@ -37,7 +40,8 @@ export class CruftManager implements ICruftManager {
     const coordinates = this._track.trackPoints() as TrackPoint[];
     let point = this._track.firstPoint;
 
-    let maxSize = 0;
+    this._maxSize = 0;
+    this._totalSize = 0;
 
     const segments: ITimeRange[] = [];
     let segmentKeep: ITimeRange;
@@ -49,9 +53,9 @@ export class CruftManager implements ICruftManager {
     const updateSegmentKeep = (segmentCheck: ITimeRange, coordCount: number) => {
       segments.push(segmentCheck);
 
-      if (coordCount > maxSize) {
+      if (coordCount > this._maxSize) {
         segmentKeep = segmentCheck;
-        maxSize = coordCount;
+        this._maxSize = coordCount;
       }
     }
 
@@ -62,6 +66,7 @@ export class CruftManager implements ICruftManager {
         segment.endTime = point.val.timestamp;
 
         updateSegmentKeep(segment, coordCount);
+        this._totalSize += coordCount;
         coordCount = 0;
 
         segment = {
@@ -76,18 +81,19 @@ export class CruftManager implements ICruftManager {
     coordCount++;
     segment.endTime = coordinates[coordinates.length - 1].timestamp;
     updateSegmentKeep(segment, coordCount);
+    this._totalSize += coordCount;
 
     return { segments, segmentKeep };
   }
 
-  trimTrackSegmentCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track {
-    const { segments, segmentKeep } = this.getTrackSegmentsByCruft(triggerDistanceKM);
+  trimTrackByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): number {
+    const { segments, segmentKeep } = this.getTrackRangesByCruft(triggerDistanceKM);
 
     if (segments.length > 1) {
-      this._track.trimToRange(segmentKeep)
+      this._track.trimToRange(segmentKeep);
     };
 
-    return this._track;
+    return this._totalSize - this._maxSize;
   }
 
   // splitTrackSegmentByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track[] {
