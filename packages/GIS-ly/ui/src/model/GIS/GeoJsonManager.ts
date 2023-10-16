@@ -1,4 +1,9 @@
 import {
+  FeatureCollection as SerialFeatureCollection
+} from 'geojson';
+
+
+import {
   FeatureCollection,
   Feature,
   FeatureProperty,
@@ -75,7 +80,14 @@ export class GeoJsonManager implements IGeoJsonManager {
     this._isSingleTrack = this.getType();
   }
 
-  TrackFromGeoJson(): Track | null {
+  static TrackFromJson(json: SerialFeatureCollection): Track | null {
+    const featureCollection = FeatureCollection.fromJson(json);
+    const geoJsonMngr = new GeoJsonManager(featureCollection);
+
+    return geoJsonMngr.toTrack();
+  }
+
+  toTrack(): Track | null {
     if (this._geoJson?.features) {
       let type = this._geoJson.features[0].geometry.type;
 
@@ -206,8 +218,6 @@ export class GeoJsonManager implements IGeoJsonManager {
             }
           };
 
-          // const trackProperty = feature.properties as TrackProperty;
-          // const properties = trackProperty.fromTimestamps(timestamps);
           const properties = TrackProperty.fromJson(json);
 
           lineStringFeature = Feature.fromGeometry(lineString, { properties });
