@@ -1,7 +1,7 @@
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
 import { ITimeRange } from "../Time/TimeRange";
-import config from '../config';
+import config from '../../../config';
 import { TrackSegment } from "../Track/TrackSegment";
 import { VertexNode } from "../../Geometry";
 
@@ -31,7 +31,7 @@ export class CruftManager implements ICruftManager {
   }
 
   getTrackRangesByCruft(
-    triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM
+    triggerDistanceKM: number = config.trackCriteria.cruft.pointSeparationLimit
   ): {
     segments: ITimeRange[];
     segmentKeep: ITimeRange;
@@ -86,7 +86,7 @@ export class CruftManager implements ICruftManager {
     return { segments, segmentKeep };
   }
 
-  trimTrackByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): number {
+  trimTrackByCruft(triggerDistanceKM: number = config.trackCriteria.cruft.pointSeparationLimit): number {
     const { segments, segmentKeep } = this.getTrackRangesByCruft(triggerDistanceKM);
 
     if (segments.length > 1) {

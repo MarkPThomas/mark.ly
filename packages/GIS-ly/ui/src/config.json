@@ -1,0 +1,115 @@
+{
+  "baseLayers": [
+    {
+      "name": "OpenStreetMap",
+      "attributions": [
+        {
+          "label": "OpenStreetMap",
+          "url": "https://openstreetmap.org/copyright"
+        }
+      ],
+      "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    },
+    {
+      "name": "Topo Map",
+      "attributions": [
+        {
+          "label": "Thunderforest",
+          "url": "http://thunderforest.com/"
+        },
+        {
+          "label": "OpenStreetMap",
+          "url": "https://openstreetmap.org/copyright"
+        }
+      ],
+      "url": "https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey="
+    },
+    {
+      "name": "ESRI Topo Map",
+      "attributions": [
+        {
+          "label": "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"
+        }
+      ],
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+    },
+    {
+      "name": "ESRI Satellite Map",
+      "attributions": [
+        {
+          "label": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+        }
+      ],
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+    }
+  ],
+  "trackCriteria": {
+    "units": {
+      "length": "mile",
+      "time": "hour",
+      "angle": "degree"
+    },
+    "activities": [
+      {
+        "activity": "Hiking",
+        "speed": {
+          "min": 0.25,
+          "max": 4
+        },
+        "rotation": {
+          "units": {
+            "angle": "degree",
+            "time": "second"
+          },
+          "angularVelocityMax": 60
+        },
+        "elevation": {
+          "units": {
+            "length": "foot"
+          },
+          "maxAscentRate": 3000,
+          "maxDescentRate": 4500
+        }
+      },
+      {
+        "activity": "Cycling",
+        "speed": {
+          "min": 0.25,
+          "max": 60
+        },
+        "rotation": {
+          "units": {
+            "angle": "degree",
+            "time": "second"
+          },
+          "angularVelocityMax": 120
+        },
+        "elevation": {
+          "units": {
+            "length": "foot"
+          },
+          "maxAscentRate": 2000,
+          "maxDescentRate": 6000
+        },
+        "slope": {
+          "units": {
+            "angle": "percent"
+          },
+          "maxPercent": 30
+        }
+      }
+    ],
+    "cruft": {
+      "pointSeparationLimit": 3
+    },
+    "noiseCloud": {
+      "speedMin": 0.25
+    },
+    "misc": {
+      "units": {
+        "time": "second"
+      },
+      "gpsTimeInterval": 30
+    }
+  }
+}
