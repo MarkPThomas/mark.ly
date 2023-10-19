@@ -33,7 +33,7 @@ export class Settings implements ISettings {
       ];
     }
 
-    if (!initialPosition.zoom) { // || !Number.parseInt(initialPosition.zoom)) {
+    if (!initialPosition.zoom) {
       initialPosition.zoom = 13;
     }
 

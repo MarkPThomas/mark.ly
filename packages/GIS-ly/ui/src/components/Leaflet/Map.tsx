@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   LatLngBoundsExpression,
   LatLngTuple
@@ -35,7 +35,7 @@ import { ITrackCriteria } from '../../model/GIS/settings';
 
 import { Settings } from '../../Settings';
 
-import { BaseLayers } from './Layers/BaseLayers';
+import { createBaseTileLayers, appendLayerApiKey } from './Layers/BaseLayers';
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
@@ -58,24 +58,27 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [layers, setLayers] = useState<LayersControlProps | null>(null)
 
-  // const [layer, setLayer] = useState<GeoJSON>(null);
-  // const [coords, setCoords] = useState<TrackPoints | null>(null);
   const [track, setTrack] = useState<Track | null>(null);
 
   useEffect(() => {
-    BaseLayers(config.baseLayers, restHandlers.handleLayerApiKeys)
-      .then((result) => {
-        result.position = layers.position;
+    console.log('Initializing map with config: ', config);
+    setLayers(createBaseTileLayers(config.baseLayers));
 
-        if (layers.overlays) {
-          result.overlays = layers.overlays;
-        }
+    // TODO: Finish fixing. This only breaks the 'Topo Map' underlay
+    // Temporary stub is to include the API key in the URL in the config file
+    // appendLayerApiKey(config.baseLayers[0], restHandlers.handleLayerApiKeys)
+    // .then((result) => {
+    //   result.position = layers.position;
 
-        setLayers(result);
-      })
-      .catch((error) => {
-        console.log('BaseLayers set failed', error);
-      });
+    //   if (layers.overlays) {
+    //     result.overlays = layers.overlays;
+    //   }
+    //   console.log('UseEffect completed: ', result)
+    //   setLayers(result);
+    // })
+    // .catch((error) => {
+    //   console.log('BaseLayers set failed', error);
+    // });
   }, []);
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
@@ -92,12 +95,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
     const newBounds = track.boundingBox().toCornerLatLng();
     console.log('newBounds: ', newBounds);
-    // updateFromGeoJson(newGeoJson, newCoords);
 
-    // TODO: How to update setLayer from original reference?
-    // setLayer(geoJson);
-    // console.log('layer: ', layer);
-    // setCoords(newCoords);
     setLayers(updatedLayersProps(newGeoJson, newCoords));
     setBounds(newBounds);
   }
@@ -296,43 +294,44 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   console.log('layersProps:', layers)
 
   return (
-    <div id="map-container">
-      <MapContainer
-        center={position.point}
-        zoom={position.zoom}
-        scrollWheelZoom={false}
-        style={{ width: '100%', height: '700px' }}
-      >
-        {layers.baseLayers[0].item}
-        <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
-        {
-          (layers.baseLayers?.length > 1 || layers.overlays?.length)
-            ?
-            <LayersControl {...layers} />
-            : null
-        }
-        <SetViewOnClick animateRef={animateRef} />
-        <SetViewOnTrackLoad bounds={bounds} />
-      </MapContainer>
-      <input type="file" onChange={handleFileSelection} />
-      <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
-      <label htmlFor="animatePan">Set View On Click</label>
-      {/* <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" /> */}
+    layers ?
+      <div id="map-container">
+        <MapContainer
+          center={position.point}
+          zoom={position.zoom}
+          scrollWheelZoom={false}
+          style={{ width: '100%', height: '700px' }}
+        >
+          {layers.baseLayers[0].item}
+          <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
+          {
+            (layers.baseLayers?.length > 1 || layers.overlays?.length)
+              ?
+              <LayersControl {...layers} />
+              : null
+          }
+          <SetViewOnClick animateRef={animateRef} />
+          <SetViewOnTrackLoad bounds={bounds} />
+        </MapContainer>
+        <input type="file" onChange={handleFileSelection} />
+        <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
+        <label htmlFor="animatePan">Set View On Click</label>
+        {/* <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" /> */}
 
-      {/* <input type="button" onClick={handleSplitCruft} value="Split Cruft" /> */}
-      <input type="button" onClick={handleTrimCruft} value="Trim Cruft" />
+        {/* <input type="button" onClick={handleSplitCruft} value="Split Cruft" /> */}
+        <input type="button" onClick={handleTrimCruft} value="Trim Cruft" />
 
-      <input type="button" onClick={handleSmoothStationary} value="Smooth Stationary" />
-      <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
+        <input type="button" onClick={handleSmoothStationary} value="Smooth Stationary" />
+        <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
 
-      <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
-      <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
+        <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
+        <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
 
-      {/* <input type="button" onClick={handleGetElevation} value="Get Elevation Data" /> */}
-      {/* <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" /> */}
+        {/* <input type="button" onClick={handleGetElevation} value="Get Elevation Data" /> */}
+        {/* <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" /> */}
 
-      <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
-      <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
-    </div>
+        <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
+        <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
+      </div> : null
   )
 }
