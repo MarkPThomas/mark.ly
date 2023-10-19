@@ -6,5 +6,5 @@ import {
 const Requests = createAxiosInstance();
 
 export const Tiles = {
-  getApiKey: (apiKeyName: string) => Requests.get<ITileApiKeyResponse>(`/tileApiKey?apiKeyName=${apiKeyName}`)
+  getApiKey: (apiKeyName: string) => Requests.get<ITileApiKeyResponse>(`/tileApiKey/?apiKeyName=${apiKeyName}`)
 };

@@ -1,10 +1,12 @@
 import { Router } from 'express';
 
-import { tileApiKeyValidate } from '../middleware/tileApiKeyValidate';
+// import { tileApiKeyValidate } from '../middleware/tileApiKeyValidate';
 import * as tileApiController from './tileApiKey';
 
 const router = Router();
 
-router.get('/tileApiKey', tileApiKeyValidate, tileApiController.getApiKey);
+// TODO: Fix/finish validation middleware. See tileApiKeyValidate
+router.get('/tileApiKey', tileApiController.getApiKey);
+// router.get('/tileApiKey', tileApiKeyValidate, tileApiController.getApiKey);
 
 export default router;

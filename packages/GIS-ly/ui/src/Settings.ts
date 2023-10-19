@@ -5,13 +5,13 @@ import {
   convertToGlobalDefaults
 } from "./model/GIS/settings";
 
-export interface IConfig {
+export interface ISettings {
   initialPosition: IInitialPosition;
   baseLayers: IBaseLayer[];
   trackCriteria: ITrackCriteria;
 }
 
-export class Config implements IConfig {
+export class Settings implements ISettings {
   initialPosition: IInitialPosition;
   baseLayers: IBaseLayer[];
   trackCriteria: ITrackCriteria;
@@ -33,7 +33,7 @@ export class Config implements IConfig {
       ];
     }
 
-    if (!initialPosition.zoom) { // || !Number.parseInt(initialPosition.zoom)) {
+    if (!initialPosition.zoom) {
       initialPosition.zoom = 13;
     }
 
