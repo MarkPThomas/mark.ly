@@ -23,11 +23,13 @@ export class ParametricComponent<T> extends ParametricEquation<T> {
     parametricCB: ValueAtPosition<T> | null = null,
     functionDifferential: ParametricComponent<T> | null = null
   ) {
-    if (!parametricCB) {
-      super(constantValue, undefined);
-    } else {
+    if (parametricCB) {
       super(undefined, parametricCB);
-      super._differential = functionDifferential;
+    } else {
+      super(constantValue, undefined);
+    }
+    if (parametricCB) {
+      this._differential = functionDifferential;
     }
   }
 }
