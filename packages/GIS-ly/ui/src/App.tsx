@@ -1,4 +1,4 @@
-import { Config } from './Config';
+import { Settings } from './Settings';
 import { Tiles } from './api';
 import { Map } from './components/Leaflet/Map';
 
@@ -9,7 +9,7 @@ const restHandlers = {
 }
 
 type Props = {
-  config: Config
+  config: Settings
 }
 
 export const App = ({ config }: Props) => {

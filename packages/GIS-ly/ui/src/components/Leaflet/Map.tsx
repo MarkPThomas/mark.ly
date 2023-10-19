@@ -33,7 +33,7 @@ import {
 import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
 import { ITrackCriteria } from '../../model/GIS/settings';
 
-import { Config } from '../../Config';
+import { Settings } from '../../Settings';
 
 import { BaseLayers } from './Layers/BaseLayers';
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
@@ -47,12 +47,12 @@ export interface IInitialPosition {
 }
 
 export type MapProps = {
-  config: Config,
+  config: Settings,
   restHandlers?
 };
 
 export const Map = ({ config, restHandlers }: MapProps) => {
-  const [position, setPosition] = useState(config.initialPosition);
+  const [position, setPosition] = useState<IInitialPosition>(config.initialPosition);
   const [bounds, setBounds] = useState<LatLngBoundsExpression | null>(null);
   const [trackCriteria, setTrackCriteria] = useState<ITrackCriteria>(config.trackCriteria);
 
@@ -180,6 +180,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleTrimCruft = () => {
     console.log('handleTrimCruft')
     if (track) {
+      // TODO: inject point separation limit from settings
       const manager = new CruftManager(track);
 
       const triggerDistanceKM: number = 5;
@@ -239,6 +240,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
     if (track) {
+      // TODO: inject gps time interval from settings
       const manager = new NoiseCloudSmoother(track);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
@@ -301,7 +303,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         scrollWheelZoom={false}
         style={{ width: '100%', height: '700px' }}
       >
-        {layers[0].item}
+        {layers.baseLayers[0].item}
         <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
         {
           (layers.baseLayers?.length > 1 || layers.overlays?.length)

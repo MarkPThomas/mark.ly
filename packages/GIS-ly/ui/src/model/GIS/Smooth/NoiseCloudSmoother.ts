@@ -1,5 +1,3 @@
-import config from '../../../config';
-
 import { VertexNode } from "../../Geometry/Polyline";
 import { Track } from "../Track/Track";
 import { TrackPoint } from "../Track/TrackPoint";
@@ -8,10 +6,15 @@ import { TrackSegment } from "../Track/TrackSegment";
 import { Smoother } from "./Smoother";
 
 export class NoiseCloudSmoother extends Smoother {
-  constructor(track: Track) { super(track); }
+  private _gpsTimeInterval: number;
+
+  constructor(track: Track, gpsTimeInterval: number = 30) {
+    super(track);
+    this._gpsTimeInterval = gpsTimeInterval;
+  }
 
   public smoothNoiseClouds(minSpeedMS: number, iterate?: boolean) {
-    const minRadiusMeters = minSpeedMS * config.trackCriteria.misc.gpsTimeInterval;
+    const minRadiusMeters = minSpeedMS * this._gpsTimeInterval;
 
     const totalRemovedNodes: VertexNode<TrackPoint, TrackSegment>[][] = [];
 

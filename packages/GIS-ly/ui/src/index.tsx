@@ -5,9 +5,9 @@ import * as configJson from './config.json';
 
 import { App } from './App';
 import './style.css';
-import { Config } from './Config';
+import { Settings } from './Settings';
 
-const mapConfig = new Config(configJson);
+const mapConfig = new Settings(configJson);
 
 const container = document.getElementById(appConfig.domId);
 const root = createRoot(container!);
