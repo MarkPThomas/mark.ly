@@ -4,10 +4,7 @@ import {
   LatLngTuple
 } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
-import {
-  GeoJSON,
-  FeatureCollection as FeatureCollectionSerial
-} from 'geojson';
+import { FeatureCollection as FeatureCollectionSerial } from 'geojson';
 
 import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
 
@@ -33,31 +30,53 @@ import {
   AngularSpeedSmoother,
   ElevationSpeedSmoother
 } from '../../model/GIS/Smooth';
+import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
+import { ITrackCriteria } from '../../model/GIS/settings';
 
+import { Config } from '../../Config';
+
+import { BaseLayers } from './Layers/BaseLayers';
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
-import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
 
+export interface IInitialPosition {
+  point: LatLngTuple,
+  zoom: number
+}
 
 export type MapProps = {
-  initialPosition: {
-    point: LatLngTuple,
-    zoom: number
-  },
-  initialLayers?: LayersControlProps
+  config: Config,
+  restHandlers?
 };
 
-export const Map = ({ initialPosition, initialLayers }: MapProps) => {
-  const [position, setPosition] = useState(initialPosition);
+export const Map = ({ config, restHandlers }: MapProps) => {
+  const [position, setPosition] = useState(config.initialPosition);
   const [bounds, setBounds] = useState<LatLngBoundsExpression | null>(null);
-  const [layersProps, setLayersProps] = useState(initialLayers)
+  const [trackCriteria, setTrackCriteria] = useState<ITrackCriteria>(config.trackCriteria);
+
+  const [layers, setLayers] = useState<LayersControlProps | null>(null)
 
   // const [layer, setLayer] = useState<GeoJSON>(null);
   // const [coords, setCoords] = useState<TrackPoints | null>(null);
   const [track, setTrack] = useState<Track | null>(null);
 
+  useEffect(() => {
+    BaseLayers(config.baseLayers, restHandlers.handleLayerApiKeys)
+      .then((result) => {
+        result.position = layers.position;
+
+        if (layers.overlays) {
+          result.overlays = layers.overlays;
+        }
+
+        setLayers(result);
+      })
+      .catch((error) => {
+        console.log('BaseLayers set failed', error);
+      });
+  }, []);
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
   const updateFromTrack = (track: Track) => {
@@ -79,7 +98,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     // setLayer(geoJson);
     // console.log('layer: ', layer);
     // setCoords(newCoords);
-    setLayersProps(updatedLayersProps(newGeoJson, newCoords));
+    setLayers(updatedLayersProps(newGeoJson, newCoords));
     setBounds(newBounds);
   }
 
@@ -106,7 +125,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
           const newCoords = track.trackPoints();
           console.log('newCoords: ', newCoords);
           // setCoords(newCoords);
-          setLayersProps(updatedLayersProps(geoJson, newCoords));
+          setLayers(updatedLayersProps(geoJson, newCoords));
 
           const newBounds = track.boundingBox().toCornerLatLng();
           console.log('newBounds: ', newBounds);
@@ -262,7 +281,7 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
     coords: TrackPoint[]
   ): LayersControlProps =>
     layer ? {
-      ...initialLayers,
+      ...layers,
       overlays: [{
         name: 'Track',
         geoJSON: layer,
@@ -270,9 +289,9 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
           coords
         ]
       }]
-    } : layersProps;
+    } : layers;
 
-  console.log('layersProps:', layersProps)
+  console.log('layersProps:', layers)
 
   return (
     <div id="map-container">
@@ -282,12 +301,12 @@ export const Map = ({ initialPosition, initialLayers }: MapProps) => {
         scrollWheelZoom={false}
         style={{ width: '100%', height: '700px' }}
       >
-        {initialLayers.baseLayers[0].item}
+        {layers[0].item}
         <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
         {
-          (layersProps.baseLayers?.length > 1 || layersProps.overlays?.length)
+          (layers.baseLayers?.length > 1 || layers.overlays?.length)
             ?
-            <LayersControl {...layersProps} />
+            <LayersControl {...layers} />
             : null
         }
         <SetViewOnClick animateRef={animateRef} />
