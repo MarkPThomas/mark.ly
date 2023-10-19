@@ -1,3 +1,7 @@
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+const fs = require('fs'); // to check if the file exists
+
 const path = require('path');
 const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -5,6 +9,8 @@ const sharedConfig = require('./webpack.shared.config.js');
 
 const devMode = process.env.NODE_ENV !== 'production';
 const clientPort = 8080;
+
+dotenv.config({ path: path.normalize(`${__dirname}/../../ui/src/.env.${process.env.NODE_ENV}`) });
 
 const config = {
   target: 'web',

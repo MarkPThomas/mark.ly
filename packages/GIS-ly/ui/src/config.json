@@ -1,4 +1,11 @@
 {
+  "initialPosition": {
+    "point": [
+      37.7749,
+      -122.4194
+    ],
+    "zoom": 13
+  },
   "baseLayers": [
     {
       "name": "OpenStreetMap",
@@ -22,7 +29,8 @@
           "url": "https://openstreetmap.org/copyright"
         }
       ],
-      "url": "https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey="
+      "url": "https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png",
+      "apiKey": "thunderforest"
     },
     {
       "name": "ESRI Topo Map",

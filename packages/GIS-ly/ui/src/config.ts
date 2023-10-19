@@ -1,93 +1,46 @@
-import toSnakeCase from '../../../common/utils/toSnakeCase';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-import * as config from './config.json';
-
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: path.normalize(`${__dirname}/../../ui/.env`) });
-}
-
-const importedConfig: IConfig = config as IConfig;
-console.log('importedConfig:', importedConfig);
-
-const e = process.env;
-console.log('Config Env, e:', e);
-
-importedConfig.baseLayers.forEach((baseLayer) => {
-  const nameProp = toSnakeCase(baseLayer.name).toUpperCase() + '_API_KEY';
-  const api = e[nameProp];
-  if (api) {
-    baseLayer.url += api;
-  }
-});
-
-// TODO: Read units to convert to normalized/default units
-export default {
-  apiKeys: {
-    thunderforest: e.THUNDERFOREST_API_KEY,
-  },
-  baseLayers: importedConfig.baseLayers,
-  trackCriteria: importedConfig.trackCriteria
-};
+import { IBaseLayer } from "./components/Leaflet/Layers/BaseLayers";
+import { IInitialPosition } from "./components/Leaflet/Map";
+import {
+  ITrackCriteria,
+  convertToGlobalDefaults
+} from "./model/GIS/settings";
 
 export interface IConfig {
-  baseLayers: IBaseLayer[]
-  trackCriteria: ITrackCriteria
+  initialPosition: IInitialPosition;
+  baseLayers: IBaseLayer[];
+  trackCriteria: ITrackCriteria;
 }
 
-export interface IBaseLayer {
-  name: string
-  attributions: IAttribution[]
-  url: string
-}
+export class Config implements IConfig {
+  initialPosition: IInitialPosition;
+  baseLayers: IBaseLayer[];
+  trackCriteria: ITrackCriteria;
 
-export interface IAttribution {
-  label: string
-  url?: string
-}
+  constructor(config: any) {
+    this.initialPosition = this.getInitialPosition(config.initialPosition);
+    this.baseLayers = config.baseLayers;
+    this.trackCriteria = this.normalizeUnits(config.trackCriteria);
+  }
 
-export interface ITrackCriteria {
-  units?: IUnits
-  activities: IActivity[]
-  cruft: {
-    units?: IUnits
-    pointSeparationLimit: number
-  }
-  noiseCloud: {
-    units?: IUnits
-    speedMin: number
-  }
-  misc: {
-    units?: IUnits
-    gpsTimeInterval: number
-  }
-}
+  getInitialPosition(initialPosition: IInitialPosition): IInitialPosition {
+    if (!initialPosition.point
+      || initialPosition.point.length !== 2
+      || !(typeof initialPosition.point[0] === 'number' && typeof initialPosition.point[1] === 'number')) {
 
-export interface IActivity {
-  activity: string
-  units?: IUnits
-  speed: {
-    units?: IUnits
-    min: number,
-    max: number
-  }
-  rotation?: {
-    units?: IUnits
-    angularVelocityMax: number
-  }
-  elevation?: {
-    units?: IUnits
-    maxAscentRate: number,
-    maxDescentRate: number
-  }
-  slope?: {
-    units?: IUnits
-    maxPercent: number
-  }
-}
+      initialPosition.point = [
+        37.7749,
+        -122.4194
+      ];
+    }
 
-export interface IUnits {
-  length?: 'mile' | 'foot' | 'kilometer' | 'meter'
-  time?: 'second' | 'minute' | 'hour'
-  angle?: 'radian' | 'degree' | 'percent'
+    if (!initialPosition.zoom) { // || !Number.parseInt(initialPosition.zoom)) {
+      initialPosition.zoom = 13;
+    }
+
+    return initialPosition as IInitialPosition;
+  }
+
+  normalizeUnits(trackCriteria: ITrackCriteria): ITrackCriteria {
+    return convertToGlobalDefaults(trackCriteria);
+  }
 }

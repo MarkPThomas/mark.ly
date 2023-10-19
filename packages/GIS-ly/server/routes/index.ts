@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
-// import * as forecastController from './forecast';
+import { tileApiKeyValidate } from '../middleware/tileApiKeyValidate';
+import * as tileApiController from './tileApiKey';
 
 const router = Router();
 
-// router.get('/forecast', forecastController.getForecast);
+router.get('/tileApiKey', tileApiKeyValidate, tileApiController.getApiKey);
 
 export default router;

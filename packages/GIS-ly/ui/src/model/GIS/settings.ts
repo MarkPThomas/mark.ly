@@ -1,0 +1,56 @@
+export interface ITrackCriteria {
+  units?: IUnits
+  activities: IActivity[]
+  cruft: {
+    units?: IUnits
+    pointSeparationLimit: number
+  }
+  noiseCloud: {
+    units?: IUnits
+    speedMin: number
+  }
+  misc: {
+    units?: IUnits
+    gpsTimeInterval: number
+  }
+}
+
+export interface IActivity {
+  activity: string
+  units?: IUnits
+  speed: {
+    units?: IUnits
+    min: number,
+    max: number
+  }
+  rotation?: {
+    units?: IUnits
+    angularVelocityMax: number
+  }
+  elevation?: {
+    units?: IUnits
+    maxAscentRate: number,
+    maxDescentRate: number
+  }
+  slope?: {
+    units?: IUnits
+    maxPercent: number
+  }
+}
+
+export interface IUnits {
+  length?: 'mile' | 'foot' | 'kilometer' | 'meter'
+  time?: 'second' | 'minute' | 'hour'
+  angle?: 'radian' | 'degree' | 'percent'
+}
+
+const globalDefaults: IUnits = {
+  length: 'meter',
+  time: 'second',
+  angle: 'radian'
+}
+
+export function convertToGlobalDefaults(trackCriteria: ITrackCriteria): ITrackCriteria {
+  // TODO: Finish conversion
+  return trackCriteria;
+}

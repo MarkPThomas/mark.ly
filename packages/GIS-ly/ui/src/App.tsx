@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { LatLngTuple } from 'leaflet';
-
+import { Config } from './Config';
+import { Tiles } from './api';
 import { Map } from './components/Leaflet/Map';
-import { BaseLayers } from './components/Leaflet/Layers/BaseLayers';
 
-export const App = (props) => {
-  const initialLayers = BaseLayers();
-  const initialPosition = {
-    point: [37.7749, -122.4194] as LatLngTuple,
-    zoom: 13
+const restHandlers = {
+  handleLayerApiKeys: async (apiKeyName: string) => {
+    return await Tiles.getApiKey(apiKeyName);
   }
+}
 
+type Props = {
+  config: Config
+}
+
+export const App = ({ config }: Props) => {
   return (
     <>
-      <Map initialPosition={initialPosition} initialLayers={initialLayers} />
+      <Map
+        config={config}
+        restHandlers={restHandlers}
+      />
     </>
   );
 }

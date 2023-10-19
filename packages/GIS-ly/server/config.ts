@@ -2,9 +2,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import config from '../project.config';
 
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: path.normalize(`${__dirname}/../../server/.env`) });
-}
+dotenv.config({ path: path.normalize(`${__dirname}/../../server/.env.${process.env.NODE_ENV}`) });
 
 const e = process.env;
 
