@@ -3,7 +3,7 @@ import {
   IUnits,
   Angle,
   eAngle,
-  Length as LengthClass,
+  Length,
   eLength,
   Time,
   eTime
@@ -26,7 +26,7 @@ declare namespace Conversion {
 export class Conversion {
   static Angle = Angle;
   static Time = Time;
-  static Length = LengthClass;
+  static Length = Length;
   static Speed = Speed;
 
   private _globalUnits: IUnits;
