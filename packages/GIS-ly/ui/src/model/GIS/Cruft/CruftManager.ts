@@ -26,7 +26,7 @@ export class CruftManager implements ICruftManager {
     return this._track;
   }
 
-  constructor(track: Track, pointSeparationLimit: number = 4000) {
+  constructor(track: Track, pointSeparationLimit: number = 5000) {
     this._track = track;
     this._pointSeparationLimit = pointSeparationLimit;
   }
