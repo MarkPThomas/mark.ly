@@ -53,9 +53,9 @@
   ],
   "trackCriteria": {
     "units": {
-      "length": "mile",
-      "time": "hour",
-      "angle": "degree"
+      "length": "miles",
+      "time": "hours",
+      "angle": "degrees"
     },
     "activities": [
       {
@@ -66,14 +66,14 @@
         },
         "rotation": {
           "units": {
-            "angle": "degree",
-            "time": "second"
+            "angle": "degrees",
+            "time": "seconds"
           },
           "angularVelocityMax": 60
         },
         "elevation": {
           "units": {
-            "length": "foot"
+            "length": "feet"
           },
           "maxAscentRate": 3000,
           "maxDescentRate": 4500
@@ -87,14 +87,14 @@
         },
         "rotation": {
           "units": {
-            "angle": "degree",
-            "time": "second"
+            "angle": "degrees",
+            "time": "seconds"
           },
           "angularVelocityMax": 120
         },
         "elevation": {
           "units": {
-            "length": "foot"
+            "length": "feet"
           },
           "maxAscentRate": 2000,
           "maxDescentRate": 6000
@@ -115,7 +115,7 @@
     },
     "misc": {
       "units": {
-        "time": "second"
+        "time": "seconds"
       },
       "gpsTimeInterval": 30
     }

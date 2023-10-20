@@ -1,4 +1,4 @@
-import { IBaseLayer } from "./components/Leaflet/Layers/BaseLayers";
+import { ITilesLayer } from "./components/Leaflet/Layers/TileLayers";
 import { IInitialPosition } from "./components/Leaflet/Map";
 import {
   ITrackCriteria,
@@ -7,13 +7,13 @@ import {
 
 export interface ISettings {
   initialPosition: IInitialPosition;
-  baseLayers: IBaseLayer[];
+  baseLayers: ITilesLayer[];
   trackCriteria: ITrackCriteria;
 }
 
 export class Settings implements ISettings {
   initialPosition: IInitialPosition;
-  baseLayers: IBaseLayer[];
+  baseLayers: ITilesLayer[];
   trackCriteria: ITrackCriteria;
 
   constructor(config: any) {

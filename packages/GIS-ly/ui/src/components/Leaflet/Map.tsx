@@ -35,7 +35,7 @@ import { ITrackCriteria } from '../../model/GIS/settings';
 
 import { Settings } from '../../Settings';
 
-import { createBaseTileLayers, appendLayerApiKey } from './Layers/BaseLayers';
+import { createTileLayers, appendTilesApiKey } from './Layers/TileLayers';
 import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
@@ -62,7 +62,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   useEffect(() => {
     console.log('Initializing map with config: ', config);
-    setLayers(createBaseTileLayers(config.baseLayers));
+    setLayers(createTileLayers(config.baseLayers));
 
     // TODO: Finish fixing. This only breaks the 'Topo Map' underlay
     // Temporary stub is to include the API key in the URL in the config file
@@ -181,8 +181,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       // TODO: inject point separation limit from settings
       const manager = new CruftManager(track);
 
-      const triggerDistanceKM: number = 5;
-      const numberTrimmed = manager.trimTrackByCruft(triggerDistanceKM);
+      const triggerDistanceM: number = 5000;
+      const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
 
       console.log(`number nodes removed: ${numberTrimmed}`);
 
