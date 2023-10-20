@@ -9,7 +9,7 @@ import { ITileApiKeysResponse } from '../../../../../server/api/model';
 
 import { LayersControlProps } from '../LeafletControls/Layers/LayersControl';
 
-export interface IBaseLayer {
+export interface ITilesLayer {
   name: string
   attributions: IAttribution[]
   url: string
@@ -21,28 +21,28 @@ export interface IAttribution {
   url?: string
 }
 
-export async function appendLayerApiKey(
-  baseLayer: IBaseLayer,
+export async function appendTilesApiKey(
+  tilesLayer: ITilesLayer,
   handleLayerApiKeys: (apiKeyName: string) => Promise<ITileApiKeysResponse>
 ): Promise<string> {
-  if (baseLayer.apiKey) {
-    handleLayerApiKeys(baseLayer.apiKey)
+  if (tilesLayer.apiKey) {
+    handleLayerApiKeys(tilesLayer.apiKey)
       .then((result) => {
         console.log('Result: ', result)
-        baseLayer.url += result.key
+        tilesLayer.url += result.key
 
-        return baseLayer.url;
+        return tilesLayer.url;
       })
       .catch((error) => {
         console.log('Error fetching API key', error);
       });
   } else {
-    return baseLayer.url;
+    return tilesLayer.url;
   }
 }
 
-export function createBaseTileLayers(
-  baseLayers: IBaseLayer[],
+export function createTileLayers(
+  baseLayers: ITilesLayer[],
   position: ControlPosition = 'topright'
 ): LayersControlProps {
   function getAttributionLink(name: string, url: string = null) {
@@ -85,7 +85,7 @@ export function createBaseTileLayers(
     }
   });
 
-  const baseLayersComponents = tileLayerProps.map((tileLayerProp: TileLayerProps, index) => {
+  const tileLayersComponents = tileLayerProps.map((tileLayerProp: TileLayerProps, index) => {
     return {
       name: baseLayers[index].name,
       item: <TileLayer key={hashString(JSON.stringify(tileLayerProp))} {...tileLayerProp} />
@@ -95,6 +95,6 @@ export function createBaseTileLayers(
 
   return {
     position,
-    baseLayers: baseLayersComponents
+    baseLayers: tileLayersComponents
   }
 }

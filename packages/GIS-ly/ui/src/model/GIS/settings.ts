@@ -39,15 +39,15 @@ export interface IActivity {
 }
 
 export interface IUnits {
-  length?: 'mile' | 'foot' | 'kilometer' | 'meter'
-  time?: 'second' | 'minute' | 'hour'
-  angle?: 'radian' | 'degree' | 'percent'
+  length?: 'miles' | 'feet' | 'kilometers' | 'meters'
+  time?: 'seconds' | 'minutes' | 'hours'
+  angle?: 'radians' | 'degrees' | 'percent'
 }
 
 const globalDefaults: IUnits = {
-  length: 'meter',
-  time: 'second',
-  angle: 'radian'
+  length: 'meters',
+  time: 'seconds',
+  angle: 'radians'
 }
 
 export function convertToGlobalDefaults(trackCriteria: ITrackCriteria): ITrackCriteria {
