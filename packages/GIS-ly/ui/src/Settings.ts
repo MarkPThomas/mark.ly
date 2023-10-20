@@ -2,7 +2,7 @@ import { ITilesLayer } from "./components/Leaflet/Layers/TileLayers";
 import { IInitialPosition } from "./components/Leaflet/Map";
 import {
   ITrackCriteria,
-  convertToGlobalDefaults
+  convertTrackToGlobalUnits
 } from "./model/GIS/settings";
 
 export interface ISettings {
@@ -41,6 +41,6 @@ export class Settings implements ISettings {
   }
 
   normalizeUnits(trackCriteria: ITrackCriteria): ITrackCriteria {
-    return convertToGlobalDefaults(trackCriteria);
+    return convertTrackToGlobalUnits(trackCriteria);
   }
 }
