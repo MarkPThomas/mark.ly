@@ -1,27 +1,45 @@
-export class Angle {
-  protected static RADIANS_PER_DEGREE = Math.PI / 180;
+export class Radians {
+  protected static DEGREES_PER_RADIAN = 180 / Math.PI;
 
-  static radiansToDegrees(radians: number = 1) {
-    return radians / this.RADIANS_PER_DEGREE;
+  static toDegrees(radians: number = 1) {
+    return radians * this.DEGREES_PER_RADIAN;
   }
 
-  static degreesToRadians(degrees: number = 1) {
+  static toPercent(radians: number = 1) {
+    return 100 * Math.tan(radians);
+  }
+}
+
+export class Degrees {
+  protected static RADIANS_PER_DEGREE = Math.PI / 180;
+
+  static toRadians(degrees: number = 1) {
     return degrees * this.RADIANS_PER_DEGREE;
   }
 
-  static radiansToPercent(radians: number = 1) {
-    return 100 * Math.tan(radians);
+  static toPercent(degrees: number = 1) {
+    return 100 * Math.tan(Degrees.toRadians(degrees));
   }
+}
 
-  static percentToRadians(percent: number = 1) {
+export class Percent {
+  static toRadians(percent: number = 1) {
     return Math.atan(percent / 100);
   }
 
-  static degreesToPercent(degrees: number = 1) {
-    return Math.tan(Angle.degreesToRadians(degrees));
+  static toDegrees(percent: number = 1) {
+    return Radians.toDegrees(Percent.toRadians(percent));
   }
+}
 
-  static percentToDegrees(percent: number = 1) {
-    return Angle.radiansToDegrees(Angle.percentToRadians(percent));
-  }
+declare namespace Angle {
+  type Radians = typeof Angle.Radians.prototype;
+  type Degrees = typeof Angle.Degrees.prototype;
+  type Percent = typeof Angle.Percent.prototype;
+}
+
+export class Angle {
+  static Radians = Radians;
+  static Degrees = Degrees;
+  static Percent = Percent;
 }
