@@ -19,7 +19,10 @@ export class Settings implements ISettings {
   constructor(config: any) {
     this.initialPosition = this.getInitialPosition(config.initialPosition);
     this.baseLayers = config.baseLayers;
+
+    console.log('config.trackCriteria:', config.trackCriteria)
     this.trackCriteria = this.normalizeUnits(config.trackCriteria);
+    console.log('converted trackCriteria:', this.trackCriteria)
   }
 
   getInitialPosition(initialPosition: IInitialPosition): IInitialPosition {

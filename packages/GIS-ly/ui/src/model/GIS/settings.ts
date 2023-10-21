@@ -92,6 +92,8 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
     });
   }
 
+  sessionTrackCriteria.units = globalUnits;
+
   return sessionTrackCriteria;
 }
 
@@ -107,6 +109,8 @@ function convertCruftToGlobalUnits(cruft: ICruft, units: IUnits, sessionTrackCri
   if (cruft.timeSeparationLimit) {
     sessionTrackCriteria.cruft.timeSeparationLimit = converter.convertTime(cruft.timeSeparationLimit, localUnits);
   }
+
+  delete sessionTrackCriteria.cruft.units;
 }
 
 function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
@@ -121,6 +125,8 @@ function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, units: IUnits, 
   if (noiseCloud.minPauseResumeTime) {
     sessionTrackCriteria.noiseCloud.minPauseResumeTime = converter.convertTime(noiseCloud.minPauseResumeTime, localUnits);
   }
+
+  delete sessionTrackCriteria.noiseCloud.units;
 }
 
 function convertMiscToGlobalUnits(misc: IMisc, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
@@ -131,6 +137,8 @@ function convertMiscToGlobalUnits(misc: IMisc, units: IUnits, sessionTrackCriter
   const localUnits = getLocalUnits(misc.units, units);
 
   sessionTrackCriteria.misc.gpsTimeInterval = converter.convertTime(misc.gpsTimeInterval, localUnits);
+
+  delete sessionTrackCriteria.misc.units;
 }
 
 function convertActivityToGlobalUnits(activity: IActivity, units: IUnits, sessionActivity: IActivity) {
@@ -144,6 +152,8 @@ function convertActivityToGlobalUnits(activity: IActivity, units: IUnits, sessio
   convertActivityRotationToGlobalUnits(activity.rotation, localUnits, sessionActivity.rotation);
   convertActivityElevationToGlobalUnits(activity.elevation, localUnits, sessionActivity.elevation);
   convertActivitySlopeToGlobalUnits(activity.slope, localUnits, sessionActivity.slope);
+
+  delete sessionActivity.units;
 }
 
 function convertActivitySpeedToGlobalUnits(criteria: ISpeedCriteria, units: IUnits, sessionCriteria: ISpeedCriteria) {
@@ -155,6 +165,8 @@ function convertActivitySpeedToGlobalUnits(criteria: ISpeedCriteria, units: IUni
 
   sessionCriteria.max = converter.convertSpeed(criteria.max, localUnits);
   sessionCriteria.min = converter.convertSpeed(criteria.min, localUnits);
+
+  delete sessionCriteria.units;
 }
 
 function convertActivityRotationToGlobalUnits(criteria: IRotationCriteria, units: IUnits, sessionCriteria: IRotationCriteria) {
@@ -165,6 +177,8 @@ function convertActivityRotationToGlobalUnits(criteria: IRotationCriteria, units
   const localUnits = getLocalUnits(criteria.units, units);
 
   sessionCriteria.angularVelocityMax = converter.convertAngularSpeed(criteria.angularVelocityMax, localUnits);
+
+  delete sessionCriteria.units;
 }
 
 function convertActivityElevationToGlobalUnits(criteria: IElevationCriteria, units: IUnits, sessionCriteria: IElevationCriteria) {
@@ -176,6 +190,8 @@ function convertActivityElevationToGlobalUnits(criteria: IElevationCriteria, uni
 
   sessionCriteria.maxAscentRate = converter.convertSpeed(criteria.maxAscentRate, localUnits);
   sessionCriteria.maxDescentRate = converter.convertSpeed(criteria.maxDescentRate, localUnits);
+
+  delete sessionCriteria.units;
 }
 
 function convertActivitySlopeToGlobalUnits(criteria: ISlopeCriteria, units: IUnits, sessionCriteria: ISlopeCriteria) {
@@ -186,6 +202,8 @@ function convertActivitySlopeToGlobalUnits(criteria: ISlopeCriteria, units: IUni
   const localUnits = getLocalUnits(criteria.units, units);
 
   sessionCriteria.max = converter.convertAngle(criteria.max, localUnits);
+
+  delete sessionCriteria.units;
 }
 
 

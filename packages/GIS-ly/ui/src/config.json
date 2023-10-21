@@ -57,9 +57,9 @@
       "time": "hours",
       "angle": "degrees"
     },
-    "activities": [
-      {
-        "activity": "Hiking",
+    "activities": {
+      "hiking": {
+        "name": "Hiking",
         "speed": {
           "min": 0.25,
           "max": 4
@@ -79,8 +79,8 @@
           "maxDescentRate": 4500
         }
       },
-      {
-        "activity": "Cycling",
+      "cycling": {
+        "name": "Cycling",
         "speed": {
           "min": 0.25,
           "max": 60
@@ -106,7 +106,7 @@
           "maxPercent": 30
         }
       }
-    ],
+    },
     "cruft": {
       "pointSeparationLimit": 3
     },
