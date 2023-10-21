@@ -181,7 +181,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const manager = new CruftManager(track);
 
       // const triggerDistanceM: number = 5000;
-      const triggerDistanceM = config.trackCriteria.cruft.pointSeparationLimit;
+      const triggerDistanceM = trackCriteria.cruft.pointSeparationLimit;
       console.log('triggerDistanceM: ', triggerDistanceM)
       const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
 
@@ -198,7 +198,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
       // const minSpeedMS = 0.11176;
-      const minSpeedMS = config.trackCriteria.activities.hiking.speed.min;
+      const minSpeedMS = trackCriteria.activities.hiking.speed.min;
       console.log('minSpeedMS: ', minSpeedMS)
 
       let numberNodesRemoved = manager.smoothStationary(minSpeedMS, true);
@@ -219,7 +219,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       console.log('old speedLimitMS: ', speedLimitMpS)
 
 
-      const speedLimitMS = config.trackCriteria.activities.hiking.speed.max;
+      const speedLimitMS = trackCriteria.activities.hiking.speed.max;
       console.log('speedLimitMS: ', speedLimitMS)
 
       let numberNodesRemoved = manager.smoothBySpeed(speedLimitMS, true);
@@ -236,7 +236,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
       //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
       // const angularSpeedLimitRadS = 1.0472;
-      const angularSpeedLimitRadS = config.trackCriteria.activities.hiking.rotation.angularVelocityMax;
+      const angularSpeedLimitRadS = trackCriteria.activities.hiking.rotation.angularVelocityMax;
       console.log('angularSpeedLimitRadS: ', angularSpeedLimitRadS)
 
       let numberNodesRemoved = manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
@@ -249,13 +249,13 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
     if (track) {
-      const gpsTimeIntervalS = config.trackCriteria.misc.gpsTimeInterval;
+      const gpsTimeIntervalS = trackCriteria.misc.gpsTimeInterval;
       console.log('gpsTimeIntervalS: ', gpsTimeIntervalS)
       const manager = new NoiseCloudSmoother(track, gpsTimeIntervalS);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
       // const minSpeedMS = 0.11176;
-      const minSpeedMS = config.trackCriteria.noiseCloud.speedMin;
+      const minSpeedMS = trackCriteria.noiseCloud.speedMin;
       console.log('minSpeedMS: ', minSpeedMS)
 
       let numberNodesRemoved = manager.smoothNoiseClouds(minSpeedMS, true);
@@ -282,9 +282,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       //0.254 meters/second = 3000 ft / hr
       // const ascentSpeedLimitMPS = 0.254;
       // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
-      const ascentSpeedLimitMS = config.trackCriteria.activities.hiking.elevation.maxAscentRate;
+      const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.maxAscentRate;
       console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
-      const descentSpeedLimitMS = config.trackCriteria.activities.hiking.elevation.maxDescentRate;
+      const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.maxDescentRate;
       console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
 
       let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
@@ -310,6 +310,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     } : layers;
 
   console.log('layersProps:', layers)
+  console.log('position.zoom: ', position.zoom)
+  console.log('bounds:', bounds)
 
   return (
     layers ?
@@ -321,15 +323,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           style={{ width: '100%', height: '700px' }}
         >
           {layers.baseLayers[0].item}
-          <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 3)} />
+          <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 2)} tileSourceUrl={config.miniMap.url} />
           {
             (layers.baseLayers?.length > 1 || layers.overlays?.length)
               ?
               <LayersControl {...layers} />
               : null
           }
+          {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
-          <SetViewOnTrackLoad bounds={bounds} />
         </MapContainer>
         <input type="file" onChange={handleFileSelection} />
         <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />

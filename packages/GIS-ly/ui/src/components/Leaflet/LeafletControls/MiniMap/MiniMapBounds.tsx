@@ -16,7 +16,7 @@ export function MiniMapBounds({ parentMap, zoom }: Props) {
 
   // Clicking a point on the minimap sets the parent's map center
   const onClick = useCallback(
-    (e) => {
+    (e: { latlng: any; }) => {
       parentMap.setView(e.latlng, parentMap.getZoom())
     },
     [parentMap],

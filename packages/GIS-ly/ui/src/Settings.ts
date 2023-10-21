@@ -8,17 +8,20 @@ import {
 export interface ISettings {
   initialPosition: IInitialPosition;
   baseLayers: ITilesLayer[];
+  miniMap: ITilesLayer;
   trackCriteria: ITrackCriteria;
 }
 
 export class Settings implements ISettings {
   initialPosition: IInitialPosition;
   baseLayers: ITilesLayer[];
+  miniMap: ITilesLayer;
   trackCriteria: ITrackCriteria;
 
   constructor(config: any) {
     this.initialPosition = this.getInitialPosition(config.initialPosition);
     this.baseLayers = config.baseLayers;
+    this.miniMap = config.miniMap;
 
     console.log('config.trackCriteria:', config.trackCriteria)
     this.trackCriteria = this.normalizeUnits(config.trackCriteria);
