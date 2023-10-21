@@ -66,7 +66,7 @@ export interface ISlopeCriteria extends IUnitOverrideable {
   max: number
 }
 
-interface IUnitOverrideable {
+export interface IUnitOverrideable {
   units?: IUnitOverrides
 }
 
