@@ -1,9 +1,9 @@
-import { IUnits } from './baseUnits/Units';
+import { IUnitOverrides, IUnits } from './baseUnits/Units';
 
 export * from './Conversion';
 export * from './baseUnits/Units';
 
-export function getLocalUnits(localOverrides: IUnits, globalUnits: IUnits) {
+export function getLocalUnits(localOverrides: IUnitOverrides, globalUnits: IUnits) {
   let localUnits: IUnits = globalUnits;
 
   if (localOverrides) {

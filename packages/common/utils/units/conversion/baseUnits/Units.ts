@@ -4,6 +4,12 @@ export interface IUnits {
   angle: eAngle
 }
 
+export interface IUnitOverrides {
+  length?: eLength
+  time?: eTime
+  angle?: eAngle
+}
+
 export enum eLength {
   feet = 'feet',
   miles = 'miles',
