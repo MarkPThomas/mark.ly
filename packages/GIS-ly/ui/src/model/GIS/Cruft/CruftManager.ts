@@ -32,7 +32,7 @@ export class CruftManager implements ICruftManager {
   }
 
   getTrackRangesByCruft(
-    triggerDistance: number
+    triggerDistance?: number
   ): {
     segments: ITimeRange[];
     segmentKeep: ITimeRange;

@@ -178,10 +178,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleTrimCruft = () => {
     console.log('handleTrimCruft')
     if (track) {
-      // TODO: inject point separation limit from settings
       const manager = new CruftManager(track);
 
-      const triggerDistanceM: number = 5000;
+      // const triggerDistanceM: number = 5000;
+      const triggerDistanceM = config.trackCriteria.cruft.pointSeparationLimit;
+      console.log('triggerDistanceM: ', triggerDistanceM)
       const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
 
       console.log(`number nodes removed: ${numberTrimmed}`);
@@ -196,7 +197,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const manager = new StationarySmoother(track);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
-      const minSpeedMS = 0.11176;
+      // const minSpeedMS = 0.11176;
+      const minSpeedMS = config.trackCriteria.activities.hiking.speed.min;
+      console.log('minSpeedMS: ', minSpeedMS)
 
       let numberNodesRemoved = manager.smoothStationary(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
@@ -210,10 +213,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     if (track) {
       const manager = new SpeedSmoother(track);
 
+      // 1.78816 meters/sec = 4 mph
       const speedLimitKph = Conversion.Speed.mphToKph(4);
       const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
+      console.log('old speedLimitMS: ', speedLimitMpS)
 
-      let numberNodesRemoved = manager.smoothBySpeed(speedLimitMpS, true);
+
+      const speedLimitMS = config.trackCriteria.activities.hiking.speed.max;
+      console.log('speedLimitMS: ', speedLimitMS)
+
+      let numberNodesRemoved = manager.smoothBySpeed(speedLimitMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
       updateFromTrack(track);
@@ -226,7 +235,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const manager = new AngularSpeedSmoother(track);
 
       //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
-      const angularSpeedLimitRadS = 1.0472;
+      // const angularSpeedLimitRadS = 1.0472;
+      const angularSpeedLimitRadS = config.trackCriteria.activities.hiking.rotation.angularVelocityMax;
+      console.log('angularSpeedLimitRadS: ', angularSpeedLimitRadS)
 
       let numberNodesRemoved = manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
@@ -238,11 +249,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
     if (track) {
-      // TODO: inject gps time interval from settings
-      const manager = new NoiseCloudSmoother(track);
+      const gpsTimeIntervalS = config.trackCriteria.misc.gpsTimeInterval;
+      console.log('gpsTimeIntervalS: ', gpsTimeIntervalS)
+      const manager = new NoiseCloudSmoother(track, gpsTimeIntervalS);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
-      const minSpeedMS = 0.11176;
+      // const minSpeedMS = 0.11176;
+      const minSpeedMS = config.trackCriteria.noiseCloud.speedMin;
+      console.log('minSpeedMS: ', minSpeedMS)
 
       let numberNodesRemoved = manager.smoothNoiseClouds(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
@@ -266,10 +280,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const manager = new ElevationSpeedSmoother(track);
 
       //0.254 meters/second = 3000 ft / hr
-      const ascentSpeedLimitMPS = 0.254;
-      const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
+      // const ascentSpeedLimitMPS = 0.254;
+      // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
+      const ascentSpeedLimitMS = config.trackCriteria.activities.hiking.elevation.maxAscentRate;
+      console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
+      const descentSpeedLimitMS = config.trackCriteria.activities.hiking.elevation.maxDescentRate;
+      console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
 
-      let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMPS, descentSpeedLimitMPS, true);
+      let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
       updateFromTrack(track);

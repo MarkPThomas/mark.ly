@@ -2,7 +2,7 @@ import { ITilesLayer } from "./components/Leaflet/Layers/TileLayers";
 import { IInitialPosition } from "./components/Leaflet/Map";
 import {
   ITrackCriteria,
-  convertToGlobalDefaults
+  convertTrackToGlobalUnits
 } from "./model/GIS/settings";
 
 export interface ISettings {
@@ -19,7 +19,10 @@ export class Settings implements ISettings {
   constructor(config: any) {
     this.initialPosition = this.getInitialPosition(config.initialPosition);
     this.baseLayers = config.baseLayers;
+
+    console.log('config.trackCriteria:', config.trackCriteria)
     this.trackCriteria = this.normalizeUnits(config.trackCriteria);
+    console.log('converted trackCriteria:', this.trackCriteria)
   }
 
   getInitialPosition(initialPosition: IInitialPosition): IInitialPosition {
@@ -41,6 +44,6 @@ export class Settings implements ISettings {
   }
 
   normalizeUnits(trackCriteria: ITrackCriteria): ITrackCriteria {
-    return convertToGlobalDefaults(trackCriteria);
+    return convertTrackToGlobalUnits(trackCriteria);
   }
 }

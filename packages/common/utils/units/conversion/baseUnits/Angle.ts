@@ -2,7 +2,7 @@ export class Radians {
   protected static DEGREES_PER_RADIAN = 180 / Math.PI;
 
   static toDegrees(radians: number = 1) {
-    return radians * this.DEGREES_PER_RADIAN;
+    return radians * Radians.DEGREES_PER_RADIAN;
   }
 
   static toPercent(radians: number = 1) {
@@ -14,7 +14,7 @@ export class Degrees {
   protected static RADIANS_PER_DEGREE = Math.PI / 180;
 
   static toRadians(degrees: number = 1) {
-    return degrees * this.RADIANS_PER_DEGREE;
+    return degrees * Degrees.RADIANS_PER_DEGREE;
   }
 
   static toPercent(degrees: number = 1) {
