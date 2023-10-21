@@ -6,6 +6,16 @@
     ],
     "zoom": 13
   },
+  "miniMap": {
+    "name": "OpenStreetMap",
+    "attributions": [
+      {
+        "label": "OpenStreetMap",
+        "url": "https://openstreetmap.org/copyright"
+      }
+    ],
+    "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  },
   "baseLayers": [
     {
       "name": "OpenStreetMap",
