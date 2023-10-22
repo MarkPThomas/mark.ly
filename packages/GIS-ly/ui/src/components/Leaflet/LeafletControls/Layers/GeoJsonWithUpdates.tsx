@@ -1,6 +1,8 @@
 import React, { ReactElement, useEffect, useRef } from "react";
 import { GeoJSON, GeoJSONProps } from "react-leaflet";
-import { GeoJSON as LeafletGeoJSON } from "leaflet";
+import { Layer, GeoJSON as LeafletGeoJSON } from "leaflet";
+
+type GeoJsonWrapperProps = { layers?: Layer[] } & GeoJSONProps;
 
 /**
  * GeoJsonWithUpdates is a wrapper around react-leaflet's GeoJSON component to support data changes
@@ -9,19 +11,25 @@ import { GeoJSON as LeafletGeoJSON } from "leaflet";
  * It accepts the same props like react-leaflet's GeoJSON component.
  * However, updates are only support
  */
-export default function GeoJsonWithUpdates(props: GeoJSONProps): ReactElement {
+export default function GeoJsonWithUpdates(props: GeoJsonWrapperProps): ReactElement {
   const geoJsonLayerRef = useRef<LeafletGeoJSON | null>(null);
 
   useEffect(() => {
-    const layer = geoJsonLayerRef.current;
-    if (layer) {
-      layer.clearLayers().addData(props.data);
+    const geoJsonLayer = geoJsonLayerRef.current;
+    if (geoJsonLayer) {
+      geoJsonLayer.clearLayers().addData(props.data);
       // clearLayers() seems to remove the `pathOptions`, `style` and `interactive` prop as well
       // Resetting it here
       if (props.pathOptions) {
-        layer.setStyle(props.pathOptions);
+        geoJsonLayer.setStyle(props.pathOptions);
       } else if (props.style) {
-        layer.setStyle(props.style);
+        geoJsonLayer.setStyle(props.style);
+      }
+
+      if (props.layers) {
+        props.layers.forEach((layer) => {
+          geoJsonLayer.addLayer(layer);
+        });
       }
     }
   }, [props.data, props.pathOptions, props.style]);

@@ -1,7 +1,6 @@
 import { GeoJsonObject } from 'geojson';
 import { ControlPosition } from 'leaflet';
 import {
-  GeoJSON,
   FeatureGroup,
   FeatureGroupProps,
   LayerGroup,
@@ -39,6 +38,7 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
   console.log('position: ', position)
   console.log('overlays: ', overlays)
   console.log('baseLayers: ', baseLayers)
+
   return (
     (overlays || baseLayers) ?
       <LC position={position}>
@@ -59,30 +59,17 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                 </FeatureGroup>
                 :
                 overlay.geoJSON ?
-                  <GeoJsonWithUpdates
-                    key={hashString(JSON.stringify(overlay.items[0]))}
-                    data={overlay.geoJSON}
-                  >
-                    {overlay.items.map((item: TrackPoint[] | ReactNode) =>
-                      item as TrackPoint[] ?
-                        <CoordinateMarkersLayer
-                          key={hashString(JSON.stringify(item))}
-                          coords={item as TrackPoint[]}
-                        /> : null
-                    )}
-                  </GeoJsonWithUpdates>
-                  // <GeoJSON
-                  //   key={hashString(JSON.stringify(overlay.items[0]))}
-                  //   data={overlay.geoJSON}
-                  // >
-                  //   {overlay.items.map((item: TrackPoint[] | ReactNode) =>
-                  //     item as TrackPoint[] ?
-                  //       <CoordinateMarkersLayer
-                  //         key={hashString(JSON.stringify(item))}
-                  //         coords={item as TrackPoint[]}
-                  //       /> : null
-                  //   )}
-                  // </GeoJSON>
+                  <LayerGroup>
+                    <GeoJsonWithUpdates
+                      key={hashString(JSON.stringify(overlay.items[0]))}
+                      data={overlay.geoJSON}
+                      children={[<CoordinateMarkersLayer
+                        key={hashString(JSON.stringify(overlay.items[0]))}
+                        coords={overlay.items[0] as TrackPoint[]}
+                      />]
+                      }
+                    />
+                  </LayerGroup>
                   :
                   <LayerGroup>
                     {overlay.items.map((item) => item)}
