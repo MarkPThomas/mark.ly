@@ -15,6 +15,7 @@ import { hashString } from '../../../../../../../common/utils';//'common/utils';
 import { TrackPoint } from '../../../../model/GIS/Track';
 
 import { CoordinateMarkersLayer } from '../../Custom/CoordinateMarkersLayer';
+import GeoJsonWithUpdates from './GeoJsonWithUpdates';
 
 type Overlay = {
   name: string,
@@ -58,7 +59,7 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                 </FeatureGroup>
                 :
                 overlay.geoJSON ?
-                  <GeoJSON
+                  <GeoJsonWithUpdates
                     key={hashString(JSON.stringify(overlay.items[0]))}
                     data={overlay.geoJSON}
                   >
@@ -69,7 +70,19 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                           coords={item as TrackPoint[]}
                         /> : null
                     )}
-                  </GeoJSON>
+                  </GeoJsonWithUpdates>
+                  // <GeoJSON
+                  //   key={hashString(JSON.stringify(overlay.items[0]))}
+                  //   data={overlay.geoJSON}
+                  // >
+                  //   {overlay.items.map((item: TrackPoint[] | ReactNode) =>
+                  //     item as TrackPoint[] ?
+                  //       <CoordinateMarkersLayer
+                  //         key={hashString(JSON.stringify(item))}
+                  //         coords={item as TrackPoint[]}
+                  //       /> : null
+                  //   )}
+                  // </GeoJSON>
                   :
                   <LayerGroup>
                     {overlay.items.map((item) => item)}
