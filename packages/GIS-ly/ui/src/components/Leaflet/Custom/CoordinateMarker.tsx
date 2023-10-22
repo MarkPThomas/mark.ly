@@ -29,7 +29,7 @@ export function CoordinateMarker({ coord }: CoordinateMarkerProps) {
     key={hashString(JSON.stringify(coord))}
     center={[coord.lat, coord.lng]}
     pathOptions={{ fillColor: 'red', color: 'black', weight: 1 }}
-    radius={5}
+    radius={30}
   >
     <Popup>
       <span>
