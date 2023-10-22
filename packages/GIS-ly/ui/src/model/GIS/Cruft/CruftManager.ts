@@ -1,8 +1,10 @@
-import { Track } from "../Track/Track";
-import { TrackPoint } from "../Track/TrackPoint";
-import { ITimeRange } from "../Time/TimeRange";
-import { TrackSegment } from "../Track/TrackSegment";
 import { VertexNode } from "../../Geometry";
+import {
+  Track,
+  TrackPoint,
+  TrackSegment
+} from "../Track";
+import { ITimeRange } from "../Time/TimeRange";
 
 
 export interface ICruftManager {
