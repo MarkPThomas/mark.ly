@@ -41,6 +41,8 @@ import { LayersControl, LayersControlProps } from './LeafletControls/Layers/Laye
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
+import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
+
 export interface IInitialPosition {
   point: LatLngTuple,
   zoom: number
@@ -265,13 +267,27 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
-  const handleGetElevation = () => {
+  const handleGetApiElevation = () => {
     console.log('handleGetElevation')
     if (track) {
       track.addElevationsFromApi();
 
       updateFromTrack(track);
     }
+  }
+
+  const handleGetCachedElevation = () => {
+    const cachedDataMap = {};
+
+    cachedData.forEach((apiCall) => {
+      apiCall.results.forEach((response) => {
+        cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+      });
+    });
+
+    track.addElevations(cachedDataMap);
+
+    updateFromTrack(track);
   }
 
   const handleSmoothByElevation = () => {
@@ -347,8 +363,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
         <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
 
-        {/* <input type="button" onClick={handleGetElevation} value="Get Elevation Data" /> */}
-        {/* <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" /> */}
+        {/* <input type="button" onClick={handleGetElevation} value="Get Elevation Data from API" /> */}
+        <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" />
 
         <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
         <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />

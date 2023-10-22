@@ -144,7 +144,7 @@ export class Track implements ITrack {
     this._polylineTrack.addElevationProperties();
   }
 
-  addElevations(elevations: Map<string, number>) {
+  addElevations(elevations: Map<string, number> | { [key: string]: number }) {
     this._polylineTrack.addElevations(elevations);
   }
 

@@ -243,7 +243,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
 
-  addElevations(elevations: Map<string, number>) {
+  addElevations(elevations: Map<string, number> | { [key: string]: number }) {
     this.addNodeElevations(elevations);
     // TODO: What if route properties haven't been run?
     //  Should this be manual like that?
@@ -252,17 +252,27 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     this.addElevationProperties();
   }
 
-  protected addNodeElevations(elevations: Map<string, number>) {
-    // console.log('Adding elevations to points...')
+  protected addNodeElevations(elevations: Map<string, number> | { [key: string]: number }) {
+    console.log('Adding elevations to points...')
+    console.log('Elevations: ', elevations)
+    let updatedPoints = 0;
+    let totalElevations = elevations instanceof Map ? elevations.size : Object.keys(elevations).length;
+    let totalPoints = 0;
     let coord = this._vertices.head as CoordNode;
     while (coord) {
-      const elevation = elevations.get(JSON.stringify({ lat: coord.val.lat, lng: coord.val.lng }));
+      const elevation = elevations instanceof Map
+        ? elevations.get(JSON.stringify({ lat: coord.val.lat, lng: coord.val.lng }))
+        : elevations[`${coord.val.lat},${coord.val.lng}`];
       if (elevation) {
+        // console.log('Elevation: ', elevation)
+        updatedPoints++;
         coord.val.elevation = elevation;
       }
 
       coord = coord.next as CoordNode;
+      totalPoints++;
     }
+    console.log(`${updatedPoints} of ${totalPoints} points updated with elevations from ${totalElevations} elevations`)
   }
 
   addElevationsFromApi() {
@@ -288,18 +298,29 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   protected addElevationDataToSegments() {
-    // console.log('Deriving elevation data for segments...')
+    console.log('Deriving elevation data for segments...')
     let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
+    let segmentCount = 0;
+    let updatedSegmentCount = 0;
     while (coord) {
       const prevCoord = coord.prev as VertexNode<TVertex, TSegment>;
-      const prevSegment = prevCoord.nextSeg?.val;
+      const prevSegmentVal = prevCoord.nextSeg?.val as TSegment;
 
-      if (prevSegment) {
-        prevSegment.addElevationData(prevCoord.val, coord.val);
+      // console.log('prevCoord: ', prevCoord)
+      // console.log('prevSegmentVal: ', prevSegmentVal)
+      // console.log('coord: ', coord)
+
+
+      if (prevSegmentVal && prevSegmentVal.addElevationData) {
+        // console.log('adding elevation data')
+        updatedSegmentCount++;
+        prevSegmentVal.addElevationData(prevCoord.val, coord.val);
       }
 
       coord = coord.next as VertexNode<TVertex, TSegment>;
+      segmentCount++;
     }
+    console.log(`Updated ${updatedSegmentCount} segments out of ${segmentCount}`)
   }
 
   // === Query Methods
