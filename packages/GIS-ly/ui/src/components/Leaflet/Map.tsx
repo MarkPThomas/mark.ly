@@ -30,6 +30,7 @@ import {
   AngularSpeedSmoother,
   ElevationSpeedSmoother
 } from '../../model/GIS/Smooth';
+import { StopSplitter } from '../../model/GIS/Split';
 import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
 import { ITrackCriteria } from '../../model/GIS/settings';
 
@@ -188,6 +189,30 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
 
       console.log(`number nodes removed: ${numberTrimmed}`);
+
+      updateFromTrack(track);
+    }
+  }
+
+  const handleSplitOnStop = () => {
+    console.log('handleSplitOnStop')
+    if (track) {
+      const manager = new StopSplitter(track);
+
+      // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
+      const maxStopDurationS = trackCriteria.split.maxStopDuration;
+      console.log('maxStopDurationS: ', maxStopDurationS)
+      // const minMoveDurationS: number = 5 min = 300 sec;
+      const minMoveDurationS = trackCriteria.split.minMoveDuration;
+      console.log('minMoveDurationS: ', minMoveDurationS)
+      const splitResults = manager.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+
+      console.log(`number tracks returned: ${splitResults.tracks.length}`);
+      console.log(`number segments split on: ${splitResults.segments.length}`);
+      console.log(`number points split by: ${splitResults.points.length}`);
+
+      // TODO: Swap track w/ track[0]
+      // TODO: Add additional track layers from remaining track[n]
 
       updateFromTrack(track);
     }
@@ -354,8 +379,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <label htmlFor="animatePan">Set View On Click</label>
         {/* <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" /> */}
 
-        {/* <input type="button" onClick={handleSplitCruft} value="Split Cruft" /> */}
+        <br />
+        <hr />
+
         <input type="button" onClick={handleTrimCruft} value="Trim Cruft" />
+
+        {/* <input type="button" onClick={handleSplitCruft} value="Split Cruft" /> */}
+        <input type="button" onClick={handleSplitOnStop} value="Split Separate Movements" />
+
+        <br />
+        <hr />
 
         <input type="button" onClick={handleSmoothStationary} value="Smooth Stationary" />
         <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
@@ -363,9 +396,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
         <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
 
-        {/* <input type="button" onClick={handleGetElevation} value="Get Elevation Data from API" /> */}
+        <br />
+        <hr />
+
+        {/* <input type="button" onClick={handleGetApiElevation} value="Get Elevation Data from API" /> */}
         <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
         <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" />
+
+        <br />
+        <hr />
 
         <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
         <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />

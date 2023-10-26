@@ -125,7 +125,7 @@
     },
     "split": {
       "maxStopDuration": 3,
-      "minMoveDuration": 0.083
+      "minMoveDuration": 0.08333
     },
     "misc": {
       "units": {
