@@ -15,7 +15,26 @@ import { IPointProperties } from '../Point/Point';
 
 type CoordNode = VertexNode<RoutePoint, RouteSegment>;
 
+export interface IRouteStats {
+  length: number;
+  height: {
+    min: number;
+    max: number;
+    gain: number;
+    loss: number;
+    net: number;
+  };
+  slope: {
+    min: number;
+    avg: number;
+    max: number;
+  }
+}
+
 export interface IPolylineRouteMethods<TVertex extends RoutePoint, TSegment extends RouteSegment> {
+  // Property Methods
+  getNetHeight(): number | undefined;
+
   // Misc Methods
   /**
      * Adds elevation data to the track for matching lat/long points.
@@ -136,12 +155,25 @@ export interface IPolylineRoute<TVertex extends RoutePoint, TSegment extends Rou
   IPolyline<TVertex, TSegment>,
   IPolylineRouteMethods<TVertex, TSegment> {
 
+  // stats: IRouteStats;
 }
 
 export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSegment>
   extends Polyline<TVertex, TSegment>
   implements IPolylineRoute<TVertex, TSegment>
 {
+  // TODO: Abstract this & generic stats type to Polyline
+  // protected _statsDirty: boolean;
+  // protected _stats: IRouteStats;
+  // get stats(): IRouteStats {
+  //   if (!this._stats || this._statsDirty) {
+  //     this._stats = this.calcStats();
+  //     if (this._statsDirty) {
+  //       this._statsDirty = false;
+  //     }
+  //   }
+  //   return this._stats;
+  // }
 
   constructor(coords: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[]) {
     super(coords);
@@ -206,6 +238,21 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   // === Property Methods
+  getNetHeight(): number | undefined {
+    if (!this.firstVertex) {
+      return 0;
+    }
+
+    if (this.firstVertex.val.elevation && this.lastVertex.val.elevation) {
+      return this.lastVertex.val.elevation - this.firstVertex.val.elevation;
+    } else if (this.firstVertex.val.alt && this.lastVertex.val.alt) {
+      return this.lastVertex.val.alt - this.firstVertex.val.alt;
+    } else {
+      console.log(`Start/End vertices don't have consistent elevation/altitude data`)
+      return undefined;
+    }
+  }
+
   protected override addPropertiesToNodes() {
     super.addPropertiesToNodes();
     this.addPathPropertiesToCoords();

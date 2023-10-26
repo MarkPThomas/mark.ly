@@ -47,6 +47,7 @@ export interface ITrack
     evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean
   ): VertexNode<TrackPoint, TrackSegment>[];
 
+  getDuration(): number;
 }
 
 export class Track implements ITrack {
@@ -136,6 +137,7 @@ export class Track implements ITrack {
     return this._geoJsonTrack.equals(track._geoJsonTrack);
   }
 
+  // Properties Methods
   addProperties() {
     this._polylineTrack.addProperties();
   }
@@ -187,6 +189,10 @@ export class Track implements ITrack {
     return this._polylineTrack.vertexNodesBy(target, evaluator);
   }
 
+  // === Property Methods
+  getDuration() {
+    return this._polylineTrack.getDuration();
+  }
 
   updateGeoJsonTrack(trackChanged: boolean | number) {
     if (trackChanged) {

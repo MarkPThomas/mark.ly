@@ -8,12 +8,41 @@ import {
 import { ITrackPointProperties, TrackPoint } from './TrackPoint';
 import { TrackSegment } from './TrackSegment';
 import { ITimeRange } from '../Time/TimeRange';
-import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
+import { IPolylineRouteMethods, IRouteStats, PolylineRoute } from '../Route/PolylineRoute';
+import { TimeStamp } from '../Time';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 
+export interface ITrackStats extends IRouteStats {
+  duration: number;
+  speed: {
+    min: number;
+    avg: number;
+    max: number;
+    median: number;
+    stdDev1: number;
+  };
+  elevationRate: {
+    ascent: {
+      max: number;
+      avg: number;
+      median: number;
+      stdDev1: number;
+    };
+    descent: {
+      max: number;
+      avg: number;
+      median: number;
+      stdDev1: number;
+    }
+  }
+}
+
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
+  // Property Methods
+  getDuration(): number;
+
   // Misc Methods
   generateTimestampMap(): void;
   cloneFromToTimes(startTime: string, endTime: string): PolylineTrack | null;
@@ -131,6 +160,7 @@ export interface IPolylineTrack
   IPolylineTrackMethods,
   ICloneable<PolylineTrack> {
 
+  // stats: ITrackStats;
 }
 
 export class PolylineTrack
@@ -138,6 +168,19 @@ export class PolylineTrack
   implements IPolylineTrack {
 
   protected _pointsByTimestamp: Map<string, CoordNode>;
+
+  // TODO: Abstract this & generic stats type to Polyline
+  // protected _statsDirty: boolean;
+  // protected _stats: ITrackStats;
+  // get stats(): ITrackStats {
+  //   if (!this._stats || this._statsDirty) {
+  //     this._stats = this.calcStats();
+  //     if (this._statsDirty) {
+  //       this._statsDirty = false;
+  //     }
+  //   }
+  //   return this._stats;
+  // }
 
   constructor(
     coords: VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | TrackPoint[],
@@ -254,6 +297,14 @@ export class PolylineTrack
   }
 
   // === Property Methods
+  getDuration(): number {
+    if (!this.firstVertex) {
+      return 0;
+    }
+
+    return TimeStamp.calcIntervalSec(this.firstVertex.val.timestamp, this.lastVertex.val.timestamp);
+  }
+
   protected override updatePathProperties(vertices: CoordNode[]) {
     vertices.forEach((vertex) => {
       vertex.val.path.addPropertiesFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
