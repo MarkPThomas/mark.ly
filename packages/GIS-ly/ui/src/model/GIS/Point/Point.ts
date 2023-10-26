@@ -69,19 +69,6 @@ export class PPoint
     return PPoint.calcDistanceBetween(this, pointJ);
   }
 
-  static calcDistanceBetween(pointI: IPointProperties, pointJ: IPointProperties) {
-    const toRads = Math.PI / 180;
-
-    const latI = pointI.lat * toRads;
-    const latJ = pointJ.lat * toRads;
-    const lngI = pointI.lng * toRads;
-    const lngJ = pointJ.lng * toRads;
-
-    const radius = 6371; // km
-
-    return Math.acos(Math.sin(latI) * Math.sin(latJ) + Math.cos(latI) * Math.cos(latJ) * Math.cos(lngJ - lngI)) * radius * 1000;
-  }
-
   // === Common Interfaces ===
   clone(): PPoint {
     const point = new PPoint(this.lat, this.lng, this.alt);
@@ -118,6 +105,19 @@ export class PPoint
   }
 
   // === Calc Methods ===
+  static calcDistanceBetween(pointI: IPointProperties, pointJ: IPointProperties) {
+    const toRads = Math.PI / 180;
+
+    const latI = pointI.lat * toRads;
+    const latJ = pointJ.lat * toRads;
+    const lngI = pointI.lng * toRads;
+    const lngJ = pointJ.lng * toRads;
+
+    const radius = 6371; // km
+
+    return Math.acos(Math.sin(latI) * Math.sin(latJ) + Math.cos(latI) * Math.cos(latJ) * Math.cos(lngJ - lngI)) * radius * 1000;
+  }
+
   /**
    * Returns the distance between two lat/long points in meters.
    *
@@ -165,5 +165,34 @@ export class PPoint
 
   static calcSegmentMappedElevationChange(ptI: IPointProperties, ptJ: IPointProperties) {
     return ptJ.elevation && ptI.elevation ? ptJ.elevation - ptI.elevation : undefined;
+  }
+
+  static calcSegmentSlopeRad(ptI: PPoint, ptJ: PPoint): number | null {
+    const height = (ptJ.elevation && ptI.elevation)
+      ? ptJ.elevation - ptI.elevation
+      : (ptJ.elevation && ptI.elevation) ?
+        ptJ.alt - ptI.alt
+        : null;
+
+    if (height === null) {
+      return null;
+    }
+
+    const length = ptI.distanceTo(ptJ);
+
+    return PPoint.calcSegmentSlopeRadByRiseRun(height, length);
+  }
+
+  static calcSegmentSlopeRadByRiseRun(rise: number, run: number): number | null {
+    if (rise === undefined || rise === null
+      || run === undefined || run === null) {
+      return null;
+    }
+
+    return run
+      ? Math.atan(rise / run)
+      : rise > 0 ? Math.PI / 2
+        : rise < 0 ? 3 * Math.PI / 2
+          : null;
   }
 }

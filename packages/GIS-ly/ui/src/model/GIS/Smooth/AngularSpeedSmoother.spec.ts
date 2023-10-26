@@ -1,5 +1,7 @@
-import { Track } from "../Track/Track";
-import { TrackPoint } from "../Track/TrackPoint";
+import {
+  Track,
+  TrackPoint
+} from "../Track";
 
 import { AngularSpeedSmoother } from "./AngularSpeedSmoother";
 

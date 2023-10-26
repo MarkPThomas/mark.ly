@@ -1,7 +1,10 @@
 import { VertexNode } from "../../Geometry/Polyline";
-import { TrackPoint } from "../Track/TrackPoint";
-import { TrackSegment } from "../Track/TrackSegment";
-import { EvaluatorArgs, Track } from "../Track/Track";
+import {
+  EvaluatorArgs,
+  Track,
+  TrackPoint,
+  TrackSegment
+} from "../Track";
 
 export interface ISmoothManager {
   track: Track;
@@ -18,7 +21,7 @@ export interface ISmoothManager {
    */
   smooth(
     target: number | EvaluatorArgs,
-    evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean,
+    evaluator: (target: number | EvaluatorArgs, point: VertexNode<TrackPoint, TrackSegment>) => boolean,
     iterate: boolean
   ): VertexNode<TrackPoint, TrackSegment>[]
 }
@@ -35,7 +38,7 @@ export class SmoothManager implements ISmoothManager {
 
   smooth(
     target: number | EvaluatorArgs,
-    evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean,
+    evaluator: (target: number | EvaluatorArgs, point: VertexNode<TrackPoint, TrackSegment>) => boolean,
     iterate: boolean = false
   ): VertexNode<TrackPoint, TrackSegment>[] {
     let smoothCoordsCurrent: VertexNode<TrackPoint, TrackSegment>[];

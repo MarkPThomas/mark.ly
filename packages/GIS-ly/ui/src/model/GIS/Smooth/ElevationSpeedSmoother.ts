@@ -1,7 +1,10 @@
 import { VertexNode } from "../../Geometry/Polyline";
-import { EvaluatorArgs, Track } from "../Track/Track";
-import { TrackPoint } from "../Track/TrackPoint";
-import { TrackSegment } from "../Track/TrackSegment";
+import {
+  EvaluatorArgs,
+  Track,
+  TrackPoint,
+  TrackSegment
+} from "../Track";
 
 import { Smoother } from "./Smoother";
 

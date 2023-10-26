@@ -1,4 +1,4 @@
-import { Track } from "../Track/Track";
+import { Track } from "../Track";
 import { SmoothManager } from "./SmoothManager";
 
 export interface ISmoother {

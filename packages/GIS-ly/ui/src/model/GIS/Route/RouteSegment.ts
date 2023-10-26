@@ -54,6 +54,8 @@ export interface IRouteSegmentProperties extends ISegmentGeometryProperties {
    * @memberof ITrackSegment
    */
   height?: number;
+
+  slope?: number;
 }
 
 export interface IRouteSegment
@@ -79,6 +81,14 @@ export class RouteSegment
   angle: number;
   direction: IDirection;
   height: number;
+
+  private _slope: number = undefined;
+  get slope(): number {
+    if (this._slope === undefined) {
+      this._slope = PPoint.calcSegmentSlopeRadByRiseRun(this.height, this.length)
+    }
+    return this._slope;
+  }
 
   constructor(length?: number, angle?: number, direction?: IDirection, height?: number) {
     super(length);

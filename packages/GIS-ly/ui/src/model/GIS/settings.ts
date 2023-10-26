@@ -11,6 +11,7 @@ import {
 export interface ITrackCriteria extends IUnitOverrideable {
   activities: { [key: string]: IActivity; }
   cruft?: ICruft
+  split?: ISplit
   noiseCloud?: INoiseCloud
   misc?: IMisc
 }
@@ -28,6 +29,11 @@ export interface INoiseCloud extends IUnitOverrideable {
    * @memberof INoiseCloud
    */
   minPauseResumeTime?: number
+}
+
+export interface ISplit extends IUnitOverrideable {
+  maxStopDuration: number
+  minMoveDuration: number
 }
 
 export interface IMisc extends IUnitOverrideable {
@@ -76,6 +82,7 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
 
   convertCruftToGlobalUnits(trackCriteria.cruft, localUnits, sessionTrackCriteria);
   convertNoiseCloudToGlobalUnits(trackCriteria.noiseCloud, localUnits, sessionTrackCriteria);
+  convertSplitToGlobalUnits(trackCriteria.split, localUnits, sessionTrackCriteria);
   convertMiscToGlobalUnits(trackCriteria.misc, localUnits, sessionTrackCriteria);
 
   if (trackCriteria.activities) {
@@ -127,6 +134,19 @@ function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, units: IUnits, 
   }
 
   delete sessionTrackCriteria.noiseCloud.units;
+}
+
+function convertSplitToGlobalUnits(split: ISplit, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
+  if (!split) {
+    return;
+  }
+
+  const localUnits = getLocalUnits(split.units, units);
+
+  sessionTrackCriteria.split.maxStopDuration = converter.convertTime(split.maxStopDuration, localUnits);
+  sessionTrackCriteria.split.minMoveDuration = converter.convertTime(split.minMoveDuration, localUnits);
+
+  delete sessionTrackCriteria.split.units;
 }
 
 function convertMiscToGlobalUnits(misc: IMisc, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
@@ -265,6 +285,10 @@ const globalDefaults: ITrackCriteria = {
   },
   cruft: {
     pointSeparationLimit: 3
+  },
+  split: {
+    maxStopDuration: 3,
+    minMoveDuration: 0.083
   },
   noiseCloud: {
     speedMin: 0.25
