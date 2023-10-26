@@ -123,6 +123,10 @@
     "noiseCloud": {
       "speedMin": 0.25
     },
+    "split": {
+      "maxStopDuration": 3,
+      "minMoveDuration": 0.083
+    },
     "misc": {
       "units": {
         "time": "seconds"

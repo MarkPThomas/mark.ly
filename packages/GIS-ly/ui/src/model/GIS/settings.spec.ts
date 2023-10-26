@@ -147,6 +147,10 @@ describe('#convertToGlobalDefaults', () => {
       cruft: {
         pointSeparationLimit: 3
       },
+      split: {
+        maxStopDuration: 2,
+        minMoveDuration: 0.04
+      },
       noiseCloud: {
         speedMin: 0.25
       },
@@ -162,6 +166,7 @@ describe('#convertToGlobalDefaults', () => {
 
     expect(convertedTrackCriteria.cruft.pointSeparationLimit).toBeCloseTo(4828, 0);
     expect(convertedTrackCriteria.noiseCloud.speedMin).toBeCloseTo(0.11176, 5);
+    expect(convertedTrackCriteria.split.maxStopDuration).toBeCloseTo(7200, 0);
     expect(convertedTrackCriteria.misc.gpsTimeInterval).toBeCloseTo(30, 0);
 
     expect(convertedTrackCriteria.activities.hiking.name).toEqual('Hiking');
@@ -180,6 +185,7 @@ describe('#convertToGlobalDefaults', () => {
     expect(convertedTrackCriteria.activities.cycling.slope.max).toBeCloseTo(0.2915, 4);
   });
 
+  // TODO: Fix programmed settings. They are changed by tests above, affecting tests below.
   it('should fill in defaults where not specified in the config file', () => {
     const trackCriteria = {};
 
@@ -187,6 +193,7 @@ describe('#convertToGlobalDefaults', () => {
 
     expect(convertedTrackCriteria.cruft.pointSeparationLimit).toBeCloseTo(4828, 0);
     expect(convertedTrackCriteria.noiseCloud.speedMin).toBeCloseTo(0.11176, 5);
+    expect(convertedTrackCriteria.split.maxStopDuration).toBeCloseTo(10800, 0);
     expect(convertedTrackCriteria.misc.gpsTimeInterval).toBeCloseTo(30, 0);
 
     expect(convertedTrackCriteria.activities.hiking.name).toEqual('Hiking');
