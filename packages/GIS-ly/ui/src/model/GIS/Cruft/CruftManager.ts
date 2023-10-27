@@ -1,10 +1,11 @@
-import { VertexNode } from "../../Geometry";
+import { SegmentNode, VertexNode } from "../../Geometry";
 import {
   Track,
   TrackPoint,
   TrackSegment
 } from "../Track";
 import { ITimeRange } from "../Time/TimeRange";
+import { ISplitResult, SplitManager } from "../Split/SplitManager";
 
 
 export interface ICruftManager {
@@ -15,7 +16,7 @@ export interface ICruftManager {
     segmentKeep: ITimeRange;
   };
   trimTrackByCruft(triggerDistanceKM: number): number;
-  // splitTrackSegmentByCruft(triggerDistanceKM: number): Track[];
+  splitTrackSegmentByCruft(triggerDistanceKM: number): ISplitResult;
 }
 
 export class CruftManager implements ICruftManager {
@@ -99,95 +100,19 @@ export class CruftManager implements ICruftManager {
     return this._totalSize - this._maxSize;
   }
 
-  // splitTrackSegmentByCruft(triggerDistanceKM: number = config.CRUFT_TRIGGER_DISTANCE_KM): Track[] {
-  //   const { segments } = this.getTrackSegmentsByCruft(triggerDistanceKM);
-  //   if (segments.length === 1) {
-  //     return [this._track.clone()];
-  //   }
+  splitTrackSegmentByCruft(triggerDistance?: number, minMoveDuration?: number): ISplitResult {
+    const splitMngr = new SplitManager(this._track, minMoveDuration);
 
-  //   const tracks: Track[] = [];
-  //   segments.forEach((segment) => {
-  //     const track = this._track.splitToSegment(segment);
-  //     if (track) {
-  //       tracks.push(track);
-  //     }
-  //   });
+    triggerDistance = triggerDistance ?? this._pointSeparationLimit;
 
-  //   return tracks.length ? tracks : [this._track.clone()];
-  // }
+    const tracksSplit = splitMngr.splitBySegment(triggerDistance, this.isCruft)
+
+    tracksSplit.tracks = splitMngr.removeShortTracks(tracksSplit.tracks, minMoveDuration);
+
+    return tracksSplit;
+  }
+
+  protected isCruft(limit: number, segment: SegmentNode<TrackPoint, TrackSegment>) {
+    return segment.val?.length && segment.val.length >= Math.abs(limit);
+  }
 }
-
-
-
-// export function getTrackSegmentsByCruft(
-//   geoJson: FeatureCollection,
-//   triggerDistanceKM: number = 5
-// ) {
-//   const triggerDistanceMeters = triggerDistanceKM * 1000;
-//   const coordinates = getCoords(geoJson) as TrackPoint[];
-
-//   let maxSize = 0;
-
-//   const segments: SegmentLimits[] = [];
-//   let segmentKeep: SegmentLimits;
-//   let segment: SegmentLimits = {
-//     startCoord: coordinates[0],
-//     endCoord: null
-//   };
-
-//   const updateSegmentKeep = (segmentCheck: SegmentLimits) => {
-//     segments.push(segmentCheck);
-
-//     const priorSegmentSize = segmentCheck.endCoord.indices.coordIndex - segmentCheck.startCoord.indices.coordIndex + 1;
-//     // TODO: Add future weights to BB diagonal length as well in case noise cloud on clipped end
-//     if (priorSegmentSize > maxSize) {
-//       segmentKeep = segmentCheck;
-//       maxSize = priorSegmentSize;
-//     }
-//   }
-
-//   for (let i = 1; i < coordinates.length; i++) {
-//     if (coordinates[i].distanceTo(coordinates[i - 1]) >= triggerDistanceMeters) {
-//       segment.endCoord = coordinates[i - 1];
-//       updateSegmentKeep(segment);
-
-//       segment = {
-//         startCoord: coordinates[i],
-//         endCoord: null
-//       };
-//     }
-//   }
-//   segment.endCoord = coordinates[coordinates.length - 1];
-//   updateSegmentKeep(segment);
-
-//   return { segments, segmentKeep };
-// }
-
-// export function splitTrackSegmentByCruft(
-//   geoJson: GeoJSONFeatureCollection,
-//   triggerDistanceKM: number = 5
-// ) {
-//   const { segments } = getTrackSegmentsByCruft(geoJson, triggerDistanceKM);
-//   if (segments.length === 1) {
-//     return [geoJson];
-//   }
-
-//   const tracks: GeoJSONFeatureCollection[] = [];
-//   segments.forEach((segment) => {
-//     const track = splitTrackSegment(geoJson, segment);
-//     if (track) {
-//       tracks.push(track);
-//     }
-//   });
-
-//   return tracks.length ? tracks : [geoJson];
-// }
-
-// export function clipTrackSegmentByCruft(
-//   geoJson: GeoJSONFeatureCollection,
-//   triggerDistanceKM: number = 5
-// ) {
-//   const { segments, segmentKeep } = getTrackSegmentsByCruft(geoJson, triggerDistanceKM);
-
-//   return segments.length === 1 ? geoJson : splitTrackSegment(geoJson, segmentKeep);
-// }
