@@ -105,6 +105,7 @@ export class CruftManager implements ICruftManager {
 
     triggerDistance = triggerDistance ?? this._pointSeparationLimit;
 
+    // TODO: Replace w/ GapDistanceSplitter, add in GapTimeSplitter?
     const tracksSplit = splitMngr.splitBySegment(triggerDistance, this.isCruft)
 
     tracksSplit.tracks = splitMngr.removeShortTracks(tracksSplit.tracks, minMoveDuration);
