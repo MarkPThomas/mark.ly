@@ -30,7 +30,7 @@ import {
   AngularSpeedSmoother,
   ElevationSpeedSmoother
 } from '../../model/GIS/Smooth';
-import { StopSplitter } from '../../model/GIS/Split';
+import { DurationSplitter } from '../../model/GIS/Split';
 import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
 import { ITrackCriteria } from '../../model/GIS/settings';
 
@@ -197,7 +197,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSplitOnStop = () => {
     console.log('handleSplitOnStop')
     if (track) {
-      const manager = new StopSplitter(track);
+      const manager = new DurationSplitter(track);
 
       // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
       const maxStopDurationS = trackCriteria.split.stopDurationMax;
@@ -205,7 +205,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       // const minMoveDurationS: number = 5 min = 300 sec;
       const minMoveDurationS = trackCriteria.split.moveDurationMin;
       console.log('minMoveDurationS: ', minMoveDurationS)
-      const splitResults = manager.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitResults = manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       console.log(`number tracks returned: ${splitResults.tracks.length}`);
       console.log(`number segments split on: ${splitResults.segments.length}`);

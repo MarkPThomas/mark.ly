@@ -8,7 +8,7 @@ export interface ISplitter {
 export abstract class Splitter implements ISplitter {
   protected _splitManager: SplitManager;
 
-  constructor(track: Track, minMoveDuration?: number) {
-    this._splitManager = new SplitManager(track, minMoveDuration);
+  constructor(track: Track, minTrackDuration?: number) {
+    this._splitManager = new SplitManager(track, minTrackDuration);
   }
 }

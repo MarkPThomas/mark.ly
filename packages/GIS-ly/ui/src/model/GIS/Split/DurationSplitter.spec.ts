@@ -3,10 +3,10 @@ import {
   TrackPoint
 } from "../Track";
 
-import { StopSplitter } from "./StopSplitter";
+import { DurationSplitter } from "./DurationSplitter";
 
-describe('##StopSplitter', () => {
-  describe('#splitByStopDuration', () => {
+describe('##DurationSplitter', () => {
+  describe('#splitByMaxDuration', () => {
     it('should do nothing to a track that has no separate activities by time stopped', () => {
       const coords = [
         new TrackPoint(-8.9428362309, -77.7104663163, 0, '2023-07-04T20:00:00Z'),
@@ -20,8 +20,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(0);
       expect(removedCoords.segments.length).toEqual(0);
@@ -43,8 +43,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -66,8 +66,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -89,8 +89,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(2);   // 4
       expect(removedCoords.segments.length).toEqual(1);
@@ -112,8 +112,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -135,8 +135,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -157,8 +157,8 @@ describe('##StopSplitter', () => {
 
       // minEdgeTimes default = 300 sec = 5 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -180,8 +180,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track, minMoveDurationS);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS);
+      const splitter = new DurationSplitter(track, minMoveDurationS);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -203,8 +203,8 @@ describe('##StopSplitter', () => {
 
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       expect(removedCoords.points.length).toEqual(2);
       expect(removedCoords.segments.length).toEqual(1);
@@ -234,8 +234,8 @@ describe('##StopSplitter', () => {
 
       const minMovementTimesS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
-      const splitter = new StopSplitter(track);
-      const removedCoords = splitter.splitByStopDuration(maxStopDurationS, minMovementTimesS);
+      const splitter = new DurationSplitter(track);
+      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMovementTimesS);
 
       expect(removedCoords.points.length).toEqual(8);
       expect(removedCoords.segments.length).toEqual(4);
