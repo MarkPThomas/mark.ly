@@ -17,8 +17,8 @@ export interface ITrackCriteria extends IUnitOverrideable {
 }
 
 export interface ICruft extends IUnitOverrideable {
-  pointSeparationLimit: number
-  timeSeparationLimit?: number
+  gapDistanceMax: number
+  gapTimeMax?: number
 }
 
 export interface INoiseCloud extends IUnitOverrideable {
@@ -28,12 +28,12 @@ export interface INoiseCloud extends IUnitOverrideable {
    * @type {string}
    * @memberof INoiseCloud
    */
-  minPauseResumeTime?: number
+  stopDurationMin?: number
 }
 
 export interface ISplit extends IUnitOverrideable {
-  maxStopDuration: number
-  minMoveDuration: number
+  stopDurationMax: number
+  moveDurationMin: number
 }
 
 export interface IMisc extends IUnitOverrideable {
@@ -52,6 +52,7 @@ export interface IActivity extends IUnitOverrideable {
   rotation?: IRotationCriteria
   elevation?: IElevationCriteria
   slope?: ISlopeCriteria
+  gapDistanceMax?: number
 }
 
 export interface ISpeedCriteria extends IUnitOverrideable {
@@ -64,8 +65,8 @@ export interface IRotationCriteria extends IUnitOverrideable {
 }
 
 export interface IElevationCriteria extends IUnitOverrideable {
-  maxAscentRate: number,
-  maxDescentRate: number
+  ascentRateMax: number,
+  descentRateMax: number
 }
 
 export interface ISlopeCriteria extends IUnitOverrideable {
@@ -111,10 +112,10 @@ function convertCruftToGlobalUnits(cruft: ICruft, units: IUnits, sessionTrackCri
 
   const localUnits = getLocalUnits(cruft.units, units);
 
-  sessionTrackCriteria.cruft.pointSeparationLimit = converter.convertLength(cruft.pointSeparationLimit, localUnits);
+  sessionTrackCriteria.cruft.gapDistanceMax = converter.convertLength(cruft.gapDistanceMax, localUnits);
 
-  if (cruft.timeSeparationLimit) {
-    sessionTrackCriteria.cruft.timeSeparationLimit = converter.convertTime(cruft.timeSeparationLimit, localUnits);
+  if (cruft.gapTimeMax) {
+    sessionTrackCriteria.cruft.gapTimeMax = converter.convertTime(cruft.gapTimeMax, localUnits);
   }
 
   delete sessionTrackCriteria.cruft.units;
@@ -129,8 +130,8 @@ function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, units: IUnits, 
 
   sessionTrackCriteria.noiseCloud.speedMin = converter.convertSpeed(noiseCloud.speedMin, localUnits);
 
-  if (noiseCloud.minPauseResumeTime) {
-    sessionTrackCriteria.noiseCloud.minPauseResumeTime = converter.convertTime(noiseCloud.minPauseResumeTime, localUnits);
+  if (noiseCloud.stopDurationMin) {
+    sessionTrackCriteria.noiseCloud.stopDurationMin = converter.convertTime(noiseCloud.stopDurationMin, localUnits);
   }
 
   delete sessionTrackCriteria.noiseCloud.units;
@@ -143,8 +144,8 @@ function convertSplitToGlobalUnits(split: ISplit, units: IUnits, sessionTrackCri
 
   const localUnits = getLocalUnits(split.units, units);
 
-  sessionTrackCriteria.split.maxStopDuration = converter.convertTime(split.maxStopDuration, localUnits);
-  sessionTrackCriteria.split.minMoveDuration = converter.convertTime(split.minMoveDuration, localUnits);
+  sessionTrackCriteria.split.stopDurationMax = converter.convertTime(split.stopDurationMax, localUnits);
+  sessionTrackCriteria.split.moveDurationMin = converter.convertTime(split.moveDurationMin, localUnits);
 
   delete sessionTrackCriteria.split.units;
 }
@@ -172,6 +173,8 @@ function convertActivityToGlobalUnits(activity: IActivity, units: IUnits, sessio
   convertActivityRotationToGlobalUnits(activity.rotation, localUnits, sessionActivity.rotation);
   convertActivityElevationToGlobalUnits(activity.elevation, localUnits, sessionActivity.elevation);
   convertActivitySlopeToGlobalUnits(activity.slope, localUnits, sessionActivity.slope);
+
+  sessionActivity.gapDistanceMax = converter.convertLength(activity.gapDistanceMax, localUnits);
 
   delete sessionActivity.units;
 }
@@ -208,8 +211,8 @@ function convertActivityElevationToGlobalUnits(criteria: IElevationCriteria, uni
 
   const localUnits = getLocalUnits(criteria.units, units);
 
-  sessionCriteria.maxAscentRate = converter.convertSpeed(criteria.maxAscentRate, localUnits);
-  sessionCriteria.maxDescentRate = converter.convertSpeed(criteria.maxDescentRate, localUnits);
+  sessionCriteria.ascentRateMax = converter.convertSpeed(criteria.ascentRateMax, localUnits);
+  sessionCriteria.descentRateMax = converter.convertSpeed(criteria.descentRateMax, localUnits);
 
   delete sessionCriteria.units;
 }
@@ -251,8 +254,8 @@ const globalDefaults: ITrackCriteria = {
         units: {
           length: eLength.feet
         },
-        maxAscentRate: 3000,
-        maxDescentRate: 4500
+        ascentRateMax: 3000,
+        descentRateMax: 4500
       }
     },
     cycling: {
@@ -272,8 +275,8 @@ const globalDefaults: ITrackCriteria = {
         units: {
           length: eLength.feet
         },
-        maxAscentRate: 2000,
-        maxDescentRate: 6000
+        ascentRateMax: 2000,
+        descentRateMax: 6000
       },
       slope: {
         units: {
@@ -284,11 +287,11 @@ const globalDefaults: ITrackCriteria = {
     }
   },
   cruft: {
-    pointSeparationLimit: 3
+    gapDistanceMax: 3
   },
   split: {
-    maxStopDuration: 3,
-    minMoveDuration: 0.083
+    stopDurationMax: 3,
+    moveDurationMin: 0.083
   },
   noiseCloud: {
     speedMin: 0.25

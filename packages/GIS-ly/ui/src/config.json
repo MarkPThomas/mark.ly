@@ -85,8 +85,8 @@
           "units": {
             "length": "feet"
           },
-          "maxAscentRate": 3000,
-          "maxDescentRate": 4500
+          "ascentRateMax": 3000,
+          "descentRateMax": 4500
         }
       },
       "cycling": {
@@ -106,26 +106,26 @@
           "units": {
             "length": "feet"
           },
-          "maxAscentRate": 2000,
-          "maxDescentRate": 6000
+          "ascentRateMax": 2000,
+          "descentRateMax": 6000
         },
         "slope": {
           "units": {
             "angle": "percent"
           },
-          "maxPercent": 30
+          "max": 30
         }
       }
     },
     "cruft": {
-      "pointSeparationLimit": 3
+      "gapDistanceMax": 3
     },
     "noiseCloud": {
       "speedMin": 0.25
     },
     "split": {
-      "maxStopDuration": 3,
-      "minMoveDuration": 0.08333
+      "stopDurationMax": 3,
+      "moveDurationMin": 0.08333
     },
     "misc": {
       "units": {
