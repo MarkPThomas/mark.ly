@@ -21,12 +21,6 @@ export class StopSplitter extends Splitter {
     return tracksSplit;
   }
 
-  protected isNearEdge(track: Track, minEdgeTimes: number): boolean {
-    const duration = track.getDuration();
-
-    return duration <= Math.abs(minEdgeTimes);
-  }
-
   protected isDoneWithActivity(limit: number, segment: SegmentNode<TrackPoint, TrackSegment>) {
     return segment.val?.duration && segment.val.duration > limit;
   }

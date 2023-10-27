@@ -210,7 +210,8 @@ describe('##CruftManager', () => {
     it('should clip the first portion of a track when triggered there', () => {
       const cruftManager = getCruftManager(data.cruftStart);
 
-      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(2);
+      const triggerDistanceM = 2000;
+      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(triggerDistanceM);
 
       expect(segments.length).toEqual(2);
       expect(segmentKeep.startTime).toEqual('5');
@@ -220,7 +221,8 @@ describe('##CruftManager', () => {
     it('should clip the last portion of a track when triggered there', () => {
       const cruftManager = getCruftManager(data.cruftEnd);
 
-      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(2);
+      const triggerDistanceM = 2000;
+      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(triggerDistanceM);
 
       expect(segments.length).toEqual(2);
       expect(segmentKeep.startTime).toEqual('1');
@@ -230,7 +232,8 @@ describe('##CruftManager', () => {
     it('should clip the first & last portions of a track when triggered there', () => {
       const cruftManager = getCruftManager(data.cruftStartEnd);
 
-      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(2);
+      const triggerDistanceM = 2000;
+      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(triggerDistanceM);
 
       expect(segments.length).toEqual(3);
       expect(segmentKeep.startTime).toEqual('5');
@@ -240,7 +243,8 @@ describe('##CruftManager', () => {
     it('should keep the 2nd of 4 segments after clipping multiple segments', () => {
       const cruftManager = getCruftManager(data.cruftKeep2ndOf4);
 
-      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(2);
+      const triggerDistanceM = 2000;
+      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(triggerDistanceM);
 
       expect(segments.length).toEqual(4);
       expect(segmentKeep.startTime).toEqual('5');
@@ -250,7 +254,8 @@ describe('##CruftManager', () => {
     it('should do nothing to a track that does not trigger clipping', () => {
       const cruftManager = getCruftManager(data.cruftNone);
 
-      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(2);
+      const triggerDistanceM = 2000;
+      const { segments, segmentKeep } = cruftManager.getTrackRangesByCruft(triggerDistanceM);
 
       expect(segments.length).toEqual(1);
       expect(segmentKeep.startTime).toEqual('1');
@@ -264,7 +269,8 @@ describe('##CruftManager', () => {
     it('should clip the first portion of a track when triggered', () => {
       const cruftManager = getCruftManager(data.cruftStart);
 
-      const numberClipped = cruftManager.trimTrackByCruft(2);
+      const triggerDistanceM = 2000;
+      const numberClipped = cruftManager.trimTrackByCruft(triggerDistanceM);
 
       const expectedNumberClipped = dataPositions.cruftStart.length - expectedFinalLength;
       expect(numberClipped).toEqual(expectedNumberClipped);
@@ -273,7 +279,8 @@ describe('##CruftManager', () => {
     it('should clip the last portion of a track when triggered', () => {
       const cruftManager = getCruftManager(data.cruftEnd);
 
-      const numberClipped = cruftManager.trimTrackByCruft(2);
+      const triggerDistanceM = 2000;
+      const numberClipped = cruftManager.trimTrackByCruft(triggerDistanceM);
 
       const expectedNumberClipped = dataPositions.cruftEnd.length - expectedFinalLength;
       expect(numberClipped).toEqual(expectedNumberClipped);
@@ -282,7 +289,8 @@ describe('##CruftManager', () => {
     it('should clip the first & last portions of a track when triggered', () => {
       const cruftManager = getCruftManager(data.cruftStartEnd);
 
-      const numberClipped = cruftManager.trimTrackByCruft(2);
+      const triggerDistanceM = 2000;
+      const numberClipped = cruftManager.trimTrackByCruft(triggerDistanceM);
 
       const expectedNumberClipped = dataPositions.cruftStartEnd.length - expectedFinalLength;
       expect(numberClipped).toEqual(expectedNumberClipped);
@@ -291,7 +299,8 @@ describe('##CruftManager', () => {
     it('should keep the 2nd of 4 segments after clipping multiple segments', () => {
       const cruftManager = getCruftManager(data.cruftKeep2ndOf4);
 
-      const numberClipped = cruftManager.trimTrackByCruft(2);
+      const triggerDistanceM = 2000;
+      const numberClipped = cruftManager.trimTrackByCruft(triggerDistanceM);
 
       const expectedNumberClipped = dataPositions.cruftKeep2ndOf4.length - expectedFinalLength;
       expect(numberClipped).toEqual(expectedNumberClipped);
@@ -300,64 +309,70 @@ describe('##CruftManager', () => {
     it('should do nothing to a track that does not trigger clipping', () => {
       const cruftManager = getCruftManager(data.cruftNone);
 
-      const numberClipped = cruftManager.trimTrackByCruft(2);
+      const triggerDistanceM = 2000;
+      const numberClipped = cruftManager.trimTrackByCruft(triggerDistanceM);
 
       const expectedNumberClipped = dataPositions.cruftNone.length - expectedFinalLength;
       expect(numberClipped).toEqual(expectedNumberClipped);
     });
   });
 
-  // describe('#splitTrackSegmentByCruft', () => {
-  //   it('should split to keep the last portion of a track when triggered', () => {
-  //     const cruftManager = getCruftManager(data.cruftStart);
+  describe('#splitTrackSegmentByCruft', () => {
+    it('should split to keep the last portion of a track when triggered', () => {
+      const cruftManager = getCruftManager(data.cruftStart);
 
-  //     const tracks = cruftManager.splitTrackSegmentByCruft(2);
+      const triggerDistanceM = 2000;
+      const tracksSplit = cruftManager.splitTrackSegmentByCruft(triggerDistanceM);
 
-  //     expect(tracks.length).toEqual(2);
-  //     expect(tracks[0].trackPoints.length).toEqual(4);
-  //     expect(tracks[1].trackPoints.length).toEqual(5);
-  //   });
+      expect(tracksSplit.tracks.length).toEqual(2);
+      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(4);
+      expect(tracksSplit.tracks[1].trackPoints().length).toEqual(5);
+    });
 
-  //   it('should split to keep the first portion of a track when triggered', () => {
-  //     const cruftManager = getCruftManager(data.cruftEnd);
+    it('should split to keep the first portion of a track when triggered', () => {
+      const cruftManager = getCruftManager(data.cruftEnd);
 
-  //     const tracks = cruftManager.splitTrackSegmentByCruft(2);
+      const triggerDistanceM = 2000;
+      const tracksSplit = cruftManager.splitTrackSegmentByCruft(triggerDistanceM);
 
-  //     expect(tracks.length).toEqual(2);
-  //     expect(tracks[0].trackPoints.length).toEqual(5);
-  //     expect(tracks[1].trackPoints.length).toEqual(4);
-  //   });
+      expect(tracksSplit.tracks.length).toEqual(2);
+      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(5);
+      expect(tracksSplit.tracks[1].trackPoints().length).toEqual(4);
+    });
 
-  //   it('should split at the first & last portions to keep the middle of a track when triggered', () => {
-  //     const cruftManager = getCruftManager(data.cruftStartEnd);
+    it('should split at the first & last portions to keep the middle of a track when triggered', () => {
+      const cruftManager = getCruftManager(data.cruftStartEnd);
 
-  //     const tracks = cruftManager.splitTrackSegmentByCruft(2);
+      const triggerDistanceM = 2000;
+      const tracksSplit = cruftManager.splitTrackSegmentByCruft(triggerDistanceM);
 
-  //     expect(tracks.length).toEqual(3);
-  //     expect(tracks[0].trackPoints.length).toEqual(4);
-  //     expect(tracks[1].trackPoints.length).toEqual(5);
-  //     expect(tracks[2].trackPoints.length).toEqual(3);
-  //   });
+      expect(tracksSplit.tracks.length).toEqual(3);
+      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(4);
+      expect(tracksSplit.tracks[1].trackPoints().length).toEqual(5);
+      expect(tracksSplit.tracks[2].trackPoints().length).toEqual(3);
+    });
 
-  //   it('should split to keep the 2nd of 4 segments after clipping multiple segments', () => {
-  //     const cruftManager = getCruftManager(data.cruftKeep2ndOf4);
+    it('should split to keep the 2nd of 4 segments after splitting multiple segments', () => {
+      const cruftManager = getCruftManager(data.cruftKeep2ndOf4);
 
-  //     const tracks = cruftManager.splitTrackSegmentByCruft(2);
+      const triggerDistanceM = 2000;
+      const tracksSplit = cruftManager.splitTrackSegmentByCruft(triggerDistanceM);
 
-  //     expect(tracks.length).toEqual(4);
-  //     expect(tracks[0].trackPoints.length).toEqual(4);
-  //     expect(tracks[1].trackPoints.length).toEqual(5); // Kept in tie
-  //     expect(tracks[2].trackPoints.length).toEqual(5);
-  //     expect(tracks[3].trackPoints.length).toEqual(2);
-  //   });
+      expect(tracksSplit.tracks.length).toEqual(4);
+      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(4);
+      expect(tracksSplit.tracks[1].trackPoints().length).toEqual(5); // Kept in tie
+      expect(tracksSplit.tracks[2].trackPoints().length).toEqual(5);
+      expect(tracksSplit.tracks[3].trackPoints().length).toEqual(2);
+    });
 
-  //   it('should return the track segment unchanged for a track that does not trigger clipping', () => {
-  //     const cruftManager = getCruftManager(data.cruftNone);
+    it('should return the track segment unchanged for a track that does not trigger splitting', () => {
+      const cruftManager = getCruftManager(data.cruftNone);
 
-  //     const tracks = cruftManager.splitTrackSegmentByCruft(2);
+      const triggerDistanceM = 2000;
+      const tracksSplit = cruftManager.splitTrackSegmentByCruft(triggerDistanceM);
 
-  //     expect(tracks.length).toEqual(1);
-  //     expect(tracks[0].trackPoints.length).toEqual(5);
-  //   });
-  // });
+      expect(tracksSplit.tracks.length).toEqual(1);
+      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(5);
+    });
+  });
 });
