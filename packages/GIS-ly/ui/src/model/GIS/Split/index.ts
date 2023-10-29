@@ -1,1 +1,1 @@
-export * from './StopSplitter';
+export * from './DurationSplitter';

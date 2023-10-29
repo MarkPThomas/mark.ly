@@ -318,7 +318,7 @@ describe('##CruftManager', () => {
   });
 
   describe('#splitTrackSegmentByCruft', () => {
-    it('should split to keep the last portion of a track when triggered', () => {
+    it('should split at the last portion of a track when triggered', () => {
       const cruftManager = getCruftManager(data.cruftStart);
 
       const triggerDistanceM = 2000;
@@ -329,7 +329,7 @@ describe('##CruftManager', () => {
       expect(tracksSplit.tracks[1].trackPoints().length).toEqual(5);
     });
 
-    it('should split to keep the first portion of a track when triggered', () => {
+    it('should split at the first portion of a track when triggered', () => {
       const cruftManager = getCruftManager(data.cruftEnd);
 
       const triggerDistanceM = 2000;
@@ -340,7 +340,7 @@ describe('##CruftManager', () => {
       expect(tracksSplit.tracks[1].trackPoints().length).toEqual(4);
     });
 
-    it('should split at the first & last portions to keep the middle of a track when triggered', () => {
+    it('should split at the first & last portions', () => {
       const cruftManager = getCruftManager(data.cruftStartEnd);
 
       const triggerDistanceM = 2000;
@@ -352,7 +352,7 @@ describe('##CruftManager', () => {
       expect(tracksSplit.tracks[2].trackPoints().length).toEqual(3);
     });
 
-    it('should split to keep the 2nd of 4 segments after splitting multiple segments', () => {
+    it('should split into 4 segments after splitting multiple segments', () => {
       const cruftManager = getCruftManager(data.cruftKeep2ndOf4);
 
       const triggerDistanceM = 2000;

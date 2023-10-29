@@ -18,7 +18,7 @@ describe('#convertToGlobalDefaults', () => {
         }
       },
       cruft: {
-        pointSeparationLimit: 3
+        gapDistanceMax: 3
       },
       noiseCloud: {
         speedMin: 0.25
@@ -30,7 +30,7 @@ describe('#convertToGlobalDefaults', () => {
 
     const convertedTrackCriteria = convertTrackToGlobalUnits(trackCriteria as ITrackCriteria);
 
-    expect(convertedTrackCriteria.cruft.pointSeparationLimit).toBeCloseTo(4828, 0);
+    expect(convertedTrackCriteria.cruft.gapDistanceMax).toBeCloseTo(4828, 0);
     expect(convertedTrackCriteria.noiseCloud.speedMin).toBeCloseTo(0.11176, 5);
     expect(convertedTrackCriteria.misc.gpsTimeInterval).toBeCloseTo(1800, 0);
 
@@ -63,8 +63,8 @@ describe('#convertToGlobalDefaults', () => {
             units: {
               length: "feet"
             },
-            maxAscentRate: 3000,
-            maxDescentRate: 4500
+            ascentRateMax: 3000,
+            descentRateMax: 4500
           }
         }
       },
@@ -83,8 +83,8 @@ describe('#convertToGlobalDefaults', () => {
     expect(convertedTrackCriteria.activities.hiking.speed.min).toBeCloseTo(0.11176, 5);
     expect(convertedTrackCriteria.activities.hiking.speed.max).toBeCloseTo(1.78816, 5);
     expect(convertedTrackCriteria.activities.hiking.rotation.angularVelocityMax).toBeCloseTo(1.0472, 4);
-    expect(convertedTrackCriteria.activities.hiking.elevation.maxAscentRate).toBeCloseTo(0.254, 3);
-    expect(convertedTrackCriteria.activities.hiking.elevation.maxDescentRate).toBeCloseTo(0.381, 3);
+    expect(convertedTrackCriteria.activities.hiking.elevation.ascentRateMax).toBeCloseTo(0.254, 3);
+    expect(convertedTrackCriteria.activities.hiking.elevation.descentRateMax).toBeCloseTo(0.381, 3);
   });
 
   it('should convert a full config file of differing units and overwrites', () => {
@@ -112,8 +112,8 @@ describe('#convertToGlobalDefaults', () => {
             units: {
               length: "feet"
             },
-            maxAscentRate: 3000,
-            maxDescentRate: 4500
+            ascentRateMax: 3000,
+            descentRateMax: 4500
           }
         },
         cycling: {
@@ -133,8 +133,8 @@ describe('#convertToGlobalDefaults', () => {
             units: {
               length: "feet"
             },
-            maxAscentRate: 2000,
-            maxDescentRate: 6000
+            ascentRateMax: 2000,
+            descentRateMax: 6000
           },
           slope: {
             units: {
@@ -145,11 +145,11 @@ describe('#convertToGlobalDefaults', () => {
         }
       },
       cruft: {
-        pointSeparationLimit: 3
+        gapDistanceMax: 3
       },
       split: {
-        maxStopDuration: 2,
-        minMoveDuration: 0.04
+        stopDurationMax: 2,
+        moveDurationMin: 0.04
       },
       noiseCloud: {
         speedMin: 0.25
@@ -164,24 +164,24 @@ describe('#convertToGlobalDefaults', () => {
 
     const convertedTrackCriteria = convertTrackToGlobalUnits(trackCriteria as ITrackCriteria);
 
-    expect(convertedTrackCriteria.cruft.pointSeparationLimit).toBeCloseTo(4828, 0);
+    expect(convertedTrackCriteria.cruft.gapDistanceMax).toBeCloseTo(4828, 0);
     expect(convertedTrackCriteria.noiseCloud.speedMin).toBeCloseTo(0.11176, 5);
-    expect(convertedTrackCriteria.split.maxStopDuration).toBeCloseTo(7200, 0);
+    expect(convertedTrackCriteria.split.stopDurationMax).toBeCloseTo(7200, 0);
     expect(convertedTrackCriteria.misc.gpsTimeInterval).toBeCloseTo(30, 0);
 
     expect(convertedTrackCriteria.activities.hiking.name).toEqual('Hiking');
     expect(convertedTrackCriteria.activities.hiking.speed.min).toBeCloseTo(0.11176, 5);
     expect(convertedTrackCriteria.activities.hiking.speed.max).toBeCloseTo(1.78816, 5);
     expect(convertedTrackCriteria.activities.hiking.rotation.angularVelocityMax).toBeCloseTo(1.0472, 4);
-    expect(convertedTrackCriteria.activities.hiking.elevation.maxAscentRate).toBeCloseTo(0.254, 3);
-    expect(convertedTrackCriteria.activities.hiking.elevation.maxDescentRate).toBeCloseTo(0.381, 3);
+    expect(convertedTrackCriteria.activities.hiking.elevation.ascentRateMax).toBeCloseTo(0.254, 3);
+    expect(convertedTrackCriteria.activities.hiking.elevation.descentRateMax).toBeCloseTo(0.381, 3);
 
     expect(convertedTrackCriteria.activities.cycling.name).toEqual('Cycling');
     expect(convertedTrackCriteria.activities.cycling.speed.min).toBeCloseTo(0.11176, 5);
     expect(convertedTrackCriteria.activities.cycling.speed.max).toBeCloseTo(26.8224, 4);
     expect(convertedTrackCriteria.activities.cycling.rotation.angularVelocityMax).toBeCloseTo(2.0944, 4);
-    expect(convertedTrackCriteria.activities.cycling.elevation.maxAscentRate).toBeCloseTo(0.1693, 4);
-    expect(convertedTrackCriteria.activities.cycling.elevation.maxDescentRate).toBeCloseTo(0.508, 3);
+    expect(convertedTrackCriteria.activities.cycling.elevation.ascentRateMax).toBeCloseTo(0.1693, 4);
+    expect(convertedTrackCriteria.activities.cycling.elevation.descentRateMax).toBeCloseTo(0.508, 3);
     expect(convertedTrackCriteria.activities.cycling.slope.max).toBeCloseTo(0.2915, 4);
   });
 
@@ -191,24 +191,24 @@ describe('#convertToGlobalDefaults', () => {
 
     const convertedTrackCriteria = convertTrackToGlobalUnits(trackCriteria as ITrackCriteria);
 
-    expect(convertedTrackCriteria.cruft.pointSeparationLimit).toBeCloseTo(4828, 0);
+    expect(convertedTrackCriteria.cruft.gapDistanceMax).toBeCloseTo(4828, 0);
     expect(convertedTrackCriteria.noiseCloud.speedMin).toBeCloseTo(0.11176, 5);
-    expect(convertedTrackCriteria.split.maxStopDuration).toBeCloseTo(10800, 0);
+    expect(convertedTrackCriteria.split.stopDurationMax).toBeCloseTo(10800, 0);
     expect(convertedTrackCriteria.misc.gpsTimeInterval).toBeCloseTo(30, 0);
 
     expect(convertedTrackCriteria.activities.hiking.name).toEqual('Hiking');
     expect(convertedTrackCriteria.activities.hiking.speed.min).toBeCloseTo(0.11176, 5);
     expect(convertedTrackCriteria.activities.hiking.speed.max).toBeCloseTo(1.78816, 5);
     expect(convertedTrackCriteria.activities.hiking.rotation.angularVelocityMax).toBeCloseTo(1.0472, 4);
-    expect(convertedTrackCriteria.activities.hiking.elevation.maxAscentRate).toBeCloseTo(0.254, 3);
-    expect(convertedTrackCriteria.activities.hiking.elevation.maxDescentRate).toBeCloseTo(0.381, 3);
+    expect(convertedTrackCriteria.activities.hiking.elevation.ascentRateMax).toBeCloseTo(0.254, 3);
+    expect(convertedTrackCriteria.activities.hiking.elevation.descentRateMax).toBeCloseTo(0.381, 3);
 
     expect(convertedTrackCriteria.activities.cycling.name).toEqual('Cycling');
     expect(convertedTrackCriteria.activities.cycling.speed.min).toBeCloseTo(0.11176, 5);
     expect(convertedTrackCriteria.activities.cycling.speed.max).toBeCloseTo(26.8224, 4);
     expect(convertedTrackCriteria.activities.cycling.rotation.angularVelocityMax).toBeCloseTo(2.0944, 4);
-    expect(convertedTrackCriteria.activities.cycling.elevation.maxAscentRate).toBeCloseTo(0.1693, 4);
-    expect(convertedTrackCriteria.activities.cycling.elevation.maxDescentRate).toBeCloseTo(0.508, 3);
+    expect(convertedTrackCriteria.activities.cycling.elevation.ascentRateMax).toBeCloseTo(0.1693, 4);
+    expect(convertedTrackCriteria.activities.cycling.elevation.descentRateMax).toBeCloseTo(0.508, 3);
     expect(convertedTrackCriteria.activities.cycling.slope.max).toBeCloseTo(0.2915, 4);
   });
 });

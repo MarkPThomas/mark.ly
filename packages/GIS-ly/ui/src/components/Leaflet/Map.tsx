@@ -30,7 +30,7 @@ import {
   AngularSpeedSmoother,
   ElevationSpeedSmoother
 } from '../../model/GIS/Smooth';
-import { StopSplitter } from '../../model/GIS/Split';
+import { DurationSplitter } from '../../model/GIS/Split';
 import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
 import { ITrackCriteria } from '../../model/GIS/settings';
 
@@ -184,7 +184,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const manager = new CruftManager(track);
 
       // const triggerDistanceM: number = 5000;
-      const triggerDistanceM = trackCriteria.cruft.pointSeparationLimit;
+      const triggerDistanceM = trackCriteria.cruft.gapDistanceMax;
       console.log('triggerDistanceM: ', triggerDistanceM)
       const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
 
@@ -197,15 +197,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSplitOnStop = () => {
     console.log('handleSplitOnStop')
     if (track) {
-      const manager = new StopSplitter(track);
+      const manager = new DurationSplitter(track);
 
       // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
-      const maxStopDurationS = trackCriteria.split.maxStopDuration;
+      const maxStopDurationS = trackCriteria.split.stopDurationMax;
       console.log('maxStopDurationS: ', maxStopDurationS)
       // const minMoveDurationS: number = 5 min = 300 sec;
-      const minMoveDurationS = trackCriteria.split.minMoveDuration;
+      const minMoveDurationS = trackCriteria.split.moveDurationMin;
       console.log('minMoveDurationS: ', minMoveDurationS)
-      const splitResults = manager.splitByStopDuration(maxStopDurationS, minMoveDurationS);
+      const splitResults = manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
       console.log(`number tracks returned: ${splitResults.tracks.length}`);
       console.log(`number segments split on: ${splitResults.segments.length}`);
@@ -323,9 +323,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       //0.254 meters/second = 3000 ft / hr
       // const ascentSpeedLimitMPS = 0.254;
       // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
-      const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.maxAscentRate;
+      const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
       console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
-      const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.maxDescentRate;
+      const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
       console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
 
       let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);

@@ -27,17 +27,17 @@ export interface ISplitManager {
 }
 
 export class SplitManager implements ISplitManager {
-  private _minMoveDuration: number;
+  private _minTrackDuration: number;
 
   private _track: Track;
   get track() {
     return this._track;
   }
 
-  constructor(track: Track, minMoveDuration: number = 300) {
+  constructor(track: Track, minTrackDuration: number = 300) {
     this._track = track;
 
-    this._minMoveDuration = Math.abs(minMoveDuration);
+    this._minTrackDuration = Math.abs(minTrackDuration);
   }
 
   splitByPoint(
@@ -118,7 +118,7 @@ export class SplitManager implements ISplitManager {
   }
 
   removeShortTracks(tracks: Track[], minMoveDuration?: number): Track[] {
-    minMoveDuration = minMoveDuration ?? this._minMoveDuration;
+    minMoveDuration = minMoveDuration ?? this._minTrackDuration;
     const tracksKeep = [];
     tracks.forEach((track) => {
       if (!this.isTooShortDuration(track, minMoveDuration)) {
