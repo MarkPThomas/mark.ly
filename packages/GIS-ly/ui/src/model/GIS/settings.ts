@@ -9,7 +9,7 @@ import {
 } from '../../../../../common/utils/units/conversion';
 
 export interface ITrackCriteria extends IUnitOverrideable {
-  activities: { [key: string]: IActivity; }
+  activities: IActivities
   cruft?: ICruft
   split?: ISplit
   noiseCloud?: INoiseCloud
@@ -44,6 +44,10 @@ export interface IMisc extends IUnitOverrideable {
    * @memberof IMisc
    */
   gpsTimeInterval: number
+}
+
+export interface IActivities {
+  [key: string]: IActivity;
 }
 
 export interface IActivity extends IUnitOverrideable {
