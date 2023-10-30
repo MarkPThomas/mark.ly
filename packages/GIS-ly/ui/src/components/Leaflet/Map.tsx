@@ -21,7 +21,7 @@ import {
 import {
   Track,
   TrackPoint
-} from '../../model/GIS/Track';
+} from '../../model/GIS/Core/Track';
 
 import {
   StationarySmoother,
@@ -29,9 +29,9 @@ import {
   NoiseCloudSmoother,
   AngularSpeedSmoother,
   ElevationSpeedSmoother
-} from '../../model/GIS/Smooth';
-import { DurationSplitter } from '../../model/GIS/Split';
-import { CruftManager } from '../../model/GIS/Cruft/CruftManager';
+} from '../../model/GIS/Actions/Smooth';
+import { DurationSplitter } from '../../model/GIS/Actions/Split';
+import { CruftManager } from '../../model/GIS/Actions/Cruft/CruftManager';
 import { ITrackCriteria } from '../../model/GIS/settings';
 
 import { Settings } from '../../Settings';

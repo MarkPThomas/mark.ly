@@ -11,7 +11,7 @@ import { ReactNode } from 'react';
 
 import { hashString } from '../../../../../../../common/utils';//'common/utils';
 
-import { TrackPoint } from '../../../../model/GIS/Track';
+import { TrackPoint } from '../../../../model/GIS/Core/Track';
 
 import { CoordinateMarkersLayer } from '../../Custom/CoordinateMarkersLayer';
 import GeoJsonWithUpdates from './GeoJsonWithUpdates';

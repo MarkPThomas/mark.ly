@@ -1,6 +1,6 @@
 import { FeatureCollection, Geometry } from "geojson";
 
-import { TrackPoint } from "./Track/TrackPoint";
+import { TrackPoint } from "./Core/Track/TrackPoint";
 
 export type LatLng = [number, number];
 export type LatLngs = LatLng | LatLng[] | LatLng[][] | LatLng[][][];
