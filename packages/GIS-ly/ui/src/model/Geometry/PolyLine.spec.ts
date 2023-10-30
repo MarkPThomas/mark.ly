@@ -715,6 +715,43 @@ describe('##Polyline', () => {
           expect(trimmedSegmentTail.next).toBeNull();
           expect(trimmedSegmentTail.nextVert).toBeNull();
         });
+
+        it('should trim off the second to last vertex & last segment', () => {
+          coordinates = [
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex,
+          ];
+          polyline = new Polyline(coordinates);
+
+          const targetVertex = polyline.lastVertex;
+
+          const trimmedVertexTail = polyline.firstVertex as VertexNode<TestVertex, TestSegment>;
+          const trimmedSegmentTail = polyline.lastSegment as SegmentNode<TestVertex, TestSegment>;
+
+
+          const trimCount = polyline.trimBefore(targetVertex);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).toEqual(targetVertex);
+          expect(polyline.firstSegment).toBeNull();
+          expect(polyline.lastVertex).toEqual(targetVertex);
+          expect(polyline.firstSegment).toBeNull();
+
+          expect(polyline.size().vertices).toEqual(1);
+          expect(polyline.size().segments).toEqual(0);
+          expect(polyline.vertices()).toEqual([
+            [6, -160] as TestVertex
+          ]);
+
+          expect(targetVertex.prev).toBeNull();
+          expect(targetVertex.prevSeg).toBeNull();
+
+          expect(trimmedVertexTail.next).toBeNull();
+          expect(trimmedSegmentTail.next).toBeNull();
+          expect(trimmedSegmentTail.nextVert).toBeNull();
+        });
       });
 
       describe('#trimAfter', () => {
@@ -811,6 +848,43 @@ describe('##Polyline', () => {
           expect(trimmedVertexHead.prev).toBeNull();
           expect(trimmedSegmentHead.prev).toBeNull();
           expect(trimmedSegmentHead.prevVert).toBeNull();
+        });
+
+        it('should trim off the second to last vertex & last segment', () => {
+          coordinates = [
+            [5, -150] as TestVertex,
+            [6, -160] as TestVertex,
+          ];
+          polyline = new Polyline(coordinates);
+
+          const targetVertex = polyline.firstVertex;
+
+          const trimmedVertexTail = polyline.lastVertex as VertexNode<TestVertex, TestSegment>;
+          const trimmedSegmentTail = polyline.lastSegment as SegmentNode<TestVertex, TestSegment>;
+
+
+          const trimCount = polyline.trimAfter(targetVertex);
+
+
+          expect(trimCount).toBeTruthy();
+
+          expect(polyline.firstVertex).toEqual(targetVertex);
+          expect(polyline.firstSegment).toBeNull();
+          expect(polyline.lastVertex).toEqual(targetVertex);
+          expect(polyline.firstSegment).toBeNull();
+
+          expect(polyline.size().vertices).toEqual(1);
+          expect(polyline.size().segments).toEqual(0);
+          expect(polyline.vertices()).toEqual([
+            [5, -150] as TestVertex
+          ]);
+
+          expect(targetVertex.next).toBeNull();
+          expect(targetVertex.nextSeg).toBeNull();
+
+          expect(trimmedVertexTail.prev).toBeNull();
+          expect(trimmedSegmentTail.prev).toBeNull();
+          expect(trimmedSegmentTail.prevVert).toBeNull();
         });
       });
 
@@ -1364,6 +1438,26 @@ describe('##Polyline', () => {
             [5, -150] as TestVertex,
             [6, -160] as TestVertex
           ]);
+        });
+
+        it('should remove all of the vertices if specified', () => {
+          const verticesRemove = [];
+
+          let vertex = polyline.firstVertex;
+          while (vertex) {
+            verticesRemove.push(vertex);
+            vertex = vertex.next as VertexNode<TestVertex, TestSegment>;
+          }
+
+          const removedVertices = polyline.removeAtAny(verticesRemove);
+
+          expect(removedVertices.length).toEqual(6);
+
+          const polylineLength = polyline.size();
+          expect(polylineLength.vertices).toEqual(0);
+          expect(polylineLength.segments).toEqual(0);
+
+          expect(polyline.vertices()).toEqual([]);
         });
       });
 
