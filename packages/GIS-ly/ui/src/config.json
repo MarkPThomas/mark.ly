@@ -87,7 +87,8 @@
           },
           "ascentRateMax": 3000,
           "descentRateMax": 4500
-        }
+        },
+        "gapDistanceMax": 2
       },
       "cycling": {
         "name": "Cycling",
@@ -114,7 +115,8 @@
             "angle": "percent"
           },
           "max": 30
-        }
+        },
+        "gapDistanceMax": 4
       }
     },
     "cruft": {

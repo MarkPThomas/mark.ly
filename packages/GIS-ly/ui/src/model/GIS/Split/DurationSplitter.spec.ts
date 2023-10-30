@@ -7,6 +7,21 @@ import { DurationSplitter } from "./DurationSplitter";
 
 describe('##DurationSplitter', () => {
   describe('#splitByMaxDuration', () => {
+    it('should do nothing to an empty track', () => {
+      const track = Track.fromPoints([]);
+      track.addProperties();
+
+      const minMoveDurationS = 120; // 2 min
+      const maxStopDurationS = 3600; // 1 hr
+      const splitter = new DurationSplitter(track);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+
+      expect(splitResult.points.length).toEqual(0);
+      expect(splitResult.segments.length).toEqual(0);
+      expect(splitResult.tracks.length).toEqual(0);
+      expect(track.trackPoints().length).toEqual(0);
+    });
+
     it('should do nothing to a track that has no separate activities by time stopped', () => {
       const coords = [
         new TrackPoint(-8.9428362309, -77.7104663163, 0, '2023-07-04T20:00:00Z'),
@@ -21,12 +36,12 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(0);
-      expect(removedCoords.segments.length).toEqual(0);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(4);
+      expect(splitResult.points.length).toEqual(0);
+      expect(splitResult.segments.length).toEqual(0);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(4);
       expect(track.trackPoints().length).toEqual(4);
     });
 
@@ -44,12 +59,12 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(3);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(3);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -67,12 +82,12 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -90,12 +105,12 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);   // 4
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(3);
+      expect(splitResult.points.length).toEqual(2);   // 4
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(3);
       expect(track.trackPoints().length).toEqual(3); // track is modified & is the first returned track or dropped track
     });
 
@@ -113,12 +128,12 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -136,11 +151,11 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(0);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(0);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -158,12 +173,12 @@ describe('##DurationSplitter', () => {
       // minEdgeTimes default = 300 sec = 5 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -181,12 +196,12 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track, minMoveDurationS);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(1);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(1);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -204,13 +219,13 @@ describe('##DurationSplitter', () => {
       const minMoveDurationS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      expect(removedCoords.points.length).toEqual(2);
-      expect(removedCoords.segments.length).toEqual(1);
-      expect(removedCoords.tracks.length).toEqual(2);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
-      expect(removedCoords.tracks[1].trackPoints().length).toEqual(2);
+      expect(splitResult.points.length).toEqual(2);
+      expect(splitResult.segments.length).toEqual(1);
+      expect(splitResult.tracks.length).toEqual(2);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
+      expect(splitResult.tracks[1].trackPoints().length).toEqual(2);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
 
@@ -235,13 +250,13 @@ describe('##DurationSplitter', () => {
       const minMovementTimesS = 120; // 2 min
       const maxStopDurationS = 3600; // 1 hr
       const splitter = new DurationSplitter(track);
-      const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMovementTimesS);
+      const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMovementTimesS);
 
-      expect(removedCoords.points.length).toEqual(8);
-      expect(removedCoords.segments.length).toEqual(4);
-      expect(removedCoords.tracks.length).toEqual(2);
-      expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
-      expect(removedCoords.tracks[1].trackPoints().length).toEqual(2);
+      expect(splitResult.points.length).toEqual(8);
+      expect(splitResult.segments.length).toEqual(4);
+      expect(splitResult.tracks.length).toEqual(2);
+      expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
+      expect(splitResult.tracks[1].trackPoints().length).toEqual(2);
       expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
     });
   });

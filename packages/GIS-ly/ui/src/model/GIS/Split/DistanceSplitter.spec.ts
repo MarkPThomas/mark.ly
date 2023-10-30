@@ -30,12 +30,12 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DistanceSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(0);
-  //     expect(removedCoords.segments.length).toEqual(0);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(4);
+  //     expect(splitResult.points.length).toEqual(0);
+  //     expect(splitResult.segments.length).toEqual(0);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(4);
   //     expect(track.trackPoints().length).toEqual(4);
   //   });
 
@@ -53,12 +53,12 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(3);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(3);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -76,12 +76,12 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -99,12 +99,12 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);   // 4
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(3);
+  //     expect(splitResult.points.length).toEqual(2);   // 4
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(3);
   //     expect(track.trackPoints().length).toEqual(3); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -122,12 +122,12 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -145,11 +145,11 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(0);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(0);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -167,12 +167,12 @@ describe('##DistanceSplitter', () => {
   //     // minEdgeTimes default = 300 sec = 5 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -190,12 +190,12 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track, minMoveDurationS);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(1);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(1);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -213,13 +213,13 @@ describe('##DistanceSplitter', () => {
   //     const minMoveDurationS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-  //     expect(removedCoords.points.length).toEqual(2);
-  //     expect(removedCoords.segments.length).toEqual(1);
-  //     expect(removedCoords.tracks.length).toEqual(2);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
-  //     expect(removedCoords.tracks[1].trackPoints().length).toEqual(2);
+  //     expect(splitResult.points.length).toEqual(2);
+  //     expect(splitResult.segments.length).toEqual(1);
+  //     expect(splitResult.tracks.length).toEqual(2);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
+  //     expect(splitResult.tracks[1].trackPoints().length).toEqual(2);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
 
@@ -244,13 +244,13 @@ describe('##DistanceSplitter', () => {
   //     const minMovementTimesS = 120; // 2 min
   //     const maxStopDurationS = 3600; // 1 hr
   //     const splitter = new DurationSplitter(track);
-  //     const removedCoords = splitter.splitByMaxDuration(maxStopDurationS, minMovementTimesS);
+  //     const splitResult = splitter.splitByMaxDuration(maxStopDurationS, minMovementTimesS);
 
-  //     expect(removedCoords.points.length).toEqual(8);
-  //     expect(removedCoords.segments.length).toEqual(4);
-  //     expect(removedCoords.tracks.length).toEqual(2);
-  //     expect(removedCoords.tracks[0].trackPoints().length).toEqual(2);
-  //     expect(removedCoords.tracks[1].trackPoints().length).toEqual(2);
+  //     expect(splitResult.points.length).toEqual(8);
+  //     expect(splitResult.segments.length).toEqual(4);
+  //     expect(splitResult.tracks.length).toEqual(2);
+  //     expect(splitResult.tracks[0].trackPoints().length).toEqual(2);
+  //     expect(splitResult.tracks[1].trackPoints().length).toEqual(2);
   //     expect(track.trackPoints().length).toEqual(2); // track is modified & is the first returned track or dropped track
   //   });
   // });
@@ -451,6 +451,30 @@ describe('##DistanceSplitter', () => {
   }
 
   describe('#splitByMaxDistance', () => {
+    it('should do nothing to an empty track', () => {
+      const track = Track.fromPoints([]);
+      track.addProperties();
+
+      const triggerDistanceM = 2000;
+      const splitter = new DistanceSplitter(track);
+      const splitResult = splitter.splitByMaxDistance(triggerDistanceM);
+
+      expect(splitResult.points.length).toEqual(0);
+      expect(splitResult.segments.length).toEqual(0);
+      expect(splitResult.tracks.length).toEqual(0);
+      expect(track.trackPoints().length).toEqual(0);
+    });
+
+    it('should do nothing for a track that does not trigger splitting', () => {
+      const distanceSplitter = getDistanceSplitter(data.splitNone);
+
+      const triggerDistanceM = 2000;
+      const tracksSplit = distanceSplitter.splitByMaxDistance(triggerDistanceM);
+
+      expect(tracksSplit.tracks.length).toEqual(1);
+      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(5);
+    });
+
     it('should split at the last portion of a track when triggered', () => {
       const distanceSplitter = getDistanceSplitter(data.splitStart);
 
@@ -496,16 +520,6 @@ describe('##DistanceSplitter', () => {
       expect(tracksSplit.tracks[1].trackPoints().length).toEqual(5);
       expect(tracksSplit.tracks[2].trackPoints().length).toEqual(5);
       expect(tracksSplit.tracks[3].trackPoints().length).toEqual(2);
-    });
-
-    it('should return the track segment unchanged for a track that does not trigger splitting', () => {
-      const distanceSplitter = getDistanceSplitter(data.splitNone);
-
-      const triggerDistanceM = 2000;
-      const tracksSplit = distanceSplitter.splitByMaxDistance(triggerDistanceM);
-
-      expect(tracksSplit.tracks.length).toEqual(1);
-      expect(tracksSplit.tracks[0].trackPoints().length).toEqual(5);
     });
   });
 });

@@ -723,15 +723,26 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       return null;
     }
 
+    const lastSegment = this.lastVertex.prevSeg;
     const trimmedHead = this._vertices.trimHead(vertex);
 
     if (trimmedHead) {
-      this._segments.trimHead(vertex.nextSeg);
+      if (this.isOnlyVertexInPolyline(this.firstVertex)) {
+        this._segments.remove(lastSegment).node;
+        lastSegment.nextVert = null;
 
-      if (vertex && vertex.prevSeg) {
-        const lastHeadSegment = vertex.prevSeg;
-        lastHeadSegment.nextVert = null;
-        vertex.prevSeg = null;
+        this.firstVertex.prevSeg = null;
+        this.firstVertex.nextSeg = null;
+      } else {
+        if (vertex.nextSeg) {
+          this._segments.trimHead(vertex.nextSeg);
+        }
+
+        if (vertex && vertex.prevSeg) {
+          const lastHeadSegment = vertex.prevSeg;
+          lastHeadSegment.nextVert = null;
+          vertex.prevSeg = null;
+        }
       }
 
       if (vertex) {
@@ -751,17 +762,26 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       return null;
     }
 
+    const firstSegment = this.firstVertex.nextSeg;
     const trimmedTailHead = this._vertices.trimTail(vertex);
 
     if (trimmedTailHead) {
-      if (vertex.prevSeg) {
-        this._segments.trimTail(vertex.prevSeg);
-      }
+      if (this.isOnlyVertexInPolyline(this.firstVertex)) {
+        this._segments.remove(firstSegment).node;
+        firstSegment.prevVert = null;
 
-      if (vertex.nextSeg) {
-        const firstTailSegment = vertex.nextSeg;
-        firstTailSegment.prevVert = null;
-        vertex.nextSeg = null;
+        this.firstVertex.prevSeg = null;
+        this.firstVertex.nextSeg = null;
+      } else {
+        if (vertex.prevSeg) {
+          this._segments.trimTail(vertex.prevSeg);
+        }
+
+        if (vertex.nextSeg) {
+          const firstTailSegment = vertex.nextSeg;
+          firstTailSegment.prevVert = null;
+          vertex.nextSeg = null;
+        }
       }
 
       if (vertex) {

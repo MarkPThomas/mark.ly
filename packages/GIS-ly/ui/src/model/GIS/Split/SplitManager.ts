@@ -81,6 +81,9 @@ export class SplitManager implements ISplitManager {
       splitTracksKeep = this.keepOddTracks(splitTracks);
     }
 
+    if (splitTracksKeep.length === 0) {
+      splitTracksKeep = [this._track];
+    }
 
     return {
       tracks: splitTracksKeep,
