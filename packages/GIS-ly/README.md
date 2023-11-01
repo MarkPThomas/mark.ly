@@ -11,8 +11,8 @@ Do you have unwanted trackpoints in your GPS recording? Did you lose satellite r
 - **Routes**
     - Trip planning features
 
-## Live Demo
-Try is out! There is a [live demo]() available online with some sample GPS tracks.
+<!-- ## Live Demo
+Try it out! There is a [live demo]() available online with some sample GPS tracks. -->
 
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html) for topics like:
@@ -24,8 +24,8 @@ See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html) 
 - Product design diagrams & notes
 <!-- - Documentation such as diagrams for the app and UX styling guidelines are stored in the **`./docs`** directory. -->
 
-## Team Members
-- [Mark Thomas](https://github.com/MarkPThomas) - [Engineering Journal](https://gist.github.com/MarkPThomas/7ce6b7a2a48820ad1995afc5ee6ba506)
+<!-- ## Team Members
+- [Mark Thomas](https://github.com/MarkPThomas) - [Engineering Journal](https://gist.github.com/MarkPThomas/7ce6b7a2a48820ad1995afc5ee6ba506) -->
 
 
 # Demos
@@ -34,6 +34,8 @@ Below are some brief descriptions of the various app components, with animations
 <img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
 
 ## Track Cleaning
+Oftentimes a GPS track will contain inaccurate or unwanted data. The Track.ly portion of GIS.ly allows automated & manual cleaning of the recording.
+
 ### Trim Cruft
 GPS tracks may have some cruft (i.e. unwanted data) at the start or end of the track that come from turning the GPS device on at multiple times without starting a new track. GIS.ly can detect this & automatically remove it. See the [Wiki](https://markpthomas.github.io/wiki/Track-Cruft_52560088.html) for more information.
 
@@ -61,7 +63,7 @@ Sometimes an extended section of a track is offset from a known path. Or perhaps
 
 
 # CI/CD
-## Continuous Integration
+<!-- ## Continuous Integration
 Basic test of JavaScript continuous integration uses [CircleCI](https://circleci.com/) to run the tests, and [Coveralls](https://coveralls.io/) for reporting test coverage.
 
 Circle CI: [![rpp29-fec-gouda](https://circleci.com/gh/rpp29-fec-gouda/atelier.svg?style=svg)](https://app.circleci.com/pipelines/github/rpp29-fec-gouda/atelier)
@@ -89,7 +91,7 @@ Bugs: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=rp
 
 Code Smells: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=rpp29-fec-gouda_atelier&metric=code_smells)](https://sonarcloud.io/dashboard?id=rpp29-fec-gouda_atelier)
 
-Technical Debt: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=rpp29-fec-gouda_atelier&metric=sqale_index)](https://sonarcloud.io/dashboard?id=rpp29-fec-gouda_atelier)
+Technical Debt: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=rpp29-fec-gouda_atelier&metric=sqale_index)](https://sonarcloud.io/dashboard?id=rpp29-fec-gouda_atelier) -->
 
 ## Testing
 [Jest](https://jestjs.io/) is the framework chosen to test React & most other project code.
