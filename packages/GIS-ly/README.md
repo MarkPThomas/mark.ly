@@ -1,14 +1,14 @@
 # GIS.ly
 Do you have unwanted trackpoints in your GPS recording? Did you lose satellite reception in a deep canyon? Did you forget to end your activity for Strava before driving home? Well, GIS.ly has you covered for automated & easy manual corrections.
 
-**Coming soon:**
-- Tracks
+## Coming soon: ##
+- **Tracks**
     - Elevation-based functionality
     - Improved speed
     - Improved controls
     - More automation by activity
     - Custom & CRUD-able user settings for units, activity, etc.
-- Routes
+- **Routes**
     - Trip planning features
 
 ## Live Demo
@@ -31,19 +31,21 @@ See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html) 
 # Demos
 Below are some brief descriptions of the various app components, with animations showing their dynamic behavior.
 
-## Atelier
-Lorem ipsum, I sayum! Lorem ipsum, I sayum!
-
 <img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
 
-## Product Overview
+## Trim Cruft
 Lorem ipsum, I sayum! Lorem ipsum, I sayum!
 
-### Image Gallery
+## Smooth by Speed
 Lorem ipsum, I sayum! Lorem ipsum, I sayum!
 
 https://user-images.githubusercontent.com/6684303/130370001-9988c092-f074-426a-9003-9fa844883840.mp4
 
+## Split by Activity
+Lorem ipsum, I sayum! Lorem ipsum, I sayum!
+
+## Track Cleaning Previews
+Lorem ipsum, I sayum! Lorem ipsum, I sayum!
 
 
 # CI/CD
@@ -93,8 +95,8 @@ Technical Debt: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?
 - Navigate to `http://localhost:3000` in browser
 
 ### Local Usage
-When working locally, such as for running tests, issue `package.json` scripts using `yarn`, such as:
-`yarn build`      - Builds the project locally
+When working locally, such as for running tests, issue `package.json` scripts using `yarn`, such as: \
+`yarn build`      - Builds the project locally \
 `yarn start-dev`  - Runs the project locally
 
 ## Testing
