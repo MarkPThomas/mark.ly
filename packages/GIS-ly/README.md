@@ -15,12 +15,12 @@ Do you have unwanted trackpoints in your GPS recording? Did you lose satellite r
 Try is out! There is a [live demo]() available online with some sample GPS tracks.
 
 ## Documentation
-See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html" target="_blank) for topics like:
+See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html) for topics like:
 - Complete product description
 - Demos
 - How-to articles
 - API documentation
-- Algorithms, diagrams, and other development documentaiton
+- Algorithms, diagrams, and other development documentation
 - Product design diagrams & notes
 <!-- - Documentation such as diagrams for the app and UX styling guidelines are stored in the **`./docs`** directory. -->
 
