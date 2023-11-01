@@ -15,7 +15,7 @@ Do you have unwanted trackpoints in your GPS recording? Did you lose satellite r
 Try is out! There is a [live demo]() available online with some sample GPS tracks.
 
 ## Documentation
-See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html) for topics like:
+See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html" target="_blank) for topics like:
 - Complete product description
 - Demos
 - How-to articles
@@ -33,27 +33,34 @@ Below are some brief descriptions of the various app components, with animations
 
 <img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
 
-## Trim Cruft
-Lorem ipsum, I sayum! Lorem ipsum, I sayum!
+## Track Cleaning
+### Trim Cruft
+GPS tracks may have some cruft (i.e. unwanted data) at the start or end of the track that come from turning the GPS device on at multiple times without starting a new track. GIS.ly can detect this & automatically remove it. See the [Wiki](https://markpthomas.github.io/wiki/Track-Cruft_52560088.html) for more information.
 
-## Smooth by Speed
-Lorem ipsum, I sayum! Lorem ipsum, I sayum!
+<img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
+
+### Smooth by Speed
+Smoothing refers to the removal of Track Points that are likely to be inaccurate. One way to do this is by determining if the average speed at a point exceeds a realistic speed for the intended activity, such as hiking. See the [Wiki](https://markpthomas.github.io/wiki/Track-Smoothing_52756672.html) for more information.
 
 https://user-images.githubusercontent.com/6684303/130370001-9988c092-f074-426a-9003-9fa844883840.mp4
 
-## Split by Activity
-Lorem ipsum, I sayum! Lorem ipsum, I sayum!
+### Split by Activity
+Did you forget to turn off your GPS device after your bike ride or run, & then drove home? Or what about recording multiple activities, such as in a biathlon or triathlon? GIS.ly can detect when a type of activity has changed & split the track into separate tracks for each activity. See the [Wiki](https://markpthomas.github.io/wiki/Track-Splitting_52560128.html) for more information.
 
-## Track Cleaning Previews
-Lorem ipsum, I sayum! Lorem ipsum, I sayum!
+<img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
+
+### Previews
+Although automated cleaning can be nice, and you can always undo operations to tweak settings and try again, it may be niced to see what the affect of an operation will be before committing to it. In GIS.ly, you can preview these effects for a smoother cleaning experience.
+
+<img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
+
+### Rebuilding Sections of a Track
+Sometimes an extended section of a track is offset from a known path. Or perhaps smoothing cleanups have left some large straight segments in your Track. You can manully move or insert Trackp Points, as well as draw corrections for a segment to rebuild portions of your Track.  See the [Wiki](https://markpthomas.github.io/wiki/Track-Insertion_52756729.html) for more information.
+
+<img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
 
 
 # CI/CD
-## Testing
-- [Jest](https://jestjs.io/) is the framework chosen to test React & most other project code.
-- Tests are located in the **`./tests`** directory
-- ```npm test``` to run the tests
-
 ## Continuous Integration
 Basic test of JavaScript continuous integration uses [CircleCI](https://circleci.com/) to run the tests, and [Coveralls](https://coveralls.io/) for reporting test coverage.
 
@@ -84,8 +91,10 @@ Code Smells: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?pro
 
 Technical Debt: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=rpp29-fec-gouda_atelier&metric=sqale_index)](https://sonarcloud.io/dashboard?id=rpp29-fec-gouda_atelier)
 
+## Testing
+[Jest](https://jestjs.io/) is the framework chosen to test React & most other project code.
 
-## Usage
+# Usage
 ## Installation & Setup
 - **Clone/pull repo**
 - `yarn install`
@@ -94,7 +103,7 @@ Technical Debt: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?
 - `yarn build` (in a separate terminal) for webpack/react/index.html
 - Navigate to `http://localhost:3000` in browser
 
-### Local Usage
+## Local Usage
 When working locally, such as for running tests, issue `package.json` scripts using `yarn`, such as: \
 `yarn build`      - Builds the project locally \
 `yarn start-dev`  - Runs the project locally
@@ -109,27 +118,27 @@ Unit and integration tests for a given file are located in a separate testing fi
 Test files are designated by the following format `{fileTested}.[u|i|a]spec.ts`.
 
 ### Unit Tests
-Unit tests should mock any and all calls to database repos or calls to other services. Unit tests are typically designated by `u`.
-Filename: `{fileTested}.spec.ts`
-Commands:
-`yarn test:u`         - Runs all unit tests directly
-<!-- `yarn test:u:dev`     - Runs all unit tests within a container environment
+Unit tests should mock any and all calls to database repos or calls to other services. Unit tests are typically designated by `u`. \
+**Filename:** `{fileTested}.spec.ts` \
+**Commands:** \
+`yarn test:u`         - Runs all unit tests directly \
+<!-- `yarn test:u:dev`     - Runs all unit tests within a container environment \
 `make run_unit_tests` - Runs all unit tests within a container environment -->
 
 ### Integration Tests
-Any tests that may include limited calls to a database or service is an integration test. These require database migration and seeding test data before testing. Integration tests are typically designated by `i`.
-Filename: `{fileTested}.ispec.ts`
-Commands:
-`yarn test:i`                - Runs all integration tests directly
-<!-- `yarn test:i:dev`            - Runs all integration tests within a container environment
+Any tests that may include limited calls to a database or service is an integration test. These require database migration and seeding test data before testing. Integration tests are typically designated by `i`. \
+**Filename:** `{fileTested}.ispec.ts` \
+**Commands:** \
+`yarn test:i`                - Runs all integration tests directly \
+<!-- `yarn test:i:dev`            - Runs all integration tests within a container environment \
 `make run_integration_tests` - Runs all integration tests within a container environment -->
 
 ### Acceptance Tests
-Acceptance tests run on a more fully functional environment and test complex interactions and flow that align more with user stories rather than basic functionality. Acceptance tests are typically designated by `a`.
-Filename: `{fileTested}.aspec.ts`
-Commands:
-`yarn test:a`                - Runs all acceptance tests directly
-<!-- `yarn test:a:dev`            - Runs all acceptance tests within a container environment
+Acceptance tests run on a more fully functional environment and test complex interactions and flow that align more with user stories rather than basic functionality. Acceptance tests are typically designated by `a`. \
+**Filename:** `{fileTested}.aspec.ts` \
+**Commands:**
+`yarn test:a`                - Runs all acceptance tests directly \
+<!-- `yarn test:a:dev`            - Runs all acceptance tests within a container environment \
 `make run_acceptance_tests`  - Runs all acceptance tests within a container environment -->
 
 ## Databases
