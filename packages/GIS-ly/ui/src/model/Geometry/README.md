@@ -17,10 +17,10 @@ Unit tests for a given file are located in a separate testing file at the same d
 Test files are designated by the following format `{fileTested}.[u]spec.ts`.
 
 ### Unit Tests
-Unit tests should mock any and all calls to database repos or calls to other services. Unit tests are typically designated by `u`, if designated at all. \
+Unit tests should mock any and all calls to database repos or calls to other services. Unit tests are typically designated by `u`, if designated at all.
 
 Filename: \
-  `{fileTested}.spec.ts` \
+  `{fileTested}.spec.ts`
 
 Commands: \
   `yarn test:u`         - Runs all unit tests directly \
