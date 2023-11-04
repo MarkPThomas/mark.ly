@@ -52,7 +52,7 @@ Did you forget to turn off your GPS device after your bike ride or run, & then d
 <img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
 
 ### Previews
-Although automated cleaning can be nice, and you can always undo operations to tweak settings and try again, it may be niced to see what the affect of an operation will be before committing to it. In GIS.ly, you can preview these effects for a smoother cleaning experience.
+Although automated cleaning can be nice, and you can always undo operations to tweak settings and try again, it may be nice to see what the affect of an operation will be before committing to it. In GIS.ly, you can preview these effects for a smoother cleaning experience.
 
 <img alt="atelier demo" src="./docs/demos/demo_po.gif" width="50%" />
 
