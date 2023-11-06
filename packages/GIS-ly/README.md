@@ -106,8 +106,8 @@ Technical Debt: [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?
 - Navigate to `http://localhost:3000` in browser
 
 ## Local Usage
-When working locally, such as for running tests, issue `package.json` scripts using  `yarn`, such as: \
-- `yarn build`      - Builds the project locally \
+When working locally, such as for running tests, issue `package.json` scripts using  `yarn`, such as:
+- `yarn build`      - Builds the project locally
 - `yarn start-dev`  - Runs the project locally
 
 ## Testing
@@ -126,7 +126,7 @@ Unit tests should mock any and all calls to database repos or calls to other ser
   `{fileTested}.spec.ts`
 
 **Commands:** \
-  `yarn test:u`         - Runs all unit tests directly
+- `yarn test:u`         - Runs all unit tests directly
 <!-- `yarn test:u:dev`     - Runs all unit tests within a container environment \
 `make run_unit_tests` - Runs all unit tests within a container environment -->
 
@@ -137,7 +137,7 @@ Any tests that may include limited calls to a database or service is an integrat
   `{fileTested}.ispec.ts`
 
 **Commands:** \
-  `yarn test:i`                - Runs all integration tests directly
+- `yarn test:i`                - Runs all integration tests directly
 <!-- `yarn test:i:dev`            - Runs all integration tests within a container environment \
 `make run_integration_tests` - Runs all integration tests within a container environment -->
 
@@ -148,7 +148,7 @@ Acceptance tests run on a more fully functional environment and test complex int
   `{fileTested}.aspec.ts`
 
 **Commands:** \
-  `yarn test:a`                - Runs all acceptance tests directly
+- `yarn test:a`                - Runs all acceptance tests directly
 <!-- `yarn test:a:dev`            - Runs all acceptance tests within a container environment \
 `make run_acceptance_tests`  - Runs all acceptance tests within a container environment -->
 
