@@ -7,14 +7,14 @@ See my [Wiki](https://markpthomas.github.io/wiki/Apps_819631.html) for more info
 
 # GIS.ly
 🎉🎉🎉 This is currently my most mature project within this repo 🎉🎉🎉 \
-[See it here](https://github.com/MarkPThomas/mark.ly/tree/main/packages/gis-ly).
+[See it here](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly).
 
 # Projects
 The following is a list of active projects in this repo.
 
 ## Apps
 These are under active development
-* [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/gis-ly) - App for GIS-oriented work, such as Track cleaning, route planning.
+* [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly) - App for GIS-oriented work, such as Track cleaning, route planning.
 * [Weather.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/weather-ly) - App for planning trips using weather & air quality data.
 * [Rack.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/rack-ly) - App for climbing group rack logistics, especially for gear-heavy destinations like Indian Creek.
 
@@ -24,7 +24,7 @@ These are under active development
 ## Libraries to Extract
 These are either set to be their own compiled projects here, or extracted to a dedicated repo. Size/complexity/usage has organically evolved to this state.
 * [common->Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math) (in progress being ported from C#)
-* [common->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry) to be merged with [GIS.ly->Geometry(2)](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry) once C# porting is complete
+* [common->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry) to be merged with [GIS.ly->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry) once C# porting is complete
 * [common->Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures)
 * [common->Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion)
 * [GIS.ly->GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON)
