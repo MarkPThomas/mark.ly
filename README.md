@@ -7,14 +7,14 @@ See my [Wiki](https://markpthomas.github.io/wiki/Apps_819631.html) for more info
 
 # GIS.ly
 🎉🎉🎉 This is currently my most mature project within this repo 🎉🎉🎉 \
-[See it here](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly).
+[See it here](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly#gisly).
 
 # Projects
 The following is a list of active projects in this repo.
 
 ## Apps
 These are under active development
-* [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly) - App for GIS-oriented work, such as Track cleaning, route planning.
+* [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly#gisly) - App for GIS-oriented work, such as Track cleaning, route planning.
 * [Weather.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/weather-ly) - App for planning trips using weather & air quality data.
 * [Rack.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/rack-ly) - App for climbing group rack logistics, especially for gear-heavy destinations like Indian Creek.
 
