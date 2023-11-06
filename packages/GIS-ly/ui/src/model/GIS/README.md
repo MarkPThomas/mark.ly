@@ -19,10 +19,10 @@ Test files are designated by the following format `{fileTested}.[u]spec.ts`.
 ### Unit Tests
 Unit tests should mock any and all calls to database repos or calls to other services. Unit tests are typically designated by `u`, if designated at all.
 
-Filename: \
+**Filename:** \
   `{fileTested}.spec.ts`
 
-Commands: \
+**Commands:** \
   `yarn test:u`         - Runs all unit tests directly \
   `yarn test:u:dev`     - Runs all unit tests within a container environment \
   `make run_unit_tests` - Runs all unit tests within a container environment
