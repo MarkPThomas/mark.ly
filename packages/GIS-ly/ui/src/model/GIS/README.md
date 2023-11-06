@@ -22,7 +22,7 @@ Unit tests should mock any and all calls to database repos or calls to other ser
 **Filename:** \
   `{fileTested}.spec.ts`
 
-**Commands:** \
-  `yarn test:u`         - Runs all unit tests directly \
-  `yarn test:u:dev`     - Runs all unit tests within a container environment \
-  `make run_unit_tests` - Runs all unit tests within a container environment
+**Commands:**
+* `yarn test:u`         - Runs all unit tests directly
+* `yarn test:u:dev`     - Runs all unit tests within a container environment
+* `make run_unit_tests` - Runs all unit tests within a container environment
