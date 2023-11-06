@@ -15,20 +15,20 @@ The following is a list of active projects in this repo.
 ## Apps
 These are under active development
 * [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly#gisly) - App for GIS-oriented work, such as Track cleaning, route planning.
-* [Weather.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/weather-ly) - App for planning trips using weather & air quality data.
-* [Rack.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/rack-ly) - App for climbing group rack logistics, especially for gear-heavy destinations like Indian Creek.
+* [Weather.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/weather-ly#weatherly) - App for planning trips using weather & air quality data.
+* [Rack.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/rack-ly#rackly) - App for climbing group rack logistics, especially for gear-heavy destinations like Indian Creek.
 
 ## Libraries
 * [common](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common) - Contains code used across multiple projects. Sometimes code may be replicated, but this code is worth being a shared dependency.
 
 ## Libraries to Extract
 These are either set to be their own compiled projects here, or extracted to a dedicated repo. Size/complexity/usage has organically evolved to this state.
-* [common->Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math) (in progress being ported from C#)
-* [common->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry) to be merged with [GIS.ly->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry) once C# porting is complete
-* [common->Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures)
-* [common->Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion)
-* [GIS.ly->GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON)
-* [GIS.ly->GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GIS)
+* [common->Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math#math) (in progress being ported from C#)
+* [common->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry#geometry) to be merged with [GIS.ly->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry#geometry) once C# porting is complete
+* [common->Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures#data-structures)
+* [common->Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion#units-conversion)
+* [GIS.ly->GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON#geojson)
+* [GIS.ly->GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GIS#gis)
 
 ## Template Projects
 To assist in creating new projects or standardizing existing ones, I am fleshing out some 'Hello World' template projects.
