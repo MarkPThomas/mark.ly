@@ -23,12 +23,12 @@ These are under active development
 
 ## Libraries to Extract
 These are either set to be their own compiled projects here, or extracted to a dedicated repo. Size/complexity/usage has organically evolved to this state.
-* [Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math) (in progress being ported from C#)
-* [Geometry (1)](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry) to be merged with [GIS.ly->Geometry(2)](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry) once C# porting is complete
-* [Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures)
-* [Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion)
-* [GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON)
-* [GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GIS)
+* [common->Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math) (in progress being ported from C#)
+* [common->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry) to be merged with [GIS.ly->Geometry(2)](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry) once C# porting is complete
+* [common->Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures)
+* [common->Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion)
+* [GIS.ly->GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON)
+* [GIS.ly->GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GIS)
 
 ## Template Projects
 To assist in creating new projects or standardizing existing ones, I am fleshing out some 'Hello World' template projects.
