@@ -32,22 +32,28 @@ Contains code used across multiple projects. Sometimes code may be replicated, b
 These are either set to be their own compiled projects here, or extracted to a dedicated repo. Size/complexity/usage has organically evolved to this state.
 
 #### [Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math#math)
+Contains methods & objects for mathematical operations, such as vector math, point/curve intersections, coordinate conversions, 2D interpolations, cube root derivations, parametric equations, and more! \
 [common->Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/math#math)
 In progress, being ported from C#.
 
 #### [Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry#geometry)
+Need more out of a shapes library than basic lines, curves, & bounding box collisions for video games? This library allows deep and complex modeling of polylines, polygons, and more, with an ability to get detailed shape properties and segment information, such as normal vectors. \
 [common->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/geometry#geometry) to be merged with [GIS.ly->Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/Geometry#geometry) once C# porting is complete.
 
 #### [Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures#data-structures)
+JavaScript lacks many useful data structures, such as Linked Lists, Heaps, and LRUs. This library implements such structures, including making them easily extendable for those that want further customization. \
 [common->Data Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/dataStructures#data-structures)
 
 #### [Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion#units-conversion)
+Conveniently converts between different units. Beginning with unit primitives, it builds on those to convert between more complex units, such as speed, stress, etc. The libary is also set of for users to extend it in order to add support for units conversions not yet added. \
 [common->Unit Conversions](https://github.com/MarkPThomas/mark.ly/tree/main/packages/common/utils/units/conversion#units-conversion)
 
 #### [GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON#geojson)
+A wrapper library that makes it easy to store, access, manipulate, and update GeoJSON objects as immutable entities. It also has convenience features, such as tolerance limits & validations for Geometries. \
 [GIS.ly->GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GeoJSON#geojson)
 
 #### [GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GIS#gis)
+A one-stop shop for GIS work, such as generating layers for Leaflet, CRUD and auto-cleaning features for routes & tracks. It is made to be extensible, so you can derive your own custom objects and methods of manipulating & cleaning them. \
 [GIS.ly->GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/GIS-ly/ui/src/model/GIS#gis)
 
 ## Misc Projects
