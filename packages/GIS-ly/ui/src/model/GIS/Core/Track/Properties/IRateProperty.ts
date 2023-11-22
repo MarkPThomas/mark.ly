@@ -1,7 +1,11 @@
-import { MaxMin } from "../../../../Geometry/Properties";
+import { INodeOfInterest } from "../../../../Geometry/Properties";
+
+import { TrackPoint } from "../TrackPoint";
+import { TrackSegment } from "../TrackSegment";
 
 export interface IRateProperty {
-  range: MaxMin; // <SegmentNode<TVertex, TSegment>>
+  max: INodeOfInterest<TrackPoint, TrackSegment>;
+  min: INodeOfInterest<TrackPoint, TrackSegment>;
   avg: number;
   median: number;
   stdDev1: number;

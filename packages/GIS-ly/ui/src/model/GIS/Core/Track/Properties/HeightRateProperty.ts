@@ -1,10 +1,8 @@
+import { SegmentNode } from "../../../../Geometry/Polyline";
 import {
-  SegmentNode,
-  VertexNode
-} from "../../../../Geometry/Polyline";
-import {
-  IPointOfInterest,
-  MaxMin,
+  BasicProperty,
+  INodeOfInterest,
+  MaxMinProperty,
   Sum
 } from "../../../../Geometry/Properties";
 
@@ -13,7 +11,7 @@ import { TrackSegment } from "../TrackSegment";
 
 interface IHeightRateSigned {
   avg: number;
-  max: IPointOfInterest;
+  max: INodeOfInterest<TrackPoint, TrackSegment>;
 }
 
 export interface IHeightRate {
@@ -22,45 +20,54 @@ export interface IHeightRate {
 };
 
 
-class HeightRateSigned implements IHeightRateSigned {
-  private _range: MaxMin<VertexNode<TrackPoint, TrackSegment>>;
+class HeightRateSigned
+  extends BasicProperty<TrackPoint, TrackSegment>
+  implements IHeightRateSigned {
   private _heightTotal: Sum;
   private _duration: Sum;
 
   get avg(): number {
     return this._duration.value ? this._heightTotal.value / this._duration.value : 0;
   }
-
-  get max(): IPointOfInterest<VertexNode<TrackPoint, TrackSegment>> {
-    return this._range.max;
+  private _maxMin: MaxMinProperty<TrackPoint, TrackSegment>;
+  get max(): INodeOfInterest<TrackPoint, TrackSegment> {
+    return this._maxMin?.range.max;
   }
 
-  constructor(isConsidered: (number: number) => boolean) {
-    this._range = new MaxMin<VertexNode<TrackPoint, TrackSegment>>();
+  protected override initializeProperties() {
+    this._heightTotal = new Sum(this._isConsidered);
+    this._duration = new Sum(this._isConsidered);
+    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this._startVertex, this.getPtElevation);
+  }
 
-    this._heightTotal = new Sum(isConsidered);
-    this._duration = new Sum(isConsidered);
+  protected getPtElevation(point: TrackPoint): number {
+    return point.elevation;
   }
 
   add(segment: SegmentNode<TrackPoint, TrackSegment>) {
     this._heightTotal.add(segment.val.height);
     this._duration.add(segment.val.duration);
 
-    this._range.add(segment.prevVert.val.elevation);
-    this._range.add(segment.nextVert.val.elevation);
+    this._maxMin.add(segment);
   }
 
-  remove(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    this._range = new MaxMin();
+  protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    this._heightTotal.add(segment.val.height);
+    this._duration.add(segment.val.duration);
+
+    this._maxMin.add(segment);
   }
 
-  protected isAscending(number: number): boolean {
-    return number > 0;
+  protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    this._heightTotal.remove(segment.val.height);
+    this._duration.remove(segment.val.duration);
+
+    this._maxMin.remove(segment);
   }
 }
-
-export class HeightRateProperty implements IHeightRate {
-  private _useAltitude;
+export class HeightRateProperty
+  extends BasicProperty<TrackPoint, TrackSegment>
+  implements IHeightRate {
 
   private _ascent: HeightRateSigned;
   get ascent(): IHeightRateSigned {
@@ -78,37 +85,17 @@ export class HeightRateProperty implements IHeightRate {
     }
   }
 
-  constructor(useAltitude = false) {
-    this._useAltitude = useAltitude;
-    this._ascent = new HeightRateSigned(this.isAscending);
-    this._descent = new HeightRateSigned(this.isDescending);
+  protected override initializeProperties() {
+    this._ascent = new HeightRateSigned(this._startVertex, this.isAscending);
+    this._descent = new HeightRateSigned(this._startVertex, this.isDescending);
   }
 
-  fromTo(
-    start: VertexNode<TrackPoint, TrackSegment>,
-    end: VertexNode<TrackPoint, TrackSegment>
-  ): void {
-    this._ascent = new HeightRateSigned(this.isAscending);
-    this._descent = new HeightRateSigned(this.isDescending);
-
-    let segNode = start.nextSeg;
-    while (segNode) {
-      this.add(segNode);
-
-      if (segNode.nextVert === end) {
-        break;
-      } else {
-        segNode = segNode.next as SegmentNode<TrackPoint, TrackSegment>;
-      }
-    }
-  }
-
-  add(segment: SegmentNode<TrackPoint, TrackSegment>) {
+  protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
     this._ascent.add(segment);
     this._descent.add(segment);
   }
 
-  remove(segment: SegmentNode<TrackPoint, TrackSegment>) {
+  protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
     this._ascent.remove(segment);
     this._descent.remove(segment);
   }

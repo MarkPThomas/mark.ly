@@ -1,4 +1,4 @@
-import { Properties } from "./Properties";
+import { ConstrainedProperty } from "./ConstrainedProperty";
 
 export interface ISum {
   count: number,
@@ -6,7 +6,7 @@ export interface ISum {
 }
 
 export class Sum
-  extends Properties
+  extends ConstrainedProperty
   implements ISum {
 
   private _count: number;

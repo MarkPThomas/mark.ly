@@ -1,10 +1,8 @@
+import { SegmentNode } from "../../../../Geometry/Polyline";
 import {
-  SegmentNode,
-  VertexNode
-} from "../../../../Geometry/Polyline";
-import {
-  IPointOfInterest,
-  MaxMin,
+  BasicProperty,
+  INodeOfInterest,
+  MaxMinProperty,
   Sum
 } from "../../../../Geometry/Properties";
 
@@ -13,17 +11,20 @@ import { TrackSegment } from "../TrackSegment";
 
 export interface ISpeed {
   avg: number;
-  max: IPointOfInterest;
-  min: IPointOfInterest;
+  max: INodeOfInterest<TrackPoint, TrackSegment>;
+  min: INodeOfInterest<TrackPoint, TrackSegment>;
 }
 
-export class SpeedProperty implements ISpeed {
-  _range: MaxMin<SegmentNode<TrackPoint, TrackSegment>>;
-  get max(): IPointOfInterest<SegmentNode<TrackPoint, TrackSegment>> {
-    return this._range.max;
+export class SpeedProperty
+  extends BasicProperty<TrackPoint, TrackSegment>
+  implements ISpeed {
+
+  private _maxMin: MaxMinProperty<TrackPoint, TrackSegment>;
+  get max(): INodeOfInterest<TrackPoint, TrackSegment> {
+    return this._maxMin?.range.max;
   }
-  get min(): IPointOfInterest<SegmentNode<TrackPoint, TrackSegment>> {
-    return this._range.min;
+  get min(): INodeOfInterest<TrackPoint, TrackSegment> {
+    return this._maxMin?.range.min;
   }
 
   _distance: Sum;
@@ -32,47 +33,28 @@ export class SpeedProperty implements ISpeed {
     return this._duration ? this._distance.value / this._duration.value : 0;
   }
 
-  private _useAltitude;
-
-  constructor(useAltitude = false) {
-    this._useAltitude = useAltitude;
-
-    this._distance = new Sum();
-    this._duration = new Sum();
-    this._range = new MaxMin<SegmentNode<TrackPoint, TrackSegment>>();
+  protected override initializeProperties() {
+    this._distance = new Sum(this._isConsidered);
+    this._duration = new Sum(this._isConsidered);
+    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this._startVertex, this.getPtSpeed);
   }
 
-  fromTo(
-    start: VertexNode<TrackPoint, TrackSegment>,
-    end: VertexNode<TrackPoint, TrackSegment>
-  ): void {
-    this._distance = new Sum();
-    this._duration = new Sum();
-    this._range = new MaxMin<SegmentNode<TrackPoint, TrackSegment>>();
-
-    let segNode = start.nextSeg;
-    while (segNode) {
-      this.add(segNode);
-
-      if (segNode.nextVert === end) {
-        break;
-      } else {
-        segNode = segNode.next as SegmentNode<TrackPoint, TrackSegment>;
-      }
-    }
+  // TODO: See about using segment speed? And/or correct Pt average speeds to be weighted by neighboring seg durations
+  protected getPtSpeed(point: TrackPoint): number {
+    return point.path.speed;
   }
 
-  add(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    this._distance.add(segment.val.height);
-    this._duration.add(segment.val.height);
+  protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    this._distance.add(segment.val.length);
+    this._duration.add(segment.val.duration);
 
-    this._range.add(segment.val.speed);
+    this._maxMin.add(segment);
   }
 
-  remove(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    this._distance.add(segment.val.height);
-    this._duration.add(segment.val.height);
+  protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    this._distance.remove(segment.val.length);
+    this._duration.remove(segment.val.duration);
 
-    this._range = new MaxMin();
+    this._maxMin.remove(segment);
   }
 }
