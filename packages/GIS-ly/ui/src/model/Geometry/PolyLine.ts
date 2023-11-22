@@ -5,6 +5,7 @@ import {
   INodeDouble
 } from '../../../../../common/utils/dataStructures';
 
+import { IPolylineProperties } from './IPolylineProperties';
 import { Segment } from './Segment';
 import { Vertex } from './Vertex';
 
@@ -112,9 +113,10 @@ export interface IPolylineSize {
   segments: number;
 }
 
-
 export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   // Properties
+  properties: IPolylineProperties;
+
   firstVertex: VertexNode<TVertex, TSegment>;
   firstSegment: SegmentNode<TVertex, TSegment>;
 
@@ -226,6 +228,11 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 {
   protected _vertices: List<VertexNode<TVertex, TSegment>, TVertex> = new List<VertexNode<TVertex, TSegment>, TVertex>();
   protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
+
+  protected _properties: IPolylineProperties;
+  get properties(): IPolylineProperties {
+    return { ...this._properties };
+  }
 
   get firstVertex() {
     return this._vertices.head;
@@ -399,6 +406,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
    */
   protected addPropertiesToSegments() {
     let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
+
     while (coord) {
       const prevCoord = coord.prev as VertexNode<TVertex, TSegment>;
       const segmentValue = this.createSegmentValue(prevCoord.val, coord.val);
