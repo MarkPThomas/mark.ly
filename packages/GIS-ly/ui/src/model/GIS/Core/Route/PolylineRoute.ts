@@ -4,7 +4,7 @@ import {
   VertexNode,
   IPolyline,
   Polyline
-} from '../../../Geometry';
+} from '../../../Geometry/Polyline';
 
 // import { ElevationRequestApi } from '../../elevationDataApi';
 import { ElevationRequestApi } from '../../../../../../server/api/elevationDataApi';

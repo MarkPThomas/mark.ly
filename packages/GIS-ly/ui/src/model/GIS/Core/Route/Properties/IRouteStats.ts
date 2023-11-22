@@ -1,4 +1,4 @@
-import { IPolylineProperties } from "../../../../Geometry/IPolylineProperties";
+import { IPolylineProperties } from "../../../../Geometry/Polyline/Properties/IPolylineProperties";
 import { IHeight } from "./HeightProperty";
 import { ISlope } from "./SlopeProperty";
 

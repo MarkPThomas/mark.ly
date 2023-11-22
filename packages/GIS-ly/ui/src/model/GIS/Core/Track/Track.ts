@@ -1,7 +1,7 @@
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 
 import { FeatureCollection } from '../../../GeoJSON';
-import { VertexNode, SegmentNode } from '../../../Geometry';
+import { VertexNode, SegmentNode } from '../../../Geometry/Polyline';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { TrackPoint } from './TrackPoint';

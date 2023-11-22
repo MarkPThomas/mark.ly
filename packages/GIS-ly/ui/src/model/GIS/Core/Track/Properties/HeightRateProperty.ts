@@ -1,7 +1,7 @@
 import {
   SegmentNode,
   VertexNode
-} from "../../../../Geometry";
+} from "../../../../Geometry/Polyline";
 import {
   IPointOfInterest,
   MaxMin,

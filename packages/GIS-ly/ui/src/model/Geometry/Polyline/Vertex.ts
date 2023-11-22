@@ -1,4 +1,4 @@
-import { ICloneable, IEquatable } from '../../../../../common/interfaces';
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 /**
  * Vertices in are the points where two or more line segments or edges meet (like a corner).

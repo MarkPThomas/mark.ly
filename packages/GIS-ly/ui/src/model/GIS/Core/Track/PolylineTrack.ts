@@ -3,7 +3,7 @@ import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 import {
   VertexNode,
   Polyline
-} from '../../../Geometry';
+} from '../../../Geometry/Polyline';
 
 import { ITrackPointProperties, TrackPoint } from './TrackPoint';
 import { TrackSegment } from './TrackSegment';

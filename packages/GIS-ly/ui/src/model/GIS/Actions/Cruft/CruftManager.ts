@@ -1,4 +1,4 @@
-import { SegmentNode, VertexNode } from "../../../Geometry";
+import { SegmentNode, VertexNode } from "../../../Geometry/Polyline";
 import {
   Track,
   TrackPoint,

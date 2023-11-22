@@ -1,4 +1,4 @@
-import { ICloneable, IEquatable } from '../../../../../common/interfaces';
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 
 export interface ISegmentProperties {
   /**

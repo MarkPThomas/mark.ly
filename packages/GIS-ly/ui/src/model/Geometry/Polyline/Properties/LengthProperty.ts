@@ -1,12 +1,13 @@
 import {
+  Sum
+} from "../../Properties";
+
+import {
   SegmentNode,
   VertexNode
-} from "./Polyline";
-import {
-  Sum
-} from "./Properties";
-import { Segment } from "./Segment";
-import { Vertex } from "./Vertex";
+} from "../Polyline";
+import { Segment } from "../Segment";
+import { Vertex } from "../Vertex";
 
 export interface ILength {
   length: Sum
