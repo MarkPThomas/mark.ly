@@ -1,10 +1,11 @@
 import {
   SegmentNode,
   VertexNode
-} from "../../../../Geometry";
+} from "../../../../Geometry/Polyline";
 import {
-  IPointOfInterest,
-  MaxMin,
+  INodeOfInterest,
+  BasicProperty,
+  MaxMinProperty,
   Sum
 } from "../../../../Geometry/Properties";
 
@@ -15,96 +16,46 @@ export interface IHeight {
   net: number;
   gain: number;
   loss: number;
-  max: IPointOfInterest;
-  min: IPointOfInterest;
+  max: INodeOfInterest<RoutePoint, RouteSegment>;
+  min: INodeOfInterest<RoutePoint, RouteSegment>;
 }
 
-export class HeightProperty implements IHeight {
-  net: number;
+export class HeightProperty
+  extends BasicProperty<RoutePoint, RouteSegment>
+  implements IHeight {
 
-  _range: MaxMin<VertexNode<RoutePoint, RouteSegment>>;
-  get max(): IPointOfInterest<VertexNode<RoutePoint, RouteSegment>> {
-    return this._range.max;
-  }
-  get min(): IPointOfInterest<VertexNode<RoutePoint, RouteSegment>> {
-    return this._range.min;
+  private _net: number;
+  get net(): number {
+    return this._net;
   }
 
-  _gain: Sum;
+  private _maxMin: MaxMinProperty<RoutePoint, RouteSegment>;
+  get max(): INodeOfInterest<RoutePoint, RouteSegment> {
+    return this._maxMin?.range.max;
+  }
+  get min(): INodeOfInterest<RoutePoint, RouteSegment> {
+    return this._maxMin?.range.min;
+  }
+
+  private _gain: Sum;
   get gain(): number {
     return this._gain.value;
   }
 
-  _loss: Sum;
+  private _loss: Sum;
   get loss(): number {
     return this._loss.value;
   }
 
-  private _useAltitude;
+  constructor(startVertex: VertexNode<RoutePoint, RouteSegment>) {
+    super(startVertex);
+    this.initialize(startVertex);
+  }
 
-  constructor(useAltitude = false) {
-    this._useAltitude = useAltitude;
-
+  protected override initializeProperties() {
     this._gain = new Sum(this.isAscending);
     this._loss = new Sum(this.isDescending);
-    this._range = new MaxMin<VertexNode<RoutePoint, RouteSegment>>();
-  }
-
-  fromTo(
-    start: VertexNode<RoutePoint, RouteSegment>,
-    end: VertexNode<RoutePoint, RouteSegment>
-  ): void {
-    this.net = this.getNetHeight(start, end);
-
-    this._gain = new Sum(this.isAscending);
-    this._loss = new Sum(this.isDescending);
-    this._range = new MaxMin<VertexNode<RoutePoint, RouteSegment>>();
-
-    let segNode = start.nextSeg;
-    while (segNode) {
-      this.add(segNode);
-
-      if (segNode.nextVert === end) {
-        break;
-      } else {
-        segNode = segNode.next as SegmentNode<RoutePoint, RouteSegment>;
-      }
-    }
-  }
-
-  add(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    // TODO: Consider how to handle net height
-    this._gain.add(segment.val.height);
-    this._loss.add(segment.val.height);
-
-    this._range.add(segment.prevVert.val.elevation);
-    this._range.add(segment.nextVert.val.elevation);
-  }
-
-  remove(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    // TODO: Consider how to handle net height
-    this._gain.add(segment.val.height);
-    this._loss.add(segment.val.height);
-
-    this._range = new MaxMin();
-  }
-
-  protected getNetHeight(
-    start: VertexNode<RoutePoint, RouteSegment>,
-    end: VertexNode<RoutePoint, RouteSegment>
-  ): number | undefined {
-    // if (!start) {
-    //   return 0;
-    // }
-
-    // if (start.val.elevation && end.val.elevation) {
-    return end.val.elevation - start.val.elevation;
-    // } else if (start.val.alt && end.val.alt) {
-    //   return end.val.alt - start.val.alt;
-    // } else {
-    //   console.log(`Start/End vertices don't have consistent elevation/altitude data`)
-    //   return undefined;
-    // }
+    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this._startVertex, this.getPtElevation);
   }
 
   protected isAscending(number: number): boolean {
@@ -113,6 +64,47 @@ export class HeightProperty implements IHeight {
 
   protected isDescending(number: number): boolean {
     return number < 0;
+  }
+
+  protected getPtElevation(point: RoutePoint): number {
+    return point.elevation;
+  }
+
+  protected override addProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    this._net = this.getNetHeight();
+
+    this._gain.add(segment.val.height);
+    this._loss.add(segment.val.height);
+
+    this._maxMin.add(segment);
+  }
+
+  protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    this._net = this.getNetHeight();
+
+    this._gain.remove(segment.val.height);
+    this._loss.remove(segment.val.height);
+
+    this._maxMin.remove(segment);
+  }
+
+
+  protected getNetHeight(): number | undefined {
+    // if (!start) {
+    //   return 0;
+    // }
+
+    // if (start.val.elevation && end.val.elevation) {
+    if (!this._startVertex || !this._endVertex) {
+      return 0;
+    }
+
+    return this._endVertex.val.elevation - this._startVertex.val.elevation
+    //   return end.val.alt - start.val.alt;
+    // } else {
+    //   console.log(`Start/End vertices don't have consistent elevation/altitude data`)
+    //   return undefined;
+    // }
   }
 
 

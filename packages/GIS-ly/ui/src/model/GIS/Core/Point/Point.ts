@@ -1,7 +1,7 @@
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 import { Point, Position } from "../../../GeoJSON";
 import { IDirection } from "../Direction";
-import { Vertex } from "../../../Geometry/Vertex";
+import { Vertex } from "../../../Geometry/Polyline/Vertex";
 
 export interface IPointProperties {
   lat: number;

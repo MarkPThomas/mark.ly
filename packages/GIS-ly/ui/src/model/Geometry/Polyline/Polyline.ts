@@ -1,11 +1,11 @@
-import { ICloneable, IEquatable } from '../../../../../common/interfaces';
+import { ICloneable, IEquatable } from '../../../../../../common/interfaces';
 import {
   LinkedListDoubleGeneric as List,
   NodeDouble,
   INodeDouble
-} from '../../../../../common/utils/dataStructures';
+} from '../../../../../../common/utils/dataStructures';
 
-import { IPolylineProperties } from './IPolylineProperties';
+import { IPolylineProperties } from './Properties/IPolylineProperties';
 import { Segment } from './Segment';
 import { Vertex } from './Vertex';
 

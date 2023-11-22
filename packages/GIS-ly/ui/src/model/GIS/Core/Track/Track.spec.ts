@@ -1,7 +1,7 @@
 import { ICoordinate } from '../../../../../../server/api/elevationDataApi/model';
 import { TrackPoint } from './TrackPoint';
 import { TrackSegment, TrackSegmentData } from './TrackSegment';
-import { VertexNode, SegmentNode } from '../../../Geometry';
+import { VertexNode, SegmentNode } from '../../../Geometry/Polyline';
 import { EvaluatorArgs, Track } from './Track';
 import { FeatureCollection, LineString, Point } from '../../../GeoJSON';
 import { GeoJsonManager } from '../GeoJsonManager';
