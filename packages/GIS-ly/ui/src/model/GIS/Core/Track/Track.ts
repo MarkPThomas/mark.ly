@@ -190,6 +190,11 @@ export class Track implements ITrack {
   }
 
   // === Property Methods
+
+  // getNetHeight(): number | undefined {
+  //   return this._polylineTrack.getNetHeight();
+  // }
+
   getDuration() {
     return this._polylineTrack.getDuration();
   }

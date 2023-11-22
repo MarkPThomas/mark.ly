@@ -8,39 +8,14 @@ import {
 import { ITrackPointProperties, TrackPoint } from './TrackPoint';
 import { TrackSegment } from './TrackSegment';
 import { ITimeRange } from '../Time/TimeRange';
-import { IPolylineRouteMethods, IRouteStats, PolylineRoute } from '../Route/PolylineRoute';
+import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
 import { TimeStamp } from '../Time';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 
-export interface ITrackStats extends IRouteStats {
-  duration: number;
-  speed: {
-    min: number;
-    avg: number;
-    max: number;
-    median: number;
-    stdDev1: number;
-  };
-  elevationRate: {
-    ascent: {
-      max: number;
-      avg: number;
-      median: number;
-      stdDev1: number;
-    };
-    descent: {
-      max: number;
-      avg: number;
-      median: number;
-      stdDev1: number;
-    }
-  }
-}
-
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
-  // Property Methods
+  // Properties Methods
   getDuration(): number;
 
   // Misc Methods
