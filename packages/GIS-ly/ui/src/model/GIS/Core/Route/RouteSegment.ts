@@ -5,7 +5,7 @@ import { Point } from '../../../GeoJSON';
 import {
   ISegmentProperties as ISegmentGeometryProperties,
   Segment as SegmentGeometry
-} from '../../../Geometry/Segment';
+} from '../../../Geometry/Polyline/Segment';
 
 import { IDirection } from '../Direction';
 import { IPointProperties, PPoint } from '../Point/Point';
