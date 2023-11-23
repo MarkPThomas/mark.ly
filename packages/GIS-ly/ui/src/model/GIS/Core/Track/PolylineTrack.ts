@@ -5,18 +5,19 @@ import {
   Polyline
 } from '../../../Geometry/Polyline';
 
-import { ITrackPointProperties, TrackPoint } from './TrackPoint';
-import { TrackSegment } from './TrackSegment';
 import { ITimeRange } from '../Time/TimeRange';
 import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
 import { TimeStamp } from '../Time';
+
+import { ITrackPointProperties, TrackPoint } from './TrackPoint';
+import { TrackSegment } from './TrackSegment';
+import { HeightRateStats, SpeedStats, ITrackStats, TrackStats } from './Stats';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
   // Properties Methods
-  getDuration(): number;
 
   // Misc Methods
   generateTimestampMap(): void;
@@ -135,7 +136,7 @@ export interface IPolylineTrack
   IPolylineTrackMethods,
   ICloneable<PolylineTrack> {
 
-  // stats: ITrackStats;
+  stats: ITrackStats;
 }
 
 export class PolylineTrack
@@ -144,18 +145,13 @@ export class PolylineTrack
 
   protected _pointsByTimestamp: Map<string, CoordNode>;
 
-  // TODO: Abstract this & generic stats type to Polyline
-  // protected _statsDirty: boolean;
-  // protected _stats: ITrackStats;
-  // get stats(): ITrackStats {
-  //   if (!this._stats || this._statsDirty) {
-  //     this._stats = this.calcStats();
-  //     if (this._statsDirty) {
-  //       this._statsDirty = false;
-  //     }
-  //   }
-  //   return this._stats;
-  // }
+  protected override _stats: TrackStats;
+  override get stats(): ITrackStats {
+    if (!this._stats || this._stats.isDirty) {
+      this._stats = new TrackStats(this.firstVertex, this.lastVertex);
+    }
+    return this._stats.stats as ITrackStats;
+  }
 
   constructor(
     coords: VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | TrackPoint[],
@@ -272,15 +268,8 @@ export class PolylineTrack
   }
 
   // === Property Methods
-  getDuration(): number {
-    if (!this.firstVertex) {
-      return 0;
-    }
-
-    return TimeStamp.calcIntervalSec(this.firstVertex.val.timestamp, this.lastVertex.val.timestamp);
-  }
-
   protected override updatePathProperties(vertices: CoordNode[]) {
+    this.setDirty();
     vertices.forEach((vertex) => {
       vertex.val.path.addPropertiesFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
       if (vertex.val.elevation || vertex.val.alt) {
@@ -302,7 +291,6 @@ export class PolylineTrack
       currNode = currNode.next as CoordNode;
     }
   }
-
 
   // === Query Methods
   vertexNodeByTime(timestamp: string): CoordNode | null | undefined {

@@ -15,7 +15,7 @@ export interface ISpeed {
   min: INodeOfInterest<TrackPoint, TrackSegment>;
 }
 
-export class SpeedProperty
+export class SpeedStats
   extends BasicProperty<TrackPoint, TrackSegment>
   implements ISpeed {
 
@@ -36,7 +36,7 @@ export class SpeedProperty
   protected override initializeProperties() {
     this._distance = new Sum(this._isConsidered);
     this._duration = new Sum(this._isConsidered);
-    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this._startVertex, this.getPtSpeed);
+    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this.getPtSpeed);
   }
 
   // TODO: See about using segment speed? And/or correct Pt average speeds to be weighted by neighboring seg durations
@@ -56,5 +56,13 @@ export class SpeedProperty
     this._duration.remove(segment.val.duration);
 
     this._maxMin.remove(segment);
+  }
+
+  serialize(): ISpeed {
+    return {
+      avg: this.avg,
+      max: this.max,
+      min: this.min
+    }
   }
 }

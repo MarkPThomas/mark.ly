@@ -20,7 +20,7 @@ export interface IHeight {
   min: INodeOfInterest<RoutePoint, RouteSegment>;
 }
 
-export class HeightProperty
+export class HeightStats
   extends BasicProperty<RoutePoint, RouteSegment>
   implements IHeight {
 
@@ -47,7 +47,7 @@ export class HeightProperty
     return this._loss.value;
   }
 
-  constructor(startVertex: VertexNode<RoutePoint, RouteSegment>) {
+  constructor(startVertex?: VertexNode<RoutePoint, RouteSegment>) {
     super(startVertex);
     this.initialize(startVertex);
   }
@@ -55,7 +55,7 @@ export class HeightProperty
   protected override initializeProperties() {
     this._gain = new Sum(this.isAscending);
     this._loss = new Sum(this.isDescending);
-    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this._startVertex, this.getPtElevation);
+    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this.getPtElevation);
   }
 
   protected isAscending(number: number): boolean {
@@ -119,4 +119,14 @@ export class HeightProperty
   // protected hasAltitude(start: TVertex, end: TVertex): boolean {
   //   return start.alt && end.alt;
   // }
+
+  serialize(): IHeight {
+    return {
+      net: this.getNetHeight(),
+      gain: this.gain,
+      loss: this.loss,
+      max: this.max,
+      min: this.min
+    }
+  }
 }

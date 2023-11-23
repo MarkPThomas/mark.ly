@@ -6,7 +6,7 @@ export abstract class BasicProperty<TVertex extends Vertex, TSegment extends Seg
   protected _endVertex: VertexNode<TVertex, TSegment>;
 
   constructor(
-    startVertex: VertexNode<TVertex, TSegment>,
+    startVertex?: VertexNode<TVertex, TSegment>,
     isConsidered: (number: number) => boolean | null = null
   ) {
     super(isConsidered);
@@ -89,4 +89,6 @@ export abstract class BasicProperty<TVertex extends Vertex, TSegment extends Seg
   }
 
   protected abstract removeProperties(segment: SegmentNode<TVertex, TSegment>): void;
+
+  abstract serialize();
 }

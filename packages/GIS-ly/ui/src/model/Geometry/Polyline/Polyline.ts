@@ -5,7 +5,7 @@ import {
   INodeDouble
 } from '../../../../../../common/utils/dataStructures';
 
-import { IPolylineProperties } from './Properties/IPolylineProperties';
+import { IPolylineProperties, PolylineStats } from './Stats/PolylineStats';
 import { Segment } from './Segment';
 import { Vertex } from './Vertex';
 
@@ -115,7 +115,7 @@ export interface IPolylineSize {
 
 export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   // Properties
-  properties: IPolylineProperties;
+  stats: IPolylineProperties;
 
   firstVertex: VertexNode<TVertex, TSegment>;
   firstSegment: SegmentNode<TVertex, TSegment>;
@@ -229,9 +229,16 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   protected _vertices: List<VertexNode<TVertex, TSegment>, TVertex> = new List<VertexNode<TVertex, TSegment>, TVertex>();
   protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
 
-  protected _properties: IPolylineProperties;
-  get properties(): IPolylineProperties {
-    return { ...this._properties };
+  protected setDirty() {
+    this._stats.setDirty();
+  }
+
+  protected _stats: PolylineStats<TVertex, TSegment>;
+  get stats(): IPolylineProperties {
+    if (!this._stats || this._stats.isDirty) {
+      this._stats = new PolylineStats(this.firstVertex, this.lastVertex);
+    }
+    return this._stats.stats;
   }
 
   get firstVertex() {
@@ -440,7 +447,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
    * @memberof Polyline
    */
   protected updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
-    // TODO: Consider making abstract class so that this is abstracted
+    this.setDirty();
   }
 
   /**

@@ -9,16 +9,20 @@ import {
 // import { ElevationRequestApi } from '../../elevationDataApi';
 import { ElevationRequestApi } from '../../../../../../server/api/elevationDataApi';
 
+import { IPointProperties } from '../Point/Point';
+
 import { IRoutePointProperties, RoutePoint } from './RoutePoint';
 import { RouteSegment } from './RouteSegment';
-import { IPointProperties } from '../Point/Point';
-import { IRouteStats } from './Properties/IRouteStats';
+import { IRouteStats, RouteStats } from './Stats';
 
 type CoordNode = VertexNode<RoutePoint, RouteSegment>;
 
 
 
-export interface IPolylineRouteMethods<TVertex extends RoutePoint, TSegment extends RouteSegment> {
+export interface IPolylineRouteMethods<
+  TVertex extends RoutePoint = RoutePoint,
+  TSegment extends RouteSegment = RouteSegment
+> {
   // Misc Methods
   /**
      * Adds elevation data to the track for matching lat/long points.
@@ -134,31 +138,28 @@ export interface IPolylineRouteMethods<TVertex extends RoutePoint, TSegment exte
   ): PolylineRoute<TVertex, TSegment>[];
 }
 
-export interface IPolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSegment>
+export interface IPolylineRoute<
+  TVertex extends RoutePoint = RoutePoint,
+  TSegment extends RouteSegment = RouteSegment
+>
   extends
   IPolyline<TVertex, TSegment>,
   IPolylineRouteMethods<TVertex, TSegment> {
 
-  // stats: IRouteStats;
+  stats: IRouteStats;
 }
 
 export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSegment>
   extends Polyline<TVertex, TSegment>
   implements IPolylineRoute<TVertex, TSegment>
 {
-  // TODO: Abstract this & generic stats type to Polyline
-  // protected _statsDirty: boolean;
-  // protected _stats: IRouteStats;
-  // get stats(): IRouteStats {
-  //   if (!this._stats || this._statsDirty) {
-  //     this._stats = this.calcStats();
-  //     if (this._statsDirty) {
-  //       this._statsDirty = false;
-  //     }
-  //   }
-  //   return this._stats;
-  // }
-  protected override _properties: IRouteStats;
+  protected override _stats: RouteStats<TVertex, TSegment>;
+  override get stats(): IRouteStats {
+    if (!this._stats || this._stats.isDirty) {
+      this._stats = new RouteStats(this.firstVertex, this.lastVertex);
+    }
+    return this._stats.stats as IRouteStats;
+  }
 
   constructor(coords: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[]) {
     super(coords);
@@ -238,6 +239,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   protected override updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
+    this.setDirty();
     vertices.forEach((vertex) => {
       vertex.val.path.addPropertiesFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
     });

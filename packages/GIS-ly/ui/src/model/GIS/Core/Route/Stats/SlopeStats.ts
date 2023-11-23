@@ -23,7 +23,7 @@ export interface ISlope {
   downhill: ISlopeSigned;
 };
 
-class SlopeSigned
+class SlopeStatsSigned
   extends BasicProperty<RoutePoint, RouteSegment>
   implements ISlopeSigned {
 
@@ -43,7 +43,7 @@ class SlopeSigned
     this._gain = new Sum(this._isConsidered);
     this._gainLength = new Sum(this._isConsidered);
 
-    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this._startVertex, this.getPtElevation);
+    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this.getPtElevation);
   }
 
   protected getPtElevation(point: RoutePoint): number {
@@ -63,9 +63,16 @@ class SlopeSigned
 
     this._maxMin.remove(segment);
   }
+
+  serialize(): ISlopeSigned {
+    return {
+      avg: this.avg,
+      max: this.max
+    }
+  }
 }
 
-export class SlopeProperty
+export class SlopeStats
   extends BasicProperty<RoutePoint, RouteSegment>
   implements ISlope {
 
@@ -75,7 +82,7 @@ export class SlopeProperty
     return this._totalHeight ? this._totalLength / this._totalHeight : 0;
   }
 
-  private _uphill: SlopeSigned;
+  private _uphill: SlopeStatsSigned;
   get uphill(): ISlopeSigned {
     return {
       avg: this._uphill.avg,
@@ -83,7 +90,7 @@ export class SlopeProperty
     }
   }
 
-  private _downhill: SlopeSigned;
+  private _downhill: SlopeStatsSigned;
   get downhill(): ISlopeSigned {
     return {
       avg: this._downhill.avg,
@@ -91,14 +98,14 @@ export class SlopeProperty
     }
   }
 
-  constructor(startVertex: VertexNode<RoutePoint, RouteSegment>) {
+  constructor(startVertex?: VertexNode<RoutePoint, RouteSegment>) {
     super(startVertex);
     this.initialize(startVertex);
   }
 
   protected override initializeProperties() {
-    this._uphill = new SlopeSigned(this._startVertex, this.isAscending);
-    this._downhill = new SlopeSigned(this._startVertex, this.isDescending);
+    this._uphill = new SlopeStatsSigned(this._startVertex, this.isAscending);
+    this._downhill = new SlopeStatsSigned(this._startVertex, this.isDescending);
   }
 
   protected isAscending(number: number): boolean {
@@ -123,5 +130,13 @@ export class SlopeProperty
 
     this._uphill.remove(segment);
     this._downhill.remove(segment);
+  }
+
+  serialize(): ISlope {
+    return {
+      avg: this.avg,
+      uphill: this._uphill.serialize(),
+      downhill: this._downhill.serialize()
+    }
   }
 }
