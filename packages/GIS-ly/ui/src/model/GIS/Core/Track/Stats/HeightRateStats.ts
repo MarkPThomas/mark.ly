@@ -20,7 +20,7 @@ export interface IHeightRate {
 };
 
 
-class HeightRateSigned
+class HeightRateStatsSigned
   extends BasicProperty<TrackPoint, TrackSegment>
   implements IHeightRateSigned {
   private _heightTotal: Sum;
@@ -37,7 +37,7 @@ class HeightRateSigned
   protected override initializeProperties() {
     this._heightTotal = new Sum(this._isConsidered);
     this._duration = new Sum(this._isConsidered);
-    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this._startVertex, this.getPtElevation);
+    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this.getPtElevation);
   }
 
   protected getPtElevation(point: TrackPoint): number {
@@ -64,12 +64,20 @@ class HeightRateSigned
 
     this._maxMin.remove(segment);
   }
+
+  serialize(): IHeightRateSigned {
+    return {
+      avg: this.avg,
+      max: this.max
+    }
+  }
 }
-export class HeightRateProperty
+
+export class HeightRateStats
   extends BasicProperty<TrackPoint, TrackSegment>
   implements IHeightRate {
 
-  private _ascent: HeightRateSigned;
+  private _ascent: HeightRateStatsSigned;
   get ascent(): IHeightRateSigned {
     return {
       avg: this._ascent.avg,
@@ -77,7 +85,7 @@ export class HeightRateProperty
     }
   }
 
-  private _descent: HeightRateSigned;
+  private _descent: HeightRateStatsSigned;
   get descent(): IHeightRateSigned {
     return {
       avg: this._descent.avg,
@@ -86,8 +94,8 @@ export class HeightRateProperty
   }
 
   protected override initializeProperties() {
-    this._ascent = new HeightRateSigned(this._startVertex, this.isAscending);
-    this._descent = new HeightRateSigned(this._startVertex, this.isDescending);
+    this._ascent = new HeightRateStatsSigned(this._startVertex, this.isAscending);
+    this._descent = new HeightRateStatsSigned(this._startVertex, this.isDescending);
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
@@ -106,5 +114,12 @@ export class HeightRateProperty
 
   protected isDescending(number: number): boolean {
     return number < 0;
+  }
+
+  serialize(): IHeightRate {
+    return {
+      ascent: this._descent.serialize(),
+      descent: this._descent.serialize()
+    }
   }
 }

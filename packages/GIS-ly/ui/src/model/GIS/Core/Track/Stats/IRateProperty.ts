@@ -7,6 +7,6 @@ export interface IRateProperty {
   max: INodeOfInterest<TrackPoint, TrackSegment>;
   min: INodeOfInterest<TrackPoint, TrackSegment>;
   avg: number;
-  median: number;
-  stdDev1: number;
+  // median: number;
+  // stdDev1: number;
 }

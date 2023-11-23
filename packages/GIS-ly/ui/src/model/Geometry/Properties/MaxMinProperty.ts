@@ -17,8 +17,8 @@ export class MaxMinProperty<TVertex extends Vertex, TSegment extends Segment>
   }
 
   constructor(
-    startVertex: VertexNode<TVertex, TSegment>,
     getProperty: (val: TVertex | TSegment) => number,
+    startVertex?: VertexNode<TVertex, TSegment>,
     tolerance: number = 1e-6,
     isConsidered: (number: number) => boolean | null = null
   ) {
@@ -61,6 +61,13 @@ export class MaxMinProperty<TVertex extends Vertex, TSegment extends Segment>
       } else {
         segNode = segNode.next as SegmentNode<TVertex, TSegment>;
       }
+    }
+  }
+
+  override serialize() {
+    return {
+      max: this._range.max,
+      min: this._range.min
     }
   }
 }

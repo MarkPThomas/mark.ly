@@ -13,7 +13,7 @@ export interface ILength {
   length: number
 }
 
-export class LengthProperty<TVertex extends Vertex, TSegment extends Segment>
+export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
   extends BasicProperty<TVertex, TSegment>
   implements ILength {
 
@@ -32,5 +32,11 @@ export class LengthProperty<TVertex extends Vertex, TSegment extends Segment>
 
   protected override removeProperties(segment: SegmentNode<TVertex, TSegment>) {
     this._length.remove(segment.val.length);
+  }
+
+  override serialize(): ILength {
+    return {
+      length: this.length
+    }
   }
 }
