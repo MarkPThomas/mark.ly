@@ -3,14 +3,14 @@ import { Segment } from "../Segment";
 import { Vertex } from "../Vertex";
 import { ILength, LengthStats } from "./LengthStats";
 
-export interface IPolylineProperties extends ILength {
+export interface IPolylineStats extends ILength {
 
 }
 
 export class PolylineStats<
   TVertex extends Vertex,
   TSegment extends Segment,
-  TStats extends IPolylineProperties = IPolylineProperties
+  TStats extends IPolylineStats = IPolylineStats
 > {
 
   protected _firstVertex: VertexNode<TVertex, TSegment>;

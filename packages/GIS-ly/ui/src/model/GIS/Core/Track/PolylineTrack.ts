@@ -310,6 +310,14 @@ export class PolylineTrack
     }
   }
 
+  override statsFromTo(
+    startVertex: VertexNode<TrackPoint, TrackSegment>,
+    endVertex: VertexNode<TrackPoint, TrackSegment>
+  ): ITrackStats {
+    const stats = new TrackStats(startVertex, endVertex);
+    return stats.stats as ITrackStats;
+  }
+
   // TODO: What is a unique property. By node value?
   static isPolylineTrack(polyline: any) {
     return polyline instanceof PolylineTrack || '_pointsByTimestamp' in polyline;
