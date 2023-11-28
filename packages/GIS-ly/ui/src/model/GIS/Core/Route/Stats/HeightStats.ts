@@ -7,7 +7,7 @@ import {
   BasicProperty,
   MaxMinProperty,
   Sum
-} from "../../../../Geometry/Properties";
+} from "../../../../Geometry/Stats";
 
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
@@ -67,10 +67,14 @@ export class HeightStats
   }
 
   protected getPtElevation(point: RoutePoint): number {
-    return point.elevation;
+    return point?.elevation;
   }
 
   protected override addProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._net = this.getNetHeight();
 
     this._gain.add(segment.val.height);
@@ -80,6 +84,10 @@ export class HeightStats
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._net = this.getNetHeight();
 
     this._gain.remove(segment.val.height);

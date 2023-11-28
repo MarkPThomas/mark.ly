@@ -1,7 +1,7 @@
 import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
-import { ConstrainedProperty } from "./ConstrainedProperty";
+import { ConstrainedStats } from "./ConstrainedStats";
 
-export abstract class BasicProperty<TVertex extends Vertex, TSegment extends Segment> extends ConstrainedProperty {
+export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segment> extends ConstrainedStats {
   protected _startVertex: VertexNode<TVertex, TSegment>;
   protected _endVertex: VertexNode<TVertex, TSegment>;
 
@@ -59,7 +59,7 @@ export abstract class BasicProperty<TVertex extends Vertex, TSegment extends Seg
   protected abstract addProperties(segment: SegmentNode<TVertex, TSegment>): void;
 
   remove(segment: SegmentNode<TVertex, TSegment>) {
-    if (!this._startVertex) {
+    if (!this._startVertex || !segment) {
       return;
     }
 

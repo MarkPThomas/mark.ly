@@ -355,6 +355,14 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     );
   }
 
+  override statsFromTo(
+    startVertex: VertexNode<TVertex, TSegment>,
+    endVertex: VertexNode<TVertex, TSegment>
+  ): IRouteStats {
+    const stats = new RouteStats(startVertex, endVertex);
+    return stats.stats as IRouteStats;
+  }
+
   // TODO: What is a unique property. By node value?
   static isPolylineRoute(polyline: any) {
     return polyline instanceof PolylineRoute || 'firstVertex' in polyline;

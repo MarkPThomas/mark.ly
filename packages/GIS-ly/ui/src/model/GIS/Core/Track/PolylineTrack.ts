@@ -17,6 +17,8 @@ type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
+  duration: number;
+
   // Properties Methods
 
   // Misc Methods
@@ -151,6 +153,10 @@ export class PolylineTrack
       this._stats = new TrackStats(this.firstVertex, this.lastVertex);
     }
     return this._stats.stats as ITrackStats;
+  }
+
+  get duration(): number {
+    return TrackStats.duration(this.firstVertex.val, this.lastVertex.val)
   }
 
   constructor(
@@ -308,6 +314,14 @@ export class PolylineTrack
         (timestamp: string, coord: CoordNode) => coord.val.timestamp === timestamp
       )[0];
     }
+  }
+
+  override statsFromTo(
+    startVertex: VertexNode<TrackPoint, TrackSegment>,
+    endVertex: VertexNode<TrackPoint, TrackSegment>
+  ): ITrackStats {
+    const stats = new TrackStats(startVertex, endVertex);
+    return stats.stats as ITrackStats;
   }
 
   // TODO: What is a unique property. By node value?

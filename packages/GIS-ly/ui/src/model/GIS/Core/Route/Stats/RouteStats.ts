@@ -1,10 +1,10 @@
-import { IPolylineProperties, PolylineStats } from "../../../../Geometry/Polyline/Stats/PolylineStats";
+import { IPolylineStats, PolylineStats } from "../../../../Geometry/Polyline/Stats/PolylineStats";
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
 import { HeightStats, IHeight } from "./HeightStats";
 import { ISlope, SlopeStats } from "./SlopeStats";
 
-export interface IRouteStats extends IPolylineProperties {
+export interface IRouteStats extends IPolylineStats {
   height: IHeight;
   slope: ISlope;
 }

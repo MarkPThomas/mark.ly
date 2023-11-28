@@ -5,7 +5,7 @@ import {
   INodeDouble
 } from '../../../../../../common/utils/dataStructures';
 
-import { IPolylineProperties, PolylineStats } from './Stats/PolylineStats';
+import { IPolylineStats, PolylineStats } from './Stats/PolylineStats';
 import { Segment } from './Segment';
 import { Vertex } from './Vertex';
 
@@ -115,7 +115,7 @@ export interface IPolylineSize {
 
 export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   // Properties
-  stats: IPolylineProperties;
+  stats: IPolylineStats;
 
   firstVertex: VertexNode<TVertex, TSegment>;
   firstSegment: SegmentNode<TVertex, TSegment>;
@@ -229,12 +229,8 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   protected _vertices: List<VertexNode<TVertex, TSegment>, TVertex> = new List<VertexNode<TVertex, TSegment>, TVertex>();
   protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
 
-  protected setDirty() {
-    this._stats.setDirty();
-  }
-
   protected _stats: PolylineStats<TVertex, TSegment>;
-  get stats(): IPolylineProperties {
+  get stats(): IPolylineStats {
     if (!this._stats || this._stats.isDirty) {
       this._stats = new PolylineStats(this.firstVertex, this.lastVertex);
     }
@@ -450,6 +446,10 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     this.setDirty();
   }
 
+  protected setDirty() {
+    this._stats.setDirty();
+  }
+
   /**
    * Lazy way to update segments & vertices.
    *
@@ -592,6 +592,14 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     return this.vertexNodesBy(
       vertex,
       (target: TVertex, vertexNode: VertexNode<TVertex, TSegment>) => vertexNode.equals(target));
+  }
+
+  statsFromTo(
+    startVertex: VertexNode<TVertex, TSegment>,
+    endVertex: VertexNode<TVertex, TSegment>
+  ): IPolylineStats {
+    const stats = new PolylineStats(startVertex, endVertex);
+    return stats.stats;
   }
 
   static isPolyline(polyline: any) {

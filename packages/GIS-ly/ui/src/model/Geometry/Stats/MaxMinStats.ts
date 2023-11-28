@@ -1,9 +1,9 @@
 import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
-import { BasicProperty } from "./BasicProperty";
+import { BasicStats } from "./BasicStats";
 import { MaxMin } from "./MaxMin";
 
-export class MaxMinProperty<TVertex extends Vertex, TSegment extends Segment>
-  extends BasicProperty<TVertex, TSegment>
+export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
+  extends BasicStats<TVertex, TSegment>
 {
   protected _tolerance: number;
   protected _getProperty: (val: TVertex | TSegment) => number;
@@ -37,6 +37,10 @@ export class MaxMinProperty<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected override addProperties(segment: SegmentNode<TVertex, TSegment>) {
+    if (!segment) {
+      return;
+    }
+
     if (!this._startVertex) {
       this.initialize(segment.prevVert, segment.nextVert);
     }

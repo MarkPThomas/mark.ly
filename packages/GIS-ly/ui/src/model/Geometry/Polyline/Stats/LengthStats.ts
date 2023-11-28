@@ -1,7 +1,7 @@
 import {
-  BasicProperty,
+  BasicStats,
   Sum
-} from "../../Properties";
+} from "../../Stats";
 
 import {
   SegmentNode
@@ -14,7 +14,7 @@ export interface ILength {
 }
 
 export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
-  extends BasicProperty<TVertex, TSegment>
+  extends BasicStats<TVertex, TSegment>
   implements ILength {
 
   private _length: Sum;
@@ -27,10 +27,18 @@ export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected override addProperties(segment: SegmentNode<TVertex, TSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._length.add(segment.val.length);
   }
 
   protected override removeProperties(segment: SegmentNode<TVertex, TSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._length.remove(segment.val.length);
   }
 

@@ -4,7 +4,7 @@ import {
   INodeOfInterest,
   MaxMinProperty,
   Sum
-} from "../../../../Geometry/Properties";
+} from "../../../../Geometry/Stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";
@@ -41,10 +41,14 @@ export class SpeedStats
 
   // TODO: See about using segment speed? And/or correct Pt average speeds to be weighted by neighboring seg durations
   protected getPtSpeed(point: TrackPoint): number {
-    return point.path.speed;
+    return point?.path.speed;
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._distance.add(segment.val.length);
     this._duration.add(segment.val.duration);
 
@@ -52,6 +56,10 @@ export class SpeedStats
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._distance.remove(segment.val.length);
     this._duration.remove(segment.val.duration);
 

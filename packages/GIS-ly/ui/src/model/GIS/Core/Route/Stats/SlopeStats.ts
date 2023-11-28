@@ -6,8 +6,8 @@ import {
   BasicProperty,
   MaxMinProperty,
   Sum
-} from "../../../../Geometry/Properties";
-import { INodeOfInterest } from "../../../../Geometry/Properties/INodeOfInterest";
+} from "../../../../Geometry/Stats";
+import { INodeOfInterest } from "../../../../Geometry/Stats/INodeOfInterest";
 
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
@@ -47,10 +47,14 @@ class SlopeStatsSigned
   }
 
   protected getPtElevation(point: RoutePoint): number {
-    return point.elevation;
+    return point?.elevation;
   }
 
   protected override addProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._gain.add(segment.val.height);
     this._gainLength.add(segment.val.length);
 
@@ -58,6 +62,10 @@ class SlopeStatsSigned
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._gain.remove(segment.val.height);
     this._gainLength.remove(segment.val.length);
 
@@ -117,6 +125,10 @@ export class SlopeStats
   }
 
   protected override addProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._totalLength += segment.val.length;
     this._totalHeight += segment.val.height;
 
@@ -125,6 +137,10 @@ export class SlopeStats
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._totalLength -= segment.val.length;
     this._totalHeight -= segment.val.height;
 

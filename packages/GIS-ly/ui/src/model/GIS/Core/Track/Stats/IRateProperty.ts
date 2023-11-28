@@ -1,4 +1,4 @@
-import { INodeOfInterest } from "../../../../Geometry/Properties";
+import { INodeOfInterest } from "../../../../Geometry/Stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";
