@@ -4,7 +4,6 @@ import { Vertex } from "../Vertex";
 import { ILength, LengthStats } from "./LengthStats";
 
 export interface IPolylineStats extends ILength {
-
 }
 
 export class PolylineStats<

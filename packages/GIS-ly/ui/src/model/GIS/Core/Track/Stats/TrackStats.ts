@@ -26,7 +26,14 @@ export class TrackStats<
       return 0;
     }
 
-    return TimeStamp.calcIntervalSec(this._firstVertex.val.timestamp, this._lastVertex.val.timestamp);
+    return TrackStats.duration(this._firstVertex.val, this._lastVertex.val);
+  }
+
+  static duration(
+    start: TrackPoint,
+    end: TrackPoint
+  ): number {
+    return TimeStamp.calcIntervalSec(start.timestamp, end.timestamp);
   }
 
   override addStats() {

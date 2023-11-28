@@ -17,6 +17,8 @@ type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
+  duration: number;
+
   // Properties Methods
 
   // Misc Methods
@@ -151,6 +153,10 @@ export class PolylineTrack
       this._stats = new TrackStats(this.firstVertex, this.lastVertex);
     }
     return this._stats.stats as ITrackStats;
+  }
+
+  get duration(): number {
+    return TrackStats.duration(this.firstVertex.val, this.lastVertex.val)
   }
 
   constructor(

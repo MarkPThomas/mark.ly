@@ -1,5 +1,5 @@
 export { INodeOfInterest } from "./INodeOfInterest";
-export { BasicProperty } from "./BasicProperty";
+export { BasicStats } from "./BasicStats";
 export { MaxMin } from "./MaxMin";
-export { MaxMinProperty } from "./MaxMinProperty";
+export { MaxMinStats } from "./MaxMinStats";
 export { Sum } from "./Sum";

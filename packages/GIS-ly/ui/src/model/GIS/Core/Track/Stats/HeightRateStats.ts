@@ -4,7 +4,7 @@ import {
   INodeOfInterest,
   MaxMinProperty,
   Sum
-} from "../../../../Geometry/Properties";
+} from "../../../../Geometry/Stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";
@@ -41,10 +41,14 @@ class HeightRateStatsSigned
   }
 
   protected getPtElevation(point: TrackPoint): number {
-    return point.elevation;
+    return point?.elevation;
   }
 
   add(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._heightTotal.add(segment.val.height);
     this._duration.add(segment.val.duration);
 
@@ -52,6 +56,10 @@ class HeightRateStatsSigned
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._heightTotal.add(segment.val.height);
     this._duration.add(segment.val.duration);
 
@@ -59,6 +67,10 @@ class HeightRateStatsSigned
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
+    if (!segment) {
+      return;
+    }
+
     this._heightTotal.remove(segment.val.height);
     this._duration.remove(segment.val.duration);
 
