@@ -44,7 +44,7 @@ export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
 
   override serialize(): ILength {
     return {
-      length: this.length
+      length: this.length ?? 0
     }
   }
 }
