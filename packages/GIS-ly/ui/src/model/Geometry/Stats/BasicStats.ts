@@ -1,29 +1,32 @@
-import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
+import { Polyline, Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
 import { ConstrainedStats } from "./ConstrainedStats";
 
 export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segment> extends ConstrainedStats {
   protected _startVertex: VertexNode<TVertex, TSegment>;
   protected _endVertex: VertexNode<TVertex, TSegment>;
 
-  constructor(
-    startVertex?: VertexNode<TVertex, TSegment>,
-    isConsidered: (number: number) => boolean | null = null
-  ) {
+  constructor(isConsidered: (number: number) => boolean | null = null) {
     super(isConsidered);
-    this.initialize(startVertex);
-  }
-
-  protected initialize(
-    startVertex: VertexNode<TVertex, TSegment>,
-    endVertex?: VertexNode<TVertex, TSegment>
-  ) {
-    this._startVertex = startVertex;
-    this._endVertex = endVertex ? endVertex : startVertex;
-
     this.initializeProperties();
   }
 
   protected abstract initializeProperties(): void;
+
+  of(polyline: Polyline<TVertex, TSegment>) {
+    if (!polyline || !polyline.firstVertex) {
+      return;
+    }
+
+    this.fromTo(polyline.firstVertex, polyline.lastVertex);
+  }
+
+  update() {
+    if (!this._startVertex || !this._endVertex) {
+      return;
+    }
+
+    this.fromTo(this._startVertex, this._endVertex);
+  }
 
   fromTo(
     startVertex: VertexNode<TVertex, TSegment>,
@@ -33,30 +36,42 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
       return;
     }
 
-    this.initialize(startVertex);
+    this._startVertex = startVertex;
+    this._endVertex = endVertex;
+    this.initializeProperties();
 
     let segNode = startVertex.nextSeg;
-    while (segNode) {
+    if (segNode) {
       this.add(segNode);
 
-      if (segNode.nextVert === endVertex) {
-        break;
-      } else {
-        segNode = segNode.next as SegmentNode<TVertex, TSegment>;
+      segNode = segNode.next as SegmentNode<TVertex, TSegment>;
+      while (segNode) {
+        this.add(segNode, true);
+
+        if (segNode.nextVert === endVertex || !segNode.next) {
+          break;
+        } else {
+          segNode = segNode.next as SegmentNode<TVertex, TSegment>;
+        }
       }
     }
   }
 
-  add(segment: SegmentNode<TVertex, TSegment>) {
-    if (!this._startVertex) {
-      this._startVertex = segment.prevVert;
-      this._endVertex = segment.nextVert;
+  add(segment: SegmentNode<TVertex, TSegment>, nextVertOnly: boolean = false) {
+    if (!segment) {
+      return;
     }
 
-    this.addProperties(segment);
+    if (!this._startVertex) {
+      this._startVertex = segment.prevVert;
+      this.initializeProperties();
+    }
+    this._endVertex = segment.nextVert;
+
+    this.addProperties(segment, nextVertOnly);
   }
 
-  protected abstract addProperties(segment: SegmentNode<TVertex, TSegment>): void;
+  protected abstract addProperties(segment: SegmentNode<TVertex, TSegment>, nextVertOnly?: boolean): void;
 
   remove(segment: SegmentNode<TVertex, TSegment>) {
     if (!this._startVertex || !segment) {
@@ -84,7 +99,7 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
     if (this._startVertex) {
       this.removeProperties(segment);
     } else {
-      this.initialize(null);
+      this.initializeProperties();
     }
   }
 

@@ -43,15 +43,9 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected initializeNodesOfInterest() {
-    this._min = {
-      value: Infinity,
-      nodes: []
-    }
-
-    this._max = {
-      value: -Infinity,
-      nodes: []
-    }
+    const empty = MaxMin.empty();
+    this._max = empty.max;
+    this._min = empty.min;
   }
 
   add(
@@ -82,5 +76,18 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
         this._max.nodes.push(node);
       }
     }
+  }
+
+  static empty() {
+    return {
+      max: {
+        value: -Infinity,
+        nodes: []
+      },
+      min: {
+        value: Infinity,
+        nodes: []
+      }
+    };
   }
 }

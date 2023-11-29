@@ -1,5 +1,5 @@
 import { NodeDouble } from '../../../../../../common/utils/dataStructures';
-import { IVertexProperties, Segment, Vertex } from '../Polyline';
+import { IVertexProperties, Vertex } from '../Polyline';
 import { MaxMin } from './MaxMin';
 
 class TestVertex extends Vertex {
@@ -56,7 +56,19 @@ describe('##MaxMin', () => {
   });
 
   describe('#add', () => {
-    it('should add the new min and see it reflected in object properties', () => {
+    it('should do nothing if no node is provided', () => {
+      const getProperty = (val: TestVertex) => val.valNum;
+      const maxMin = new MaxMin(getProperty);
+
+      maxMin.add(null);
+
+      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.nodes.length).toEqual(0);
+      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.nodes.length).toEqual(0);
+    });
+
+    it('should add the new min & see it reflected in object properties', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const maxMin = new MaxMin(getProperty);
 
@@ -91,7 +103,7 @@ describe('##MaxMin', () => {
       expect(maxMin.min.nodes.length).toEqual(1);
     });
 
-    it('should add the new max and see it reflected in object properties', () => {
+    it('should add the new max & see it reflected in object properties', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const maxMin = new MaxMin(getProperty);
 
