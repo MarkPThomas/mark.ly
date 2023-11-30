@@ -23,7 +23,7 @@ export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected override initializeProperties() {
-    this._length = new Sum();
+    this._length = new Sum(this._isConsidered);
   }
 
   protected override addProperties(segment: SegmentNode<TVertex, TSegment>) {
