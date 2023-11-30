@@ -53,9 +53,10 @@ export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
         max: this._range.max,
         min: this._range.min
       }
-      : {
-        max: undefined,
-        min: undefined
-      }
+      : MaxMin.empty();
+  }
+
+  static empty() {
+    return MaxMin.empty();
   }
 }

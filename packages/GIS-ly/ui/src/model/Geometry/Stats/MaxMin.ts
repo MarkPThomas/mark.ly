@@ -17,12 +17,12 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
 
   private _min: INodeOfInterest<TVertex, TSegment>;
   get min(): INodeOfInterest<TVertex, TSegment> {
-    return this._min;
+    return this._min.value !== MaxMin.minInitial ? this._min : MaxMin.emptyEntry();
   }
 
   private _max: INodeOfInterest<TVertex, TSegment>;
   get max(): INodeOfInterest<TVertex, TSegment> {
-    return this._max;
+    return this._max.value !== MaxMin.maxInitial ? this._max : MaxMin.emptyEntry();
   }
 
   constructor(
@@ -43,9 +43,11 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected initializeNodesOfInterest() {
-    const empty = MaxMin.empty();
-    this._max = empty.max;
-    this._min = empty.min;
+    this._max = MaxMin.emptyEntry();
+    this._max.value = MaxMin.maxInitial;
+
+    this._min = MaxMin.emptyEntry();
+    this._min.value = MaxMin.minInitial;
   }
 
   add(
@@ -58,7 +60,7 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
     const number = this._getProperty(node.val);
 
     if (this._isConsidered === null || this._isConsidered(number)) {
-      if (this._min.value === Infinity || number - this._min.value < -this._tolerance) {
+      if (this._min.value === MaxMin.minInitial || number - this._min.value < -this._tolerance) {
         this._min.value = number;
         this._min.nodes = [];
       }
@@ -67,7 +69,7 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
         this._min.nodes.push(node);
       }
 
-      if (this._max.value === -Infinity || number - this._max.value > this._tolerance) {
+      if (this._max.value === MaxMin.maxInitial || number - this._max.value > this._tolerance) {
         this._max.value = number;
         this._max.nodes = [];
       }
@@ -78,16 +80,20 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
+  protected static maxInitial = -Infinity;
+  protected static minInitial = Infinity;
+
   static empty() {
     return {
-      max: {
-        value: -Infinity,
-        nodes: []
-      },
-      min: {
-        value: Infinity,
-        nodes: []
-      }
+      max: MaxMin.emptyEntry(),
+      min: MaxMin.emptyEntry()
+    };
+  }
+
+  static emptyEntry() {
+    return {
+      value: 0,
+      nodes: []
     };
   }
 }

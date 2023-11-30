@@ -23,9 +23,9 @@ describe('##MaxMin', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const maxMin = new MaxMin(getProperty);
 
-      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.value).toEqual(0);
       expect(maxMin.max.nodes.length).toEqual(0);
-      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.value).toEqual(0);
       expect(maxMin.min.nodes.length).toEqual(0);
     });
 
@@ -35,9 +35,9 @@ describe('##MaxMin', () => {
 
       const maxMin = new MaxMin(getProperty, isConsidered);
 
-      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.value).toEqual(0);
       expect(maxMin.max.nodes.length).toEqual(0);
-      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.value).toEqual(0);
       expect(maxMin.min.nodes.length).toEqual(0);
     });
 
@@ -48,9 +48,9 @@ describe('##MaxMin', () => {
 
       const maxMin = new MaxMin(getProperty, isConsidered, tolerance);
 
-      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.value).toEqual(0);
       expect(maxMin.max.nodes.length).toEqual(0);
-      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.value).toEqual(0);
       expect(maxMin.min.nodes.length).toEqual(0);
     });
   });
@@ -62,9 +62,9 @@ describe('##MaxMin', () => {
 
       maxMin.add(null);
 
-      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.value).toEqual(0);
       expect(maxMin.max.nodes.length).toEqual(0);
-      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.value).toEqual(0);
       expect(maxMin.min.nodes.length).toEqual(0);
     });
 
@@ -301,9 +301,9 @@ describe('##MaxMin', () => {
       const tolerance = 0.1;
       const maxMin = new MaxMin(getProperty, isConsidered, tolerance);
 
-      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.value).toEqual(0);
       expect(maxMin.max.nodes.length).toEqual(0);
-      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.value).toEqual(0);
       expect(maxMin.min.nodes.length).toEqual(0);
 
       const vertex = new TestVertex(0.5);
@@ -311,9 +311,9 @@ describe('##MaxMin', () => {
 
       maxMin.add(node);
 
-      expect(maxMin.max.value).toEqual(-Infinity);
+      expect(maxMin.max.value).toEqual(0);
       expect(maxMin.max.nodes.length).toEqual(0);
-      expect(maxMin.min.value).toEqual(Infinity);
+      expect(maxMin.min.value).toEqual(0);
       expect(maxMin.min.nodes.length).toEqual(0);
 
       const vertex1 = new TestVertex(1);
