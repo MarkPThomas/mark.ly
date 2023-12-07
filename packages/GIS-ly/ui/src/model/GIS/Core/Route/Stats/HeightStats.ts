@@ -1,11 +1,10 @@
 import {
   SegmentNode,
-  VertexNode
 } from "../../../../Geometry/Polyline";
 import {
   INodeOfInterest,
-  BasicProperty,
-  MaxMinProperty,
+  BasicStats,
+  MaxMinStats,
   Sum
 } from "../../../../Geometry/Stats";
 
@@ -21,15 +20,14 @@ export interface IHeight {
 }
 
 export class HeightStats
-  extends BasicProperty<RoutePoint, RouteSegment>
+  extends BasicStats<RoutePoint, RouteSegment>
   implements IHeight {
 
-  private _net: number;
   get net(): number {
-    return this._net;
+    return this.getNetHeight();
   }
 
-  private _maxMin: MaxMinProperty<RoutePoint, RouteSegment>;
+  private _maxMin: MaxMinStats<RoutePoint, RouteSegment>;
   get max(): INodeOfInterest<RoutePoint, RouteSegment> {
     return this._maxMin?.range.max;
   }
@@ -47,22 +45,26 @@ export class HeightStats
     return this._loss.value;
   }
 
-  constructor(startVertex?: VertexNode<RoutePoint, RouteSegment>) {
-    super(startVertex);
-    this.initialize(startVertex);
-  }
-
   protected override initializeProperties() {
     this._gain = new Sum(this.isAscending);
     this._loss = new Sum(this.isDescending);
-    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this.getPtElevation);
+    this._maxMin = new MaxMinStats<RoutePoint, RouteSegment>(this.getPtElevation, false, this._isConsidered);
   }
 
   protected isAscending(number: number): boolean {
+    if (this._isConsidered) {
+      // if (this._isConsidered && this._isConsidered(number)) {
+      console.log('Consider Meeee!', number);
+    }
+    // return (!this._isConsidered || this._isConsidered(number)) && number > 0;
     return number > 0;
   }
 
   protected isDescending(number: number): boolean {
+    // if (this._isConsidered && this._isConsidered(number)) {
+    //   console.log('Consider Meeee!', number);
+    // }
+    // return (!this._isConsidered || this._isConsidered(number)) && number < 0;
     return number < 0;
   }
 
@@ -75,8 +77,6 @@ export class HeightStats
       return;
     }
 
-    this._net = this.getNetHeight();
-
     this._gain.add(segment.val.height);
     this._loss.add(segment.val.height);
 
@@ -88,8 +88,6 @@ export class HeightStats
       return;
     }
 
-    this._net = this.getNetHeight();
-
     this._gain.remove(segment.val.height);
     this._loss.remove(segment.val.height);
 
@@ -98,39 +96,15 @@ export class HeightStats
 
 
   protected getNetHeight(): number | undefined {
-    // if (!start) {
-    //   return 0;
-    // }
+    const startElevation = this._startVertex?.val?.elevation ?? 0;
+    const endElevation = this._endVertex?.val?.elevation ?? 0;
 
-    // if (start.val.elevation && end.val.elevation) {
-    if (!this._startVertex || !this._endVertex) {
-      return 0;
-    }
-
-    return this._endVertex.val.elevation - this._startVertex.val.elevation
-    //   return end.val.alt - start.val.alt;
-    // } else {
-    //   console.log(`Start/End vertices don't have consistent elevation/altitude data`)
-    //   return undefined;
-    // }
+    return endElevation - startElevation;
   }
-
-
-  // protected hasData(start: TVertex, end: TVertex): boolean {
-  //   return this.hasElevation(start, end) || this.hasAltitude(start, end);
-  // }
-
-  // protected hasElevation(start: TVertex, end: TVertex): boolean {
-  //   return start.elevation && end.elevation;
-  // }
-
-  // protected hasAltitude(start: TVertex, end: TVertex): boolean {
-  //   return start.alt && end.alt;
-  // }
 
   serialize(): IHeight {
     return {
-      net: this.getNetHeight(),
+      net: this.net,
       gain: this.gain,
       loss: this.loss,
       max: this.max,

@@ -2,11 +2,12 @@ import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
 import { BasicStats } from "./BasicStats";
 import { MaxMin } from "./MaxMin";
 
-export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
+export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment, TProps = TVertex | TSegment>
   extends BasicStats<TVertex, TSegment>
 {
   protected _tolerance: number;
   protected _getProperty: (val: TVertex | TSegment) => number;
+  protected _isSegmentProperty: boolean;
 
   protected _range: MaxMin<TVertex, TSegment> = null;
   get range() {
@@ -15,12 +16,14 @@ export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
 
   constructor(
     getProperty: (val: TVertex | TSegment) => number,
+    isSegmentProperty: boolean = false,
     isConsidered: (number: number) => boolean | null = null,
     tolerance: number = 1e-6
   ) {
     super(isConsidered);
 
     this._getProperty = getProperty;
+    this._isSegmentProperty = isSegmentProperty;
     this._tolerance = tolerance;
   }
 
@@ -37,10 +40,14 @@ export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
       return;
     }
 
-    if (!nextVertOnly) {
-      this._range.add(segment.prevVert);
+    if (this._isSegmentProperty) {
+      this._range.add(segment);
+    } else {
+      if (!nextVertOnly) {
+        this._range.add(segment.prevVert);
+      }
+      this._range.add(segment.nextVert);
     }
-    this._range.add(segment.nextVert);
   }
 
   protected override removeProperties() {
