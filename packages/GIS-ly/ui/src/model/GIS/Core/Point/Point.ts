@@ -44,7 +44,7 @@ export class PPoint
 
     this.lat = lat;
     this.lng = lng;
-    if (altitude) {
+    if (!PPoint.isNullOrUndefined(altitude)) {
       this.alt = altitude;
     }
   }
@@ -160,17 +160,31 @@ export class PPoint
   }
 
   static calcSegmentMeasuredAltitudeChange(ptI: IPointProperties, ptJ: IPointProperties) {
-    return ptJ.alt && ptI.alt ? ptJ.alt - ptI.alt : undefined;
+    return PPoint.bothHaveAltitudes(ptI, ptJ)
+      ? ptJ.alt - ptI.alt
+      : undefined;
   }
+
+  private static bothHaveAltitudes(ptI: IPointProperties, ptJ: IPointProperties) {
+    return !PPoint.isNullOrUndefined(ptI.alt) && !PPoint.isNullOrUndefined(ptJ.alt);
+  }
+
 
   static calcSegmentMappedElevationChange(ptI: IPointProperties, ptJ: IPointProperties) {
-    return ptJ.elevation && ptI.elevation ? ptJ.elevation - ptI.elevation : undefined;
+    return PPoint.bothHaveElevations(ptI, ptJ)
+      ? ptJ.elevation - ptI.elevation
+      : undefined;
   }
 
+  private static bothHaveElevations(ptI: IPointProperties, ptJ: IPointProperties) {
+    return !PPoint.isNullOrUndefined(ptI.elevation) && !PPoint.isNullOrUndefined(ptJ.elevation);
+  }
+
+
   static calcSegmentSlopeRad(ptI: PPoint, ptJ: PPoint): number | null {
-    const height = (ptJ.elevation && ptI.elevation)
+    const height = PPoint.bothHaveElevations(ptI, ptJ)
       ? ptJ.elevation - ptI.elevation
-      : (ptJ.elevation && ptI.elevation) ?
+      : PPoint.bothHaveAltitudes(ptI, ptJ) ?
         ptJ.alt - ptI.alt
         : null;
 
@@ -184,15 +198,21 @@ export class PPoint
   }
 
   static calcSegmentSlopeRadByRiseRun(rise: number, run: number): number | null {
-    if (rise === undefined || rise === null
-      || run === undefined || run === null) {
+    if (PPoint.isNullOrUndefined(rise)
+      || PPoint.isNullOrUndefined(run)) {
       return null;
     }
 
+    const sign = run < 0 ? -1 : 1;
+
     return run
-      ? Math.atan(rise / run)
-      : rise > 0 ? Math.PI / 2
-        : rise < 0 ? 3 * Math.PI / 2
-          : null;
+      ? sign * Math.atan(rise / run)
+      : rise > 0 ? sign * Math.PI / 2
+        : rise < 0 ? sign * 3 * Math.PI / 2
+          : 0;
+  }
+
+  private static isNullOrUndefined(val: any) {
+    return val === null || val === undefined;
   }
 }

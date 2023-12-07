@@ -228,6 +228,7 @@ describe('##PPoint', () => {
     });
   });
 
+  // // ==== Old test comparing Point length calc to Leaflet length calc
   // describe('#distanceTo', () => {
   //   // cases:
   //   // lat = 0, lng = -180 to +180
@@ -522,12 +523,24 @@ describe('##PPoint', () => {
 
     describe('#calcSegmentMeasuredAltitudeChange', () => {
       it('should return undefined if either or both of the nodes provided lack measured altitudes', () => {
-        const coordNoElev = new PPoint(39.74005097339472, -104.9998123858178, 0);
-        const coordMeasuredElev = new PPoint(39.73055300708892, -104.9990802128465, 1000);
+        const coord1NoAlt = new PPoint(39.74005097339472, -104.9998123858178);
+        const coord1Alt = new PPoint(39.74005097339472, -104.9998123858178, 1000);
+        const coord1ElevNoAlt = new PPoint(39.74005097339472, -104.9998123858178);
+        coord1ElevNoAlt.elevation = 1000;
 
-        expect(PPoint.calcSegmentMeasuredAltitudeChange(coordNoElev, coordMeasuredElev)).toBeUndefined();
-        expect(PPoint.calcSegmentMeasuredAltitudeChange(coordMeasuredElev, coordNoElev)).toBeUndefined();
-        expect(PPoint.calcSegmentMeasuredAltitudeChange(coordNoElev, coordNoElev)).toBeUndefined();
+        const coord2NoAlt = new PPoint(39.73055300708892, -104.9990802128465);
+        const coord2Alt = new PPoint(39.73055300708892, -104.9990802128465, 1000);
+        const coord2ElevNoAlt = new PPoint(39.73055300708892, -104.9990802128465);
+        coord2ElevNoAlt.elevation = 1000;
+
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1NoAlt, coord2NoAlt)).toBeUndefined();
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1Alt, coord2NoAlt)).toBeUndefined();
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1NoAlt, coord2Alt)).toBeUndefined();
+
+        // With elevations
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1ElevNoAlt, coord2ElevNoAlt)).toBeUndefined();
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1Alt, coord2ElevNoAlt)).toBeUndefined();
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1ElevNoAlt, coord2Alt)).toBeUndefined();
       });
 
       it('should return the difference in altitude between two nodes that have measured altitudes', () => {
@@ -536,6 +549,14 @@ describe('##PPoint', () => {
 
         expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1, coord2)).toEqual(1000); // Uphill slope
         expect(PPoint.calcSegmentMeasuredAltitudeChange(coord2, coord1)).toEqual(-1000);  // Downhill slope
+      });
+
+      it('should return the difference in altitude between two nodes that have measured altitudes, one of which is 0', () => {
+        const coord1 = new PPoint(39.74005097339472, -104.9998123858178, 0);
+        const coord2 = new PPoint(39.73055300708892, -104.9990802128465, 2000);
+
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord1, coord2)).toEqual(2000); // Uphill slope
+        expect(PPoint.calcSegmentMeasuredAltitudeChange(coord2, coord1)).toEqual(-2000);  // Downhill slope
       });
     });
 
@@ -558,6 +579,162 @@ describe('##PPoint', () => {
 
         expect(PPoint.calcSegmentMappedElevationChange(coord1, coord2)).toEqual(1000); // Uphill slope
         expect(PPoint.calcSegmentMappedElevationChange(coord2, coord1)).toEqual(-1000);  // Downhill slope
+      });
+
+      it('should return the difference in elevation between two nodes that have mapped elevations, one of which is 0', () => {
+        const coord1 = new PPoint(39.74005097339472, -104.9998123858178, 0);
+        coord1.elevation = 0;
+        const coord2 = new PPoint(39.73055300708892, -104.9990802128465, 0);
+        coord2.elevation = 2000;
+
+        expect(PPoint.calcSegmentMappedElevationChange(coord1, coord2)).toEqual(2000); // Uphill slope
+        expect(PPoint.calcSegmentMappedElevationChange(coord2, coord1)).toEqual(-2000);  // Downhill slope
+      });
+    });
+
+    describe('#calcSegmentSlopeRadByRiseRun', () => {
+      it('should return null if either rise or run is not specified', () => {
+        const riseNull = null;
+        const riseUndefined = undefined;
+        const rise = 1;
+
+        const runNull = null;
+        const runUndefined = undefined;
+        const run = 1;
+
+        expect(PPoint.calcSegmentSlopeRadByRiseRun(riseNull, run)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRadByRiseRun(riseUndefined, run)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRadByRiseRun(rise, runNull)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRadByRiseRun(rise, runUndefined)).toBeNull();
+      });
+
+      it('should return 0 if both rise & run are 0', () => {
+        const rise = 0;
+        const run = 0;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toEqual(0);
+      });
+
+      it('should return (1/2)*PI if pointing upwards vertical', () => {
+        const rise = 1;
+        const run = 0;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo((1 / 2) * Math.PI, 6);
+      });
+
+      it('should return (3/2)*PI if pointing downwards vertical)', () => {
+        const rise = -1;
+        const run = 0;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo((3 / 2) * Math.PI, 6);
+      });
+
+      it('should return 0 if pointing rightwards horizontal', () => {
+        const rise = 0;
+        const run = 1;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo(0, 3);
+      });
+
+      it('should return 0 if pointing leftwards horizontal', () => {
+        const rise = 0;
+        const run = -1;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo(0, 6); // -0
+      });
+
+      it('should return (1/4)* PI if pointing to quadrant I at 45 degrees', () => {
+        const rise = 1;
+        const run = 1;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo((1 / 4) * Math.PI, 6);
+      });
+
+      it('should return (1/4)* PI if pointing to quadrant II at 45 degrees', () => {
+        const rise = 1;
+        const run = -1;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo((1 / 4) * Math.PI, 6);
+      });
+
+      it('should return -(1/4)* PI if pointing to quadrant III at 45 degrees', () => {
+        const rise = -1;
+        const run = -1;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo(-(1 / 4) * Math.PI, 6);
+      });
+
+      it('should return -(1/4)* PI if pointing to quadrant IV at 45 degrees', () => {
+        const rise = -1;
+        const run = 1;
+
+        const result = PPoint.calcSegmentSlopeRadByRiseRun(rise, run);
+
+        expect(result).toBeCloseTo(-(1 / 4) * Math.PI, 6);
+      });
+    });
+
+    describe('#calcSegmentSlopeRad', () => {
+      it('should return null if segment has neither altitudes nor elevations at both vertices', () => {
+        const coord1NoAlt = new PPoint(39.74005097339472, -104.9998123858178);
+        const coord1Alt = new PPoint(39.74005097339472, -104.9998123858178, 0);
+
+        const coord2NoAlt = new PPoint(39.73055300708892, -104.9990802128465);
+        const coord2Alt = new PPoint(39.73055300708892, -104.9990802128465, 0);
+
+        const coord2MappedElevNoAlt = new PPoint(39.73055300708892, -104.9990802128465);
+        coord2MappedElevNoAlt.elevation = 0;
+
+        // No altitude
+        expect(PPoint.calcSegmentSlopeRad(coord1NoAlt, coord2NoAlt)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRad(coord1NoAlt, coord2Alt)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRad(coord1Alt, coord2NoAlt)).toBeNull();
+
+        // Partial alt/elevations
+        expect(PPoint.calcSegmentSlopeRad(coord1Alt, coord2MappedElevNoAlt)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRad(coord2MappedElevNoAlt, coord1Alt)).toBeNull();
+
+        // Partial (no alt)/elevations
+        expect(PPoint.calcSegmentSlopeRad(coord1NoAlt, coord2MappedElevNoAlt)).toBeNull();
+        expect(PPoint.calcSegmentSlopeRad(coord2MappedElevNoAlt, coord1NoAlt)).toBeNull();
+      });
+
+      it('should return the slope in altitudes between two nodes if only altitudes are present for both nodes', () => {
+        const coord1 = new PPoint(39.74005097339472, -104.9998123858178, 0);
+        const coord2 = new PPoint(39.73055300708892, -104.9990802128465, 500);
+
+        const coord2MappedElev = new PPoint(39.73055300708892, -104.9990802128465, 500);
+        coord2MappedElev.elevation = 1000;
+
+        expect(PPoint.calcSegmentSlopeRad(coord1, coord2)).toBeCloseTo(0.441, 3); // Uphill slope
+        expect(PPoint.calcSegmentSlopeRad(coord2, coord1)).toBeCloseTo(-0.441, 3);  // Downhill slope
+        expect(PPoint.calcSegmentSlopeRad(coord1, coord2MappedElev)).toBeCloseTo(0.441, 3); // Partial elevation w/ 2 altitudes
+      });
+
+      it('should return the slope in elevation between two nodes that both have mapped elevations', () => {
+        const coord1 = new PPoint(39.74005097339472, -104.9998123858178, 0);
+        coord1.elevation = 0;
+        const coord2 = new PPoint(39.73055300708892, -104.9990802128465, 0);
+        coord2.elevation = 2000;
+
+        expect(PPoint.calcSegmentSlopeRad(coord1, coord2)).toBeCloseTo(1.084, 3); // Uphill slope
+        expect(PPoint.calcSegmentSlopeRad(coord2, coord1)).toBeCloseTo(-1.084, 3);  // Downhill slope
       });
     });
   });
