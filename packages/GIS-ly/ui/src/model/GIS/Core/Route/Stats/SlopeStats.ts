@@ -1,6 +1,5 @@
 import {
-  SegmentNode,
-  VertexNode
+  SegmentNode
 } from "../../../../Geometry/Polyline";
 import {
   BasicStats,
