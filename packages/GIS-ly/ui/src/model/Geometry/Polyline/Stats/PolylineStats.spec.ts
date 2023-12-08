@@ -187,7 +187,7 @@ describe('##PoylineStats', () => {
     }
 
     describe('with first/last vertices', () => {
-      it('should do nothing for a stats object with no first vertex', () => {
+      it('should do nothing & return undefined for a stats object with no first vertex', () => {
         const stats = PolylineStats.fromVertices(null, lastVertex);
 
         expect(stats.isDirty).toBeTruthy();
@@ -196,9 +196,7 @@ describe('##PoylineStats', () => {
 
         expect(stats.isDirty).toBeTruthy();
 
-        expect(result).toEqual({
-          length: 0
-        });
+        expect(result).toBeUndefined();
       });
 
       it('should lazy load stats & reset dirty flag', () => {
@@ -273,7 +271,7 @@ describe('##PoylineStats', () => {
     });
 
     describe('with polyline', () => {
-      it('should do nothing for a stats object with no polyline', () => {
+      it('should do nothing & return undefined for a stats object with no polyline', () => {
         const stats = PolylineStats.fromPolyline(null);
 
         expect(stats.isDirty).toBeTruthy();
@@ -282,9 +280,7 @@ describe('##PoylineStats', () => {
 
         expect(stats.isDirty).toBeTruthy();
 
-        expect(result).toEqual({
-          length: 0
-        });
+        expect(result).toBeUndefined();
       });
 
       it('should lazy load stats & reset dirty flag', () => {

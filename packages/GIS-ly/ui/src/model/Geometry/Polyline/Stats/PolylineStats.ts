@@ -87,12 +87,12 @@ export class PolylineStats<
   }
 
   protected compileStats(): TStats {
-    if (!this._lengthStats || this._statsDirty) {
+    if (this._statsDirty) {
       this.addStats();
     }
 
     return this._lengthStats
       ? this._lengthStats.serialize() as TStats
-      : { length: 0 } as TStats;
+      : undefined;
   }
 }
