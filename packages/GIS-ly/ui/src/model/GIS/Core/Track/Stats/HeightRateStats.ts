@@ -57,7 +57,7 @@ class HeightRateStatsSigned
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 

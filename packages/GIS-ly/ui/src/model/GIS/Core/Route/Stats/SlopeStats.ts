@@ -63,7 +63,7 @@ class SlopeStatsSigned
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 

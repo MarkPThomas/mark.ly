@@ -52,19 +52,10 @@ export class HeightStats
   }
 
   protected isAscending(number: number): boolean {
-    if (this._isConsidered) {
-      // if (this._isConsidered && this._isConsidered(number)) {
-      console.log('Consider Meeee!', number);
-    }
-    // return (!this._isConsidered || this._isConsidered(number)) && number > 0;
     return number > 0;
   }
 
   protected isDescending(number: number): boolean {
-    // if (this._isConsidered && this._isConsidered(number)) {
-    //   console.log('Consider Meeee!', number);
-    // }
-    // return (!this._isConsidered || this._isConsidered(number)) && number < 0;
     return number < 0;
   }
 
@@ -73,7 +64,7 @@ export class HeightStats
   }
 
   protected override addProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 
@@ -84,7 +75,7 @@ export class HeightStats
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 

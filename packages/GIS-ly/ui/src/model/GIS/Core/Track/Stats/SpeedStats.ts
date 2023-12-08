@@ -44,7 +44,7 @@ export class SpeedStats
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.speed))) {
       return;
     }
 
@@ -55,7 +55,7 @@ export class SpeedStats
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.speed))) {
       return;
     }
 
