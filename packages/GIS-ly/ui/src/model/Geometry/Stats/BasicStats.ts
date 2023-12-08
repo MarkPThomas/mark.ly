@@ -40,7 +40,7 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
     this._endVertex = endVertex;
     this.initializeProperties();
 
-    let segNode = startVertex.nextSeg;
+    let segNode = startVertex.nextSeg as SegmentNode<TVertex, TSegment>;
     if (segNode) {
       this.add(segNode);
 

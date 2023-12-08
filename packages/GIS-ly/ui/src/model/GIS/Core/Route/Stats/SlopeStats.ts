@@ -1,10 +1,9 @@
 import {
-  SegmentNode,
-  VertexNode
+  SegmentNode
 } from "../../../../Geometry/Polyline";
 import {
-  BasicProperty,
-  MaxMinProperty,
+  BasicStats,
+  MaxMinStats,
   Sum
 } from "../../../../Geometry/Stats";
 import { INodeOfInterest } from "../../../../Geometry/Stats/INodeOfInterest";
@@ -24,39 +23,39 @@ export interface ISlope {
 };
 
 class SlopeStatsSigned
-  extends BasicProperty<RoutePoint, RouteSegment>
+  extends BasicStats<RoutePoint, RouteSegment>
   implements ISlopeSigned {
 
-  private _maxMin: MaxMinProperty<RoutePoint, RouteSegment>;
-  private _gain: Sum;
-  private _gainLength: Sum;
+  private _maxMin: MaxMinStats<RoutePoint, RouteSegment>;
+  private _heightChange: Sum;
+  private _length: Sum;
 
   get avg(): number {
-    return this._gainLength.value ? this._gain.value / this._gainLength.value : 0;
+    return this._length.value ? this._heightChange.value / this._length.value : 0;
   }
 
   get max(): INodeOfInterest<RoutePoint, RouteSegment> {
-    return this._maxMin?.range.max;
+    return this._maxMin && (this._isConsidered && this._isConsidered(1)) ? this._maxMin.range.max : this._maxMin.range.min;
   }
 
   protected override initializeProperties() {
-    this._gain = new Sum(this._isConsidered);
-    this._gainLength = new Sum(this._isConsidered);
+    this._heightChange = new Sum();
+    this._length = new Sum();
 
-    this._maxMin = new MaxMinProperty<RoutePoint, RouteSegment>(this.getPtElevation);
+    this._maxMin = new MaxMinStats<RoutePoint, RouteSegment>(this.getSegSlope, true);
   }
 
-  protected getPtElevation(point: RoutePoint): number {
-    return point?.elevation;
+  protected getSegSlope(segment: RouteSegment): number {
+    return segment?.slope;
   }
 
   protected override addProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 
-    this._gain.add(segment.val.height);
-    this._gainLength.add(segment.val.length);
+    this._heightChange.add(segment.val.height);
+    this._length.add(segment.val.length);
 
     this._maxMin.add(segment);
   }
@@ -66,8 +65,8 @@ class SlopeStatsSigned
       return;
     }
 
-    this._gain.remove(segment.val.height);
-    this._gainLength.remove(segment.val.length);
+    this._heightChange.remove(segment.val.height);
+    this._length.remove(segment.val.length);
 
     this._maxMin.remove(segment);
   }
@@ -81,13 +80,13 @@ class SlopeStatsSigned
 }
 
 export class SlopeStats
-  extends BasicProperty<RoutePoint, RouteSegment>
+  extends BasicStats<RoutePoint, RouteSegment>
   implements ISlope {
 
   private _totalLength: number;
   private _totalHeight: number;
   get avg(): number {
-    return this._totalHeight ? this._totalLength / this._totalHeight : 0;
+    return this._totalLength ? this._totalHeight / this._totalLength : 0;
   }
 
   private _uphill: SlopeStatsSigned;
@@ -106,14 +105,11 @@ export class SlopeStats
     }
   }
 
-  constructor(startVertex?: VertexNode<RoutePoint, RouteSegment>) {
-    super(startVertex);
-    this.initialize(startVertex);
-  }
-
   protected override initializeProperties() {
-    this._uphill = new SlopeStatsSigned(this._startVertex, this.isAscending);
-    this._downhill = new SlopeStatsSigned(this._startVertex, this.isDescending);
+    this._uphill = new SlopeStatsSigned(this.isAscending);
+    this._downhill = new SlopeStatsSigned(this.isDescending);
+    this._totalLength = 0;
+    this._totalHeight = 0;
   }
 
   protected isAscending(number: number): boolean {

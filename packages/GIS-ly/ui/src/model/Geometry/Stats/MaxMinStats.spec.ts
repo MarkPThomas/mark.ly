@@ -22,9 +22,9 @@ describe('##MaxMinStats', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const maxMin = new MaxMinStats(getProperty);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -34,9 +34,9 @@ describe('##MaxMinStats', () => {
 
       const maxMin = new MaxMinStats(getProperty, isConsidered);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -47,9 +47,9 @@ describe('##MaxMinStats', () => {
 
       const maxMin = new MaxMinStats(getProperty, isConsidered, tolerance);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
   });
@@ -77,9 +77,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.add(null);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -278,9 +278,9 @@ describe('##MaxMinStats', () => {
       const maxMin = new MaxMinStats(getProperty, isConsidered, tolerance);
       const nextVertexOnly = true;
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       const vertexOut = new VertexNode(new TestVertex(0.5));
@@ -292,9 +292,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.add(segmentOut);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.add(segmentIn, nextVertexOnly);
@@ -323,9 +323,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.fromTo(startNode, endNode);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -338,9 +338,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.fromTo(startNode, endNode);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -455,9 +455,9 @@ describe('##MaxMinStats', () => {
     it('should do nothing if no polyline is provided', () => {
       maxMin.of(null);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -466,9 +466,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.of(polyline);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -553,16 +553,16 @@ describe('##MaxMinStats', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const maxMin = new MaxMinStats(getProperty);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.update();
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
 
@@ -585,9 +585,9 @@ describe('##MaxMinStats', () => {
       maxMin.remove(polyline.firstSegment);
 
       // Reset to initialized state
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.update();
@@ -660,9 +660,9 @@ describe('##MaxMinStats', () => {
         )
       );
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.update();
@@ -683,9 +683,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.remove(polyline.firstSegment);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.update();
@@ -706,9 +706,9 @@ describe('##MaxMinStats', () => {
 
       maxMin.remove(polyline.lastSegment);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.update();
@@ -731,16 +731,16 @@ describe('##MaxMinStats', () => {
       maxMin.remove(polyline.firstSegment.next as SegmentNode<TestVertex, Segment>);
       maxMin.remove(polyline.lastSegment);
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
 
       maxMin.update();
 
-      expect(maxMin.range.max.value).toEqual(-Infinity);
+      expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
-      expect(maxMin.range.min.value).toEqual(Infinity);
+      expect(maxMin.range.min.value).toEqual(0);
       expect(maxMin.range.min.nodes.length).toEqual(0);
     });
   });
@@ -752,7 +752,7 @@ describe('##MaxMinStats', () => {
 
       const result = maxMin.serialize();
 
-      expect(result).toEqual({});
+      expect(result).toEqual(MaxMinStats.empty());
     });
 
     it('should serialize the object into a JSON object', () => {

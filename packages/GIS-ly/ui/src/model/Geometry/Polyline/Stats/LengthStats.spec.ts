@@ -266,15 +266,15 @@ describe('##LengthStats', () => {
 
   describe('#serialize', () => {
     it('should write out empty properties if empty', () => {
-      const maxMin = new LengthStats();
+      const lengthStats = new LengthStats();
 
-      const result = maxMin.serialize();
+      const result = lengthStats.serialize();
 
       expect(result.length).toEqual(0);
     });
 
     it('should serialize the object into a JSON object', () => {
-      const maxMin = new LengthStats();
+      const lengthStats = new LengthStats();
 
       const vertexStart = new TestVertex(1);
       const vertexMin1 = new TestVertex(-1);
@@ -291,11 +291,11 @@ describe('##LengthStats', () => {
 
       const polyline = new Polyline<TestVertex, Segment>(vertices);
 
-      maxMin.of(polyline);
+      lengthStats.of(polyline);
 
-      const result = maxMin.serialize();
+      const result = lengthStats.serialize();
 
-      expect(result.length).toEqual(maxMin.length);
+      expect(result.length).toEqual(lengthStats.length);
     });
   });
 });
