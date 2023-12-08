@@ -1,8 +1,8 @@
 import { SegmentNode } from "../../../../Geometry/Polyline";
 import {
-  BasicProperty,
+  BasicStats,
   INodeOfInterest,
-  MaxMinProperty,
+  MaxMinStats,
   Sum
 } from "../../../../Geometry/Stats";
 
@@ -16,10 +16,10 @@ export interface ISpeed {
 }
 
 export class SpeedStats
-  extends BasicProperty<TrackPoint, TrackSegment>
+  extends BasicStats<TrackPoint, TrackSegment>
   implements ISpeed {
 
-  private _maxMin: MaxMinProperty<TrackPoint, TrackSegment>;
+  private _maxMin: MaxMinStats<TrackPoint, TrackSegment>;
   get max(): INodeOfInterest<TrackPoint, TrackSegment> {
     return this._maxMin?.range.max;
   }
@@ -27,21 +27,20 @@ export class SpeedStats
     return this._maxMin?.range.min;
   }
 
-  _distance: Sum;
-  _duration: Sum;
+  private _distance: Sum;
+  private _duration: Sum;
   get avg(): number {
-    return this._duration ? this._distance.value / this._duration.value : 0;
+    return (this._duration && this._duration.value) ? this._distance.value / this._duration.value : 0;
   }
 
   protected override initializeProperties() {
-    this._distance = new Sum(this._isConsidered);
-    this._duration = new Sum(this._isConsidered);
-    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this.getPtSpeed);
+    this._distance = new Sum();
+    this._duration = new Sum();
+    this._maxMin = new MaxMinStats<TrackPoint, TrackSegment>(this.getSegSpeed, true);
   }
 
-  // TODO: See about using segment speed? And/or correct Pt average speeds to be weighted by neighboring seg durations
-  protected getPtSpeed(point: TrackPoint): number {
-    return point?.path.speed;
+  protected getSegSpeed(segment: TrackSegment): number {
+    return segment?.speed;
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
