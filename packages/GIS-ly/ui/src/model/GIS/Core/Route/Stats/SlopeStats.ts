@@ -109,7 +109,7 @@ export class SlopeStats
     this._uphill = new SlopeStatsSigned(this.isAscending);
     this._downhill = new SlopeStatsSigned(this.isDescending);
     this._totalLength = 0;
-    this._totalHeight = 0
+    this._totalHeight = 0;
   }
 
   protected isAscending(number: number): boolean {

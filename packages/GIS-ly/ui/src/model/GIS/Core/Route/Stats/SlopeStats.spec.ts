@@ -12,6 +12,7 @@ describe('##SlopeStats', () => {
     const segmentNodes: SegmentNode<RoutePoint, RouteSegment>[] = [];
 
     if (heights.length) {
+      const angle = 0;
       const lat = 0;
       let long = 0;
 
@@ -20,7 +21,7 @@ describe('##SlopeStats', () => {
       let vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long * longMultiplier));
       vertexJ.val.elevation = vertexI.val.elevation + heights[0];
 
-      let segment = new RouteSegment(length, 0.1, null, heights[0]);
+      let segment = new RouteSegment(length, angle, null, heights[0]);
       let segmentNode = new SegmentNode<RoutePoint, RouteSegment>(
         vertexI,
         vertexJ,
@@ -32,8 +33,6 @@ describe('##SlopeStats', () => {
       segmentNodes.push(segmentNode);
 
       for (let i = 1; i < heights.length; i++) {
-        const angle = 0;
-
         vertexI = vertexJ;
         vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long * longMultiplier));
         vertexJ.val.elevation = vertexI.val.elevation + heights[i];

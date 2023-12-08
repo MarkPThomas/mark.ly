@@ -10,14 +10,16 @@ describe('##HeightStats', () => {
     const segmentNodes: SegmentNode<RoutePoint, RouteSegment>[] = [];
 
     if (heights.length) {
+      const angle = 0;
+      const lat = 0;
       let long = 0;
 
-      let vertexI = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, long));
+      let vertexI = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, long));
       vertexI.val.elevation = elevationInitial;
-      let vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, ++long));
+      let vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long));
       vertexJ.val.elevation = vertexI.val.elevation + heights[0];
 
-      let segment = new RouteSegment(1, 0.1, null, heights[0]);
+      let segment = new RouteSegment(lat, angle, null, heights[0]);
       let segmentNode = new SegmentNode<RoutePoint, RouteSegment>(
         vertexI,
         vertexJ,
@@ -30,9 +32,9 @@ describe('##HeightStats', () => {
 
       for (let i = 1; i < heights.length; i++) {
         vertexI = vertexJ;
-        vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, ++long));
+        vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long));
         vertexJ.val.elevation = vertexI.val.elevation + heights[i];
-        segment = new RouteSegment(1, 0.1, null, heights[i]);
+        segment = new RouteSegment(lat, angle, null, heights[i]);
 
         const segmentNode = new SegmentNode<RoutePoint, RouteSegment>(
           vertexI,
@@ -53,17 +55,18 @@ describe('##HeightStats', () => {
     let route: PolylineRoute<RoutePoint, RouteSegment>;
 
     if (heights.length) {
+      const lat = 0;
       let long = 0;
 
-      let vertexI = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, long));
+      let vertexI = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, long));
       vertexI.val.elevation = elevationInitial;
-      let vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, ++long));
+      let vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long));
       vertexJ.val.elevation = vertexI.val.elevation + heights[0];
       route = new PolylineRoute([vertexI, vertexJ]);
 
       for (let i = 1; i < heights.length; i++) {
         vertexI = vertexJ;
-        vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, ++long));
+        vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long));
         vertexJ.val.elevation = vertexI.val.elevation + heights[i];
 
         route.append(vertexJ);
