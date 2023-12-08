@@ -87,12 +87,24 @@ export class PolylineStats<
   }
 
   protected compileStats(): TStats {
-    if (this._statsDirty) {
+    if (this.shouldAddState()) {
       this.addStats();
     }
 
-    return this._lengthStats
-      ? this._lengthStats.serialize() as TStats
-      : undefined;
+    return this.propertiesAreNotInitialized()
+      ? undefined
+      : this.serialize();
+  }
+
+  protected shouldAddState(): boolean {
+    return (this._statsDirty || this.propertiesAreNotInitialized());
+  }
+
+  protected propertiesAreNotInitialized(): boolean {
+    return !this._lengthStats;
+  }
+
+  protected serialize() {
+    return this._lengthStats.serialize() as TStats;
   }
 }
