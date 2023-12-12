@@ -326,17 +326,17 @@ describe('##RouteStats', () => {
         expect(removedResultDirty.length).toBeCloseTo(10007876.98, 2);
 
         // Route Stats
-        expect(insertResult.height.net).toBeCloseTo(-8.3, 2);
-        expect(insertResult.height.gain).toBeCloseTo(30005.6, 2);
-        expect(insertResult.height.loss).toBeCloseTo(-30013.9, 2);
-        expect(insertResult.height.max.value).toBeCloseTo(30000, 2);
-        expect(insertResult.height.min.value).toBeCloseTo(-8.3, 2);
+        expect(removedResultDirty.height.net).toBeCloseTo(-8.3, 2);
+        expect(removedResultDirty.height.gain).toBeCloseTo(30005.6, 2);
+        expect(removedResultDirty.height.loss).toBeCloseTo(-30013.9, 2);
+        expect(removedResultDirty.height.max.value).toBeCloseTo(30000, 2);
+        expect(removedResultDirty.height.min.value).toBeCloseTo(-8.3, 2);
 
-        expect(insertResult.slope.avg).toBeCloseTo(-8e-7, 7);
-        expect(insertResult.slope.downhill.avg).toBeCloseTo(-0.006, 3);
-        expect(insertResult.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
-        expect(insertResult.slope.uphill.avg).toBeCloseTo(0.006, 3);
-        expect(insertResult.slope.uphill.max.value).toBeCloseTo(0.09, 3);
+        expect(removedResultDirty.slope.avg).toBeCloseTo(-8e-7, 7);
+        expect(removedResultDirty.slope.downhill.avg).toBeCloseTo(-0.006, 3);
+        expect(removedResultDirty.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
+        expect(removedResultDirty.slope.uphill.avg).toBeCloseTo(0.006, 3);
+        expect(removedResultDirty.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
         // Manually reset state
         expect(stats.isDirty).toBeFalsy();
