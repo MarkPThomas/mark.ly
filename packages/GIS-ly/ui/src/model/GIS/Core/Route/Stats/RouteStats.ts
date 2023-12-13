@@ -81,16 +81,6 @@ export class RouteStats<
     this.addStatsByState(this._slopeStats as unknown as BasicStats<TVertex, TSegment>);
   }
 
-  // protected override compileStats(): TStats {
-  //   return this.propertiesAreNotInitialized()
-  //     ? undefined
-  //     : {
-  //       ...super.compileStats(),
-  //       height: this._heightStats.serialize(),
-  //       slope: this._slopeStats.serialize()
-  //     } as TStats;
-  // }
-
   protected override propertiesAreNotInitialized(): boolean {
     return super.propertiesAreNotInitialized() || !this._heightStats || !this._slopeStats;
   }

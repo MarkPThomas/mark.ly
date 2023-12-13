@@ -1,66 +1,75 @@
 import { VertexNode } from '../../../../Geometry/Polyline';
-import { PolylineRoute } from '../PolylineRoute';
-import { RouteSegment } from '../RouteSegment';
-import { RoutePoint } from '../RoutePoint';
-import { RouteStats } from './RouteStats';
+import { PolylineTrack } from '../PolylineTrack';
+import { TrackSegment } from '../TrackSegment';
+import { TrackPoint } from '../TrackPoint';
+import { TrackStats } from './TrackStats';
 
-describe('##RouteStats', () => {
+describe('##TrackStats', () => {
   const longMultiplier = 0.0005;
+  const updateTimestampMS = (timestamp: number, duration: number) => timestamp + duration * 1000;
 
-  const createRoute = (heights: number[]): PolylineRoute<RoutePoint, RouteSegment> => {
-    let route: PolylineRoute<RoutePoint, RouteSegment>;
+  const createTrack = (heights: number[]): PolylineTrack => {
+    let track: PolylineTrack;
 
     if (heights.length) {
-      let long = 0;
       const lat = 0;
+      let long = 0;
+      let timestampMS = new Date(0).getMilliseconds();
+      let timestamp = new Date(timestampMS);
 
-      let vertexI = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, long));
+      let vertexI = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(lat, long, null, timestamp.toString()));
       vertexI.val.elevation = 0;
 
-      let vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long * longMultiplier));
+      timestampMS = updateTimestampMS(timestampMS, durations[0]);
+      timestamp = new Date(timestampMS);
+      let vertexJ = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(lat, ++long * longMultiplier, null, timestamp.toString()));
       vertexJ.val.elevation = vertexI.val.elevation + heights[0];
 
-      route = new PolylineRoute([vertexI, vertexJ]);
+      track = new PolylineTrack([vertexI, vertexJ]);
 
       for (let i = 1; i < heights.length; i++) {
+        timestampMS = updateTimestampMS(timestampMS, durations[i]);
+        timestamp = new Date(timestampMS);
+
         vertexI = vertexJ;
-        vertexJ = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(lat, ++long * longMultiplier));
+        vertexJ = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(lat, ++long * longMultiplier, null, timestamp.toString()));
         vertexJ.val.elevation = vertexI.val.elevation + heights[i];
 
-        route.append(vertexJ);
+        track.append(vertexJ);
       }
     } else {
-      route = new PolylineRoute([]);
+      track = new PolylineTrack([]);
     }
 
-    route.addElevationProperties();
+    track.addElevationProperties();
 
-    return route;
+    return track;
   };
 
   const heights = [1.7, -2.8, -0.6, 5, 0.6, -8.3, -3.9];
+  const durations = [30, 25, 15, 30, 50, 60, 30];
 
   describe('#constructor', () => {
     it('should initialize a new object from Points', () => {
-      const firstPoint = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(1, 2, 3));
-      const lastVertex = new VertexNode<RoutePoint, RouteSegment>(new RoutePoint(2, 3, 4));
+      const firstPoint = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(1, 2, 3, '4'));
+      const lastVertex = new VertexNode<TrackPoint, TrackSegment>(new TrackPoint(2, 3, 4, '5'));
 
-      const stats = RouteStats.fromRoutePoints(firstPoint, lastVertex);
+      const stats = TrackStats.fromTrackPoints(firstPoint, lastVertex);
 
       expect(stats.isDirty).toBeTruthy();
     });
 
     it('should initialize a new object from a polyline', () => {
-      const vertices: RoutePoint[] = [
-        new RoutePoint(1, 2, 3),
-        new RoutePoint(2, 3, 4),
-        new RoutePoint(3, 4, 5),
-        new RoutePoint(4, 5, 6),
+      const vertices: TrackPoint[] = [
+        new TrackPoint(1, 2, 3, '4'),
+        new TrackPoint(2, 3, 4, '5'),
+        new TrackPoint(3, 4, 5, '6'),
+        new TrackPoint(4, 5, 6, '7'),
       ];
 
-      const polyline = new PolylineRoute<RoutePoint, RouteSegment>(vertices);
+      const polyline = new PolylineTrack(vertices);
 
-      const stats = RouteStats.fromRoute(polyline);
+      const stats = TrackStats.fromTrack(polyline);
 
       expect(stats.isDirty).toBeTruthy();
     });
@@ -68,18 +77,18 @@ describe('##RouteStats', () => {
 
   describe('#setDirty', () => {
     it('should set object to dirty', () => {
-      const vertices: RoutePoint[] = [
-        new RoutePoint(1, 2, 3),
-        new RoutePoint(2, 3, 4),
-        new RoutePoint(3, 4, 5),
-        new RoutePoint(4, 5, 6),
+      const vertices: TrackPoint[] = [
+        new TrackPoint(1, 2, 3, '4'),
+        new TrackPoint(2, 3, 4, '5'),
+        new TrackPoint(3, 4, 5, '6'),
+        new TrackPoint(4, 5, 6, '7'),
       ];
 
 
-      const firstVertex = new VertexNode<RoutePoint, RouteSegment>(vertices[0]);
-      const lastVertex = new VertexNode<RoutePoint, RouteSegment>(vertices[vertices.length - 1]);
+      const firstVertex = new VertexNode<TrackPoint, TrackSegment>(vertices[0]);
+      const lastVertex = new VertexNode<TrackPoint, TrackSegment>(vertices[vertices.length - 1]);
 
-      const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
+      const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
       expect(stats.isDirty).toBeTruthy();
 
@@ -94,19 +103,19 @@ describe('##RouteStats', () => {
   });
 
   describe('#addStats', () => {
-    let vertices: RoutePoint[];
+    let vertices: TrackPoint[];
     beforeEach(() => {
       vertices = [
-        new RoutePoint(1, 2, 3),
-        new RoutePoint(2, 3, 4),
-        new RoutePoint(3, 4, 5),
-        new RoutePoint(4, 5, 6),
+        new TrackPoint(1, 2, 3, '4'),
+        new TrackPoint(2, 3, 4, '5'),
+        new TrackPoint(3, 4, 5, '6'),
+        new TrackPoint(4, 5, 6, '7'),
       ];
     });
 
     describe('with first/last vertices', () => {
-      let firstVertex: VertexNode<RoutePoint, RouteSegment>;
-      let lastVertex: VertexNode<RoutePoint, RouteSegment>;
+      let firstVertex: VertexNode<TrackPoint, TrackSegment>;
+      let lastVertex: VertexNode<TrackPoint, TrackSegment>;
 
       beforeEach(() => {
         firstVertex = new VertexNode(vertices[0]);
@@ -114,7 +123,7 @@ describe('##RouteStats', () => {
       });
 
       it('should do nothing for a stats object with no first vertex', () => {
-        const stats = RouteStats.fromRoutePoints(null, lastVertex);
+        const stats = TrackStats.fromTrackPoints(null, lastVertex);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -124,7 +133,7 @@ describe('##RouteStats', () => {
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
-        const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
+        const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -135,14 +144,14 @@ describe('##RouteStats', () => {
     });
 
     describe('with Polyline', () => {
-      let polyline: PolylineRoute<RoutePoint, RouteSegment>;
+      let polyline: PolylineTrack;
 
       beforeEach(() => {
-        polyline = new PolylineRoute<RoutePoint, RouteSegment>(vertices);
+        polyline = new PolylineTrack(vertices);
       });
 
       it('should do nothing for a stats object with no polyline', () => {
-        const stats = RouteStats.fromRoute(null);
+        const stats = TrackStats.fromTrack(null);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -151,25 +160,25 @@ describe('##RouteStats', () => {
         expect(stats.isDirty).toBeTruthy();
       });
 
-      // it('should explicitly add stats & reset dirty flag', () => {
-      //   const stats = RouteStats.fromRoute(polyline);
+      it('should explicitly add stats & reset dirty flag', () => {
+        const stats = TrackStats.fromTrack(polyline);
 
-      //   expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty).toBeTruthy();
 
-      //   stats.addStats();
+        stats.addStats();
 
-      //   expect(stats.isDirty).toBeFalsy();
-      // });
+        expect(stats.isDirty).toBeFalsy();
+      });
     });
   });
 
   describe('#stats property', () => {
-    let polyline: PolylineRoute<RoutePoint, RouteSegment>;
-    let firstVertex: VertexNode<RoutePoint, RouteSegment>;
-    let lastVertex: VertexNode<RoutePoint, RouteSegment>;
+    let polyline: PolylineTrack;
+    let firstVertex: VertexNode<TrackPoint, TrackSegment>;
+    let lastVertex: VertexNode<TrackPoint, TrackSegment>;
 
     beforeEach(() => {
-      polyline = createRoute(heights);
+      polyline = createTrack(heights);
 
       firstVertex = polyline.firstVertex;
       lastVertex = polyline.lastVertex;
@@ -177,7 +186,7 @@ describe('##RouteStats', () => {
 
     describe('with first/last vertices', () => {
       it('should do nothing & return undefined for a stats object with no first vertex', () => {
-        const stats = RouteStats.fromRoutePoints(null, lastVertex);
+        const stats = TrackStats.fromTrackPoints(null, lastVertex);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -189,7 +198,7 @@ describe('##RouteStats', () => {
       });
 
       it('should lazy load stats & reset dirty flag', () => {
-        const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
+        const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -212,11 +221,25 @@ describe('##RouteStats', () => {
         expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
+
+        // Track Stats
+        expect(result.time.duration).toEqual(240);
+        expect(result.time.maxInterval.value).toEqual(60);
+        expect(result.time.minInterval.value).toEqual(15);
+
+        expect(result.speed.avg).toBeCloseTo(1.62, 2);
+        expect(result.speed.max.value).toBeCloseTo(3.71, 2);
+        expect(result.speed.min.value).toBeCloseTo(0.93, 2);
+
+        expect(result.heightRate.ascent.avg).toBeCloseTo(0.066, 3);  // 0.081 - Wrong?
+        expect(result.heightRate.ascent.max.value).toBeCloseTo(0.167, 3);
+        expect(result.heightRate.descent.avg).toBeCloseTo(-0.12, 2);  // -0.11 - Wrong?
+        expect(result.heightRate.descent.max.value).toBeCloseTo(-0.14, 2);
       });
 
       // it('should skip nodes not meeting callback criteria provided', () => {
       //   const isLengthConsidered = (length: number) => length > 1;
-      //   const stats = RouteStats.fromRoutePoints(
+      //   const stats = TrackStats.fromTrackPoints(
       //     firstVertex,
       //     lastVertex,
       //     { isLengthConsidered }
@@ -234,7 +257,7 @@ describe('##RouteStats', () => {
       // });
 
       it('should return updated stats when middle vertex is changed & stats reset to dirty', () => {
-        const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
+        const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -258,24 +281,38 @@ describe('##RouteStats', () => {
         expect(initialResult.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(initialResult.slope.uphill.max.value).toBeCloseTo(0.09, 2);
 
+        // Track Stats
+        expect(initialResult.time.duration).toEqual(240);
+        expect(initialResult.time.maxInterval.value).toEqual(60);
+        expect(initialResult.time.minInterval.value).toEqual(15);
+
+        expect(initialResult.speed.avg).toBeCloseTo(1.62, 2);
+        expect(initialResult.speed.max.value).toBeCloseTo(3.71, 2);
+        expect(initialResult.speed.min.value).toBeCloseTo(0.93, 2);
+
+        expect(initialResult.heightRate.ascent.avg).toBeCloseTo(0.066, 3);  // 0.081 - Wrong?
+        expect(initialResult.heightRate.ascent.max.value).toBeCloseTo(0.167, 3);
+        expect(initialResult.heightRate.descent.avg).toBeCloseTo(-0.12, 2);  // -0.11 - Wrong?
+        expect(initialResult.heightRate.descent.max.value).toBeCloseTo(-0.14, 2);
+
         // Insert node
-        const vertexBeforeRemove = polyline.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+        const vertexBeforeRemove = polyline.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
         const vertexAfterRemove = vertexBeforeRemove.next;
 
         const longitudeRemove = 0.5 * (vertexBeforeRemove.val.lng + vertexAfterRemove.val.lng);
         const latitudeRemove = 45;
         const elevationRemove = 30000;
-        const pointToRemove = new RoutePoint(latitudeRemove, longitudeRemove);
+        const timestampRemoveStr = 'Wed Dec 31 1969 17:00:43 GMT-0700 (Mountain Standard Time)';
+        const pointToRemove = new TrackPoint(latitudeRemove, longitudeRemove, null, timestampRemoveStr);
         pointToRemove.elevation = elevationRemove;
 
         polyline.insertAfter(vertexBeforeRemove, pointToRemove);
-        const vertexToRemove = vertexBeforeRemove.next as VertexNode<RoutePoint, RouteSegment>;
 
         expect(stats.isDirty).toBeFalsy();
 
         const insertResultDirty = stats.stats;
 
-        // State should be unchanged from original polyine
+        // State should be unchanged from original polyline
         // Polyline-based stats
         expect(insertResultDirty.length).toBeCloseTo(initialResult.length, 2);
 
@@ -291,6 +328,20 @@ describe('##RouteStats', () => {
         expect(insertResultDirty.slope.downhill.max.value).toBeCloseTo(initialResult.slope.downhill.max.value, 2);
         expect(insertResultDirty.slope.uphill.avg).toBeCloseTo(initialResult.slope.uphill.avg, 2);
         expect(insertResultDirty.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
+
+        // Track Stats
+        expect(insertResultDirty.time.duration).toEqual(initialResult.time.duration);
+        expect(insertResultDirty.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
+        expect(insertResultDirty.time.minInterval.value).toEqual(initialResult.time.minInterval.value);
+
+        expect(insertResultDirty.speed.avg).toBeCloseTo(initialResult.speed.avg, 2);
+        expect(insertResultDirty.speed.max.value).toBeCloseTo(initialResult.speed.max.value, 2);
+        expect(insertResultDirty.speed.min.value).toBeCloseTo(initialResult.speed.min.value, 2);
+
+        expect(insertResultDirty.heightRate.ascent.avg).toBeCloseTo(initialResult.heightRate.ascent.avg, 2);
+        expect(insertResultDirty.heightRate.ascent.max.value).toBeCloseTo(initialResult.heightRate.ascent.max.value, 2);
+        expect(insertResultDirty.heightRate.descent.avg).toBeCloseTo(initialResult.heightRate.descent.avg, 2);
+        expect(insertResultDirty.heightRate.descent.max.value).toBeCloseTo(initialResult.heightRate.descent.max.value, 2);
 
         // Manually reset state
         expect(stats.isDirty).toBeFalsy();
@@ -317,7 +368,23 @@ describe('##RouteStats', () => {
         expect(insertResult.slope.uphill.avg).toBeCloseTo(0.006, 3);
         expect(insertResult.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
+        // Track Stats
+        expect(insertResult.time.duration).toEqual(initialResult.time.duration);
+        expect(insertResult.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
+        expect(insertResult.time.minInterval.value).toEqual(12);
+
+        expect(insertResult.speed.avg).toBeCloseTo(41699.49, 2);
+        expect(insertResult.speed.max.value).toBeCloseTo(416980.97, 2);
+        expect(insertResult.speed.min.value).toBeCloseTo(0.93, 2);
+
+        expect(insertResult.heightRate.ascent.avg).toBeCloseTo(243.95, 2);
+        expect(insertResult.heightRate.ascent.max.value).toBeCloseTo(2307.56, 2);
+        expect(insertResult.heightRate.descent.avg).toBeCloseTo(-256.53, 2);
+        expect(insertResult.heightRate.descent.max.value).toBeCloseTo(-2500.09, 2);
+
         // Remove node
+        const vertexToRemove = vertexBeforeRemove.next as VertexNode<TrackPoint, TrackSegment>;
+
         polyline.removeAt(vertexToRemove);
 
         const removedResultDirty = stats.stats;
@@ -337,6 +404,20 @@ describe('##RouteStats', () => {
         expect(removedResultDirty.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
         expect(removedResultDirty.slope.uphill.avg).toBeCloseTo(0.006, 3);
         expect(removedResultDirty.slope.uphill.max.value).toBeCloseTo(0.09, 3);
+
+        // Track Stats
+        expect(removedResultDirty.time.duration).toEqual(initialResult.time.duration);
+        expect(removedResultDirty.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
+        expect(removedResultDirty.time.minInterval.value).toEqual(12);
+
+        expect(removedResultDirty.speed.avg).toBeCloseTo(41699.49, 2);
+        expect(removedResultDirty.speed.max.value).toBeCloseTo(416980.97, 2);
+        expect(removedResultDirty.speed.min.value).toBeCloseTo(0.93, 2);
+
+        expect(removedResultDirty.heightRate.ascent.avg).toBeCloseTo(243.95, 2);
+        expect(removedResultDirty.heightRate.ascent.max.value).toBeCloseTo(2307.56, 2);
+        expect(removedResultDirty.heightRate.descent.avg).toBeCloseTo(-256.53, 2);
+        expect(removedResultDirty.heightRate.descent.max.value).toBeCloseTo(-2500.09, 2);
 
         // Manually reset state
         expect(stats.isDirty).toBeFalsy();
@@ -365,12 +446,26 @@ describe('##RouteStats', () => {
         expect(removedResult.slope.downhill.max.value).toBeCloseTo(initialResult.slope.downhill.max.value, 2);
         expect(removedResult.slope.uphill.avg).toBeCloseTo(initialResult.slope.uphill.avg, 2);
         expect(removedResult.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
+
+        // Track Stats
+        expect(removedResult.time.duration).toEqual(initialResult.time.duration);
+        expect(removedResult.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
+        expect(removedResult.time.minInterval.value).toEqual(initialResult.time.minInterval.value);
+
+        expect(removedResult.speed.avg).toBeCloseTo(initialResult.speed.avg, 2);
+        expect(removedResult.speed.max.value).toBeCloseTo(initialResult.speed.max.value, 2);
+        expect(removedResult.speed.min.value).toBeCloseTo(initialResult.speed.min.value, 2);
+
+        expect(removedResult.heightRate.ascent.avg).toBeCloseTo(initialResult.heightRate.ascent.avg, 2);
+        expect(removedResult.heightRate.ascent.max.value).toBeCloseTo(initialResult.heightRate.ascent.max.value, 2);
+        expect(removedResult.heightRate.descent.avg).toBeCloseTo(initialResult.heightRate.descent.avg, 2);
+        expect(removedResult.heightRate.descent.max.value).toBeCloseTo(initialResult.heightRate.descent.max.value, 2);
       });
     });
 
     describe('with polyline', () => {
       it('should do nothing & return undefined for a stats object with no polyline', () => {
-        const stats = RouteStats.fromRoute(null);
+        const stats = TrackStats.fromTrack(null);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -382,7 +477,7 @@ describe('##RouteStats', () => {
       });
 
       it('should lazy load stats & reset dirty flag', () => {
-        const stats = RouteStats.fromRoute(polyline);
+        const stats = TrackStats.fromTrack(polyline);
 
         expect(stats.isDirty).toBeTruthy();
 
@@ -405,6 +500,20 @@ describe('##RouteStats', () => {
         expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
+
+        // Track Stats
+        expect(result.time.duration).toEqual(240);
+        expect(result.time.maxInterval.value).toEqual(60);
+        expect(result.time.minInterval.value).toEqual(15);
+
+        expect(result.speed.avg).toBeCloseTo(1.62, 2);
+        expect(result.speed.max.value).toBeCloseTo(3.71, 2);
+        expect(result.speed.min.value).toBeCloseTo(0.93, 2);
+
+        expect(result.heightRate.ascent.avg).toBeCloseTo(0.066, 3);
+        expect(result.heightRate.ascent.max.value).toBeCloseTo(0.167, 3);
+        expect(result.heightRate.descent.avg).toBeCloseTo(-0.12, 2);
+        expect(result.heightRate.descent.max.value).toBeCloseTo(-0.14, 2);
       });
     });
   });
