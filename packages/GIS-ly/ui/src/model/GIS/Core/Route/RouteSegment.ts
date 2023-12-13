@@ -131,6 +131,8 @@ export class RouteSegment
     if (altitudeChange !== undefined) {
       this.height = altitudeChange;
     }
+
+    this.addElevationData(prevCoord, nextCoord);
   }
 
   addElevationData(prevCoord: IPointProperties, nextCoord: IPointProperties) {

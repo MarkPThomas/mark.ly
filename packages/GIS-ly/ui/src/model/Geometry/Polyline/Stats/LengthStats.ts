@@ -23,11 +23,11 @@ export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected override initializeProperties() {
-    this._length = new Sum(this._isConsidered);
+    this._length = new Sum();
   }
 
   protected override addProperties(segment: SegmentNode<TVertex, TSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.length))) {
       return;
     }
 
@@ -35,7 +35,7 @@ export class LengthStats<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected override removeProperties(segment: SegmentNode<TVertex, TSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.length))) {
       return;
     }
 

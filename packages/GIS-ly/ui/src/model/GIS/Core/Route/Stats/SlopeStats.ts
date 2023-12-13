@@ -35,7 +35,9 @@ class SlopeStatsSigned
   }
 
   get max(): INodeOfInterest<RoutePoint, RouteSegment> {
-    return this._maxMin && (this._isConsidered && this._isConsidered(1)) ? this._maxMin.range.max : this._maxMin.range.min;
+    return this._maxMin && (this._isConsidered && this._isConsidered(1))
+      ? this._maxMin.range.max
+      : this._maxMin.range.min;
   }
 
   protected override initializeProperties() {
@@ -61,7 +63,7 @@ class SlopeStatsSigned
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 

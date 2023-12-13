@@ -1,8 +1,8 @@
 import { SegmentNode } from "../../../../Geometry/Polyline";
 import {
-  BasicProperty,
+  BasicStats,
   INodeOfInterest,
-  MaxMinProperty,
+  MaxMinStats,
   Sum
 } from "../../../../Geometry/Stats";
 
@@ -19,9 +19,8 @@ export interface IHeightRate {
   descent: IHeightRateSigned;
 };
 
-
 class HeightRateStatsSigned
-  extends BasicProperty<TrackPoint, TrackSegment>
+  extends BasicStats<TrackPoint, TrackSegment>
   implements IHeightRateSigned {
   private _heightTotal: Sum;
   private _duration: Sum;
@@ -29,34 +28,25 @@ class HeightRateStatsSigned
   get avg(): number {
     return this._duration.value ? this._heightTotal.value / this._duration.value : 0;
   }
-  private _maxMin: MaxMinProperty<TrackPoint, TrackSegment>;
+  private _maxMin: MaxMinStats<TrackPoint, TrackSegment>;
   get max(): INodeOfInterest<TrackPoint, TrackSegment> {
-    return this._maxMin?.range.max;
+    return this._maxMin && (this._isConsidered && this._isConsidered(1))
+      ? this._maxMin.range.max
+      : this._maxMin.range.min;
   }
 
   protected override initializeProperties() {
-    this._heightTotal = new Sum(this._isConsidered);
-    this._duration = new Sum(this._isConsidered);
-    this._maxMin = new MaxMinProperty<TrackPoint, TrackSegment>(this.getPtElevation);
+    this._heightTotal = new Sum();
+    this._duration = new Sum();
+    this._maxMin = new MaxMinStats<TrackPoint, TrackSegment>(this.getHeightRate, true);
   }
 
-  protected getPtElevation(point: TrackPoint): number {
-    return point?.elevation;
-  }
-
-  add(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    if (!segment) {
-      return;
-    }
-
-    this._heightTotal.add(segment.val.height);
-    this._duration.add(segment.val.duration);
-
-    this._maxMin.add(segment);
+  protected getHeightRate(segment: TrackSegment): number {
+    return segment?.heightRate;
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 
@@ -67,7 +57,7 @@ class HeightRateStatsSigned
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
-    if (!segment) {
+    if (!segment || (this._isConsidered && !this._isConsidered(segment.val.height))) {
       return;
     }
 
@@ -86,7 +76,7 @@ class HeightRateStatsSigned
 }
 
 export class HeightRateStats
-  extends BasicProperty<TrackPoint, TrackSegment>
+  extends BasicStats<TrackPoint, TrackSegment>
   implements IHeightRate {
 
   private _ascent: HeightRateStatsSigned;
@@ -106,8 +96,8 @@ export class HeightRateStats
   }
 
   protected override initializeProperties() {
-    this._ascent = new HeightRateStatsSigned(this._startVertex, this.isAscending);
-    this._descent = new HeightRateStatsSigned(this._startVertex, this.isDescending);
+    this._ascent = new HeightRateStatsSigned(this.isAscending);
+    this._descent = new HeightRateStatsSigned(this.isDescending);
   }
 
   protected override addProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
@@ -130,7 +120,7 @@ export class HeightRateStats
 
   serialize(): IHeightRate {
     return {
-      ascent: this._descent.serialize(),
+      ascent: this._ascent.serialize(),
       descent: this._descent.serialize()
     }
   }
