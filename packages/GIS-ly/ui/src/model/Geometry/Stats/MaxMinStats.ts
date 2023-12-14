@@ -2,7 +2,7 @@ import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
 import { BasicStats } from "./BasicStats";
 import { MaxMin } from "./MaxMin";
 
-export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment, TProps = TVertex | TSegment>
+export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
   extends BasicStats<TVertex, TSegment>
 {
   protected _tolerance: number;
