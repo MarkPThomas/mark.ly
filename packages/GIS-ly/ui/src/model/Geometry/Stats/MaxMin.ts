@@ -1,4 +1,4 @@
-import { NodeDouble } from "common/utils/dataStructures/LinkedListDouble";
+import { NodeDouble } from "../../../../../../common/utils/dataStructures/LinkedListDouble";
 import { Segment, Vertex } from "../Polyline";
 import { INodeOfInterest } from "./INodeOfInterest";
 import { ConstrainedStats } from "./ConstrainedStats";
@@ -50,9 +50,7 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
     this._min.value = MaxMin.minInitial;
   }
 
-  add(
-    node: NodeDouble<TVertex | TSegment>
-  ) {
+  add(node: NodeDouble<TVertex | TSegment>) {
     if (!node) {
       return;
     }

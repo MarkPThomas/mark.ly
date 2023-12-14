@@ -32,7 +32,7 @@ describe('##MaxMinStats', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const isConsidered = (number: number) => number > 4;
 
-      const maxMin = new MaxMinStats(getProperty, isConsidered);
+      const maxMin = new MaxMinStats(getProperty, false, isConsidered);
 
       expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
@@ -45,7 +45,7 @@ describe('##MaxMinStats', () => {
       const isConsidered = (number: number) => number > 4;
       const tolerance = 0.1;
 
-      const maxMin = new MaxMinStats(getProperty, isConsidered, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, isConsidered, tolerance);
 
       expect(maxMin.range.max.value).toEqual(0);
       expect(maxMin.range.max.nodes.length).toEqual(0);
@@ -203,7 +203,7 @@ describe('##MaxMinStats', () => {
     it('should add max/min based on tolerance for equality comparison', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      const maxMin = new MaxMinStats(getProperty, null, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, null, tolerance);
       const nextVertexOnly = true;
 
       const vertexOutTolUnderMax = new VertexNode(new TestVertex(vertexMax1.val.valNum - 1.1 * tolerance));
@@ -275,7 +275,7 @@ describe('##MaxMinStats', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const isConsidered = (number: number) => number >= 1;
       const tolerance = 0.1;
-      const maxMin = new MaxMinStats(getProperty, isConsidered, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, isConsidered, tolerance);
       const nextVertexOnly = true;
 
       expect(maxMin.range.max.value).toEqual(0);
@@ -347,7 +347,7 @@ describe('##MaxMinStats', () => {
     it('should traverse from the provided start to end node & determine max/min values & nodes', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      const maxMin = new MaxMinStats(getProperty, null, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, null, tolerance);
 
       const vertexStart = new TestVertex(1);
       const vertexMin1 = new TestVertex(-1);
@@ -396,7 +396,7 @@ describe('##MaxMinStats', () => {
     it('should traverse to the end of the start node linked list if the end node is not encountered', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      const maxMin = new MaxMinStats(getProperty, null, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, null, tolerance);
 
       const vertexStart = new TestVertex(1);
       const vertexMin1 = new TestVertex(-1);
@@ -475,7 +475,7 @@ describe('##MaxMinStats', () => {
     it('should determine the max/min values & nodes of the polyline', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      const maxMin = new MaxMinStats(getProperty, null, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, null, tolerance);
 
       const vertexStart = new TestVertex(1);
       const vertexMin1 = new TestVertex(-1);
@@ -532,7 +532,7 @@ describe('##MaxMinStats', () => {
     beforeEach(() => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      maxMin = new MaxMinStats(getProperty, null, tolerance);
+      maxMin = new MaxMinStats(getProperty, false, null, tolerance);
 
       vertexMin1 = new TestVertex(-1);
       vertexMin2 = new TestVertex(-2);
@@ -612,7 +612,7 @@ describe('##MaxMinStats', () => {
     beforeEach(() => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      maxMin = new MaxMinStats(getProperty, null, tolerance);
+      maxMin = new MaxMinStats(getProperty, false, null, tolerance);
 
       vertexMin1 = new TestVertex(-1);
       vertexMin2 = new TestVertex(-2);
@@ -758,7 +758,7 @@ describe('##MaxMinStats', () => {
     it('should serialize the object into a JSON object', () => {
       const getProperty = (val: TestVertex) => val.valNum;
       const tolerance = 0.1;
-      const maxMin = new MaxMinStats(getProperty, null, tolerance);
+      const maxMin = new MaxMinStats(getProperty, false, null, tolerance);
 
       const vertexStart = new TestVertex(1);
       const vertexMin1 = new TestVertex(-1);
