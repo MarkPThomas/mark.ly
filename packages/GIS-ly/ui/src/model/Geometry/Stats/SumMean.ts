@@ -1,13 +1,14 @@
 import { ConstrainedStats } from "./ConstrainedStats";
 
-export interface ISum {
+export interface ISumMean {
   count: number,
   value: number,
+  mean(): number
 }
 
-export class Sum
+export class SumMean
   extends ConstrainedStats
-  implements ISum {
+  implements ISumMean {
 
   private _count: number = 0;
   get count(): number {
@@ -33,7 +34,7 @@ export class Sum
     }
   }
 
-  average() {
+  mean() {
     return this._count ? this._value / this._count : 0;
   }
 }
