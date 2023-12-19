@@ -2,8 +2,8 @@ import { Polyline, Segment, SegmentNode, Vertex, VertexNode } from "../Polyline"
 import { ConstrainedStats } from "./ConstrainedStats";
 
 export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segment> extends ConstrainedStats {
-  protected _startVertex: VertexNode<TVertex, TSegment>;
-  protected _endVertex: VertexNode<TVertex, TSegment>;
+  protected _firstVertex: VertexNode<TVertex, TSegment>;
+  protected _lastVertex: VertexNode<TVertex, TSegment>;
 
   constructor(isConsidered: (number: number) => boolean | null = null) {
     super(isConsidered);
@@ -21,11 +21,11 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
   }
 
   update() {
-    if (!this._startVertex || !this._endVertex) {
+    if (!this._firstVertex || !this._lastVertex) {
       return;
     }
 
-    this.fromTo(this._startVertex, this._endVertex);
+    this.fromTo(this._firstVertex, this._lastVertex);
   }
 
   fromTo(
@@ -36,8 +36,8 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
       return;
     }
 
-    this._startVertex = startVertex;
-    this._endVertex = endVertex;
+    this._firstVertex = startVertex;
+    this._lastVertex = endVertex;
     this.initializeProperties();
 
     let segNode = startVertex.nextSeg as SegmentNode<TVertex, TSegment>;
@@ -62,11 +62,11 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
       return;
     }
 
-    if (!this._startVertex) {
-      this._startVertex = segment.prevVert;
+    if (!this._firstVertex) {
+      this._firstVertex = segment.prevVert;
       this.initializeProperties();
     }
-    this._endVertex = segment.nextVert;
+    this._lastVertex = segment.nextVert;
 
     this.addProperties(segment, nextVertOnly);
   }
@@ -74,29 +74,29 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
   protected abstract addProperties(segment: SegmentNode<TVertex, TSegment>, nextVertOnly?: boolean): void;
 
   remove(segment: SegmentNode<TVertex, TSegment>) {
-    if (!this._startVertex || !segment) {
+    if (!this._firstVertex || !segment) {
       return;
     }
 
-    if (this._startVertex === segment.prevVert) {
+    if (this._firstVertex === segment.prevVert) {
       // Removing start vertex
-      if (this._endVertex === segment.nextVert) {
-        this._startVertex = null;
-        this._endVertex = null;
+      if (this._lastVertex === segment.nextVert) {
+        this._firstVertex = null;
+        this._lastVertex = null;
       } else {
-        this._startVertex = segment.nextVert;
+        this._firstVertex = segment.nextVert;
       }
-    } else if (this._endVertex === segment.nextVert) {
+    } else if (this._lastVertex === segment.nextVert) {
       // Removing end vertex
-      if (this._startVertex === segment.prevVert) {
-        this._startVertex = null;
-        this._endVertex = null;
+      if (this._firstVertex === segment.prevVert) {
+        this._firstVertex = null;
+        this._lastVertex = null;
       } else {
-        this._endVertex = segment.prevVert;
+        this._lastVertex = segment.prevVert;
       }
     }
 
-    if (this._startVertex) {
+    if (this._firstVertex) {
       this.removeProperties(segment);
     } else {
       this.initializeProperties();

@@ -87,8 +87,8 @@ export class HeightStats
 
 
   protected getNetHeight(): number | undefined {
-    const startElevation = this._startVertex?.val?.elevation ?? 0;
-    const endElevation = this._endVertex?.val?.elevation ?? 0;
+    const startElevation = this._firstVertex?.val?.elevation ?? 0;
+    const endElevation = this._lastVertex?.val?.elevation ?? 0;
 
     return endElevation - startElevation;
   }
