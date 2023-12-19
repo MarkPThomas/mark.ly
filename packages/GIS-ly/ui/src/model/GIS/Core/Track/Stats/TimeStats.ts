@@ -30,11 +30,11 @@ export class TimeStats
   }
 
   get duration(): number {
-    if (!this._startVertex) {
+    if (!this._firstVertex) {
       return 0;
     }
 
-    return TimeStamp.calcIntervalSec(this._startVertex.val.timestamp, this._endVertex.val.timestamp);
+    return TimeStamp.calcIntervalSec(this._firstVertex.val.timestamp, this._lastVertex.val.timestamp);
   }
 
   protected override initializeProperties() {
