@@ -115,6 +115,7 @@ export interface IPolylineSize {
 
 export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   // Properties
+  version: number;
   stats: IPolylineStats;
 
   firstVertex: VertexNode<TVertex, TSegment>;
@@ -228,6 +229,12 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 {
   protected _vertices: List<VertexNode<TVertex, TSegment>, TVertex> = new List<VertexNode<TVertex, TSegment>, TVertex>();
   protected _segments: List<SegmentNode<TVertex, TSegment>, TSegment> = new List<SegmentNode<TVertex, TSegment>, TSegment>();
+
+
+  private _version: number = 0;
+  get version(): number {
+    return this._version;
+  }
 
   protected _isStatConsidered: IPolylineStatsCriteria;
   protected _stats: PolylineStats<TVertex, TSegment>;
@@ -452,6 +459,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected setDirty() {
+    this._version++;
     this._stats?.setDirty();
   }
 
