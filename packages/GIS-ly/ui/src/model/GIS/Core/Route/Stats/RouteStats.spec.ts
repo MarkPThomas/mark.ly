@@ -102,7 +102,7 @@ describe('##RouteStats', () => {
 
       const polyline = new PolylineRoute<RoutePoint, RouteSegment>(vertices);
 
-      const stats = RouteStats.fromPolyline(polyline);
+      const stats = RouteStats.fromRoute(polyline);
 
       expect(stats.isDirty()).toBeTruthy();
 
@@ -434,6 +434,103 @@ describe('##RouteStats', () => {
         expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
+      });
+
+      describe('Updating Stats After Polyline Modification', () => {
+        describe('Remove Vertices', () => {
+          it('should return updated stats & sync polyline versions when start vertex is removed', () => {
+            const stats = RouteStats.fromRoute(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const result = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Modify polyine
+            polyline.trimBefore(polyline.firstVertex.next as VertexNode<RoutePoint, RouteSegment>);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Polyline-based stats
+            expect(resultModifed.length).not.toBeCloseTo(result.length, 2);
+
+            // Route Stats
+            expect(resultModifed.height.net).not.toBeCloseTo(result.height.net, 2);
+            expect(resultModifed.height.gain).not.toBeCloseTo(result.height.gain, 2);
+            expect(resultModifed.height.loss).toBeCloseTo(result.height.loss, 2);
+            expect(resultModifed.height.max.value).toBeCloseTo(result.height.max.value, 2);
+            expect(resultModifed.height.min.value).toBeCloseTo(result.height.min.value, 2);
+
+            expect(resultModifed.slope.avg).not.toBeCloseTo(result.slope.avg, 2);
+            expect(resultModifed.slope.downhill.avg).toBeCloseTo(result.slope.downhill.avg, 2);
+            expect(resultModifed.slope.downhill.max.value).toBeCloseTo(result.slope.downhill.max.value, 2);
+            expect(resultModifed.slope.uphill.avg).not.toBeCloseTo(result.slope.uphill.avg, 2);
+            expect(resultModifed.slope.uphill.max.value).toBeCloseTo(result.slope.uphill.max.value, 2);
+          });
+
+          it('should return updated stats & sync polyline versions when end vertex is removed', () => {
+            const stats = RouteStats.fromRoute(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            stats.stats;
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Modify polyine
+            polyline.trimAfter(polyline.lastVertex.prev as VertexNode<RoutePoint, RouteSegment>);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+          });
+
+          it('should return updated stats & sync polyline versions when middle vertex is removed', () => {
+            const stats = RouteStats.fromRoute(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            stats.stats;
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Modify polyine
+            const vertexRemove = polyline.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+            polyline.removeAt(vertexRemove);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+          });
+        });
       });
     });
   });
