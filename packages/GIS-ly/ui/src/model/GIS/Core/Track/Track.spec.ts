@@ -824,6 +824,27 @@ describe('##Track', () => {
         expect(result.speed.avg).toBeCloseTo(17468.17, 2);
       });
     });
+
+    describe('#getDuration', () => {
+      let trackPoints: TrackPoint[];
+      let featureCollection: FeatureCollection;
+      let track: Track;
+
+      beforeEach(() => {
+        const positions = lineStringTrack.features[0].geometry.coords;
+        const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
+
+        trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
+        featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trackPoints);
+        track = Track.fromGeoJson(featureCollection);
+      });
+
+      it('should return total duration of a Track', () => {
+        const duration = track.getDuration();
+
+        expect(duration).toBeCloseTo(70, 2);
+      });
+    });
   });
 
   describe('Accessing Items', () => {
