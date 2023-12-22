@@ -519,12 +519,12 @@ describe('##PoylineStats', () => {
             insertFirstVertex();
 
             expect(stats.polylineVersion).toEqual(0);
-            expect(polyline.version).toEqual(3);    // 1
+            expect(polyline.version).toEqual(3);
 
             const resultModifed = stats.stats;
 
             expect(stats.polylineVersion).toEqual(3);
-            expect(polyline.version).toEqual(3);  // 1
+            expect(polyline.version).toEqual(3);
 
             expect(resultModifed).toEqual({
               length: 15
@@ -550,12 +550,12 @@ describe('##PoylineStats', () => {
             insertLastVertex();
 
             expect(stats.polylineVersion).toEqual(0);
-            expect(polyline.version).toEqual(3); // 1
+            expect(polyline.version).toEqual(3);
 
             const resultModifed = stats.stats;
 
             expect(stats.polylineVersion).toEqual(3);
-            expect(polyline.version).toEqual(3); // 1
+            expect(polyline.version).toEqual(3);
 
             expect(resultModifed).toEqual({
               length: 15
@@ -582,12 +582,12 @@ describe('##PoylineStats', () => {
             insertVertex();
 
             expect(stats.polylineVersion).toEqual(0);
-            expect(polyline.version).toEqual(4); // 1
+            expect(polyline.version).toEqual(4);
 
             const resultModifed = stats.stats;
 
             expect(stats.polylineVersion).toEqual(4);
-            expect(polyline.version).toEqual(4); // 1
+            expect(polyline.version).toEqual(4);
 
             expect(resultModifed).toEqual({
               length: 15
