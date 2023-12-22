@@ -1,13 +1,15 @@
-import { Polyline, Vertex, VertexNode } from "../../../../Geometry";
+import { Polyline, VertexNode } from "../../../../Geometry";
 import {
   IPolylineStats,
   IPolylineStatsCriteria,
   PolylineStats
 } from "../../../../Geometry/Polyline/Stats/PolylineStats";
 import { BasicStats } from "../../../../Geometry/Stats";
+
 import { PolylineRoute } from "../PolylineRoute";
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
+
 import { HeightStats, IHeight } from "./HeightStats";
 import { ISlope, SlopeStats } from "./SlopeStats";
 
