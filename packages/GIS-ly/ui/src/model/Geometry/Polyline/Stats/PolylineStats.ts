@@ -16,16 +16,17 @@ export class PolylineStats<
   TSegment extends Segment,
   TStats extends IPolylineStats = IPolylineStats
 > {
-
   protected _polyline: Polyline<TVertex, TSegment>
+  protected _lastPolylineVersion: number;
+  get polylineVersion(): number {
+    return this._lastPolylineVersion;
+  }
+
   protected _firstVertex: VertexNode<TVertex, TSegment>;
   protected _lastVertex: VertexNode<TVertex, TSegment>;
   protected _isStatConsidered: IPolylineStatsCriteria;
 
   protected _statsDirty: boolean;
-  get isDirty(): boolean {
-    return this._statsDirty;
-  }
 
   protected _lengthStats: LengthStats<TVertex, TSegment>;
   get stats(): TStats {
@@ -39,12 +40,15 @@ export class PolylineStats<
     lastVertex?: VertexNode<TVertex, TSegment>
   ) {
     this._polyline = polyline;
+
     this._firstVertex = firstVertex;
     this._lastVertex = lastVertex;
+
     this._isStatConsidered = {
       isLengthConsidered: isStatConsidered?.isLengthConsidered
     };
     this._statsDirty = true;
+    this._lastPolylineVersion = -1;
   }
 
   static fromPolyline<TVertex extends Vertex, TSegment extends Segment>(
@@ -62,14 +66,40 @@ export class PolylineStats<
     return new PolylineStats(null, isStatConsidered, firstVertex, lastVertex);
   }
 
+  isDirty(): boolean {
+    if (this.hasPolyline()) {
+      return this.polylineVersionMismatch();
+    } else {
+      return this._statsDirty;
+    }
+  }
+
+  protected polylineVersionMismatch() {
+    return this._lastPolylineVersion !== this._polyline.version;
+  }
+
+  protected matchPolylineVersion() {
+    if (this.hasPolyline()) {
+      this._lastPolylineVersion = this._polyline.version;
+    }
+  }
+
   setDirty() {
-    this._statsDirty = true;
+    if (!this.hasPolyline()) {
+      this._statsDirty = true;
+    }
+  }
+
+  hasPolyline(): boolean {
+    return !!this._polyline;
   }
 
   addStats() {
     if (this._polyline || this._firstVertex) {
       this.initializeAndAddStats();
+
       this._statsDirty = false;
+      this.matchPolylineVersion();
     }
   }
 
@@ -97,7 +127,7 @@ export class PolylineStats<
   }
 
   protected shouldAddState(): boolean {
-    return (this._statsDirty || this.propertiesAreNotInitialized());
+    return (this.isDirty() || this.propertiesAreNotInitialized());
   }
 
   protected propertiesAreNotInitialized(): boolean {
