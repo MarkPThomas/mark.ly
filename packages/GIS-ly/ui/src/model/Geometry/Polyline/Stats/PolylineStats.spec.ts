@@ -146,6 +146,7 @@ describe('##PoylineStats', () => {
         stats.addStats();
 
         expect(stats.isDirty()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(0);
       });
     });
 
@@ -166,29 +167,27 @@ describe('##PoylineStats', () => {
       it('should do nothing for a stats object with no polyline', () => {
         const stats = PolylineStats.fromPolyline(null);
 
-        expect(stats.polylineVersion).toEqual(-1);
         expect(stats.hasPolyline()).toBeFalsy();
-
+        expect(stats.polylineVersion).toEqual(-1);
         expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty()).toBeTruthy();
         expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = PolylineStats.fromPolyline(polyline);
 
-        expect(stats.polylineVersion).toEqual(-1);
         expect(stats.hasPolyline()).toBeTruthy();
-
+        expect(stats.polylineVersion).toEqual(-1);
         expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty()).toBeFalsy();
         expect(stats.polylineVersion).toEqual(0);
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
   });
