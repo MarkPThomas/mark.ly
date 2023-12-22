@@ -56,7 +56,7 @@ describe('##TrackStats', () => {
 
       const stats = TrackStats.fromTrackPoints(firstPoint, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
 
     it('should initialize a new object from a polyline', () => {
@@ -71,12 +71,12 @@ describe('##TrackStats', () => {
 
       const stats = TrackStats.fromTrack(polyline);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
   });
 
   describe('#setDirty', () => {
-    it('should set object to dirty', () => {
+    it('should set object to dirty if initialized with vertices', () => {
       const vertices: TrackPoint[] = [
         new TrackPoint(1, 2, 3, '4'),
         new TrackPoint(2, 3, 4, '5'),
@@ -90,15 +90,38 @@ describe('##TrackStats', () => {
 
       const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
 
       stats.addStats();
 
-      expect(stats.isDirty).toBeFalsy();
+      expect(stats.isDirty()).toBeFalsy();
 
       stats.setDirty();
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
+    });
+
+    it('do nothing if initialized with polyline', () => {
+      const vertices: TrackPoint[] = [
+        new TrackPoint(1, 2, 3, '4'),
+        new TrackPoint(2, 3, 4, '5'),
+        new TrackPoint(3, 4, 5, '6'),
+        new TrackPoint(4, 5, 6, '7'),
+      ];
+
+      const polyline = new PolylineTrack(vertices);
+
+      const stats = TrackStats.fromPolyline(polyline);
+
+      expect(stats.isDirty()).toBeTruthy();
+
+      stats.addStats();
+
+      expect(stats.isDirty()).toBeFalsy();
+
+      stats.setDirty();
+
+      expect(stats.isDirty()).toBeFalsy();
     });
   });
 
@@ -125,21 +148,21 @@ describe('##TrackStats', () => {
       it('should do nothing for a stats object with no first vertex', () => {
         const stats = TrackStats.fromTrackPoints(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
 
@@ -153,21 +176,27 @@ describe('##TrackStats', () => {
       it('should do nothing for a stats object with no polyline', () => {
         const stats = TrackStats.fromTrack(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrack(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(0);
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
   });
@@ -188,11 +217,11 @@ describe('##TrackStats', () => {
       it('should do nothing & return undefined for a stats object with no first vertex', () => {
         const stats = TrackStats.fromTrackPoints(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -200,11 +229,11 @@ describe('##TrackStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(result.length).toBeCloseTo(389.18, 2);
@@ -245,11 +274,11 @@ describe('##TrackStats', () => {
       //     { isLengthConsidered }
       //   );
 
-      //   expect(stats.isDirty).toBeTruthy();
+      //   expect(stats.isDirty()).toBeTruthy();
 
       //   const result = stats.stats;
 
-      //   expect(stats.isDirty).toBeFalsy();
+      //   expect(stats.isDirty()).toBeFalsy();
 
       //   expect(result).toEqual({
       //     length: 5
@@ -259,11 +288,11 @@ describe('##TrackStats', () => {
       it('should return updated stats when middle vertex is changed & stats reset to dirty', () => {
         const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const initialResult = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(initialResult.length).toBeCloseTo(389.18, 2);
@@ -308,7 +337,7 @@ describe('##TrackStats', () => {
 
         polyline.insertAfter(vertexBeforeRemove, pointToRemove);
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         const insertResultDirty = stats.stats;
 
@@ -344,11 +373,11 @@ describe('##TrackStats', () => {
         expect(insertResultDirty.heightRate.descent.max.value).toBeCloseTo(initialResult.heightRate.descent.max.value, 2);
 
         // Manually reset state
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const insertResult = stats.stats;
 
@@ -420,15 +449,15 @@ describe('##TrackStats', () => {
         expect(removedResultDirty.heightRate.descent.max.value).toBeCloseTo(-2500.09, 2);
 
         // Manually reset state
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const removedResult = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // State should be back to original polyine
         // Polyline-based stats
@@ -467,11 +496,11 @@ describe('##TrackStats', () => {
       it('should do nothing & return undefined for a stats object with no polyline', () => {
         const stats = TrackStats.fromTrack(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -479,11 +508,11 @@ describe('##TrackStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrack(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(result.length).toBeCloseTo(389.18, 2);
