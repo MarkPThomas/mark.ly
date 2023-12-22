@@ -1,7 +1,7 @@
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 
 import { FeatureCollection } from '../../../GeoJSON';
-import { VertexNode, SegmentNode } from '../../../Geometry/Polyline';
+import { VertexNode, SegmentNode, IPolylineSize } from '../../../Geometry/Polyline';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { TrackPoint } from './TrackPoint';
@@ -11,9 +11,14 @@ import { GeoJsonTrack } from './GeoJsonTrack';
 import { PolylineTrack } from './PolylineTrack';
 import { BoundingBox } from '../BoundingBox';
 import { IPointProperties } from '../Point/Point';
+import { ITrackStats, TrackStats } from './Stats';
 
 
 export type EvaluatorArgs = { [name: string]: number };
+
+export interface IEditedTrackStats extends ITrackStats {
+  size: IPolylineSize
+}
 
 export interface ITrack
   extends
@@ -47,7 +52,7 @@ export interface ITrack
     evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean
   ): VertexNode<TrackPoint, TrackSegment>[];
 
-  getDuration(): number;
+  getStats(): IEditedTrackStats;
 }
 
 export class Track implements ITrack {
@@ -191,12 +196,15 @@ export class Track implements ITrack {
 
   // === Property Methods
 
-  // getNetHeight(): number | undefined {
-  //   return this._polylineTrack.getNetHeight();
-  // }
+  getStats() {
+    const size = this._polylineTrack.size();
+    const trackStats = TrackStats.fromTrack(this._polylineTrack);
+    const statsResults = trackStats.stats;
 
-  getDuration() {
-    return this._polylineTrack.getDuration();
+    return {
+      size,
+      ...statsResults
+    }
   }
 
   updateGeoJsonTrack(trackChanged: boolean | number) {

@@ -557,21 +557,21 @@ describe('##PolylineTrack', () => {
 
         expect(trackCoords[2].elevation).toEqual(1500);
         expect(trackCoords[2].path.ascentRate).toBeCloseTo(0, 0);
-        expect(trackCoords[2].path.descentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[2].path.descentRate).toBeCloseTo(25, 1);
 
-        expect(trackSegs[2].height).toBeUndefined();
-        expect(trackSegs[2].heightRate).toBeUndefined();
+        expect(trackSegs[2].height).toEqual(0);
+        expect(trackSegs[2].heightRate).toEqual(0);
 
         expect(trackCoords[3].elevation).toBeUndefined();
         expect(trackCoords[3].path.ascentRate).toBeUndefined();
         expect(trackCoords[3].path.descentRate).toBeUndefined();
 
-        expect(trackSegs[3].height).toBeUndefined();
-        expect(trackSegs[3].heightRate).toBeUndefined();
+        expect(trackSegs[3].height).toEqual(0);
+        expect(trackSegs[3].heightRate).toEqual(0);
 
         expect(trackCoords[4].elevation).toEqual(5000);
         expect(trackCoords[4].path.ascentRate).toBeCloseTo(0, 0);
-        expect(trackCoords[4].path.descentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[4].path.descentRate).toBeCloseTo(25, 1);
 
         expect(trackSegs[4].height).toBeCloseTo(-1000, 1);
         expect(trackSegs[4].heightRate).toBeCloseTo(-50, 1);

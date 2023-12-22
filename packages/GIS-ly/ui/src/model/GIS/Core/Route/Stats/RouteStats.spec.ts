@@ -47,7 +47,7 @@ describe('##RouteStats', () => {
 
       const stats = RouteStats.fromRoutePoints(firstPoint, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
 
     it('should initialize a new object from a polyline', () => {
@@ -62,12 +62,12 @@ describe('##RouteStats', () => {
 
       const stats = RouteStats.fromRoute(polyline);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
   });
 
   describe('#setDirty', () => {
-    it('should set object to dirty', () => {
+    it('should set object to dirty if initialized with vertices', () => {
       const vertices: RoutePoint[] = [
         new RoutePoint(1, 2, 3),
         new RoutePoint(2, 3, 4),
@@ -81,15 +81,38 @@ describe('##RouteStats', () => {
 
       const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
 
       stats.addStats();
 
-      expect(stats.isDirty).toBeFalsy();
+      expect(stats.isDirty()).toBeFalsy();
 
       stats.setDirty();
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
+    });
+
+    it('do nothing if initialized with polyline', () => {
+      const vertices: RoutePoint[] = [
+        new RoutePoint(1, 2, 3),
+        new RoutePoint(2, 3, 4),
+        new RoutePoint(3, 4, 5),
+        new RoutePoint(4, 5, 6),
+      ];
+
+      const polyline = new PolylineRoute<RoutePoint, RouteSegment>(vertices);
+
+      const stats = RouteStats.fromRoute(polyline);
+
+      expect(stats.isDirty()).toBeTruthy();
+
+      stats.addStats();
+
+      expect(stats.isDirty()).toBeFalsy();
+
+      stats.setDirty();
+
+      expect(stats.isDirty()).toBeFalsy();
     });
   });
 
@@ -116,21 +139,21 @@ describe('##RouteStats', () => {
       it('should do nothing for a stats object with no first vertex', () => {
         const stats = RouteStats.fromRoutePoints(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
 
@@ -144,22 +167,28 @@ describe('##RouteStats', () => {
       it('should do nothing for a stats object with no polyline', () => {
         const stats = RouteStats.fromRoute(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
       });
 
-      // it('should explicitly add stats & reset dirty flag', () => {
-      //   const stats = RouteStats.fromRoute(polyline);
+      it('should explicitly add stats & reset dirty flag', () => {
+        const stats = RouteStats.fromRoute(polyline);
 
-      //   expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
-      //   stats.addStats();
+        stats.addStats();
 
-      //   expect(stats.isDirty).toBeFalsy();
-      // });
+        expect(stats.polylineVersion).toEqual(0);
+        expect(stats.isDirty()).toBeFalsy();
+      });
     });
   });
 
@@ -179,11 +208,11 @@ describe('##RouteStats', () => {
       it('should do nothing & return undefined for a stats object with no first vertex', () => {
         const stats = RouteStats.fromRoutePoints(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -191,11 +220,11 @@ describe('##RouteStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(result.length).toBeCloseTo(389.18, 2);
@@ -222,11 +251,11 @@ describe('##RouteStats', () => {
       //     { isLengthConsidered }
       //   );
 
-      //   expect(stats.isDirty).toBeTruthy();
+      //   expect(stats.isDirty()).toBeTruthy();
 
       //   const result = stats.stats;
 
-      //   expect(stats.isDirty).toBeFalsy();
+      //   expect(stats.isDirty()).toBeFalsy();
 
       //   expect(result).toEqual({
       //     length: 5
@@ -236,11 +265,11 @@ describe('##RouteStats', () => {
       it('should return updated stats when middle vertex is changed & stats reset to dirty', () => {
         const stats = RouteStats.fromRoutePoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const initialResult = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(initialResult.length).toBeCloseTo(389.18, 2);
@@ -271,7 +300,7 @@ describe('##RouteStats', () => {
         polyline.insertAfter(vertexBeforeRemove, pointToRemove);
         const vertexToRemove = vertexBeforeRemove.next as VertexNode<RoutePoint, RouteSegment>;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         const insertResultDirty = stats.stats;
 
@@ -293,11 +322,11 @@ describe('##RouteStats', () => {
         expect(insertResultDirty.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
 
         // Manually reset state
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const insertResult = stats.stats;
 
@@ -339,15 +368,15 @@ describe('##RouteStats', () => {
         expect(removedResultDirty.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
         // Manually reset state
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const removedResult = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // State should be back to original polyine
         // Polyline-based stats
@@ -372,11 +401,11 @@ describe('##RouteStats', () => {
       it('should do nothing & return undefined for a stats object with no polyline', () => {
         const stats = RouteStats.fromRoute(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -384,11 +413,11 @@ describe('##RouteStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = RouteStats.fromRoute(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(result.length).toBeCloseTo(389.18, 2);
@@ -405,6 +434,103 @@ describe('##RouteStats', () => {
         expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
+      });
+
+      describe('Updating Stats After Polyline Modification', () => {
+        describe('Remove Vertices', () => {
+          it('should return updated stats & sync polyline versions when start vertex is removed', () => {
+            const stats = RouteStats.fromRoute(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const result = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Modify polyine
+            polyline.trimBefore(polyline.firstVertex.next as VertexNode<RoutePoint, RouteSegment>);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Polyline-based stats
+            expect(resultModifed.length).not.toBeCloseTo(result.length, 2);
+
+            // Route Stats
+            expect(resultModifed.height.net).not.toBeCloseTo(result.height.net, 2);
+            expect(resultModifed.height.gain).not.toBeCloseTo(result.height.gain, 2);
+            expect(resultModifed.height.loss).toBeCloseTo(result.height.loss, 2);
+            expect(resultModifed.height.max.value).toBeCloseTo(result.height.max.value, 2);
+            expect(resultModifed.height.min.value).toBeCloseTo(result.height.min.value, 2);
+
+            expect(resultModifed.slope.avg).not.toBeCloseTo(result.slope.avg, 2);
+            expect(resultModifed.slope.downhill.avg).toBeCloseTo(result.slope.downhill.avg, 2);
+            expect(resultModifed.slope.downhill.max.value).toBeCloseTo(result.slope.downhill.max.value, 2);
+            expect(resultModifed.slope.uphill.avg).not.toBeCloseTo(result.slope.uphill.avg, 2);
+            expect(resultModifed.slope.uphill.max.value).toBeCloseTo(result.slope.uphill.max.value, 2);
+          });
+
+          it('should return updated stats & sync polyline versions when end vertex is removed', () => {
+            const stats = RouteStats.fromRoute(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            stats.stats;
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Modify polyine
+            polyline.trimAfter(polyline.lastVertex.prev as VertexNode<RoutePoint, RouteSegment>);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+          });
+
+          it('should return updated stats & sync polyline versions when middle vertex is removed', () => {
+            const stats = RouteStats.fromRoute(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            stats.stats;
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+
+            // Modify polyine
+            const vertexRemove = polyline.firstVertex.next as VertexNode<RoutePoint, RouteSegment>;
+            polyline.removeAt(vertexRemove);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+            expect(stats.isDirty()).toBeTruthy();
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+            expect(stats.isDirty()).toBeFalsy();
+          });
+        });
       });
     });
   });

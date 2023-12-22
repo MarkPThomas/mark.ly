@@ -5,7 +5,6 @@ import {
   INodeDouble
 } from '../../../../../../common/utils/dataStructures';
 
-import { IPolylineStats, IPolylineStatsCriteria, PolylineStats } from './Stats/PolylineStats';
 import { Segment } from './Segment';
 import { Vertex } from './Vertex';
 
@@ -116,7 +115,6 @@ export interface IPolylineSize {
 export interface IPolyline<TVertex extends Vertex, TSegment extends Segment> {
   // Properties
   version: number;
-  stats: IPolylineStats;
 
   firstVertex: VertexNode<TVertex, TSegment>;
   firstSegment: SegmentNode<TVertex, TSegment>;
@@ -236,15 +234,6 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     return this._version;
   }
 
-  protected _isStatConsidered: IPolylineStatsCriteria;
-  protected _stats: PolylineStats<TVertex, TSegment>;
-  get stats(): IPolylineStats {
-    if (!this._stats || this._stats.isDirty) {
-      this._stats = PolylineStats.fromPolyline(this, this._isStatConsidered);
-    }
-    return this._stats.stats;
-  }
-
   get firstVertex() {
     return this._vertices.head;
   }
@@ -262,12 +251,8 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   }
 
   // Create/Clone/Copy Methods
-  constructor(
-    vertices: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[],
-    isStatConsidered?: IPolylineStatsCriteria
-  ) {
+  constructor(vertices: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[]) {
     if (vertices) {
-      this._isStatConsidered = isStatConsidered;
       if (Array.isArray(vertices)) {
         vertices.forEach((vertex: TVertex | VertexNode<TVertex, TSegment>) => {
           this.appendVertex(vertex);
@@ -455,12 +440,11 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
    * @memberof Polyline
    */
   protected updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
-    this.setDirty();
+    this.incrementVersion();
   }
 
-  protected setDirty() {
+  protected incrementVersion() {
     this._version++;
-    this._stats?.setDirty();
   }
 
   /**
@@ -489,13 +473,10 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     }
   }
 
-  protected createPolyline(
-    coords: VertexNode<TVertex, TSegment>[] = [],
-    isConsidered: IPolylineStatsCriteria
-  ): Polyline<TVertex, TSegment> {
+  protected createPolyline(coords: VertexNode<TVertex, TSegment>[] = []): Polyline<TVertex, TSegment> {
     // TODO: Consider making abstract class so that this is abstracted
 
-    return new Polyline<TVertex, TSegment>(coords, isConsidered);
+    return new Polyline<TVertex, TSegment>(coords);
   }
 
   equals(polyline: Polyline<TVertex, TSegment>): boolean {
@@ -517,7 +498,7 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
 
     endVertex = endVertex ?? this.lastVertex;
 
-    const polylineClone = this.createPolyline([], this._isStatConsidered);
+    const polylineClone = this.createPolyline([]);
 
     const vertexI = startVertex;
     let vertexIClone = vertexI.clone();
@@ -610,15 +591,6 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
       (target: TVertex, vertexNode: VertexNode<TVertex, TSegment>) => vertexNode.equals(target));
   }
 
-  statsFromTo(
-    startVertex: VertexNode<TVertex, TSegment>,
-    endVertex: VertexNode<TVertex, TSegment>,
-    isConsidered?: IPolylineStatsCriteria
-  ): IPolylineStats {
-    const stats = PolylineStats.fromVertices(startVertex, endVertex, isConsidered);
-    return stats.stats;
-  }
-
   static isPolyline(polyline: any) {
     return polyline instanceof Polyline || 'firstVertex' in polyline;
   }
@@ -679,7 +651,9 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected isValidSplitPolyline(): boolean {
-    return !(this.polylineIsEmpty() || this.isOnlyVertexInPolyline(this.firstVertex) || this.isOnlySegmentInPolyline(this.firstSegment));
+    return !(this.polylineIsEmpty()
+      || this.isOnlyVertexInPolyline(this.firstVertex)
+      || this.isOnlySegmentInPolyline(this.firstSegment));
   }
 
   protected isValidSplitPolylineTarget(polyline: IPolyline<TVertex, TSegment>): boolean {
@@ -690,14 +664,14 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     item: TVertex | TVertex[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | Polyline<TVertex, TSegment>
   ): Polyline<TVertex, TSegment> {
     if (VertexNode.isVertexNode(item)) {
-      return new Polyline<TVertex, TSegment>(item as VertexNode<TVertex, TSegment>, this._isStatConsidered);
+      return new Polyline<TVertex, TSegment>(item as VertexNode<TVertex, TSegment>);
     } else if (Array.isArray(item)) {
-      return new Polyline<TVertex, TSegment>(item, this._isStatConsidered);
+      return new Polyline<TVertex, TSegment>(item);
     } else if (Polyline.isPolyline(item)) {
       return item as Polyline<TVertex, TSegment>;
     } else if (item instanceof Vertex) {
       const itemNode = new VertexNode<TVertex, TSegment>(item);
-      return new Polyline<TVertex, TSegment>(itemNode, this._isStatConsidered);
+      return new Polyline<TVertex, TSegment>(itemNode);
     }
   }
 
@@ -1409,8 +1383,8 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     nextSeg.prev = null
 
     // Regenerate
-    const polylineI = this.createPolyline([this.firstVertex], this._isStatConsidered);
-    const polylineJ = this.createPolyline([cloneVert], this._isStatConsidered);
+    const polylineI = this.createPolyline([this.firstVertex]);
+    const polylineJ = this.createPolyline([cloneVert]);
 
     this.updatePathProperties([
       polylineI.lastVertex,
