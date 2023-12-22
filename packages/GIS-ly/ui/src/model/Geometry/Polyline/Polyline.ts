@@ -5,7 +5,6 @@ import {
   INodeDouble
 } from '../../../../../../common/utils/dataStructures';
 
-import { IPolylineStats, IPolylineStatsCriteria, PolylineStats } from './Stats/PolylineStats';
 import { Segment } from './Segment';
 import { Vertex } from './Vertex';
 
@@ -234,8 +233,6 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
   get version(): number {
     return this._version;
   }
-
-  protected _isStatConsidered: IPolylineStatsCriteria;
 
   get firstVertex() {
     return this._vertices.head;
@@ -592,15 +589,6 @@ export class Polyline<TVertex extends Vertex, TSegment extends Segment>
     return this.vertexNodesBy(
       vertex,
       (target: TVertex, vertexNode: VertexNode<TVertex, TSegment>) => vertexNode.equals(target));
-  }
-
-  statsFromTo(
-    startVertex: VertexNode<TVertex, TSegment>,
-    endVertex: VertexNode<TVertex, TSegment>,
-    isConsidered?: IPolylineStatsCriteria
-  ): IPolylineStats {
-    const stats = PolylineStats.fromVertices(startVertex, endVertex, isConsidered);
-    return stats.stats;
   }
 
   static isPolyline(polyline: any) {
