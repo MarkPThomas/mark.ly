@@ -1,7 +1,7 @@
 import { ICoordinate } from '../../../../../../server/api/elevationDataApi/model';
 import { TrackPoint } from './TrackPoint';
 import { TrackSegment, TrackSegmentData } from './TrackSegment';
-import { VertexNode, SegmentNode } from '../../../Geometry/Polyline';
+import { VertexNode } from '../../../Geometry/Polyline';
 import { EvaluatorArgs, Track } from './Track';
 import { FeatureCollection, LineString, Point } from '../../../GeoJSON';
 import { GeoJsonManager } from '../GeoJsonManager';
@@ -678,21 +678,21 @@ describe('##Track', () => {
 
         expect(trackCoords[2].elevation).toEqual(1500);
         expect(trackCoords[2].path.ascentRate).toBeCloseTo(0, 1);
-        expect(trackCoords[2].path.descentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[2].path.descentRate).toBeCloseTo(25, 1);
 
-        expect(trackSegs[2].height).toBeUndefined();
-        expect(trackSegs[2].heightRate).toBeUndefined();
+        expect(trackSegs[2].height).toEqual(0);
+        expect(trackSegs[2].heightRate).toEqual(0);
 
         expect(trackCoords[3]).not.toHaveProperty('elevation');
         expect(trackCoords[3].path.ascentRate).toBeUndefined();
         expect(trackCoords[3].path.descentRate).toBeUndefined();
 
-        expect(trackSegs[3].height).toBeUndefined();
-        expect(trackSegs[3].heightRate).toBeUndefined();
+        expect(trackSegs[3].height).toEqual(0);
+        expect(trackSegs[3].heightRate).toEqual(0);
 
         expect(trackCoords[4].elevation).toEqual(5000);
         expect(trackCoords[4].path.ascentRate).toBeCloseTo(0, 1);
-        expect(trackCoords[4].path.descentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[4].path.descentRate).toBeCloseTo(25, 1);
 
         expect(trackSegs[4].height).toBeCloseTo(-1000, 1);
         expect(trackSegs[4].heightRate).toBeCloseTo(-50, 1);
@@ -770,21 +770,21 @@ describe('##Track', () => {
 
         expect(trackCoords[2].elevation).toEqual(1500);
         expect(trackCoords[2].path.ascentRate).toBeCloseTo(0, 1);
-        expect(trackCoords[2].path.descentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[2].path.descentRate).toBeCloseTo(25, 1);
 
-        expect(trackSegs[2].height).toBeUndefined();
-        expect(trackSegs[2].heightRate).toBeUndefined();
+        expect(trackSegs[2].height).toEqual(0);
+        expect(trackSegs[2].heightRate).toEqual(0);
 
         expect(trackCoords[3]).not.toHaveProperty('elevation');
         expect(trackCoords[3].path.ascentRate).toBeUndefined();
         expect(trackCoords[3].path.descentRate).toBeUndefined();
 
-        expect(trackSegs[3].height).toBeUndefined();
-        expect(trackSegs[3].heightRate).toBeUndefined();
+        expect(trackSegs[3].height).toEqual(0);
+        expect(trackSegs[3].heightRate).toEqual(0);
 
         expect(trackCoords[4].elevation).toEqual(5000);
         expect(trackCoords[4].path.ascentRate).toBeCloseTo(0, 1);
-        expect(trackCoords[4].path.descentRate).toBeCloseTo(50, 1);
+        expect(trackCoords[4].path.descentRate).toBeCloseTo(25, 1);
 
         expect(trackSegs[4].height).toBeCloseTo(-1000, 1);
         expect(trackSegs[4].heightRate).toBeCloseTo(-50, 1);
@@ -797,6 +797,32 @@ describe('##Track', () => {
 
     describe('#addElevationsFromApi', () => {
 
+    });
+
+    describe('#getStats', () => {
+      let trackPoints: TrackPoint[];
+      let featureCollection: FeatureCollection;
+      let track: Track;
+
+      beforeEach(() => {
+        const positions = lineStringTrack.features[0].geometry.coords;
+        const times = (lineStringTrack.features[0].properties as ITrackPropertyProperties).coordinateProperties.times as string[];
+
+        trackPoints = GeoJsonManager.PositionsToTrackPoints(positions, times);
+        featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trackPoints);
+        track = Track.fromGeoJson(featureCollection);
+      });
+
+      it('should return stats for a Track', () => {
+        const result = track.getStats();
+
+        // Spot check of sample stats. Not comprehensive. See TrackStats tests & baser class tests for validation of all properties
+        expect(result.size.vertices).toEqual(lineStringTrack.features[0].geometry.coords.length);
+        expect(result.length).toBeCloseTo(1222771.65, 2);
+        expect(result.height.gain).toBeCloseTo(500, 2);
+        expect(result.time.duration).toBeCloseTo(70, 2);
+        expect(result.speed.avg).toBeCloseTo(17468.17, 2);
+      });
     });
   });
 
