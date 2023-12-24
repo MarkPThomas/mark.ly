@@ -43,7 +43,8 @@ import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
-import { IEditedTrackStats, TrackStats } from './Custom/TrackStats';
+import { IEditedTrackStats, TrackStats } from './Custom/Stats/Paths/TrackStats';
+import { TrackStatsComparison } from './Custom/Stats/Paths/TrackStatsComparison';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -382,12 +383,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
-        {originalTrackStats !== null ?
-          <TrackStats stats={originalTrackStats} /> : null
-        }
-        {trackStats !== null ?
-          <TrackStats stats={trackStats} /> : null
-        }
+        <div className="stats-container">
+          {originalTrackStats ?
+            <TrackStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
+          }
+          {trackStats !== null ?
+            <TrackStats stats={trackStats} /> : null
+          }
+        </div>
         <input type="file" onChange={handleFileSelection} />
         <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
         <label htmlFor="animatePan">Set View On Click</label>
