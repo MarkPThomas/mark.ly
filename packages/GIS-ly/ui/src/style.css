@@ -18,3 +18,19 @@ html {
 .leaflet-container {
   height: inherit;
 }
+
+.stats-container {
+  display: flex;
+  align-items: top;
+}
+
+.stats-container>div {
+  padding: 10px
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse
+}
