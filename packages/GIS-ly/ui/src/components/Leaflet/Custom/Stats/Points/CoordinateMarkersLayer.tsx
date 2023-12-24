@@ -3,9 +3,9 @@ import {
   LayerGroup
 } from 'react-leaflet';
 
-import { hashString } from '../../../../../../common/utils';
+import { hashString } from '../../../../../../../../common/utils';
 
-import { TrackPoint } from '../../../model/GIS/Core/Track/TrackPoint';
+import { TrackPoint } from '../../../../../model/GIS/Core/Track/TrackPoint';
 
 import { CoordinateMarker } from './CoordinateMarker';
 
