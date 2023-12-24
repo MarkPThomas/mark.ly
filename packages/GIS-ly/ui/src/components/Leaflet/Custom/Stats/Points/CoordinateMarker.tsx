@@ -4,13 +4,13 @@ import {
   Circle
 } from 'react-leaflet';
 
-import { hashString } from '../../../../../../common/utils'; //'common/utils';
-import { Conversion } from '../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
-import { Angle } from '../../../../../../common/utils/math/Coordinates/Angle';
+import { hashString } from '../../../../../../../../common/utils'; //'common/utils';
+import { Conversion } from '../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Angle } from '../../../../../../../../common/utils/math/Coordinates/Angle';
 
-import { TrackPoint } from '../../../model/GIS/Core/Track/TrackPoint';
+import { TrackPoint } from '../../../../../model/GIS/Core/Track/TrackPoint';
 
-import { LabelValue } from './LabelValueList';
+import { LabelValue } from '../../LabelValueList';
 
 
 export type CoordinateMarkerProps = {

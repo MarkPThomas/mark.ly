@@ -43,6 +43,7 @@ import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
+import { IEditedTrackStats, TrackStats } from './Custom/TrackStats';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -62,11 +63,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [layers, setLayers] = useState<LayersControlProps | null>(null)
 
   const [track, setTrack] = useState<Track | null>(null);
+  const [originalTrackStats, setOriginalTrackStats] = useState<IEditedTrackStats>(null);
+  const [trackStats, setTrackStats] = useState<IEditedTrackStats>(null);
 
   useEffect(() => {
     console.log('Initializing map with config: ', config);
     setLayers(createTileLayers(config.baseLayers));
-
     // TODO: Finish fixing. This only breaks the 'Topo Map' underlay
     // Temporary stub is to include the API key in the URL in the config file
     // appendLayerApiKey(config.baseLayers[0], restHandlers.handleLayerApiKeys)
@@ -101,6 +103,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
     setLayers(updatedLayersProps(newGeoJson, newCoords));
     setBounds(newBounds);
+
+    const trackStats = track.getStats();
+    setTrackStats(trackStats);
   }
 
   const handleFileSelection = async (event) => {
@@ -131,6 +136,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           const newBounds = track.boundingBox().toCornerLatLng();
           console.log('newBounds: ', newBounds);
           setBounds(newBounds);
+
+          const trackStats = track.getStats();
+          setOriginalTrackStats(trackStats);
         }
       }]);
   };
@@ -374,6 +382,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
+        {originalTrackStats !== null ?
+          <TrackStats stats={originalTrackStats} /> : null
+        }
+        {trackStats !== null ?
+          <TrackStats stats={trackStats} /> : null
+        }
         <input type="file" onChange={handleFileSelection} />
         <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
         <label htmlFor="animatePan">Set View On Click</label>

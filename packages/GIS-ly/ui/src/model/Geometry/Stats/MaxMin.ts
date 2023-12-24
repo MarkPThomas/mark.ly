@@ -1,6 +1,6 @@
 import { NodeDouble } from "../../../../../../common/utils/dataStructures/LinkedListDouble";
 import { Segment, Vertex } from "../Polyline";
-import { INodeOfInterest } from "./INodeOfInterest";
+import { INodeOfInterest, NodeOfInterest } from "./INodeOfInterest";
 import { ConstrainedStats } from "./ConstrainedStats";
 
 export interface IMaxMin<TVertex extends Vertex, TSegment extends Segment> {
@@ -89,9 +89,6 @@ export class MaxMin<TVertex extends Vertex, TSegment extends Segment>
   }
 
   static emptyEntry() {
-    return {
-      value: 0,
-      nodes: []
-    };
+    return NodeOfInterest.empty();
   }
 }

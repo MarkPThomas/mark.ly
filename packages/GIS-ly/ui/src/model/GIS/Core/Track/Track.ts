@@ -11,7 +11,7 @@ import { GeoJsonTrack } from './GeoJsonTrack';
 import { PolylineTrack } from './PolylineTrack';
 import { BoundingBox } from '../BoundingBox';
 import { IPointProperties } from '../Point/Point';
-import { ITrackStats, TrackStats } from './Stats';
+import { ITrackStats, TimeStats, TrackStats } from './Stats';
 
 
 export type EvaluatorArgs = { [name: string]: number };
@@ -205,6 +205,13 @@ export class Track implements ITrack {
       size,
       ...statsResults
     }
+  }
+
+  getDuration() {
+    const timeStats = new TimeStats();
+    timeStats.of(this._polylineTrack);
+
+    return timeStats.duration;
   }
 
   updateGeoJsonTrack(trackChanged: boolean | number) {

@@ -13,7 +13,7 @@ import { hashString } from '../../../../../../../common/utils';//'common/utils';
 
 import { TrackPoint } from '../../../../model/GIS/Core/Track';
 
-import { CoordinateMarkersLayer } from '../../Custom/CoordinateMarkersLayer';
+import { CoordinateMarkersLayer } from '../../Custom/Stats/Points/CoordinateMarkersLayer';
 import GeoJsonWithUpdates from './GeoJsonWithUpdates';
 
 type Overlay = {

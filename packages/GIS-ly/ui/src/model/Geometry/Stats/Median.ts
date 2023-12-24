@@ -1,5 +1,5 @@
 import { NodeDouble } from "common/utils/dataStructures/LinkedListDouble";
-import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
+import { Segment, Vertex } from "../Polyline";
 import { INodeOfInterest } from "./INodeOfInterest";
 import { ConstrainedStats } from "./ConstrainedStats";
 
