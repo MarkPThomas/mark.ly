@@ -2,22 +2,20 @@ import { SegmentNode } from "../../../../Geometry/Polyline";
 import {
   BasicStats,
   INodeOfInterest,
+  IRangeStatsResults,
   MaxMinStats,
+  Median,
+  RangeStatsResults,
+  StandardDeviationStats,
   Sum
 } from "../../../../Geometry/Stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";
 
-export interface ISpeed {
-  avg: number;
-  max: INodeOfInterest<TrackPoint, TrackSegment>;
-  min: INodeOfInterest<TrackPoint, TrackSegment>;
-}
-
 export class SpeedStats
   extends BasicStats<TrackPoint, TrackSegment>
-  implements ISpeed {
+  implements IRangeStatsResults<TrackPoint, TrackSegment> {
 
   private _maxMin: MaxMinStats<TrackPoint, TrackSegment>;
   get max(): INodeOfInterest<TrackPoint, TrackSegment> {
@@ -25,6 +23,16 @@ export class SpeedStats
   }
   get min(): INodeOfInterest<TrackPoint, TrackSegment> {
     return this._maxMin?.range.min;
+  }
+
+  private _median: Median<TrackPoint, TrackSegment>;
+  get mdn(): INodeOfInterest<TrackPoint, TrackSegment> {
+    return this._median.median;
+  }
+
+  private _standardDev: StandardDeviationStats<TrackPoint, TrackSegment>;
+  get std(): number {
+    return this._standardDev.sigma;
   }
 
   private _distance: Sum;
@@ -36,7 +44,20 @@ export class SpeedStats
   protected override initializeProperties() {
     this._distance = new Sum();
     this._duration = new Sum();
-    this._maxMin = new MaxMinStats<TrackPoint, TrackSegment>(this.getSegSpeed, true);
+
+    this._median = new Median<TrackPoint, TrackSegment>(this.getSegSpeed, this._isConsidered);
+
+    const isSegmentProperty = true;
+
+    this._maxMin = new MaxMinStats<TrackPoint, TrackSegment>(
+      this.getSegSpeed,
+      isSegmentProperty,
+      this._isConsidered);
+
+    this._standardDev = new StandardDeviationStats<TrackPoint, TrackSegment>(
+      this.getSegSpeed,
+      isSegmentProperty,
+      this._isConsidered);
   }
 
   protected getSegSpeed(segment: TrackSegment): number {
@@ -52,6 +73,9 @@ export class SpeedStats
     this._duration.add(segment.val.duration);
 
     this._maxMin.add(segment);
+
+    this._median.add(segment);
+    this._standardDev.add(segment);
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
@@ -63,13 +87,14 @@ export class SpeedStats
     this._duration.remove(segment.val.duration);
 
     this._maxMin.remove(segment);
+
+    this._median.remove(segment);
+    this._standardDev.remove(segment);
   }
 
-  serialize(): ISpeed {
-    return {
-      avg: this.avg,
-      max: this.max,
-      min: this.min
-    }
+  serialize(): IRangeStatsResults<TrackPoint, TrackSegment> {
+    const rangeResults = new RangeStatsResults(this);
+
+    return rangeResults.serialize();
   }
 }

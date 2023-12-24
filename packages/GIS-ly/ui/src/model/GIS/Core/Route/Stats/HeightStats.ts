@@ -7,20 +7,18 @@ import {
   MaxMinStats,
   Sum,
   Median,
-  StandardDeviationStats
+  StandardDeviationStats,
+  IRangeStatsResults,
+  RangeStatsResults
 } from "../../../../Geometry/Stats";
 
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
 
-export interface IHeight {
+export interface IHeight extends IRangeStatsResults<RoutePoint, RouteSegment> {
   net: number;
   gain: number;
   loss: number;
-  max: INodeOfInterest<RoutePoint, RouteSegment>;
-  min: INodeOfInterest<RoutePoint, RouteSegment>;
-  mdn: INodeOfInterest<RoutePoint, RouteSegment>;
-  std: number;
 }
 
 export class HeightStats
@@ -39,6 +37,11 @@ export class HeightStats
   private _loss: Sum;
   get loss(): number {
     return this._loss.value;
+  }
+
+  private _average: Sum;
+  get avg(): number {
+    return this._average.mean();
   }
 
   private _maxMin: MaxMinStats<RoutePoint, RouteSegment>;
@@ -74,6 +77,7 @@ export class HeightStats
   protected override initializeProperties() {
     this._gain = new Sum(this.isAscending);
     this._loss = new Sum(this.isDescending);
+    this._average = new Sum();
     this._median = new Median<RoutePoint, RouteSegment>(this.getPtElevationOrAltitude, this._isConsidered);
 
     const isSegmentProperty = false;
@@ -95,6 +99,8 @@ export class HeightStats
     this._gain.add(segment.val.height);
     this._loss.add(segment.val.height);
 
+    this._average.add(this.getPtElevationOrAltitude(segment.prevVert.val));
+
     this._maxMin.add(segment);
     this._median.add(segment);
     this._standardDev.add(segment);
@@ -108,6 +114,8 @@ export class HeightStats
     this._gain.remove(segment.val.height);
     this._loss.remove(segment.val.height);
 
+    this._average.remove(this.getPtElevationOrAltitude(segment.prevVert.val));
+
     this._maxMin.remove(segment);
     this._median.remove(segment);
     this._standardDev.remove(segment);
@@ -118,22 +126,17 @@ export class HeightStats
     const startElevation = this._firstVertex?.val?.elevation ?? this._firstVertex?.val?.alt ?? 0;
     const endElevation = this._lastVertex?.val?.elevation ?? this._lastVertex?.val?.alt ?? 0;
 
-    console.log('getNetHeight: ')
-    console.log('_firstVertex: ', this._firstVertex)
-    console.log('_lastVertex: ', this._lastVertex)
-
     return endElevation - startElevation;
   }
 
   serialize(): IHeight {
+    const rangeResults = new RangeStatsResults(this);
+
     return {
       net: this.net,
       gain: this.gain,
       loss: this.loss,
-      max: this.max,
-      min: this.min,
-      mdn: this.mdn,
-      std: this.std
+      ...rangeResults.serialize()
     }
   }
 }

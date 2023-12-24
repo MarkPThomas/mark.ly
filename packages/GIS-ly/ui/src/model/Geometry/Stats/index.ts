@@ -5,3 +5,4 @@ export { MaxMinStats } from "./MaxMinStats";
 export { Median } from "./Median";
 export { StandardDeviationStats } from "./StandardDeviationStats";
 export { SumMean as Sum } from "./SumMean";
+export * from "./RangeStatsResults";

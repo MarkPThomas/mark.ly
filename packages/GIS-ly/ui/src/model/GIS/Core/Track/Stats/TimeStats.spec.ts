@@ -68,8 +68,8 @@ describe('##TimeStats', () => {
     it('should initialize a new object', () => {
       const timeStats = new TimeStats();
 
-      expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      expect(timeStats.max.value).toBeCloseTo(0, 2);
+      expect(timeStats.min.value).toBeCloseTo(0, 2);
       expect(timeStats.duration).toBeCloseTo(0, 2);
     });
 
@@ -78,8 +78,8 @@ describe('##TimeStats', () => {
 
       const timeStats = new TimeStats(isConsidered);
 
-      expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      expect(timeStats.max.value).toBeCloseTo(0, 2);
+      expect(timeStats.min.value).toBeCloseTo(0, 2);
       expect(timeStats.duration).toBeCloseTo(0, 2);
     });
   });
@@ -95,44 +95,44 @@ describe('##TimeStats', () => {
 
       timeStats.add(segments[0]); // 30
 
-      expect(timeStats.maxInterval.value).toEqual(30);
-      expect(timeStats.minInterval.value).toEqual(30);
+      expect(timeStats.max.value).toEqual(30);
+      expect(timeStats.min.value).toEqual(30);
       expect(timeStats.duration).toEqual(30);
 
       timeStats.add(segments[1]); // 40
 
-      expect(timeStats.maxInterval.value).toEqual(40);
-      expect(timeStats.minInterval.value).toEqual(30);
+      expect(timeStats.max.value).toEqual(40);
+      expect(timeStats.min.value).toEqual(30);
       expect(timeStats.duration).toEqual(70);
 
       timeStats.add(segments[2]); // 15
 
-      expect(timeStats.maxInterval.value).toEqual(40);
-      expect(timeStats.minInterval.value).toEqual(15);
+      expect(timeStats.max.value).toEqual(40);
+      expect(timeStats.min.value).toEqual(15);
       expect(timeStats.duration).toEqual(85);
 
       timeStats.add(segments[3]); // 45
 
-      expect(timeStats.maxInterval.value).toEqual(45);
-      expect(timeStats.minInterval.value).toEqual(15);
+      expect(timeStats.max.value).toEqual(45);
+      expect(timeStats.min.value).toEqual(15);
       expect(timeStats.duration).toEqual(130);
 
       timeStats.add(segments[4]); // 2
 
-      expect(timeStats.maxInterval.value).toEqual(45);
-      expect(timeStats.minInterval.value).toEqual(2);
+      expect(timeStats.max.value).toEqual(45);
+      expect(timeStats.min.value).toEqual(2);
       expect(timeStats.duration).toEqual(132);
 
       timeStats.add(segments[5]);  // 300
 
-      expect(timeStats.maxInterval.value).toEqual(300);
-      expect(timeStats.minInterval.value).toEqual(2);
+      expect(timeStats.max.value).toEqual(300);
+      expect(timeStats.min.value).toEqual(2);
       expect(timeStats.duration).toEqual(432);
 
       timeStats.add(segments[6]);   // 1
 
-      expect(timeStats.maxInterval.value).toEqual(300);
-      expect(timeStats.minInterval.value).toEqual(1);
+      expect(timeStats.max.value).toEqual(300);
+      expect(timeStats.min.value).toEqual(1);
       expect(timeStats.duration).toEqual(433);
     });
 
@@ -142,50 +142,50 @@ describe('##TimeStats', () => {
 
       timeStats.add(segments[0]); // 1.7
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
 
       // timeStats.add(segments[1]); // -2.8
 
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
 
 
       // timeStats.add(segments[2]); // -0.6
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
 
 
       // timeStats.add(segments[3]); // 5
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
 
 
       // timeStats.add(segments[4]); // 0.6
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
 
 
       // timeStats.add(segments[5]);  // -8.3
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
 
 
       // timeStats.add(segments[6]);   // -3.9
 
-      // expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      // expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      // expect(timeStats.max.value).toBeCloseTo(0, 2);
+      // expect(timeStats.min.value).toBeCloseTo(0, 2);
       // expect(timeStats.duration).toBeCloseTo(0, 2);
     });
   });
@@ -204,8 +204,8 @@ describe('##TimeStats', () => {
 
       timeStats.fromTo(startNode, endNode);
 
-      expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      expect(timeStats.max.value).toBeCloseTo(0, 2);
+      expect(timeStats.min.value).toBeCloseTo(0, 2);
       expect(timeStats.duration).toBeCloseTo(0, 2);
     });
 
@@ -217,8 +217,8 @@ describe('##TimeStats', () => {
 
       timeStats.fromTo(startNode, endNode);
 
-      expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      expect(timeStats.max.value).toBeCloseTo(0, 2);
+      expect(timeStats.min.value).toBeCloseTo(0, 2);
       expect(timeStats.duration).toBeCloseTo(0, 2);
     });
 
@@ -230,8 +230,8 @@ describe('##TimeStats', () => {
 
       timeStats.fromTo(startNode, endNode);
 
-      expect(timeStats.maxInterval.value).toEqual(300);
-      expect(timeStats.minInterval.value).toEqual(2);
+      expect(timeStats.max.value).toEqual(300);
+      expect(timeStats.min.value).toEqual(2);
       expect(timeStats.duration).toEqual(402);
     });
 
@@ -243,8 +243,8 @@ describe('##TimeStats', () => {
 
       timeStats.fromTo(startNode, endNode);
 
-      expect(timeStats.maxInterval.value).toEqual(300);
-      expect(timeStats.minInterval.value).toEqual(1);
+      expect(timeStats.max.value).toEqual(300);
+      expect(timeStats.min.value).toEqual(1);
       expect(timeStats.duration).toEqual(403);
     });
   });
@@ -261,8 +261,8 @@ describe('##TimeStats', () => {
     it('should do nothing if no track is provided', () => {
       timeStats.of(null);
 
-      expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      expect(timeStats.max.value).toBeCloseTo(0, 2);
+      expect(timeStats.min.value).toBeCloseTo(0, 2);
       expect(timeStats.duration).toBeCloseTo(0, 2);
     });
 
@@ -271,8 +271,8 @@ describe('##TimeStats', () => {
 
       timeStats.of(track);
 
-      expect(timeStats.maxInterval.value).toBeCloseTo(0, 2);
-      expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+      expect(timeStats.max.value).toBeCloseTo(0, 2);
+      expect(timeStats.min.value).toBeCloseTo(0, 2);
       expect(timeStats.duration).toBeCloseTo(0, 2);
     });
 
@@ -281,8 +281,8 @@ describe('##TimeStats', () => {
 
       timeStats.of(track);
 
-      expect(timeStats.maxInterval.value).toEqual(300);
-      expect(timeStats.minInterval.value).toEqual(1);
+      expect(timeStats.max.value).toEqual(300);
+      expect(timeStats.min.value).toEqual(1);
       expect(timeStats.duration).toEqual(433);
     });
   });
@@ -301,21 +301,21 @@ describe('##TimeStats', () => {
   //     expect(timeStats.duration).toEqual(3.5);
   //     expect(timeStats.uphill).toEqual(-8.5);
   //     expect(timeStats.downhill).toEqual(elevationInitial + 2);
-  //     expect(timeStats.minInterval.value).toEqual(elevationInitial - 4);
+  //     expect(timeStats.min.value).toEqual(elevationInitial - 4);
   //     expect(timeStats.net).toEqual(-4 - elevationInitial);
 
   //     timeStats.remove(createSegment(1));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
 
   //     timeStats.remove(createSegment(1));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
   //   });
@@ -328,14 +328,14 @@ describe('##TimeStats', () => {
   //     expect(timeStats.duration).toEqual(3.5);
   //     expect(timeStats.uphill).toEqual(-8.5);
   //     expect(timeStats.downhill).toEqual(elevationInitial + 2);
-  //     expect(timeStats.minInterval.value).toEqual(elevationInitial - 4);
+  //     expect(timeStats.min.value).toEqual(elevationInitial - 4);
   //     expect(timeStats.net).toEqual(-4 - elevationInitial);
 
   //     timeStats.remove(createSegment(1.5));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
   //   });
 
@@ -346,14 +346,14 @@ describe('##TimeStats', () => {
   //     expect(timeStats.duration).toEqual(3.5);
   //     expect(timeStats.uphill).toEqual(-8.5);
   //     expect(timeStats.downhill).toEqual(elevationInitial + 2);
-  //     expect(timeStats.minInterval.value).toEqual(elevationInitial - 4);
+  //     expect(timeStats.min.value).toEqual(elevationInitial - 4);
   //     expect(timeStats.net).toEqual(-4 - elevationInitial);
 
   //     timeStats.remove(createSegment(1));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
 
   //     // Note: There can be remaining values once count is at 0, since any value can be removed
@@ -361,14 +361,14 @@ describe('##TimeStats', () => {
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
 
   //     timeStats.remove(createSegment(1));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
   //   });
 
@@ -380,28 +380,28 @@ describe('##TimeStats', () => {
   //     expect(timeStats.duration).toEqual(3.5);
   //     expect(timeStats.uphill).toEqual(-8.5);
   //     expect(timeStats.downhill).toEqual(elevationInitial + 2);
-  //     expect(timeStats.minInterval.value).toEqual(elevationInitial - 4);
+  //     expect(timeStats.min.value).toEqual(elevationInitial - 4);
   //     expect(timeStats.net).toEqual(-4 - elevationInitial);
 
   //     timeStats.remove(createSegment(1));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
 
   //     timeStats.remove(createSegment(5));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
 
   //     timeStats.remove(createSegment(6));
   //     expect(timeStats.duration).toBeCloseTo(0, 2);
   //     expect(timeStats.uphill).toBeCloseTo(0, 2);
   //     expect(timeStats.downhill).toBeCloseTo(0, 2);
-  //     expect(timeStats.minInterval.value).toBeCloseTo(0, 2);
+  //     expect(timeStats.min.value).toBeCloseTo(0, 2);
   //     expect(timeStats.net).toBeCloseTo(0, 2);
   //   });
   // });
@@ -420,8 +420,8 @@ describe('##TimeStats', () => {
 
       const result = timeStats.serialize();
 
-      expect(result.maxInterval.value).toBeCloseTo(0, 2);
-      expect(result.minInterval.value).toBeCloseTo(0, 2);
+      expect(result.max.value).toBeCloseTo(0, 2);
+      expect(result.min.value).toBeCloseTo(0, 2);
       expect(result.duration).toBeCloseTo(0, 2);
     });
 
@@ -430,8 +430,8 @@ describe('##TimeStats', () => {
 
       const result = timeStats.serialize();
 
-      expect(result.maxInterval.value).toEqual(300);
-      expect(result.minInterval.value).toEqual(1);
+      expect(result.max.value).toEqual(300);
+      expect(result.min.value).toEqual(1);
       expect(result.duration).toEqual(433);
     });
   });

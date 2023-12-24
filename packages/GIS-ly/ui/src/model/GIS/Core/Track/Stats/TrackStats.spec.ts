@@ -253,8 +253,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(result.time.duration).toEqual(240);
-        expect(result.time.maxInterval.value).toEqual(60);
-        expect(result.time.minInterval.value).toEqual(15);
+        expect(result.time.max.value).toEqual(60);
+        expect(result.time.min.value).toEqual(15);
 
         expect(result.speed.avg).toBeCloseTo(1.62, 2);
         expect(result.speed.max.value).toBeCloseTo(3.71, 2);
@@ -312,8 +312,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(initialResult.time.duration).toEqual(240);
-        expect(initialResult.time.maxInterval.value).toEqual(60);
-        expect(initialResult.time.minInterval.value).toEqual(15);
+        expect(initialResult.time.max.value).toEqual(60);
+        expect(initialResult.time.min.value).toEqual(15);
 
         expect(initialResult.speed.avg).toBeCloseTo(1.62, 2);
         expect(initialResult.speed.max.value).toBeCloseTo(3.71, 2);
@@ -360,8 +360,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(insertResultDirty.time.duration).toEqual(initialResult.time.duration);
-        expect(insertResultDirty.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(insertResultDirty.time.minInterval.value).toEqual(initialResult.time.minInterval.value);
+        expect(insertResultDirty.time.max.value).toEqual(initialResult.time.max.value);
+        expect(insertResultDirty.time.min.value).toEqual(initialResult.time.min.value);
 
         expect(insertResultDirty.speed.avg).toBeCloseTo(initialResult.speed.avg, 2);
         expect(insertResultDirty.speed.max.value).toBeCloseTo(initialResult.speed.max.value, 2);
@@ -399,8 +399,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(insertResult.time.duration).toEqual(initialResult.time.duration);
-        expect(insertResult.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(insertResult.time.minInterval.value).toEqual(12);
+        expect(insertResult.time.max.value).toEqual(initialResult.time.max.value);
+        expect(insertResult.time.min.value).toEqual(12);
 
         expect(insertResult.speed.avg).toBeCloseTo(41699.49, 2);
         expect(insertResult.speed.max.value).toBeCloseTo(416980.97, 2);
@@ -436,8 +436,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(removedResultDirty.time.duration).toEqual(initialResult.time.duration);
-        expect(removedResultDirty.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(removedResultDirty.time.minInterval.value).toEqual(12);
+        expect(removedResultDirty.time.max.value).toEqual(initialResult.time.max.value);
+        expect(removedResultDirty.time.min.value).toEqual(12);
 
         expect(removedResultDirty.speed.avg).toBeCloseTo(41699.49, 2);
         expect(removedResultDirty.speed.max.value).toBeCloseTo(416980.97, 2);
@@ -478,8 +478,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(removedResult.time.duration).toEqual(initialResult.time.duration);
-        expect(removedResult.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(removedResult.time.minInterval.value).toEqual(initialResult.time.minInterval.value);
+        expect(removedResult.time.max.value).toEqual(initialResult.time.max.value);
+        expect(removedResult.time.min.value).toEqual(initialResult.time.min.value);
 
         expect(removedResult.speed.avg).toBeCloseTo(initialResult.speed.avg, 2);
         expect(removedResult.speed.max.value).toBeCloseTo(initialResult.speed.max.value, 2);
@@ -532,8 +532,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(result.time.duration).toEqual(240);
-        expect(result.time.maxInterval.value).toEqual(60);
-        expect(result.time.minInterval.value).toEqual(15);
+        expect(result.time.max.value).toEqual(60);
+        expect(result.time.min.value).toEqual(15);
 
         expect(result.speed.avg).toBeCloseTo(1.62, 2);
         expect(result.speed.max.value).toBeCloseTo(3.71, 2);

@@ -2,43 +2,71 @@ import { SegmentNode } from "../../../../Geometry/Polyline";
 import {
   BasicStats,
   INodeOfInterest,
+  IRangeStatsResults,
   MaxMinStats,
+  Median,
+  RangeStatsResults,
+  StandardDeviationStats,
   Sum
 } from "../../../../Geometry/Stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";
 
-interface IHeightRateSigned {
-  avg: number;
-  max: INodeOfInterest<TrackPoint, TrackSegment>;
-}
-
 export interface IHeightRate {
-  ascent: IHeightRateSigned;
-  descent: IHeightRateSigned;
+  ascent: IRangeStatsResults<TrackPoint, TrackSegment>;
+  descent: IRangeStatsResults<TrackPoint, TrackSegment>;
 };
 
 class HeightRateStatsSigned
   extends BasicStats<TrackPoint, TrackSegment>
-  implements IHeightRateSigned {
+  implements IRangeStatsResults<TrackPoint, TrackSegment> {
+
   private _heightTotal: Sum;
   private _duration: Sum;
-
   get avg(): number {
     return this._duration.value ? this._heightTotal.value / this._duration.value : 0;
   }
+
   private _maxMin: MaxMinStats<TrackPoint, TrackSegment>;
   get max(): INodeOfInterest<TrackPoint, TrackSegment> {
-    return this._maxMin && (this._isConsidered && this._isConsidered(1))
-      ? this._maxMin.range.max
-      : this._maxMin.range.min;
+    // return this._maxMin && (this._isConsidered && this._isConsidered(1))
+    //   ? this._maxMin.range.max
+    //   : this._maxMin.range.min;
+    return this._maxMin?.range.max;
+  }
+
+  get min(): INodeOfInterest<TrackPoint, TrackSegment> {
+    return this._maxMin?.range.min;
+  }
+
+  private _median: Median<TrackPoint, TrackSegment>;
+  get mdn(): INodeOfInterest<TrackPoint, TrackSegment> {
+    return this._median.median;
+  }
+
+  private _standardDev: StandardDeviationStats<TrackPoint, TrackSegment>;
+  get std(): number {
+    return this._standardDev.sigma;
   }
 
   protected override initializeProperties() {
     this._heightTotal = new Sum();
     this._duration = new Sum();
-    this._maxMin = new MaxMinStats<TrackPoint, TrackSegment>(this.getHeightRate, true);
+
+    this._median = new Median<TrackPoint, TrackSegment>(this.getHeightRate, this._isConsidered);
+
+    const isSegmentProperty = true;
+
+    this._maxMin = new MaxMinStats<TrackPoint, TrackSegment>(
+      this.getHeightRate,
+      isSegmentProperty,
+      this._isConsidered);
+
+    this._standardDev = new StandardDeviationStats<TrackPoint, TrackSegment>(
+      this.getHeightRate,
+      isSegmentProperty,
+      this._isConsidered);
   }
 
   protected getHeightRate(segment: TrackSegment): number {
@@ -54,6 +82,9 @@ class HeightRateStatsSigned
     this._duration.add(segment.val.duration);
 
     this._maxMin.add(segment);
+
+    this._median.add(segment);
+    this._standardDev.add(segment);
   }
 
   protected override removeProperties(segment: SegmentNode<TrackPoint, TrackSegment>) {
@@ -65,13 +96,15 @@ class HeightRateStatsSigned
     this._duration.remove(segment.val.duration);
 
     this._maxMin.remove(segment);
+
+    this._median.remove(segment);
+    this._standardDev.remove(segment);
   }
 
-  serialize(): IHeightRateSigned {
-    return {
-      avg: this.avg,
-      max: this.max
-    }
+  serialize(): IRangeStatsResults<TrackPoint, TrackSegment> {
+    const rangeResults = new RangeStatsResults(this);
+
+    return rangeResults.serialize();
   }
 }
 
@@ -80,19 +113,13 @@ export class HeightRateStats
   implements IHeightRate {
 
   private _ascent: HeightRateStatsSigned;
-  get ascent(): IHeightRateSigned {
-    return {
-      avg: this._ascent.avg,
-      max: this._ascent.max
-    }
+  get ascent(): IRangeStatsResults<TrackPoint, TrackSegment> {
+    return this._ascent.serialize();
   }
 
   private _descent: HeightRateStatsSigned;
-  get descent(): IHeightRateSigned {
-    return {
-      avg: this._descent.avg,
-      max: this._descent.max
-    }
+  get descent(): IRangeStatsResults<TrackPoint, TrackSegment> {
+    return this._descent.serialize();
   }
 
   protected override initializeProperties() {
