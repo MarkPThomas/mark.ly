@@ -62,6 +62,12 @@ export class Track implements ITrack {
   get name(): string {
     return this._geoJsonTrack.trackMetaData.name;
   }
+  set name(name: string) {
+    name = name?.trim();
+    if (name) {
+      this._geoJsonTrack.trackMetaData.name = name;
+    }
+  }
 
   get time(): string {
     return this._geoJsonTrack.trackMetaData.time;
@@ -106,22 +112,22 @@ export class Track implements ITrack {
     return track;
   }
 
-  static fromPoints(trkPts: TrackPoint[]): Track {
+  static fromPoints(trkPts: TrackPoint[], name?: string): Track {
     const track = new Track();
 
     const featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trkPts);
 
-    track._geoJsonTrack = new GeoJsonTrack(featureCollection);
+    track._geoJsonTrack = new GeoJsonTrack(featureCollection, name);
     track._polylineTrack = new PolylineTrack(trkPts);
 
     return track;
   }
 
-  static fromPolyline(trkPolyline: PolylineTrack) {
+  static fromPolyline(trkPolyline: PolylineTrack, name?: string) {
     const track = new Track();
 
     const featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trkPolyline.vertices());
-    track._geoJsonTrack = new GeoJsonTrack(featureCollection);
+    track._geoJsonTrack = new GeoJsonTrack(featureCollection, name);
 
     track._polylineTrack = trkPolyline;
 
