@@ -79,10 +79,10 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   }
 
 
-  constructor(geoJson: FeatureCollection) {
+  constructor(geoJson: FeatureCollection, name?: string) {
     this._geoJson = geoJson;
 
-    this.setBaseTrackPropertyFromJson();
+    this.setBaseTrackPropertyFromJson(name);
   }
 
   clone(): GeoJsonTrack {
@@ -171,9 +171,18 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   }
 
 
-  protected setBaseTrackPropertyFromJson() {
+  protected setBaseTrackPropertyFromJson(name?: string) {
     const properties = TrackProperty.fromJson(this.getFeature().properties as unknown as ITrackPropertyProperties);
     if (!this.baseTrackPropertiesSet()) {
+      if (!properties.time) {
+        const firstTime = [properties.coordinateProperties?.times[0]].flat(10)[0];
+        properties.time = firstTime;
+      }
+
+      if (!properties.name) {
+        properties.name = name ? name : `Track: ${properties.time}`;
+      }
+
       this.setBaseTrackProperty(properties);
     }
   }

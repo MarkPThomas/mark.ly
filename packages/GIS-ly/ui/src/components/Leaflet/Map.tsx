@@ -63,7 +63,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [layers, setLayers] = useState<LayersControlProps | null>(null)
 
-  const [track, setTrack] = useState<Track | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [tracks, setTracks] = useState<{ [key: string]: Track }>({});
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedTrackStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedTrackStats>(null);
 
@@ -88,25 +89,111 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }, []);
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
-  const updateFromTrack = (track: Track) => {
+  const updateFromTrack = (track: Track, updateStats: boolean = true) => {
     console.log('updateFromTrack');
-
     console.log('Track: ', track);
 
-    const newCoords = track.trackPoints();
-    console.log('newCoords: ', newCoords);
+    console.log('currentTrack: ', currentTrack);
+    console.log('Tracks: ', tracks);
 
-    const newGeoJson = track.toJson();
-    console.log('newGeoJson: ', newGeoJson);
+    setLayers(updateLayersProps());
 
+    // Current Track
     const newBounds = track.boundingBox().toCornerLatLng();
     console.log('newBounds: ', newBounds);
-
-    setLayers(updatedLayersProps(newGeoJson, newCoords));
     setBounds(newBounds);
 
-    const trackStats = track.getStats();
-    setTrackStats(trackStats);
+    // TODO: Automate this when adding undo/redo by using key of track key & track version.
+    //  Removes updateStats & any coordinated updateCurrentTrackStats calls
+    if (updateStats) {
+      updateCurrentTrackStats(track);
+    }
+  }
+
+  const updateCurrentTrackStats = (track: Track) => {
+    console.log('updating stats on track: ', track)
+    if (track) {
+      const trackStats = track.getStats();
+      setTrackStats(trackStats);
+    }
+  }
+
+  const updateLayersProps = (): LayersControlProps => {
+    const overlays = Object.values(tracks).map((track) => overlayDefinition(track));
+    console.log('updateLayersProps->overlays: ', overlays)
+
+    const layersProps = overlays.length ? {
+      ...layers,
+      overlays
+    } : layers;
+    console.log('layersProps: ', layersProps)
+
+    return layersProps;
+  }
+
+  const overlayDefinition = (track: Track) => {
+    const coords = track.trackPoints();
+    console.log('newCoords: ', coords);
+
+    const geoJson = track.toJson();
+    console.log('newGeoJson: ', geoJson);
+
+    const trackName = track.name;
+    console.log('trackName: ', trackName);
+
+    return {
+      name: `Track: ${trackName}`,
+      geoJSON: geoJson,
+      items: [
+        coords
+      ]
+    }
+  }
+
+  const addTracks = (newTracks: Track[]) => {
+    console.log(`Adding ${newTracks.length} tracks`);
+    const tracksModify = tracks;
+
+    newTracks.forEach((track) => {
+      tracksModify[track.time] = track;
+    })
+
+    setTracks(tracksModify);
+  }
+
+  const removeTrack = (track: Track) => {
+    console.log('Removing track: ', track);
+    const tracksModify = tracks;
+
+    if (currentTrack === track) {
+      changeCurrentTrackToNext(track);
+    }
+
+    delete tracksModify[track.time];
+
+    setTracks(tracksModify);
+  }
+
+  // Changes track to next one alphabetically by time keys
+  const changeCurrentTrackToNext = (track: Track) => {
+    console.log('changeCurrentTrackToNext');
+    const trackTimes = Object.keys(tracks);
+
+    if (trackTimes) {
+      const sortedTimes = trackTimes.sort();
+      const trackIndex = sortedTimes.indexOf(track.time);
+      const nextTrack = tracks[trackIndex + 1] ?? null;
+
+      changeCurrentTrack(nextTrack);
+    }
+  }
+
+  const changeCurrentTrack = (track: Track) => {
+    console.log('Changing current track', track)
+    // TODO: Placeholder for saving state for later under/redo operations here...
+
+    setCurrentTrack(track);
+    updateCurrentTrackStats(track);
   }
 
   const handleFileSelection = async (event) => {
@@ -114,10 +201,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     console.log('Read file: ', file);
 
     toGeoJson(file, [
-      // save converted geojson to hook state
-      // setLayer,
+      // Save converted geojson to hook state
+      // SetLayer
       (geoJson: FeatureCollectionSerial) => {
         console.log('geoJson/Layer: ', geoJson)
+        console.log('Tracks before set: ', tracks);
 
         // save converted geoJson to hook within Track
         // Generate track for CRUD that is reflected in geoJson via hooks
@@ -127,16 +215,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         track.addProperties();
 
         if (track) {
-          setTrack(track);
+          changeCurrentTrack(track);
+          addTracks([track]);
+          console.log('currentTrack: ', currentTrack);
+          console.log('Tracks after set: ', tracks);
 
-          const newCoords = track.trackPoints();
-          console.log('newCoords: ', newCoords);
-          // setCoords(newCoords);
-          setLayers(updatedLayersProps(geoJson, newCoords));
-
-          const newBounds = track.boundingBox().toCornerLatLng();
-          console.log('newBounds: ', newBounds);
-          setBounds(newBounds);
+          updateFromTrack(track, false);
 
           const trackStats = track.getStats();
           setOriginalTrackStats(trackStats);
@@ -145,11 +229,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   };
 
   const handleGPXSaveFile = () => {
-    toGpxFile(track.toJson());
+    toGpxFile(currentTrack.toJson());
   }
 
   const handleKMLSaveFile = () => {
-    toKmlFile(track.toJson());
+    toKmlFile(currentTrack.toJson());
   }
 
   const animateRef = useRef(true);
@@ -189,8 +273,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const handleTrimCruft = () => {
     console.log('handleTrimCruft')
-    if (track) {
-      const manager = new CruftManager(track);
+    if (currentTrack) {
+      const manager = new CruftManager(currentTrack);
 
       // const triggerDistanceM: number = 5000;
       const triggerDistanceM = trackCriteria.cruft.gapDistanceMax;
@@ -199,14 +283,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
       console.log(`number nodes removed: ${numberTrimmed}`);
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
 
   const handleSplitOnStop = () => {
     console.log('handleSplitOnStop')
-    if (track) {
-      const manager = new DurationSplitter(track);
+    if (currentTrack) {
+      const manager = new DurationSplitter(currentTrack);
 
       // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
       const maxStopDurationS = trackCriteria.split.stopDurationMax;
@@ -220,17 +304,21 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       console.log(`number segments split on: ${splitResults.segments.length}`);
       console.log(`number points split by: ${splitResults.points.length}`);
 
-      // TODO: Swap track w/ track[0]
-      // TODO: Add additional track layers from remaining track[n]
+      if (splitResults.tracks.length > 1) {
+        removeTrack(currentTrack);
+        addTracks(splitResults.tracks);
 
-      updateFromTrack(track);
+        const newCurrentTrack = splitResults.tracks[0];
+        changeCurrentTrack(newCurrentTrack);
+        updateFromTrack(newCurrentTrack, false);
+      }
     }
   }
 
   const handleSmoothStationary = () => {
     console.log('handleSmoothStationary')
-    if (track) {
-      const manager = new StationarySmoother(track);
+    if (currentTrack) {
+      const manager = new StationarySmoother(currentTrack);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
       // const minSpeedMS = 0.11176;
@@ -240,14 +328,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       let numberNodesRemoved = manager.smoothStationary(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
 
   const handleSmoothBySpeed = () => {
     console.log('handleSmoothBySpeed')
-    if (track) {
-      const manager = new SpeedSmoother(track);
+    if (currentTrack) {
+      const manager = new SpeedSmoother(currentTrack);
 
       // 1.78816 meters/sec = 4 mph
       const speedLimitKph = Conversion.Speed.mphToKph(4);
@@ -261,14 +349,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       let numberNodesRemoved = manager.smoothBySpeed(speedLimitMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
 
   const handleSmoothByAngularSpeed = () => {
     console.log('handleSmoothByAngularSpeed')
-    if (track) {
-      const manager = new AngularSpeedSmoother(track);
+    if (currentTrack) {
+      const manager = new AngularSpeedSmoother(currentTrack);
 
       //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
       // const angularSpeedLimitRadS = 1.0472;
@@ -278,16 +366,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       let numberNodesRemoved = manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
 
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
-    if (track) {
+    if (currentTrack) {
       const gpsTimeIntervalS = trackCriteria.misc.gpsTimeInterval;
       console.log('gpsTimeIntervalS: ', gpsTimeIntervalS)
-      const manager = new NoiseCloudSmoother(track, gpsTimeIntervalS);
+      const manager = new NoiseCloudSmoother(currentTrack, gpsTimeIntervalS);
 
       // 0.11176 meters/sec = 0.25 mph is essentially stationary
       // const minSpeedMS = 0.11176;
@@ -297,16 +385,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       let numberNodesRemoved = manager.smoothNoiseClouds(minSpeedMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
 
   const handleGetApiElevation = () => {
     console.log('handleGetElevation')
-    if (track) {
-      track.addElevationsFromApi();
+    if (currentTrack) {
+      currentTrack.addElevationsFromApi();
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
 
@@ -319,15 +407,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       });
     });
 
-    track.addElevations(cachedDataMap);
+    currentTrack.addElevations(cachedDataMap);
 
-    updateFromTrack(track);
+    updateFromTrack(currentTrack);
   }
 
   const handleSmoothByElevation = () => {
     console.log('handleSmoothByElevation')
-    if (track) {
-      const manager = new ElevationSpeedSmoother(track);
+    if (currentTrack) {
+      const manager = new ElevationSpeedSmoother(currentTrack);
 
       //0.254 meters/second = 3000 ft / hr
       // const ascentSpeedLimitMPS = 0.254;
@@ -340,24 +428,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
       console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(track);
+      updateFromTrack(currentTrack);
     }
   }
-
-  const updatedLayersProps = (
-    layer: FeatureCollectionSerial,
-    coords: TrackPoint[]
-  ): LayersControlProps =>
-    layer ? {
-      ...layers,
-      overlays: [{
-        name: 'Track',
-        geoJSON: layer,
-        items: [
-          coords
-        ]
-      }]
-    } : layers;
 
   console.log('layersProps:', layers)
   console.log('position.zoom: ', position.zoom)
