@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   LayerGroup
 } from 'react-leaflet';
