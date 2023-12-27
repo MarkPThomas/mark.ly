@@ -20,7 +20,9 @@ export enum eLength {
 export enum eTime {
   seconds = 'seconds',
   minutes = 'minutes',
-  hours = 'hours'
+  hours = 'hours',
+  days = 'days',
+  weeks = 'weeks',
 }
 
 export enum eAngle {
