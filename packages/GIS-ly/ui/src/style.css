@@ -19,13 +19,46 @@ html {
   height: inherit;
 }
 
-.stats-container {
+.toggle-header {
   display: flex;
-  align-items: top;
+  align-items: bottom;
 }
 
-.stats-container>div {
-  padding: 10px
+.toggle-button {
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: lightblue;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-button:hover {
+  border: 1px solid gray;
+  background-color: rgb(185, 215, 13);
+  cursor: pointer;
+}
+
+
+.popup-point .toggle-header h2 {
+  font-size: 1.2em;
+  margin: 0.2em 0.2em 0.2em 0;
+  text-decoration: underline;
+}
+
+.popup-point .toggle-button {
+  height: 1.2em;
+}
+
+.popup-point h1 {
+  font-size: 1.5em;
+  text-decoration: underline;
+  margin-bottom: 0.1em;
+}
+
+.popup-point .path-stats,
+.popup-point .segment-stats {
+  padding-left: 1em;
 }
 
 table,
@@ -33,4 +66,13 @@ th,
 td {
   border: 1px solid black;
   border-collapse: collapse
+}
+
+.stats-container {
+  display: flex;
+  align-items: top;
+}
+
+.stats-container>div {
+  padding: 10px
 }

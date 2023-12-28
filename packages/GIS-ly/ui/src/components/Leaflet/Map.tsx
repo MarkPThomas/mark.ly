@@ -135,6 +135,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const coords = track.trackPoints();
     console.log('newCoords: ', coords);
 
+    const segments = track.trackSegments();
+
     const geoJson = track.toJson();
     console.log('newGeoJson: ', geoJson);
 
@@ -144,9 +146,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     return {
       name: `Track: ${trackName}`,
       geoJSON: geoJson,
-      items: [
-        coords
-      ]
+      points: coords,
+      segments
     }
   }
 
