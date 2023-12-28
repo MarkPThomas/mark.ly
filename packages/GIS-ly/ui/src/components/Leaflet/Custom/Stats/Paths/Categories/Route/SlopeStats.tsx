@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+
 import { ISlope } from "../../../../../../../model/GIS/Core/Route/Stats/SlopeStats";
 import { RangeStats } from '../../RangeStats';
 import { LabelValue } from "../../../../LabelValueList";
@@ -14,16 +16,8 @@ export function SlopeStats({ slope }: SlopeStatsProps) {
     setShowAll(!showAll);
   }
 
-  const toDegrees = (slopeRatio: number) => {
-    return ((180 / Math.PI) * Math.atan(slopeRatio)).toFixed(0);
-  }
-
-  const toPercent = (slopeRatio: number) => {
-    return (100 * slopeRatio).toFixed(0);
-  }
-
   const slopeFormat = (slopeRatio: number) => {
-    return slopeRatio ? `${toPercent(slopeRatio)} % / ${toDegrees(slopeRatio)} deg` : '';
+    return slopeRatio ? `${(100 * slopeRatio).toFixed(0)}% / ${Conversion.Angle.Percent.toDegrees(100 * slopeRatio).toFixed(0)}°` : '';
   }
 
   const averageSlope = slopeFormat(slope.avg);

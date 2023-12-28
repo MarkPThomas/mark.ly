@@ -11,14 +11,15 @@ import { ReactNode } from 'react';
 
 import { hashString } from '../../../../../../../common/utils';//'common/utils';
 
-import { TrackPoint } from '../../../../model/GIS/Core/Track';
+import { TrackPoint, TrackSegment } from '../../../../model/GIS/Core/Track';
 
 import { CoordinateMarkersLayer } from '../../Custom/Stats/Points/CoordinateMarkersLayer';
 import GeoJsonWithUpdates from './GeoJsonWithUpdates';
 
 type Overlay = {
   name: string,
-  items: TrackPoint[][] | ReactNode[],
+  points: TrackPoint[],
+  segments?: TrackSegment[],
   groupOptions?: FeatureGroupProps
   geoJSON?: GeoJsonObject
 }
@@ -52,30 +53,32 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
         {
           overlays ? overlays.map((overlay) => (
             <LC.Overlay checked={true} name={overlay.name} key={hashString(JSON.stringify(overlay.name))}>
-              {('groupOptions' in overlay)
+              {/* {('groupOptions' in overlay)
                 ?
                 <FeatureGroup {...overlay.groupOptions} key={hashString(JSON.stringify(overlay.groupOptions))}>
-                  {overlay.items.map((item) => item)}
+                  {overlay.points.map((item) => item)}
                 </FeatureGroup>
                 :
-                overlay.geoJSON ?
-                  <LayerGroup>
-                    <GeoJsonWithUpdates
-                      key={hashString(JSON.stringify(overlay.items[0]))}
-                      data={overlay.geoJSON}
-                      children={[<CoordinateMarkersLayer
-                        key={hashString(JSON.stringify(overlay.items[0]))}
-                        coords={overlay.items[0] as TrackPoint[]}
-                      />]
-                      }
-                    />
-                  </LayerGroup>
-                  :
-                  <LayerGroup>
-                    {overlay.items.map((item) => item)}
-                  </LayerGroup>
+                overlay.geoJSON ? */}
+              {/* {('groupOptions' in overlay && overlay.geoJSON) ? */}
+              <LayerGroup>
+                <GeoJsonWithUpdates
+                  key={hashString(JSON.stringify(overlay.points[0]))}
+                  data={overlay.geoJSON}
+                  children={[<CoordinateMarkersLayer
+                    key={hashString(JSON.stringify(overlay.points[0]))}
+                    points={overlay.points as TrackPoint[]}
+                    segments={overlay.segments as TrackSegment[]}
+                  />]
+                  }
+                />
+              </LayerGroup>
+              {/* : null} */}
+              {/* // <LayerGroup>
+                  //   {overlay.points.map((item) => item)}
+                  // </LayerGroup> */}
 
-              }
+
             </LC.Overlay>
           )) : null
         }
