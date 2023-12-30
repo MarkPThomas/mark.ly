@@ -22,6 +22,7 @@ type Overlay = {
   segments?: TrackSegment[],
   groupOptions?: FeatureGroupProps
   geoJSON?: GeoJsonObject
+  onEachFeature?: (feature, layer) => void
 }
 
 type BaseLayer = {
@@ -65,12 +66,12 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                 <GeoJsonWithUpdates
                   key={hashString(JSON.stringify(overlay.points[0]))}
                   data={overlay.geoJSON}
+                  onEachFeature={overlay.onEachFeature}
                   children={[<CoordinateMarkersLayer
                     key={hashString(JSON.stringify(overlay.points[0]))}
                     points={overlay.points as TrackPoint[]}
                     segments={overlay.segments as TrackSegment[]}
-                  />]
-                  }
+                  />]}
                 />
               </LayerGroup>
               {/* : null} */}

@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import {
   LatLngBoundsExpression,
-  LatLngTuple
+  LatLngTuple,
+  Layer
 } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
 import { FeatureCollection as FeatureCollectionSerial } from 'geojson';
@@ -14,15 +15,10 @@ import {
   toKmlFile
 } from '../../model/Files';
 
-import {
-  GeoJsonManager
-} from '../../model/GIS';
-
-import {
-  Track,
-  TrackPoint
-} from '../../model/GIS/Core/Track';
-
+import { Feature } from '../../model/GeoJSON';
+import { GeoJsonManager } from '../../model/GIS';
+import { ITrackCriteria } from '../../model/GIS/settings';
+import { Track } from '../../model/GIS/Core/Track';
 import {
   StationarySmoother,
   SpeedSmoother,
@@ -32,7 +28,6 @@ import {
 } from '../../model/GIS/Actions/Smooth';
 import { DurationSplitter } from '../../model/GIS/Actions/Split';
 import { CruftManager } from '../../model/GIS/Actions/Cruft/CruftManager';
-import { ITrackCriteria } from '../../model/GIS/settings';
 
 import { Settings } from '../../Settings';
 
@@ -131,6 +126,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     return layersProps;
   }
 
+
   const overlayDefinition = (track: Track) => {
     const coords = track.trackPoints();
     console.log('newCoords: ', coords);
@@ -143,11 +139,44 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const trackName = track.name;
     console.log('trackName: ', trackName);
 
+    const onEachFeature = (feature: Feature, layer: Layer) => {
+      if (feature.properties) {
+        layer.bindTooltip(`Track: ${trackName}`, { sticky: true });
+      }
+      layer.on({
+        mouseover: onMouseOver,
+        click: onClick
+      });
+    };
+    const onMouseOver = (e) => { console.log('mous-e!', e) }
+    const onClick = (e) => {
+      if (trackName !== currentTrack.name) {
+        const selectedTrack = tracks[trackName];
+        changeCurrentTrack(selectedTrack);
+      } else {
+        console.log('click-e!', e)
+      }
+    }
+    // Note: e for both events contain the following properties of interest:
+    // containerPoint: Point { x: 514, y:317 } - seems to stay relative to the displayed container, TL origin
+    // layerPoint:  Point { x: 514, y:317 } - seems to increase with zoom scale, BR origin?
+    // latlng: LatlLng {lat: -10.3333, lng:-77.8876785}
+
+    // target
+    // 	_bounds: [LatLng, LatLng]
+    // 	feature (GeoJSON definition)
+    // 	options
+    // 		children[0].props {
+    // 			points: TrackPoints[]
+    // 			segments: TrackSegments[]
+    // 		}: CoordinateMarkersLayer
+
     return {
       name: `Track: ${trackName}`,
       geoJSON: geoJson,
       points: coords,
-      segments
+      segments,
+      onEachFeature
     }
   }
 
@@ -189,6 +218,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
+  const handleTrackSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedTrackTime = e.target.value;
+    const selectedTrack = tracks[selectedTrackTime];
+    changeCurrentTrack(selectedTrack);
+  }
+
   const changeCurrentTrack = (track: Track) => {
     console.log('Changing current track', track)
     // TODO: Placeholder for saving state for later under/redo operations here...
@@ -197,8 +232,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateCurrentTrackStats(track);
   }
 
-  const handleFileSelection = async (event) => {
-    const file = event.target.files[0];
+  const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files[0];
     console.log('Read file: ', file);
 
     toGeoJson(file, [
@@ -437,6 +472,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   console.log('position.zoom: ', position.zoom)
   console.log('bounds:', bounds)
 
+  const tracksValues = Object.values(tracks);
+
   return (
     layers ?
       <div id="map-container">
@@ -457,6 +494,23 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
+        {currentTrack ?
+          <div>
+            <h2>Selected Track: {currentTrack.name}</h2>
+            {tracksValues.length > 1 ?
+              <div>
+                <label htmlFor="tracks-selection">Selected Track: </label>
+                <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                  {
+                    tracksValues.map((track) =>
+                      <option value={track.time} key={track.time}>{track.name}</option>
+                    )
+                  }
+                </select>
+              </div>
+              : null}
+          </div>
+          : null}
         <div className="stats-container">
           {originalTrackStats ?
             <TrackStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
