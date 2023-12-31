@@ -26,14 +26,13 @@ export function ToggleGroup(props: ToggleGroupProps) {
   return (
     <div>
       <ToggleHeader {...childProps} />
-      {showChildren ? children.map((child, index) => {
-        return (
-          // <div key={index + Date()}>
-          <React.Fragment key={index + Date()}>
-            {child}
-          </React.Fragment>
-        );
-      }) : null}
+      {showChildren ? children.map((child, index) =>
+        <div key={index + Date()}>
+          {/* <React.Fragment key={index + Date()}> */}
+          {child}
+          {/* </React.Fragment> */}
+        </div>
+      ) : null}
     </div>
   )
 }

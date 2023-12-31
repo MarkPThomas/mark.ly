@@ -21,8 +21,20 @@ html {
 
 .toggle-header {
   display: flex;
-  align-items: bottom;
+  padding-top: 0.5em;
+  padding-bottom: 0.2em;
 }
+
+.toggle-header h1,
+.toggle-header h2,
+.toggle-header h3,
+.toggle-header h4,
+.toggle-header h5,
+.toggle-header h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 
 .toggle-button {
   border: 1px solid black;
@@ -31,6 +43,7 @@ html {
   padding: 2px;
   display: flex;
   align-items: center;
+  height: 1em;
 }
 
 .toggle-button:hover {
