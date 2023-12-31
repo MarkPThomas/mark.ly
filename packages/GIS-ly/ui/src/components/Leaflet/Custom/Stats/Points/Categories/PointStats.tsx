@@ -24,12 +24,7 @@ export function PointStats({ point }: PointStatsProps) {
     <div>
       <LabelValue label={'Latitude'} value={latitude} />
       <LabelValue label={'Longitude'} value={longitude} />
-      {(elevationMetersFeet) ?
-        <div>
-          <LabelValue label={'Elevation'} value={elevationMetersFeet} />
-        </div>
-        : null
-      }
+      <LabelValue label={'Elevation'} value={elevationMetersFeet} />
     </div>
   );
 }

@@ -40,6 +40,7 @@ import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
 import { IEditedTrackStats, TrackStats } from './Custom/Stats/Paths/TrackStats';
 import { TrackStatsComparison } from './Custom/Stats/Paths/TrackStatsComparison';
+import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -54,7 +55,7 @@ export type MapProps = {
 export const Map = ({ config, restHandlers }: MapProps) => {
   const [position, setPosition] = useState<IInitialPosition>(config.initialPosition);
   const [bounds, setBounds] = useState<LatLngBoundsExpression | null>(null);
-  const [trackCriteria, setTrackCriteria] = useState<ITrackCriteria>(config.trackCriteria);
+  const [trackCriteria, setTrackCriteria] = useState<ITrackCriteria>(config.trackCriteriaNormalized);
 
   const [layers, setLayers] = useState<LayersControlProps | null>(null)
 
@@ -511,14 +512,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               : null}
           </div>
           : null}
-        <div className="stats-container">
-          {originalTrackStats ?
-            <TrackStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
-          }
-          {trackStats !== null ?
-            <TrackStats stats={trackStats} /> : null
-          }
-        </div>
+
         <input type="file" onChange={handleFileSelection} />
         <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
         <label htmlFor="animatePan">Set View On Click</label>
@@ -553,6 +547,20 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
         <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
         <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
+        <div className="stats-container">
+          {originalTrackStats ?
+            <TrackStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
+          }
+          {trackStats !== null ?
+            <TrackStats stats={trackStats} /> : null
+          }
+          {config.trackCriteria ?
+            <TrackCriteria criteria={config.trackCriteria} /> : null
+          }
+          {config.trackCriteriaNormalized ?
+            <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
+          }
+        </div>
       </div> : null
   )
 }
