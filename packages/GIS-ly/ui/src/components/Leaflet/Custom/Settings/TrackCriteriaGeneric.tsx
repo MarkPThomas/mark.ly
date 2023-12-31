@@ -17,43 +17,43 @@ export function TrackCriteriaGeneric({ cruft, split, noiseCloud, misc, level }: 
       {cruft ?
         <ToggleGroup value={'Cruft'} level={level}
           children={[
-            cruft?.units ? <ToggleGroup value={'Units'} level={level + 1}
-              children={[<TrackCriteriaUnits units={cruft?.units} />]} />
+            cruft?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
+              children={[<TrackCriteriaUnits key={Date()} units={cruft?.units} />]} />
               : null,
-            <LabelValue label={'Max Gap Distance'} value={cruft?.gapDistanceMax} />,
-            <LabelValue label={'Max Gap Time'} value={cruft?.gapTimeMax} />
+            <LabelValue key={Date()} label={'Max Gap Distance'} value={cruft?.gapDistanceMax} />,
+            <LabelValue key={Date()} label={'Max Gap Time'} value={cruft?.gapTimeMax} />
           ]} />
         : null}
 
       {split ?
         <ToggleGroup value={'Split'} level={level}
           children={[
-            split?.units ? <ToggleGroup value={'Units'} level={level + 1}
-              children={[<TrackCriteriaUnits units={split?.units} />]} />
+            split?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
+              children={[<TrackCriteriaUnits key={Date()} units={split?.units} />]} />
               : null,
-            <LabelValue label={'Min Move Duration'} value={split?.moveDurationMin} />,
-            <LabelValue label={'Max Stop Duration'} value={split?.stopDurationMax} />
+            <LabelValue key={Date()} label={'Min Move Duration'} value={split?.moveDurationMin} />,
+            <LabelValue key={Date()} label={'Max Stop Duration'} value={split?.stopDurationMax} />
           ]} />
         : null}
 
       {noiseCloud ?
         <ToggleGroup value={'Noise Cloud'} level={level}
           children={[
-            noiseCloud?.units ? <ToggleGroup value={'Units'} level={level + 1}
-              children={[<TrackCriteriaUnits units={noiseCloud?.units} />]} />
+            noiseCloud?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
+              children={[<TrackCriteriaUnits key={Date()} units={noiseCloud?.units} />]} />
               : null,
-            <LabelValue label={'Min Speed'} value={noiseCloud?.speedMin} />,
-            <LabelValue label={'Min Stop Duration'} value={noiseCloud?.stopDurationMin} />
+            <LabelValue key={Date()} label={'Min Speed'} value={noiseCloud?.speedMin} />,
+            <LabelValue key={Date()} label={'Min Stop Duration'} value={noiseCloud?.stopDurationMin} />
           ]} />
         : null}
 
       {misc ?
         <ToggleGroup value={'Misc'} level={level}
           children={[
-            misc?.units ? <ToggleGroup value={'Units'} level={level + 1}
-              children={[<TrackCriteriaUnits units={misc?.units} />]} />
+            misc?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
+              children={[<TrackCriteriaUnits key={Date()} units={misc?.units} />]} />
               : null,
-            <LabelValue label={'GPS Time Interval'} value={misc?.gpsTimeInterval} />
+            <LabelValue key={Date()} label={'GPS Time Interval'} value={misc?.gpsTimeInterval} />
           ]} />
         : null}
     </div>);

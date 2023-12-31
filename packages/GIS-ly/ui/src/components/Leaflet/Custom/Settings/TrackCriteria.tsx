@@ -16,11 +16,12 @@ export function TrackCriteria({ criteria }: TrackCriteriaProps) {
   return (
     <div>
       <h2>Track Criteria</h2>
-      <ToggleGroup value={'Units'} level={level} children={[<TrackCriteriaUnits units={criteria.units} />]} />
+      <ToggleGroup value={'Units'} level={level} children={[<TrackCriteriaUnits key={Date()} units={criteria.units} />]} />
 
       {(criteria.cruft || criteria.split || criteria.noiseCloud || criteria.misc) ?
         <ToggleGroup value={'Generic'} level={level} children={[
           <TrackCriteriaGeneric
+            key={Date()}
             cruft={criteria.cruft}
             split={criteria.split}
             noiseCloud={criteria.noiseCloud}
