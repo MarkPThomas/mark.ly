@@ -12,8 +12,7 @@ import { PointStats } from './Categories/PointStats';
 import { PointPathStats } from './Categories/PointPathStats';
 import { TrackSegment } from '../../../../../model/GIS/Core/Track';
 import { SegmentStats } from './Categories/SegmentStats';
-import { useState } from 'react';
-import { ToggleHeader } from '../../ToggleHeader';
+import { ToggleGroup } from '../../ToggleGroup';
 
 
 export type CoordinateMarkerProps = {
@@ -23,21 +22,7 @@ export type CoordinateMarkerProps = {
 }
 
 export function CoordinateMarker({ point, segmentPrev, segmentNext }: CoordinateMarkerProps) {
-  const [showPath, setShowPath] = useState<boolean>(false);
-  const [showPrevSeg, setShowPrevSeg] = useState<boolean>(false);
-  const [showNextSeg, setShowNextSeg] = useState<boolean>(false);
-
-  const handlePathClick = () => {
-    setShowPath(!showPath);
-  };
-
-  const handlePrevSegClick = () => {
-    setShowPrevSeg(!showPrevSeg);
-  };
-
-  const handleNextSegClick = () => {
-    setShowNextSeg(!showNextSeg);
-  };
+  const level = 1;
 
   return <Circle
     key={hashString(JSON.stringify(point))}
@@ -48,26 +33,16 @@ export function CoordinateMarker({ point, segmentPrev, segmentNext }: Coordinate
     <Popup>
       <span className={"popup-point"} >
         <h1>Track Point</h1>
-        {point.timestamp ?
-          <LabelValue label={'Timestamp'} value={point.timestamp} /> : null}
+        <LabelValue label={'Timestamp'} value={point.timestamp} />
         <PointStats point={point} />
         {point.path ?
-          <div>
-            <ToggleHeader value={'Path'} cb={handlePathClick} />
-            {showPath ? <PointPathStats path={point.path} /> : null}
-          </div>
+          <ToggleGroup value={'Path'} level={level} children={[<PointPathStats key={Date()} path={point.path} />]} />
           : null}
         {segmentPrev ?
-          <div>
-            <ToggleHeader value={'Previous Segment'} cb={handlePrevSegClick} />
-            {showPrevSeg ? <SegmentStats segment={segmentPrev} /> : null}
-          </div>
+          <ToggleGroup value={'Previous Segment'} level={level} children={[<SegmentStats key={Date()} segment={segmentPrev} />]} />
           : null}
         {segmentNext ?
-          <div>
-            <ToggleHeader value={'Next Segment'} cb={handleNextSegClick} />
-            {showNextSeg ? <SegmentStats segment={segmentNext} /> : null}
-          </div>
+          <ToggleGroup value={'Next Segment'} level={level} children={[<SegmentStats key={Date()} segment={segmentNext} />]} />
           : null}
       </span>
     </Popup>
