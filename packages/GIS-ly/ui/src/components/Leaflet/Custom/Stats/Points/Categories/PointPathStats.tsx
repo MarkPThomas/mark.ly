@@ -15,16 +15,11 @@ export function PointPathStats({ path }: PointPathStatsProps) {
 
   return (
     <div className="path-stats">
-      {speedMph ?
-        <LabelValue label={'Speed (avg)'} value={speedMph} /> : null}
-      {ascentRateFeetPerHour ?
-        <LabelValue label={'Ascent Rate (avg)'} value={ascentRateFeetPerHour} /> : null}
-      {descentRateFeetPerHour ?
-        <LabelValue label={'Descent Rate (avg)'} value={descentRateFeetPerHour} /> : null}
-      {rotationDeg ?
-        <LabelValue label={'Rotation'} value={rotationDeg} /> : null}
-      {angularSpeedDegPerSec ?
-        <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} /> : null}
+      <LabelValue label={'Speed (avg)'} value={speedMph} />
+      <LabelValue label={'Ascent Rate (avg)'} value={ascentRateFeetPerHour} />
+      <LabelValue label={'Descent Rate (avg)'} value={descentRateFeetPerHour} />
+      <LabelValue label={'Rotation'} value={rotationDeg} />
+      <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} />
     </div>
   );
 }
