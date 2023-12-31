@@ -17,7 +17,7 @@ export function ToggleButton({ isToggled, isEnabled, cb }: ToggleButtonProps) {
     }
   };
 
-  const value = currentlyToggled ? '-' : '+';
+  const value = currentlyToggled ? '^' : 'v';
 
   return <div onClick={handleClick} className={'toggle-button'}>{value}</div>;
 }
