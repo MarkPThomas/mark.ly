@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import { ToggleHeader, ToggleHeaderProps } from "./ToggleHeader";
-import React from "react";
 
 export type ToggleGroupProps = {
   children: ReactNode[];
