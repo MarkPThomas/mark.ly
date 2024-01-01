@@ -13,19 +13,21 @@ export type StatsProps = { stats: IEditedStats };
 export function Stats({ stats }: StatsProps) {
   console.log('Stats: ', stats);
 
+  const level = 2;
+
   return (
     <div>
       <div>
-        <h2>Stats</h2>
+        <h2 className="stats">Stats</h2>
         <ToggleGroup
           value={'Route'}
-          level={3}
-          children={[<RouteStats stats={stats} />]}
+          level={level}
+          children={[<RouteStats key={Date()} stats={stats} level={level + 1} />]}
         />
         <ToggleGroup
           value={'Track'}
-          level={3}
-          children={[<TrackStats stats={stats} />]}
+          level={level}
+          children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
         />
       </div>
     </div>

@@ -2,28 +2,28 @@ import { ToggleGroup } from "../../ToggleGroup";
 import { HeightRateStats, SpeedStats, TimeStats } from './Categories/Track';
 import { IEditedStats } from "./Stats";
 
-export type TrackStatsProp = { stats: IEditedStats };
+export type TrackStatsProp = { stats: IEditedStats, level: number };
 
-export function TrackStats({ stats }: TrackStatsProp) {
+export function TrackStats({ stats, level }: TrackStatsProp) {
   return (
     <div>
       {stats.height ?
         <ToggleGroup
           value={'Time'}
-          level={4}
-          children={[<TimeStats time={stats.time} />]}
+          level={level}
+          children={[<TimeStats key={Date()} time={stats.time} level={level + 2} />]}
         /> : null}
       {stats.height ?
         <ToggleGroup
           value={'Speed'}
-          level={4}
-          children={[<SpeedStats speed={stats.speed} />]}
+          level={level}
+          children={[<SpeedStats key={Date()} speed={stats.speed} level={level + 2} />]}
         /> : null}
       {stats.height ?
         <ToggleGroup
           value={'Height Rate'}
-          level={4}
-          children={[<HeightRateStats heightRate={stats.heightRate} />]}
+          level={level}
+          children={[<HeightRateStats key={Date()} heightRate={stats.heightRate} level={level + 2} />]}
         /> : null}
     </div>
   );
