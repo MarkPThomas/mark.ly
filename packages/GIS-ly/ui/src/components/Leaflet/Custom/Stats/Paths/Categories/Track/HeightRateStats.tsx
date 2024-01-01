@@ -1,33 +1,28 @@
-import { useState } from "react";
-
 import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
 import { IHeightRate } from "../../../../../../../model/GIS/Core/Track/Stats/HeightRateStats";
 import { RangeStats } from '../../RangeStats';
 
 
-export type HeightRateStatsProps = { heightRate: IHeightRate };
+export type HeightRateStatsProps = { heightRate: IHeightRate, level: number };
 
-export function HeightRateStats({ heightRate }: HeightRateStatsProps) {
-  const [showAll, setShowAll] = useState<boolean>(false);
+export function HeightRateStats({ heightRate, level }: HeightRateStatsProps) {
+  const CustomTag = level ? `h${level}` as keyof JSX.IntrinsicElements : `h2` as keyof JSX.IntrinsicElements;
 
-  const handleClick = () => {
-    setShowAll(!showAll);
-  }
 
   const heightRateFormat = (valMetersPerSecond: number) => {
     return valMetersPerSecond ? `${Conversion.Speed.metersPerSecondToFeetPerHour(valMetersPerSecond).toFixed(0)} ft/hr` : '';
   }
 
   return (
-    <div onClick={handleClick}>
+    <div>
       <div>
-        <h5>Ascent</h5>
-        <RangeStats {...heightRate.ascent} showAll={showAll} formatter={heightRateFormat} />
+        <CustomTag className="height-rate-header">Ascent</CustomTag>
+        <RangeStats {...heightRate.ascent} formatter={heightRateFormat} level={level + 1} />
       </div>
       <div>
-        <h5>Descent</h5>
-        <RangeStats {...heightRate.descent} showAll={showAll} formatter={heightRateFormat} />
+        <CustomTag className="height-rate-header">Descent</CustomTag>
+        <RangeStats {...heightRate.descent} formatter={heightRateFormat} level={level + 1} />
       </div>
     </div>
   )

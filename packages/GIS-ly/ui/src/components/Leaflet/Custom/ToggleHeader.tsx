@@ -13,9 +13,7 @@ export function ToggleHeader(props: ToggleHeaderProps) {
 
   return (
     <div className='toggle-header'>
-      <div>
-        <CustomTag>{props.value}</CustomTag>
-      </div>
+      <CustomTag>{props.value}</CustomTag>
       <ToggleButton {...props} />
     </div>
   );

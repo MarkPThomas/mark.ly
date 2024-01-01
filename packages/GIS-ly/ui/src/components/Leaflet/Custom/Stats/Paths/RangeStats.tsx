@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { RoutePoint, RouteSegment } from "../../../../../model/GIS/Core/Route";
 import { Vertex, Segment } from "../../../../../model/Geometry";
 import { INodeOfInterest } from "../../../../../model/Geometry/Stats";
 import { LabelValue } from "../../LabelValueList";
+import { ToggleHeader } from "../../ToggleHeader";
 
 export type RangeStatsProps<
   TVertex extends Vertex = RoutePoint,
@@ -15,11 +17,17 @@ export type RangeStatsProps<
   stdMax1?: number;
   stdMax2?: number;
   max: INodeOfInterest<TVertex, TSegment>;
-  showAll?: boolean;
-  formatter?: (value: number) => string
+  formatter?: (value: number) => string;
+  level: number;
 };
 
 export function RangeStats(stats: RangeStatsProps) {
+  const [showAll, setShowAll] = useState<boolean>(false);
+
+  const handleClick = () => {
+    setShowAll(!showAll);
+  }
+
   const stdMin = stats.stdMin1 ? {
     stdMin2: stats.formatter(stats.stdMin2),
     stdMin1: stats.formatter(stats.stdMin1)
@@ -44,26 +52,30 @@ export function RangeStats(stats: RangeStatsProps) {
 
   return (
     <div>
-      <div>
-        <LabelValue label={'Min'} value={statsFormatted.min} />
-        {stats.showAll ?
-          <div>
-            {statsFormatted.stdMin2 ? <LabelValue label={'-Std2'} value={statsFormatted.stdMin2} /> : null}
-            {statsFormatted.stdMin1 ? <LabelValue label={'-Std1'} value={statsFormatted.stdMin1} /> : null}
-          </div> : null
-        }
-        <LabelValue label={'Avg'} value={statsFormatted.avg} />
-        {(stats.showAll && statsFormatted.mdn) ?
-          <LabelValue label={'Mdn'} value={statsFormatted.mdn} /> : null
-        }
-        {stats.showAll ?
-          <div>
-            {statsFormatted.stdMax1 ? <LabelValue label={'+Std1'} value={statsFormatted.stdMax1} /> : null}
-            {statsFormatted.stdMax2 ? <LabelValue label={'+Std2'} value={statsFormatted.stdMax2} /> : null}
-          </div> : null
-        }
-        <LabelValue label={'Max'} value={statsFormatted.max} />
+      <div className="toggle-header-show-all">
+        <ToggleHeader value="Show All" level={stats.level} isToggled={showAll} cb={handleClick} />
       </div>
+      <LabelValue label={'Min'} value={statsFormatted.min} />
+      {showAll ?
+        <div className="range-extra">
+          <LabelValue label={'-Std2'} value={statsFormatted.stdMin2} />
+          <LabelValue label={'-Std1'} value={statsFormatted.stdMin1} />
+        </div> : null
+      }
+      <LabelValue label={'Avg'} value={statsFormatted.avg} />
+      {showAll ?
+        <div className="range-extra">
+          <LabelValue label={'Mdn'} value={statsFormatted.mdn} />
+        </div>
+        : null
+      }
+      {showAll ?
+        <div className="range-extra">
+          <LabelValue label={'+Std1'} value={statsFormatted.stdMax1} />
+          <LabelValue label={'+Std2'} value={statsFormatted.stdMax2} />
+        </div> : null
+      }
+      <LabelValue label={'Max'} value={statsFormatted.max} />
     </div>
   )
 }
