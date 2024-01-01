@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useMap, useMapEvent, Rectangle } from 'react-leaflet';
 import { useEventHandlers } from '@react-leaflet/core'
+import { BOUNDS_STYLE } from '../controlSettings';
 
 // Note: from https://react-leaflet.js.org/docs/example-react-control/
-
-const BOUNDS_STYLE = { weight: 1 }
 
 type Props = {
   parentMap: any,

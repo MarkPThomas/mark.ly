@@ -6,6 +6,8 @@ import {
 } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
 import { FeatureCollection as FeatureCollectionSerial } from 'geojson';
+import Control from "react-leaflet-custom-control";
+
 
 import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
 
@@ -32,7 +34,7 @@ import { CruftManager } from '../../model/GIS/Actions/Cruft/CruftManager';
 import { Settings } from '../../Settings';
 
 import { createTileLayers, appendTilesApiKey } from './Layers/TileLayers';
-import { MiniMapControl, POSITION_CLASSES } from './LeafletControls/MiniMap/MiniMapControl';
+import { MiniMapControl } from './LeafletControls/MiniMap/MiniMapControl';
 import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
@@ -41,6 +43,8 @@ import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Da
 import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
 import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
+import { POSITION_CLASSES } from './LeafletControls/controlSettings';
+import { CleaningControl } from './LeafletControls/Custom/Cleaning';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -485,13 +489,27 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           style={{ width: '100%', height: '700px' }}
         >
           {layers.baseLayers[0].item}
-          <MiniMapControl position={POSITION_CLASSES.bottomright} zoom={Math.floor(position.zoom / 2)} tileSourceUrl={config.miniMap.url} />
+          <MiniMapControl
+            position={POSITION_CLASSES.bottomright}
+            zoom={Math.floor(position.zoom / 2)}
+            tileSourceUrl={config.miniMap.url}
+          />
           {
             (layers.baseLayers?.length > 1 || layers.overlays?.length)
               ?
               <LayersControl {...layers} />
               : null
           }
+          <Control position="topleft">
+            <CleaningControl cbTrim={handleTrimCruft} />
+          </Control>
+          {/* <Control position="topleft">
+            <EditingControl />
+          </Control> */}
+          {/* <Control position="bottomleft">
+            <HistoryControl />
+          </Control> */}
+          {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
