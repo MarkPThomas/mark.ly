@@ -1,13 +1,13 @@
 import { ITrackStats } from "../../../../../model/GIS/Core/Track/Stats";
 import { IPolylineSize } from "../../../../../model/Geometry";
 
-export interface IEditedTrackStats extends ITrackStats {
+export interface IEditedPolylineStats extends ITrackStats {
   size: IPolylineSize
 }
 
-export type TrackStatsProps = { statsInitial: IEditedTrackStats, statsCurrent: IEditedTrackStats };
+export type PolylineStatsProps = { statsInitial: IEditedPolylineStats, statsCurrent: IEditedPolylineStats };
 
-export function TrackStatsComparison({ statsInitial, statsCurrent }: TrackStatsProps) {
+export function PolylineStatsComparison({ statsInitial, statsCurrent }: PolylineStatsProps) {
   return (
     <div>
       <div><h2>Track Size</h2></div>

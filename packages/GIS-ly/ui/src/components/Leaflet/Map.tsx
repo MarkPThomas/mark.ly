@@ -38,8 +38,8 @@ import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
-import { IEditedTrackStats, TrackStats } from './Custom/Stats/Paths/TrackStats';
-import { TrackStatsComparison } from './Custom/Stats/Paths/TrackStatsComparison';
+import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
+import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 
 export interface IInitialPosition {
@@ -61,8 +61,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [tracks, setTracks] = useState<{ [key: string]: Track }>({});
-  const [originalTrackStats, setOriginalTrackStats] = useState<IEditedTrackStats>(null);
-  const [trackStats, setTrackStats] = useState<IEditedTrackStats>(null);
+  const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
+  const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
   useEffect(() => {
     console.log('Initializing map with config: ', config);
@@ -549,10 +549,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
         <div className="stats-container">
           {originalTrackStats ?
-            <TrackStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
+            <PolylineStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
           }
           {trackStats !== null ?
-            <TrackStats stats={trackStats} /> : null
+            <Stats stats={trackStats} /> : null
           }
           {config.trackCriteria ?
             <TrackCriteria criteria={config.trackCriteria} /> : null
