@@ -118,3 +118,22 @@ td {
 .stats-container>div {
   padding: 10px
 }
+
+
+.split-control {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+}
+
+.header-control.toggled {
+  background-color: #f8ffac;
+  /* border-bottom: 2px thick solid black; Leaflet seems to override this */
+}

@@ -6,6 +6,8 @@ import {
 } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
 import { FeatureCollection as FeatureCollectionSerial } from 'geojson';
+import Control from "react-leaflet-custom-control";
+
 
 import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
 
@@ -42,6 +44,7 @@ import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
 import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
+import { CleaningControl } from './LeafletControls/Custom/Cleaning';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -497,6 +500,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               <LayersControl {...layers} />
               : null
           }
+          <Control position="topleft">
+            <CleaningControl cbTrim={handleTrimCruft} />
+          </Control>
+          {/* <Control position="topleft">
+            <EditingControl />
+          </Control> */}
+          {/* <Control position="bottomleft">
+            <HistoryControl />
+          </Control> */}
+          {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
