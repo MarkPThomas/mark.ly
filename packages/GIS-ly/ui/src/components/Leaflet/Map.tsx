@@ -44,7 +44,10 @@ import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
 import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
-import { CleaningControl } from './LeafletControls/Custom/Cleaning';
+import { EditingControl } from './LeafletControls/Custom/Editing';
+import { ControlHeader } from './LeafletControls/Custom/ControlHeader';
+import { ControlItem } from './LeafletControls/Custom/ControlItem';
+import { HistoryControl } from './LeafletControls/Custom/History';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -501,14 +504,81 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               : null
           }
           <Control position="topleft">
-            <CleaningControl cbTrim={handleTrimCruft} />
+            <ControlHeader
+              category="clean"
+              children={[
+                <ControlHeader
+                  key={'trim'}
+                  category="trim"
+                  childrenBeside={true}
+                  children={[
+                    <ControlItem
+                      key={'trim cruft'}
+                      type="trim"
+                      criteria="cruft"
+                      cb={handleTrimCruft}
+                    />
+                  ]}
+                />,
+                <ControlHeader
+                  key={'smooth'}
+                  category="smooth"
+                  childrenBeside={true}
+                  children={[
+                    <ControlItem
+                      key={'smooth stopped'}
+                      type="smooth"
+                      criteria="stopped"
+                      cb={handleSmoothStationary}
+                    />,
+                    <ControlItem
+                      key={'smooth noise cloud'}
+                      type="smooth"
+                      criteria="noise cloud"
+                      cb={handleSmoothNoiseCloud}
+                    />,
+                    <ControlItem
+                      key={'smooth speed'}
+                      type="smooth"
+                      criteria="speed"
+                      cb={handleSmoothBySpeed}
+                    />,
+                    <ControlItem
+                      key={'smooth angular speed'}
+                      type="smooth"
+                      criteria="angular speed"
+                      cb={handleSmoothByAngularSpeed}
+                    />,
+                    <ControlItem
+                      key={'smooth elevation rate'}
+                      type="smooth"
+                      criteria="elevation rate"
+                      cb={handleSmoothByElevation}
+                    />
+                  ]}
+                />,
+                <ControlHeader
+                  key={'split'}
+                  category="split"
+                  childrenBeside={true}
+                  children={[
+                    <ControlItem
+                      key={'split finish'}
+                      type="split"
+                      criteria="finish"
+                      cb={handleSplitOnStop}
+                    />
+                  ]}
+                />
+              ]}
+            />
           </Control>
-          {/* <Control position="topleft">
+          <Control position="topleft">
             <EditingControl />
-          </Control> */}
-          {/* <Control position="bottomleft">
+          </Control>
+          <Control position="bottomleft">
             <HistoryControl />
-          </Control> */}
+          </Control>
           {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
@@ -536,29 +606,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <label htmlFor="animatePan">Set View On Click</label>
         {/* <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" /> */}
 
-        <br />
-        <hr />
-
-        <input type="button" onClick={handleTrimCruft} value="Trim Cruft" />
-
-        {/* <input type="button" onClick={handleSplitCruft} value="Split Cruft" /> */}
-        <input type="button" onClick={handleSplitOnStop} value="Split Separate Movements" />
-
-        <br />
-        <hr />
-
-        <input type="button" onClick={handleSmoothStationary} value="Smooth Stationary" />
-        <input type="button" onClick={handleSmoothNoiseCloud} value="Smooth Noise Cloud" />
-
-        <input type="button" onClick={handleSmoothBySpeed} value="Smooth by Speed" />
-        <input type="button" onClick={handleSmoothByAngularSpeed} value="Smooth by Angular Speed" />
 
         <br />
         <hr />
 
         {/* <input type="button" onClick={handleGetApiElevation} value="Get Elevation Data from API" /> */}
         <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
-        <input type="button" onClick={handleSmoothByElevation} value="Smooth by Elevation Rate" />
 
         <br />
         <hr />

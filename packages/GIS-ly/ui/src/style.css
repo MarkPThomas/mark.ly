@@ -119,21 +119,42 @@ td {
   padding: 10px
 }
 
-
-.split-control {
-  background-color: #fff;
+.leaflet-bar.header {
+  background-color: rgba(255, 255, 255, 0.5);
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  color: black;
 }
 
-.header-control.toggled {
+.leaflet-bar.header.child-col-beside {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.leaflet-bar.header .beside {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.leaflet-bar a.header-control,
+.leaflet-bar a.item-control {
+  width: 100%;
+}
+
+.leaflet-bar a.header-control span,
+.leaflet-bar a.item-control span {
+  margin: 5px;
+}
+
+.leaflet-bar.header.child-col-beside a.header-control.toggled {
+  width: fit-content;
+}
+
+.leaflet-bar a.header-control.toggled {
   background-color: #f8ffac;
-  /* border-bottom: 2px thick solid black; Leaflet seems to override this */
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
 }
