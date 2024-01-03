@@ -10,6 +10,7 @@ import Control from "react-leaflet-custom-control";
 
 
 import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
+import { StateHistory } from '../../../../../common/utils/history/StateHistory';
 
 import {
   toGeoJson,
@@ -44,10 +45,8 @@ import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
 import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
-import { EditingControl } from './LeafletControls/Custom/Editing';
 import { ControlHeader } from './LeafletControls/Custom/ControlHeader';
 import { ControlItem } from './LeafletControls/Custom/ControlItem';
-import { HistoryControl } from './LeafletControls/Custom/History';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -68,6 +67,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [tracks, setTracks] = useState<{ [key: string]: Track }>({});
+  const [history, setHistory] = useState<StateHistory<Track>>(null);
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
@@ -262,6 +262,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         track.addProperties();
 
         if (track) {
+          setHistory(new StateHistory<Track>(track.time, track));
+
           changeCurrentTrack(track);
           addTracks([track]);
           console.log('currentTrack: ', currentTrack);
@@ -321,166 +323,227 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleTrimCruft = () => {
     console.log('handleTrimCruft')
     if (currentTrack) {
-      const manager = new CruftManager(currentTrack);
+      handleCmd(() => {
+        const manager = new CruftManager(currentTrack);
 
-      // const triggerDistanceM: number = 5000;
-      const triggerDistanceM = trackCriteria.cruft.gapDistanceMax;
-      console.log('triggerDistanceM: ', triggerDistanceM)
-      const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
+        // const triggerDistanceM: number = 5000;
+        const triggerDistanceM = trackCriteria.cruft.gapDistanceMax;
+        console.log('triggerDistanceM: ', triggerDistanceM)
+        const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
 
-      console.log(`number nodes removed: ${numberTrimmed}`);
+        console.log(`number nodes removed: ${numberTrimmed}`);
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
 
   const handleSplitOnStop = () => {
     console.log('handleSplitOnStop')
     if (currentTrack) {
-      const manager = new DurationSplitter(currentTrack);
+      handleCmd(() => {
+        const manager = new DurationSplitter(currentTrack);
 
-      // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
-      const maxStopDurationS = trackCriteria.split.stopDurationMax;
-      console.log('maxStopDurationS: ', maxStopDurationS)
-      // const minMoveDurationS: number = 5 min = 300 sec;
-      const minMoveDurationS = trackCriteria.split.moveDurationMin;
-      console.log('minMoveDurationS: ', minMoveDurationS)
-      const splitResults = manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+        // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
+        const maxStopDurationS = trackCriteria.split.stopDurationMax;
+        console.log('maxStopDurationS: ', maxStopDurationS)
+        // const minMoveDurationS: number = 5 min = 300 sec;
+        const minMoveDurationS = trackCriteria.split.moveDurationMin;
+        console.log('minMoveDurationS: ', minMoveDurationS)
+        const splitResults = manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
 
-      console.log(`number tracks returned: ${splitResults.tracks.length}`);
-      console.log(`number segments split on: ${splitResults.segments.length}`);
-      console.log(`number points split by: ${splitResults.points.length}`);
+        console.log(`number tracks returned: ${splitResults.tracks.length}`);
+        console.log(`number segments split on: ${splitResults.segments.length}`);
+        console.log(`number points split by: ${splitResults.points.length}`);
 
-      if (splitResults.tracks.length > 1) {
-        removeTrack(currentTrack);
-        addTracks(splitResults.tracks);
+        if (splitResults.tracks.length > 1) {
+          removeTrack(currentTrack);
+          addTracks(splitResults.tracks);
 
-        const newCurrentTrack = splitResults.tracks[0];
-        changeCurrentTrack(newCurrentTrack);
-        updateFromTrack(newCurrentTrack, false);
-      }
+          const newCurrentTrack = splitResults.tracks[0];
+          changeCurrentTrack(newCurrentTrack);
+          updateFromTrack(newCurrentTrack, false);
+        }
+      });
     }
   }
 
   const handleSmoothStationary = () => {
     console.log('handleSmoothStationary')
     if (currentTrack) {
-      const manager = new StationarySmoother(currentTrack);
+      handleCmd(() => {
+        const manager = new StationarySmoother(currentTrack);
 
-      // 0.11176 meters/sec = 0.25 mph is essentially stationary
-      // const minSpeedMS = 0.11176;
-      const minSpeedMS = trackCriteria.activities.hiking.speed.min;
-      console.log('minSpeedMS: ', minSpeedMS)
+        // 0.11176 meters/sec = 0.25 mph is essentially stationary
+        // const minSpeedMS = 0.11176;
+        const minSpeedMS = trackCriteria.activities.hiking.speed.min;
+        console.log('minSpeedMS: ', minSpeedMS)
 
-      let numberNodesRemoved = manager.smoothStationary(minSpeedMS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+        let numberNodesRemoved = manager.smoothStationary(minSpeedMS, true);
+        console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
 
   const handleSmoothBySpeed = () => {
     console.log('handleSmoothBySpeed')
     if (currentTrack) {
-      const manager = new SpeedSmoother(currentTrack);
+      handleCmd(() => {
+        const manager = new SpeedSmoother(currentTrack);
 
-      // 1.78816 meters/sec = 4 mph
-      const speedLimitKph = Conversion.Speed.mphToKph(4);
-      const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
-      console.log('old speedLimitMS: ', speedLimitMpS)
+        // 1.78816 meters/sec = 4 mph
+        const speedLimitKph = Conversion.Speed.mphToKph(4);
+        const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
+        console.log('old speedLimitMS: ', speedLimitMpS)
 
 
-      const speedLimitMS = trackCriteria.activities.hiking.speed.max;
-      console.log('speedLimitMS: ', speedLimitMS)
+        const speedLimitMS = trackCriteria.activities.hiking.speed.max;
+        console.log('speedLimitMS: ', speedLimitMS)
 
-      let numberNodesRemoved = manager.smoothBySpeed(speedLimitMS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+        let numberNodesRemoved = manager.smoothBySpeed(speedLimitMS, true);
+        console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
 
   const handleSmoothByAngularSpeed = () => {
     console.log('handleSmoothByAngularSpeed')
     if (currentTrack) {
-      const manager = new AngularSpeedSmoother(currentTrack);
+      handleCmd(() => {
+        const manager = new AngularSpeedSmoother(currentTrack);
 
-      //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
-      // const angularSpeedLimitRadS = 1.0472;
-      const angularSpeedLimitRadS = trackCriteria.activities.hiking.rotation.angularVelocityMax;
-      console.log('angularSpeedLimitRadS: ', angularSpeedLimitRadS)
+        //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
+        // const angularSpeedLimitRadS = 1.0472;
+        const angularSpeedLimitRadS = trackCriteria.activities.hiking.rotation.angularVelocityMax;
+        console.log('angularSpeedLimitRadS: ', angularSpeedLimitRadS)
 
-      let numberNodesRemoved = manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+        let numberNodesRemoved = manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
+        console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
 
   const handleSmoothNoiseCloud = () => {
     console.log('handleSmoothNoiseCloud')
     if (currentTrack) {
-      const gpsTimeIntervalS = trackCriteria.misc.gpsTimeInterval;
-      console.log('gpsTimeIntervalS: ', gpsTimeIntervalS)
-      const manager = new NoiseCloudSmoother(currentTrack, gpsTimeIntervalS);
+      handleCmd(() => {
+        const gpsTimeIntervalS = trackCriteria.misc.gpsTimeInterval;
+        console.log('gpsTimeIntervalS: ', gpsTimeIntervalS)
+        const manager = new NoiseCloudSmoother(currentTrack, gpsTimeIntervalS);
 
-      // 0.11176 meters/sec = 0.25 mph is essentially stationary
-      // const minSpeedMS = 0.11176;
-      const minSpeedMS = trackCriteria.noiseCloud.speedMin;
-      console.log('minSpeedMS: ', minSpeedMS)
+        // 0.11176 meters/sec = 0.25 mph is essentially stationary
+        // const minSpeedMS = 0.11176;
+        const minSpeedMS = trackCriteria.noiseCloud.speedMin;
+        console.log('minSpeedMS: ', minSpeedMS)
 
-      let numberNodesRemoved = manager.smoothNoiseClouds(minSpeedMS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+        let numberNodesRemoved = manager.smoothNoiseClouds(minSpeedMS, true);
+        console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
 
   const handleGetApiElevation = () => {
     console.log('handleGetElevation')
     if (currentTrack) {
-      currentTrack.addElevationsFromApi();
+      handleCmd(() => {
+        currentTrack.addElevationsFromApi();
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
 
   const handleGetCachedElevation = () => {
     if (currentTrack) {
-      const cachedDataMap = {};
+      handleCmd(() => {
+        const cachedDataMap = {};
 
-      cachedData.forEach((apiCall) => {
-        apiCall.results.forEach((response) => {
-          cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+        cachedData.forEach((apiCall) => {
+          apiCall.results.forEach((response) => {
+            cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+          });
         });
+
+        currentTrack.addElevations(cachedDataMap);
+
+        updateFromTrack(currentTrack);
+        setHasElevations(true);
       });
-
-      currentTrack.addElevations(cachedDataMap);
-
-      updateFromTrack(currentTrack);
-      setHasElevations(true);
     }
   }
 
   const handleSmoothByElevation = () => {
     console.log('handleSmoothByElevation')
     if (currentTrack) {
-      const manager = new ElevationSpeedSmoother(currentTrack);
+      handleCmd(() => {
+        const manager = new ElevationSpeedSmoother(currentTrack);
 
-      //0.254 meters/second = 3000 ft / hr
-      // const ascentSpeedLimitMPS = 0.254;
-      // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
-      const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
-      console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
-      const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
-      console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
+        //0.254 meters/second = 3000 ft / hr
+        // const ascentSpeedLimitMPS = 0.254;
+        // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
+        const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
+        console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
+        const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
+        console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
 
-      let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+        let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
+        console.log('numberNodesRemoved: ', numberNodesRemoved);
 
-      updateFromTrack(currentTrack);
+        updateFromTrack(currentTrack);
+      });
     }
   }
+
+  const handleCmd = (command: () => void) => {
+    if (command) {
+      history.executeCmd(getKey(), currentTrack.clone(), command);
+
+      console.log('handleCmd: ', history)
+      setHistory(history);
+    }
+  }
+
+  const handleUndo = () => {
+    const key = getKey();
+    history.undo(key, currentTrack);
+    console.log('Undo: ', history)
+
+    console.log('# vertices: ', currentTrack.trackPoints().length)
+    const currentTrackState = history.getState(key);
+    console.log('currentTrackState: ', currentTrackState);
+    console.log('# vertices: ', currentTrackState.trackPoints().length)
+
+    setHistory(history);
+    updateFromTrack(currentTrackState);
+  }
+
+  const handleRedo = () => {
+    const key = getKey();
+    history.redo(key);
+    console.log('Redo: ', history)
+
+    setHistory(history);
+    updateFromTrack(history.getState(key));
+  }
+
+  const getKey = (): string => {
+    return currentTrack?.time;
+  }
+
+  const hasUndo = history?.hasUndo(getKey());
+  console.log('hasUndo: ', hasUndo);
+
+  const hasRedo = history?.hasRedo(getKey());
+  console.log('hasRedo: ', hasRedo);
+
 
   console.log('layersProps:', layers)
   console.log('position.zoom: ', position.zoom)
@@ -591,7 +654,20 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             />
           </Control>
           <Control position="bottomleft">
-            <HistoryControl />
+            <ControlItem
+              key={'history undo'}
+              type="history"
+              criteria="undo"
+              isDisabled={!hasUndo}
+              cb={handleUndo}
+            />
+            <ControlItem
+              key={'history redo'}
+              type="history"
+              criteria="redo"
+              isDisabled={!hasRedo}
+              cb={handleRedo}
+            />
           </Control>
           {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
