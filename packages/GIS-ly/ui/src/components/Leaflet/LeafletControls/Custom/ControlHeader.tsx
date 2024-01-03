@@ -10,20 +10,32 @@ export type ControlHeaderProps = {
   children: React.ReactNode[];
   childrenBeside?: boolean;
   childrenAlignedBeside?: boolean;
+  cb?: () => void;
 }
 
-export function ControlHeader({ isToggled, isEnabled, category, children, childrenBeside, childrenAlignedBeside }: ControlHeaderProps) {
+export function ControlHeader({
+  isToggled,
+  isEnabled,
+  category,
+  children,
+  childrenBeside,
+  childrenAlignedBeside,
+  cb
+}: ControlHeaderProps) {
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>(isToggled ?? false);
 
   const handleClick = () => {
     setCurrentlyToggled(!currentlyToggled);
+    cb();
   };
 
   const categoryUpperFirst = toUpperFirstLetter(category);
   const title = `${categoryUpperFirst} Operations`;
 
   const classNameBar = `leaflet-bar header ${childrenBeside ? `child-col-beside` : ''}`;
-  const classNameLink = `header-control${currentlyToggled ? ' toggled' : ''}`;
+  const classNameLink = `header-control
+    ${currentlyToggled ? ' toggled' : ''}
+    ${!isEnabled ? ` disabled` : ''}`;
   const classNameChildren = `${childrenAlignedBeside ? `beside` : ''}`;
 
   return (

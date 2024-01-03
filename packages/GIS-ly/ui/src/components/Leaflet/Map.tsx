@@ -71,6 +71,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
   useEffect(() => {
     console.log('Initializing map with config: ', config);
     setLayers(createTileLayers(config.baseLayers));
@@ -574,7 +576,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             />
           </Control>
           <Control position="topleft">
-            <EditingControl />
+            <ControlHeader
+              key={'edit'}
+              category="edit"
+              childrenBeside={true}
+              children={[]}
+              isEnabled={false}
+              cb={() => setIsEditing(!isEditing)}
+            />
           </Control>
           <Control position="bottomleft">
             <HistoryControl />
@@ -604,8 +613,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <input type="file" onChange={handleFileSelection} />
         <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
         <label htmlFor="animatePan">Set View On Click</label>
-        {/* <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" /> */}
-
+        {isEditing ? <div className="editing-label">Editing</div> : null}
 
         <br />
         <hr />
