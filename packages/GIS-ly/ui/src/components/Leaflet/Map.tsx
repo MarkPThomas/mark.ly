@@ -72,6 +72,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [hasElevations, setHasElevations] = useState<boolean>(false);
 
   useEffect(() => {
     console.log('Initializing map with config: ', config);
@@ -445,17 +446,20 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const handleGetCachedElevation = () => {
-    const cachedDataMap = {};
+    if (currentTrack) {
+      const cachedDataMap = {};
 
-    cachedData.forEach((apiCall) => {
-      apiCall.results.forEach((response) => {
-        cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+      cachedData.forEach((apiCall) => {
+        apiCall.results.forEach((response) => {
+          cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+        });
       });
-    });
 
-    currentTrack.addElevations(cachedDataMap);
+      currentTrack.addElevations(cachedDataMap);
 
-    updateFromTrack(currentTrack);
+      updateFromTrack(currentTrack);
+      setHasElevations(true);
+    }
   }
 
   const handleSmoothByElevation = () => {
@@ -555,7 +559,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       key={'smooth elevation rate'}
                       type="smooth"
                       criteria="elevation rate"
-                      isDisabled={true}
+                      isDisabled={!hasElevations}
                       cb={handleSmoothByElevation}
                     />
                   ]}
@@ -620,7 +624,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <hr />
 
         {/* <input type="button" onClick={handleGetApiElevation} value="Get Elevation Data from API" /> */}
-        <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+
+        {!currentTrack
+          ? <input type="button" disabled value="Get Cached Elevation Data" />
+          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        }
 
         <br />
         <hr />
