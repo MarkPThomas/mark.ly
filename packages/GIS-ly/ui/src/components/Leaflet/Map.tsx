@@ -10,6 +10,7 @@ import Control from "react-leaflet-custom-control";
 
 
 import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
+import { LinkedListDouble, NodeDouble } from '../../../../../common/utils';
 
 import {
   toGeoJson,
@@ -44,10 +45,15 @@ import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
 import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
-import { EditingControl } from './LeafletControls/Custom/Editing';
 import { ControlHeader } from './LeafletControls/Custom/ControlHeader';
 import { ControlItem } from './LeafletControls/Custom/ControlItem';
-import { HistoryControl } from './LeafletControls/Custom/History';
+
+export interface history<T> {
+  [key: string]: {
+    list: LinkedListDouble<T>,
+    pointer: NodeDouble<T>
+  }
+}
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -68,6 +74,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [tracks, setTracks] = useState<{ [key: string]: Track }>({});
+  const [history, setHistory] = useState<history<Track>>({});
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
@@ -482,6 +489,37 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
+  const handleCommand = (command: () => void) => {
+    if (command) {
+      // current track saved to history
+      const savedTrack = currentTrack.clone();
+
+      const list = history[currentTrack.time]
+        ? history[currentTrack.time].list
+        : new LinkedListDouble<Track>();
+      list.append(savedTrack);
+
+      const pointer = history[currentTrack.time]
+        ? history[currentTrack.time].pointer.next as NodeDouble<Track>
+        : list.head;
+
+      history[currentTrack.time] = { list, pointer };
+
+      setHistory(history);
+
+      // action performed
+      command();
+    }
+  }
+
+  const handleUndo = () => {
+    console.log('Undo!')
+  }
+
+  const handleRedo = () => {
+    console.log('Redo!')
+  }
+
   console.log('layersProps:', layers)
   console.log('position.zoom: ', position.zoom)
   console.log('bounds:', bounds)
@@ -591,7 +629,18 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             />
           </Control>
           <Control position="bottomleft">
-            <HistoryControl />
+            <ControlItem
+              key={'history undo'}
+              type="history"
+              criteria="undo"
+              cb={handleUndo}
+            />
+            <ControlItem
+              key={'history redo'}
+              type="history"
+              criteria="redo"
+              cb={handleRedo}
+            />
           </Control>
           {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
