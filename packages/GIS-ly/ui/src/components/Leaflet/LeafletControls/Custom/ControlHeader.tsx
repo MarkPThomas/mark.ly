@@ -5,7 +5,7 @@ import { ControlItem } from "./ControlItem";
 
 export type ControlHeaderProps = {
   isToggled?: boolean;
-  isEnabled?: boolean;
+  isDisabled?: boolean;
   category: string;
   children: React.ReactNode[];
   childrenBeside?: boolean;
@@ -15,7 +15,7 @@ export type ControlHeaderProps = {
 
 export function ControlHeader({
   isToggled,
-  isEnabled,
+  isDisabled,
   category,
   children,
   childrenBeside,
@@ -25,8 +25,12 @@ export function ControlHeader({
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>(isToggled ?? false);
 
   const handleClick = () => {
-    setCurrentlyToggled(!currentlyToggled);
-    cb();
+    if (!isDisabled) {
+      setCurrentlyToggled(!currentlyToggled);
+      if (cb) {
+        cb();
+      }
+    }
   };
 
   const categoryUpperFirst = toUpperFirstLetter(category);
@@ -35,7 +39,7 @@ export function ControlHeader({
   const classNameBar = `leaflet-bar header ${childrenBeside ? `child-col-beside` : ''}`;
   const classNameLink = `header-control
     ${currentlyToggled ? ' toggled' : ''}
-    ${!isEnabled ? ` disabled` : ''}`;
+    ${isDisabled ? ` disabled` : ''}`;
   const classNameChildren = `${childrenAlignedBeside ? `beside` : ''}`;
 
   return (

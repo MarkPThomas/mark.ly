@@ -555,6 +555,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       key={'smooth elevation rate'}
                       type="smooth"
                       criteria="elevation rate"
+                      isDisabled={true}
                       cb={handleSmoothByElevation}
                     />
                   ]}
@@ -581,7 +582,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               category="edit"
               childrenBeside={true}
               children={[]}
-              isEnabled={false}
+              isDisabled={true}
               cb={() => setIsEditing(!isEditing)}
             />
           </Control>

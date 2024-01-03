@@ -158,3 +158,11 @@ td {
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
 }
+
+a.disabled,
+a.disabled:hover,
+a.disabled:visited {
+  background-color: gray;
+  color: #545454;
+  cursor: not-allowed;
+}
