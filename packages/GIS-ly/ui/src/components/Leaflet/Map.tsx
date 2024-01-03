@@ -71,6 +71,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [hasElevations, setHasElevations] = useState<boolean>(false);
+
   useEffect(() => {
     console.log('Initializing map with config: ', config);
     setLayers(createTileLayers(config.baseLayers));
@@ -443,17 +446,20 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const handleGetCachedElevation = () => {
-    const cachedDataMap = {};
+    if (currentTrack) {
+      const cachedDataMap = {};
 
-    cachedData.forEach((apiCall) => {
-      apiCall.results.forEach((response) => {
-        cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+      cachedData.forEach((apiCall) => {
+        apiCall.results.forEach((response) => {
+          cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
+        });
       });
-    });
 
-    currentTrack.addElevations(cachedDataMap);
+      currentTrack.addElevations(cachedDataMap);
 
-    updateFromTrack(currentTrack);
+      updateFromTrack(currentTrack);
+      setHasElevations(true);
+    }
   }
 
   const handleSmoothByElevation = () => {
@@ -553,6 +559,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       key={'smooth elevation rate'}
                       type="smooth"
                       criteria="elevation rate"
+                      isDisabled={!hasElevations}
                       cb={handleSmoothByElevation}
                     />
                   ]}
@@ -574,7 +581,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             />
           </Control>
           <Control position="topleft">
-            <EditingControl />
+            <ControlHeader
+              key={'edit'}
+              category="edit"
+              childrenBeside={true}
+              children={[]}
+              isDisabled={true}
+              cb={() => setIsEditing(!isEditing)}
+            />
           </Control>
           <Control position="bottomleft">
             <HistoryControl />
@@ -604,14 +618,17 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <input type="file" onChange={handleFileSelection} />
         <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
         <label htmlFor="animatePan">Set View On Click</label>
-        {/* <input type="button" onClick={handleMergeTrackSegments} value="Merge Track Segments" /> */}
-
+        {isEditing ? <div className="editing-label">Editing</div> : null}
 
         <br />
         <hr />
 
         {/* <input type="button" onClick={handleGetApiElevation} value="Get Elevation Data from API" /> */}
-        <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+
+        {!currentTrack
+          ? <input type="button" disabled value="Get Cached Elevation Data" />
+          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        }
 
         <br />
         <hr />

@@ -4,14 +4,22 @@ export type ControlItemProps = {
   type: string;
   criteria: string;
   cb: () => void;
+  isDisabled?: boolean;
 }
 
-export function ControlItem({ cb, criteria: label, type }: ControlItemProps) {
-  const className = `item-control`;
+export function ControlItem({ cb, criteria: label, type, isDisabled }: ControlItemProps) {
+  const className = `item-control
+    ${isDisabled ? ` disabled` : ''}`;
 
   const typeUpperFirst = toUpperFirstLetter(type);
   const criteriaUppers = toUpperFirstLetterOfEach(label);
   const title = `${typeUpperFirst} by ${criteriaUppers}`;
+
+  const handleClick = () => {
+    if (!isDisabled && cb) {
+      cb();
+    }
+  }
 
   return (
     <div className="leaflet-bar item">
@@ -21,7 +29,7 @@ export function ControlItem({ cb, criteria: label, type }: ControlItemProps) {
         aria-label={title}
         aria-disabled="false"
         role="button"
-        onClick={cb}
+        onClick={handleClick}
       >
         <span aria-hidden="true">{criteriaUppers}</span>
       </a>
