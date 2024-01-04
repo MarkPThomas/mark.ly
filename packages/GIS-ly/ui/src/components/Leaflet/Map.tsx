@@ -553,6 +553,38 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               : null
           }
           <Control position="topleft">
+            <ControlHeaderExpand
+              category="file"
+              children={[
+                <ControlItem
+                  key={'file open'}
+                  type="file"
+                  criteria="open..."
+                  cb={handleTrimCruft}
+                />,
+                <ControlHeaderExpand
+                  key={'file save'}
+                  category="save selected..."
+                  childrenBeside={true}
+                  children={[
+                    <ControlItem
+                      key={'save gpx'}
+                      type="save"
+                      criteria="gpx"
+                      cb={handleGPXSaveFile}
+                    />,
+                    <ControlItem
+                      key={'save kml'}
+                      type="save"
+                      criteria="kml"
+                      cb={handleKMLSaveFile}
+                    />
+                  ]}
+                />,
+              ]}
+            />
+          </Control>
+          <Control position="topleft">
             <ControlHeaderSwap
               category="options"
               children={[
@@ -668,23 +700,25 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
-        {currentTrack ?
-          <div>
-            <h2>Selected Track: {currentTrack.name}</h2>
-            {tracksValues.length > 1 ?
-              <div>
-                <label htmlFor="tracks-selection">Selected Track: </label>
-                <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
-                  {
-                    tracksValues.map((track) =>
-                      <option value={track.time} key={track.time}>{track.name}</option>
-                    )
-                  }
-                </select>
-              </div>
-              : null}
-          </div>
-          : null}
+        {
+          currentTrack ?
+            <div>
+              <h2>Selected Track: {currentTrack.name}</h2>
+              {tracksValues.length > 1 ?
+                <div>
+                  <label htmlFor="tracks-selection">Selected Track: </label>
+                  <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                    {
+                      tracksValues.map((track) =>
+                        <option value={track.time} key={track.time}>{track.name}</option>
+                      )
+                    }
+                  </select>
+                </div>
+                : null}
+            </div>
+            : null
+        }
 
         <input type="file" onChange={handleFileSelection} />
 
@@ -693,18 +727,17 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <br />
         <hr />
 
-        {/* <input type="button" onClick={handleGetApiElevation} value="Get Elevation Data from API" /> */}
+        <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
 
-        {!currentTrack
-          ? <input type="button" disabled value="Get Cached Elevation Data" />
-          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        {
+          !currentTrack
+            ? <input type="button" disabled value="Get Cached Elevation Data" />
+            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
         }
 
         <br />
         <hr />
 
-        <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
-        <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
         <div className="stats-container">
           {originalTrackStats ?
             <PolylineStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
@@ -719,6 +752,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
           }
         </div>
-      </div> : null
+      </div > : null
   )
 }
