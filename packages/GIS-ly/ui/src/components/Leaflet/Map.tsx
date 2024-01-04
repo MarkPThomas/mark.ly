@@ -559,12 +559,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 <div key={'file open'} className="leaflet-bar item">
                   <input type="file" onChange={handleFileSelection} />
                 </div>,
-                // <ControlItem
-                //   key={'file open'}
-                //   type="file"
-                //   criteria="open..."
-                //   cb={handleTrimCruft}
-                // />,
                 <ControlHeaderExpand
                   key={'file save'}
                   category="save selected..."
