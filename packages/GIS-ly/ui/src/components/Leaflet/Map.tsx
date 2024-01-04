@@ -49,6 +49,7 @@ import { ControlHeaderExpand } from './LeafletControls/Custom/ControlHeaderExpan
 import { ControlItem } from './LeafletControls/Custom/ControlItem';
 import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
 import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComparisonControl';
+import { TrackStatsControl } from './LeafletControls/Custom/TrackStatsControl';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -74,6 +75,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
   const [showComparisonStats, setShowComparisonStats] = useState<boolean>(true);
+  const [showTrackStats, setShowTrackStats] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
 
@@ -112,6 +114,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleShowComparisonStats = () => {
     setShowComparisonStats(!showComparisonStats);
     console.log('Toggled showComparisonStats!', showComparisonStats);
+  }
+
+  const handleShowTrackStats = () => {
+    setShowTrackStats(!showTrackStats);
+    console.log('Toggled showTrackStats!', showTrackStats);
   }
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
@@ -553,15 +560,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             zoom={Math.floor(position.zoom / 2)}
             tileSourceUrl={config.miniMap.url}
           />
-          {
-            (layers.baseLayers?.length > 1 || layers.overlays?.length)
-              ?
-              <LayersControl {...layers} />
-              : null
-          }
+          {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
+            <LayersControl {...layers} />
+            : null}
           <Control position="topleft" prepend>
-            <div className="leaflet-bar top-center">
-              {currentTrack ?
+            {currentTrack ?
+              <div className="leaflet-bar top-center">
                 <div className="selected-track">
                   {tracksValues.length > 1 ?
                     <div className="selected-track-select">
@@ -578,12 +582,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     <h2>Selected Track: {currentTrack.name}</h2>
                   }
                 </div>
-                : null
-              }
-              {(showComparisonStats && originalTrackStats) ?
-                <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
-                : null}
-            </div>
+                {(showComparisonStats && originalTrackStats) ?
+                  <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
+                  : null}
+              </div>
+              : null}
           </Control>
           <Control position="topleft">
             <ControlHeaderExpand
@@ -633,6 +636,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   <div key="showComparisonStats">
                     <input type="checkbox" onClick={handleShowComparisonStats} id="showComparisonStats" defaultChecked />
                     <label htmlFor="showComparisonStats">Show Comparison Stats</label>
+                  </div>
+                  <div key="showTrackStats">
+                    <input type="checkbox" onClick={handleShowTrackStats} id="showTrackStats" defaultChecked />
+                    <label htmlFor="showTrackStats">Show Track Stats</label>
                   </div>
                 </div>
               ]}
@@ -740,6 +747,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
             </>
             : null}
+
+          {(trackStats !== null) ?
+            <Control position="topright">
+              {showTrackStats ?
+                <TrackStatsControl stats={trackStats} />
+                : null}
+            </Control>
+            : null}
+
+
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
@@ -750,21 +767,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <hr />
 
         <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
-
-        {
-          !currentTrack
-            ? <input type="button" disabled value="Get Cached Elevation Data" />
-            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        {!currentTrack
+          ? <input type="button" disabled value="Get Cached Elevation Data" />
+          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
         }
 
         <br />
         <hr />
 
         <div className="stats-container">
-
-          {trackStats !== null ?
-            <Stats stats={trackStats} /> : null
-          }
           {config.trackCriteria ?
             <TrackCriteria criteria={config.trackCriteria} /> : null
           }
