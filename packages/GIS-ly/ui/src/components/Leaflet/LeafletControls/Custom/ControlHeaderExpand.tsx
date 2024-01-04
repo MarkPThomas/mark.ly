@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../../common/utils/stringFormatting";
+import { toUpperFirstLetter } from "../../../../../../../common/utils/stringFormatting";
 import { ControlItem } from "./ControlItem";
 
-export type ControlHeaderProps = {
+export type ControlHeaderExpandProps = {
   isToggled?: boolean;
   isDisabled?: boolean;
   category: string;
@@ -13,7 +13,7 @@ export type ControlHeaderProps = {
   cb?: () => void;
 }
 
-export function ControlHeader({
+export function ControlHeaderExpand({
   isToggled,
   isDisabled,
   category,
@@ -21,17 +21,17 @@ export function ControlHeader({
   childrenBeside,
   childrenAlignedBeside,
   cb
-}: ControlHeaderProps) {
+}: ControlHeaderExpandProps) {
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>(isToggled ?? false);
 
-  const handleClick = () => {
+  const setToggle = () => {
     if (!isDisabled) {
       setCurrentlyToggled(!currentlyToggled);
       if (cb) {
         cb();
       }
     }
-  };
+  }
 
   const categoryUpperFirst = toUpperFirstLetter(category);
   const title = `${categoryUpperFirst} Operations`;
@@ -51,7 +51,8 @@ export function ControlHeader({
           aria-label={title}
           aria-disabled="false"
           role="button"
-          onClick={handleClick}>
+          onClick={setToggle}
+        >
           <span aria-hidden="true">{categoryUpperFirst}</span>
         </a>
         {currentlyToggled ?
