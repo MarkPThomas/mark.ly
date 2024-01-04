@@ -45,8 +45,9 @@ import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
 import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
-import { ControlHeader } from './LeafletControls/Custom/ControlHeader';
+import { ControlHeaderExpand } from './LeafletControls/Custom/ControlHeaderExpand';
 import { ControlItem } from './LeafletControls/Custom/ControlItem';
+import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -287,38 +288,17 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const animateRef = useRef(true);
   const handleSetViewOnClick = () => {
-    console.log('Toggled!');
     animateRef.current = !animateRef.current;
+    console.log('Toggled animateRef!', animateRef.current);
   }
 
-  // TODO: Determine if imported tracks are always merged immediately,
-  //  Or if this first step is to be left. Could be displayed as
-  //  2-3 layer items, one set being the original imported track
-  //  and another colored differently to show where the multilines occur.
-  //   e.g. different colored trackpoints, or different colored lines
+  const showPreview = useRef(true);
+  const handleShowPreview = () => {
+    showPreview.current = !showPreview.current;
+    console.log('Toggled showPreview!', showPreview.current);
+  }
 
-  // const handleMergeTrackSegments = () => {
-  //   console.log('handleMergeTrackSegments')
-  //   if (layer as GeoJSONFeatureCollection) {
-  //     const geoJson = mergeTackSegments(layer as GeoJSONFeatureCollection);
-  //     const newCoords = getCoords(geoJson);
-  //     updateFromGeoJson(geoJson, newCoords as TrackPoint[]);
-  //   }
-  // }
 
-  // TODO: Implement Split ticket
-  // const handleSplitCruft = () => {
-  //   console.log('handleSplitCruft')
-  //   if (layer as GeoJSONFeatureCollection && track) {
-  //     const manager = new CruftManager(track);
-
-  //     const triggerDistanceKM: number = 5;
-  //     const tracks = manager.splitTrackSegmentByCruft(triggerDistanceKM);
-
-  //     console.log('geoJson: ', geoJsonLayers)
-  //     // TODO: Add ability for multiple GeoJson layers, programmatic styling
-  //   }
-  // }
 
   const handleTrimCruft = () => {
     console.log('handleTrimCruft')
@@ -573,10 +553,25 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               : null
           }
           <Control position="topleft">
-            <ControlHeader
+            <ControlHeaderSwap
+              category="options"
+              children={[
+                <div key="animatePan">
+                  <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
+                  <label htmlFor="animatePan">Set View On Click</label>
+                </div>,
+                <div key="showPreview">
+                  <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
+                  <label htmlFor="showPreview">Show Clean Previews</label>
+                </div>
+              ]}
+            />
+          </Control>
+          <Control position="topleft">
+            <ControlHeaderExpand
               category="clean"
               children={[
-                <ControlHeader
+                <ControlHeaderExpand
                   key={'trim'}
                   category="trim"
                   childrenBeside={true}
@@ -589,7 +584,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     />
                   ]}
                 />,
-                <ControlHeader
+                <ControlHeaderExpand
                   key={'smooth'}
                   category="smooth"
                   childrenBeside={true}
@@ -627,7 +622,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     />
                   ]}
                 />,
-                <ControlHeader
+                <ControlHeaderExpand
                   key={'split'}
                   category="split"
                   childrenBeside={true}
@@ -644,7 +639,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             />
           </Control>
           <Control position="topleft">
-            <ControlHeader
+            <ControlHeaderExpand
               key={'edit'}
               category="edit"
               childrenBeside={true}
@@ -692,8 +687,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           : null}
 
         <input type="file" onChange={handleFileSelection} />
-        <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" value="animatePan" defaultChecked />
-        <label htmlFor="animatePan">Set View On Click</label>
+
         {isEditing ? <div className="editing-label">Editing</div> : null}
 
         <br />
