@@ -131,7 +131,7 @@ td {
 .leaflet-bar.header.child-col-beside {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
 }
 
@@ -165,8 +165,8 @@ td {
 a.disabled,
 a.disabled:hover,
 a.disabled:visited {
-  background-color: rgba(19, 1, 1, 0.3);
-  color: rgba(16, 16, 16, 0.3);
+  background-color: rgb(266, 266, 266);
+  color: rgba(16, 16, 16, 0.5);
   cursor: not-allowed;
 }
 
