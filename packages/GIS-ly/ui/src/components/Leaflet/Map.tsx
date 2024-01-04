@@ -48,6 +48,7 @@ import { POSITION_CLASSES } from './LeafletControls/controlSettings';
 import { ControlHeaderExpand } from './LeafletControls/Custom/ControlHeaderExpand';
 import { ControlItem } from './LeafletControls/Custom/ControlItem';
 import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
+import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComparisonControl';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -72,6 +73,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
+  const [showComparisonStats, setShowComparisonStats] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
 
@@ -94,6 +96,23 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     //   console.log('BaseLayers set failed', error);
     // });
   }, []);
+
+  const animateRef = useRef(true);
+  const handleSetViewOnClick = () => {
+    animateRef.current = !animateRef.current;
+    console.log('Toggled animateRef!', animateRef.current);
+  }
+
+  const showPreview = useRef(true);
+  const handleShowPreview = () => {
+    showPreview.current = !showPreview.current;
+    console.log('Toggled showPreview!', showPreview.current);
+  }
+
+  const handleShowComparisonStats = () => {
+    setShowComparisonStats(!showComparisonStats);
+    console.log('Toggled showComparisonStats!', showComparisonStats);
+  }
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
   const updateFromTrack = (track: Track, updateStats: boolean = true) => {
@@ -284,18 +303,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const handleKMLSaveFile = () => {
     toKmlFile(currentTrack.toJson());
-  }
-
-  const animateRef = useRef(true);
-  const handleSetViewOnClick = () => {
-    animateRef.current = !animateRef.current;
-    console.log('Toggled animateRef!', animateRef.current);
-  }
-
-  const showPreview = useRef(true);
-  const handleShowPreview = () => {
-    showPreview.current = !showPreview.current;
-    console.log('Toggled showPreview!', showPreview.current);
   }
 
 
@@ -552,6 +559,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               <LayersControl {...layers} />
               : null
           }
+          <Control position="topleft" prepend>
+            {(showComparisonStats && originalTrackStats) ?
+              <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
+              : null}
+          </Control>
           <Control position="topleft">
             <ControlHeaderExpand
               category="file"
@@ -582,23 +594,31 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               ]}
             />
           </Control>
+          <Control position="topleft">
+            <ControlHeaderSwap
+              category="options"
+              children={[
+                <div key="animatePan">
+                  <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
+                  <label htmlFor="animatePan">Set View On Click</label>
+                </div>,
+                <div key="showPreview">
+                  <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
+                  <label htmlFor="showPreview">Show Clean Previews</label>
+                </div>,
+                <div key="display" className="options-display">
+                  <hr />
+                  <h3>Display</h3>
+                  <div key="showComparisonStats">
+                    <input type="checkbox" onClick={handleShowComparisonStats} id="showComparisonStats" defaultChecked />
+                    <label htmlFor="showComparisonStats">Show Comparison Stats</label>
+                  </div>
+                </div>
+              ]}
+            />
+          </Control>
           {currentTrack ?
             <>
-              <Control position="topleft">
-                <ControlHeaderSwap
-                  category="options"
-                  children={[
-                    <div key="animatePan">
-                      <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
-                      <label htmlFor="animatePan">Set View On Click</label>
-                    </div>,
-                    <div key="showPreview">
-                      <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
-                      <label htmlFor="showPreview">Show Clean Previews</label>
-                    </div>
-                  ]}
-                />
-              </Control>
               <Control position="topleft">
                 <ControlHeaderExpand
                   category="clean"
@@ -696,9 +716,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   cb={handleRedo}
                 />
               </Control>
+
             </>
             : null}
-          {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
@@ -739,9 +759,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <hr />
 
         <div className="stats-container">
-          {originalTrackStats ?
-            <PolylineStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
-          }
+
           {trackStats !== null ?
             <Stats stats={trackStats} /> : null
           }
