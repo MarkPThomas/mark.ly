@@ -6,10 +6,12 @@ import { ControlItem } from "./ControlItem";
 export type ControlHeaderExpandProps = {
   isToggled?: boolean;
   isDisabled?: boolean;
+  forceClosedIfToggled?: boolean;
   category: string;
   children: React.ReactNode[];
   childrenBeside?: boolean;
   childrenAlignedBeside?: boolean;
+  forceClosed?: boolean;
   cb?: () => void;
 }
 
@@ -22,7 +24,7 @@ export function ControlHeaderExpand({
   childrenAlignedBeside,
   cb
 }: ControlHeaderExpandProps) {
-  const [currentlyToggled, setCurrentlyToggled] = useState<boolean>(isToggled ?? false);
+  const [currentlyToggled, setCurrentlyToggled] = useState<boolean>((isToggled && !isDisabled) ? true : false);
 
   const setToggle = () => {
     if (!isDisabled) {
@@ -38,7 +40,7 @@ export function ControlHeaderExpand({
 
   const classNameBar = `leaflet-bar header ${childrenBeside ? `child-col-beside` : ''}`;
   const classNameLink = `header-control
-    ${currentlyToggled ? ' toggled' : ''}
+    ${(currentlyToggled && !isDisabled) ? ' toggled' : ''}
     ${isDisabled ? ` disabled` : ''}`;
   const classNameChildren = `${childrenAlignedBeside ? `beside` : ''}`;
 
@@ -55,7 +57,7 @@ export function ControlHeaderExpand({
         >
           <span aria-hidden="true">{categoryUpperFirst}</span>
         </a>
-        {currentlyToggled ?
+        {(currentlyToggled && !isDisabled) ?
           <div className={classNameChildren}>
             {children.map((child) => child)}
           </div>

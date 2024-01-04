@@ -42,7 +42,6 @@ import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
 import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
-import { PolylineStatsComparison } from './Custom/Stats/Paths/PolylineStatsComparison';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
 import { ControlHeaderExpand } from './LeafletControls/Custom/ControlHeaderExpand';
@@ -76,6 +75,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [showComparisonStats, setShowComparisonStats] = useState<boolean>(true);
   const [showTrackStats, setShowTrackStats] = useState<boolean>(true);
+  const [animateRef, setAnimateRef] = useState<boolean>(true);
+  const [showPreview, setShowPreview] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
 
@@ -99,16 +100,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     // });
   }, []);
 
-  const animateRef = useRef(true);
   const handleSetViewOnClick = () => {
-    animateRef.current = !animateRef.current;
-    console.log('Toggled animateRef!', animateRef.current);
+    setAnimateRef(!animateRef);
+    console.log('Toggled animateRef!', animateRef);
+
   }
 
-  const showPreview = useRef(true);
   const handleShowPreview = () => {
-    showPreview.current = !showPreview.current;
-    console.log('Toggled showPreview!', showPreview.current);
+    setShowPreview(!showPreview);
+    console.log('Toggled showPreview!', showPreview);
   }
 
   const handleShowComparisonStats = () => {
@@ -119,6 +119,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleShowTrackStats = () => {
     setShowTrackStats(!showTrackStats);
     console.log('Toggled showTrackStats!', showTrackStats);
+  }
+
+  const handleOnEditClick = () => {
+    setIsEditing(!isEditing)
   }
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
@@ -560,9 +564,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             zoom={Math.floor(position.zoom / 2)}
             tileSourceUrl={config.miniMap.url}
           />
-          {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
-            <LayersControl {...layers} />
-            : null}
           <Control position="topleft" prepend>
             {currentTrack ?
               <div className="leaflet-bar top-center">
@@ -591,6 +592,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           <Control position="topleft">
             <ControlHeaderExpand
               category="file"
+              isDisabled={isEditing}
               children={[
                 <div key={'file open'} className="leaflet-bar item">
                   <input type="file" onChange={handleFileSelection} />
@@ -623,22 +625,22 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               category="options"
               children={[
                 <div key="animatePan">
-                  <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
+                  <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
                   <label htmlFor="animatePan">Set View On Click</label>
                 </div>,
                 <div key="showPreview">
-                  <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
+                  <input type="checkbox" onChange={handleShowPreview} id="showPreview" checked={showPreview} />
                   <label htmlFor="showPreview">Show Clean Previews</label>
                 </div>,
                 <div key="display" className="options-display">
                   <hr />
                   <h3>Display</h3>
                   <div key="showComparisonStats">
-                    <input type="checkbox" onClick={handleShowComparisonStats} id="showComparisonStats" defaultChecked />
+                    <input type="checkbox" onChange={handleShowComparisonStats} id="showComparisonStats" checked={showComparisonStats} />
                     <label htmlFor="showComparisonStats">Show Comparison Stats</label>
                   </div>
                   <div key="showTrackStats">
-                    <input type="checkbox" onClick={handleShowTrackStats} id="showTrackStats" defaultChecked />
+                    <input type="checkbox" onChange={handleShowTrackStats} id="showTrackStats" checked={showTrackStats} />
                     <label htmlFor="showTrackStats">Show Track Stats</label>
                   </div>
                 </div>
@@ -650,6 +652,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               <Control position="topleft">
                 <ControlHeaderExpand
                   category="clean"
+                  isDisabled={isEditing}
                   children={[
                     <ControlHeaderExpand
                       key={'trim'}
@@ -724,11 +727,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   category="edit"
                   childrenBeside={true}
                   children={[]}
-                  isDisabled={true}
-                  cb={() => setIsEditing(!isEditing)}
+                  // isDisabled={true}
+                  cb={handleOnEditClick}
                 />
               </Control>
-              <Control position="bottomleft">
+              <Control position="topleft">
                 <ControlItem
                   key={'history undo'}
                   type="history"
@@ -756,6 +759,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </Control>
             : null}
 
+          {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
+            <LayersControl {...layers} />
+            : null}
 
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
