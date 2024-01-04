@@ -2,7 +2,10 @@ import { ToggleGroup } from "../../ToggleGroup";
 import { HeightRateStats, SpeedStats, TimeStats } from './Categories/Track';
 import { IEditedStats } from "./Stats";
 
-export type TrackStatsProp = { stats: IEditedStats, level: number };
+export type TrackStatsProp = {
+  stats: IEditedStats,
+  level: number
+};
 
 export function TrackStats({ stats, level }: TrackStatsProp) {
   return (

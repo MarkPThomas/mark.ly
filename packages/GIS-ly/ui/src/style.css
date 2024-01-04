@@ -193,6 +193,14 @@ a.disabled:visited {
   margin: 0;
 }
 
+.leaflet-top.leaflet-left>.leaflet-control:first-child {
+  margin: 0;
+}
+
+.leaflet-bar.top-center {
+  margin: 10px;
+}
+
 .leaflet-bar.top-center .selected-track {
   background-color: #84ff84;
 }
@@ -202,4 +210,13 @@ a.disabled:visited {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+}
+
+.stats-control h2 {
+  margin: 0;
+}
+
+.stats-control {
+  background-color: rgb(134, 251, 255, 0.7);
+  padding: 5px;
 }

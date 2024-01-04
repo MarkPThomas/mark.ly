@@ -17,19 +17,19 @@ export function Stats({ stats }: StatsProps) {
 
   return (
     <div>
-      <div>
-        <h2 className="stats">Stats</h2>
-        <ToggleGroup
-          value={'Route'}
-          level={level}
-          children={[<RouteStats key={Date()} stats={stats} level={level + 1} />]}
-        />
-        <ToggleGroup
-          value={'Track'}
-          level={level}
-          children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
-        />
-      </div>
+      <h2 className="stats">Stats</h2>
+      <hr />
+      <ToggleGroup
+        value={'Route'}
+        level={level}
+        children={[<RouteStats key={Date()} stats={stats} level={level + 1} />]}
+      />
+      <hr />
+      <ToggleGroup
+        value={'Track'}
+        level={level}
+        children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
+      />
     </div>
   )
 }
