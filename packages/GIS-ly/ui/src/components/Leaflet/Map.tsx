@@ -553,158 +553,197 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               : null
           }
           <Control position="topleft">
-            <ControlHeaderSwap
-              category="options"
+            <ControlHeaderExpand
+              category="file"
               children={[
-                <div key="animatePan">
-                  <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
-                  <label htmlFor="animatePan">Set View On Click</label>
+                <div key={'file open'} className="leaflet-bar item">
+                  <input type="file" onChange={handleFileSelection} />
                 </div>,
-                <div key="showPreview">
-                  <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
-                  <label htmlFor="showPreview">Show Clean Previews</label>
-                </div>
+                // <ControlItem
+                //   key={'file open'}
+                //   type="file"
+                //   criteria="open..."
+                //   cb={handleTrimCruft}
+                // />,
+                <ControlHeaderExpand
+                  key={'file save'}
+                  category="save selected..."
+                  childrenBeside={true}
+                  isDisabled={!currentTrack}
+                  children={[
+                    <ControlItem
+                      key={'save gpx'}
+                      type="save"
+                      criteria="gpx"
+                      cb={handleGPXSaveFile}
+                    />,
+                    <ControlItem
+                      key={'save kml'}
+                      type="save"
+                      criteria="kml"
+                      cb={handleKMLSaveFile}
+                    />
+                  ]}
+                />,
               ]}
             />
           </Control>
-          <Control position="topleft">
-            <ControlHeaderExpand
-              category="clean"
-              children={[
-                <ControlHeaderExpand
-                  key={'trim'}
-                  category="trim"
-                  childrenBeside={true}
+          {currentTrack ?
+            <>
+              <Control position="topleft">
+                <ControlHeaderSwap
+                  category="options"
                   children={[
-                    <ControlItem
-                      key={'trim cruft'}
-                      type="trim"
-                      criteria="cruft"
-                      cb={handleTrimCruft}
-                    />
+                    <div key="animatePan">
+                      <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
+                      <label htmlFor="animatePan">Set View On Click</label>
+                    </div>,
+                    <div key="showPreview">
+                      <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
+                      <label htmlFor="showPreview">Show Clean Previews</label>
+                    </div>
                   ]}
-                />,
+                />
+              </Control>
+              <Control position="topleft">
                 <ControlHeaderExpand
-                  key={'smooth'}
-                  category="smooth"
-                  childrenBeside={true}
+                  category="clean"
                   children={[
-                    <ControlItem
-                      key={'smooth stopped'}
-                      type="smooth"
-                      criteria="stopped"
-                      cb={handleSmoothStationary}
+                    <ControlHeaderExpand
+                      key={'trim'}
+                      category="trim"
+                      childrenBeside={true}
+                      children={[
+                        <ControlItem
+                          key={'trim cruft'}
+                          type="trim"
+                          criteria="cruft"
+                          cb={handleTrimCruft}
+                        />
+                      ]}
                     />,
-                    <ControlItem
-                      key={'smooth noise cloud'}
-                      type="smooth"
-                      criteria="noise cloud"
-                      cb={handleSmoothNoiseCloud}
+                    <ControlHeaderExpand
+                      key={'smooth'}
+                      category="smooth"
+                      childrenBeside={true}
+                      children={[
+                        <ControlItem
+                          key={'smooth stopped'}
+                          type="smooth"
+                          criteria="stopped"
+                          cb={handleSmoothStationary}
+                        />,
+                        <ControlItem
+                          key={'smooth noise cloud'}
+                          type="smooth"
+                          criteria="noise cloud"
+                          cb={handleSmoothNoiseCloud}
+                        />,
+                        <ControlItem
+                          key={'smooth speed'}
+                          type="smooth"
+                          criteria="speed"
+                          cb={handleSmoothBySpeed}
+                        />,
+                        <ControlItem
+                          key={'smooth angular speed'}
+                          type="smooth"
+                          criteria="angular speed"
+                          cb={handleSmoothByAngularSpeed}
+                        />,
+                        <ControlItem
+                          key={'smooth elevation rate'}
+                          type="smooth"
+                          criteria="elevation rate"
+                          isDisabled={!hasElevations}
+                          cb={handleSmoothByElevation}
+                        />
+                      ]}
                     />,
-                    <ControlItem
-                      key={'smooth speed'}
-                      type="smooth"
-                      criteria="speed"
-                      cb={handleSmoothBySpeed}
-                    />,
-                    <ControlItem
-                      key={'smooth angular speed'}
-                      type="smooth"
-                      criteria="angular speed"
-                      cb={handleSmoothByAngularSpeed}
-                    />,
-                    <ControlItem
-                      key={'smooth elevation rate'}
-                      type="smooth"
-                      criteria="elevation rate"
-                      isDisabled={!hasElevations}
-                      cb={handleSmoothByElevation}
-                    />
-                  ]}
-                />,
-                <ControlHeaderExpand
-                  key={'split'}
-                  category="split"
-                  childrenBeside={true}
-                  children={[
-                    <ControlItem
-                      key={'split finish'}
-                      type="split"
-                      criteria="finish"
-                      cb={handleSplitOnStop}
+                    <ControlHeaderExpand
+                      key={'split'}
+                      category="split"
+                      childrenBeside={true}
+                      children={[
+                        <ControlItem
+                          key={'split finish'}
+                          type="split"
+                          criteria="finish"
+                          cb={handleSplitOnStop}
+                        />
+                      ]}
                     />
                   ]}
                 />
-              ]}
-            />
-          </Control>
-          <Control position="topleft">
-            <ControlHeaderExpand
-              key={'edit'}
-              category="edit"
-              childrenBeside={true}
-              children={[]}
-              isDisabled={true}
-              cb={() => setIsEditing(!isEditing)}
-            />
-          </Control>
-          <Control position="bottomleft">
-            <ControlItem
-              key={'history undo'}
-              type="history"
-              criteria="undo"
-              isDisabled={!hasUndo}
-              cb={handleUndo}
-            />
-            <ControlItem
-              key={'history redo'}
-              type="history"
-              criteria="redo"
-              isDisabled={!hasRedo}
-              cb={handleRedo}
-            />
-          </Control>
+              </Control>
+              <Control position="topleft">
+                <ControlHeaderExpand
+                  key={'edit'}
+                  category="edit"
+                  childrenBeside={true}
+                  children={[]}
+                  isDisabled={true}
+                  cb={() => setIsEditing(!isEditing)}
+                />
+              </Control>
+              <Control position="bottomleft">
+                <ControlItem
+                  key={'history undo'}
+                  type="history"
+                  criteria="undo"
+                  isDisabled={!hasUndo}
+                  cb={handleUndo}
+                />
+                <ControlItem
+                  key={'history redo'}
+                  type="history"
+                  criteria="redo"
+                  isDisabled={!hasRedo}
+                  cb={handleRedo}
+                />
+              </Control>
+            </>
+            : null}
           {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
-        {currentTrack ?
-          <div>
-            <h2>Selected Track: {currentTrack.name}</h2>
-            {tracksValues.length > 1 ?
-              <div>
-                <label htmlFor="tracks-selection">Selected Track: </label>
-                <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
-                  {
-                    tracksValues.map((track) =>
-                      <option value={track.time} key={track.time}>{track.name}</option>
-                    )
-                  }
-                </select>
-              </div>
-              : null}
-          </div>
-          : null}
-
-        <input type="file" onChange={handleFileSelection} />
+        {
+          currentTrack ?
+            <div>
+              <h2>Selected Track: {currentTrack.name}</h2>
+              {tracksValues.length > 1 ?
+                <div>
+                  <label htmlFor="tracks-selection">Selected Track: </label>
+                  <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                    {
+                      tracksValues.map((track) =>
+                        <option value={track.time} key={track.time}>{track.name}</option>
+                      )
+                    }
+                  </select>
+                </div>
+                : null}
+            </div>
+            : null
+        }
 
         {isEditing ? <div className="editing-label">Editing</div> : null}
 
         <br />
         <hr />
 
-        {/* <input type="button" onClick={handleGetApiElevation} value="Get Elevation Data from API" /> */}
+        <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
 
-        {!currentTrack
-          ? <input type="button" disabled value="Get Cached Elevation Data" />
-          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        {
+          !currentTrack
+            ? <input type="button" disabled value="Get Cached Elevation Data" />
+            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
         }
 
         <br />
         <hr />
 
-        <input type="button" onClick={handleGPXSaveFile} value="Save as GPX File" />
-        <input type="button" onClick={handleKMLSaveFile} value="Save as KML File" />
         <div className="stats-container">
           {originalTrackStats ?
             <PolylineStatsComparison statsInitial={originalTrackStats} statsCurrent={trackStats} /> : null
@@ -719,6 +758,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
           }
         </div>
-      </div> : null
+      </div > : null
   )
 }
