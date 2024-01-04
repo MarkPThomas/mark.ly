@@ -560,9 +560,30 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               : null
           }
           <Control position="topleft" prepend>
-            {(showComparisonStats && originalTrackStats) ?
-              <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
-              : null}
+            <div className="leaflet-bar top-center">
+              {currentTrack ?
+                <div className="selected-track">
+                  {tracksValues.length > 1 ?
+                    <div className="selected-track-select">
+                      <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
+                      <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                        {
+                          tracksValues.map((track) =>
+                            <option value={track.time} key={track.time}>{track.name}</option>
+                          )
+                        }
+                      </select>
+                    </div>
+                    :
+                    <h2>Selected Track: {currentTrack.name}</h2>
+                  }
+                </div>
+                : null
+              }
+              {(showComparisonStats && originalTrackStats) ?
+                <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
+                : null}
+            </div>
           </Control>
           <Control position="topleft">
             <ControlHeaderExpand
@@ -722,25 +743,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
         </MapContainer>
-        {
-          currentTrack ?
-            <div>
-              <h2>Selected Track: {currentTrack.name}</h2>
-              {tracksValues.length > 1 ?
-                <div>
-                  <label htmlFor="tracks-selection">Selected Track: </label>
-                  <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
-                    {
-                      tracksValues.map((track) =>
-                        <option value={track.time} key={track.time}>{track.name}</option>
-                      )
-                    }
-                  </select>
-                </div>
-                : null}
-            </div>
-            : null
-        }
 
         {isEditing ? <div className="editing-label">Editing</div> : null}
 
