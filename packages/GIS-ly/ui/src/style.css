@@ -169,3 +169,23 @@ a.disabled:visited {
   color: rgba(16, 16, 16, 0.3);
   cursor: not-allowed;
 }
+
+.leaflet-bar.top-center {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  background-color: rgb(134, 251, 255, 0.7);
+}
+
+.leaflet-bar.top-center h2 {
+  margin: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.options-display h3 {
+  margin: 0;
+}

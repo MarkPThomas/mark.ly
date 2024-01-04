@@ -1,14 +1,16 @@
-import { POSITION_CLASSES } from "../controlSettings";
+import { IEditedPolylineStats, PolylineStatsComparison } from "../../Custom/Stats/Paths/PolylineStatsComparison";
 
 export type PolylineComparisonControlProps = {
-  position?: POSITION_CLASSES,
+  statsInitial: IEditedPolylineStats,
+  statsCurrent: IEditedPolylineStats
 }
 
-export function PolylineComparisonControl({ position }: PolylineComparisonControlProps) {
-  const positionClass = position || POSITION_CLASSES.bottomleft;
+export function PolylineComparisonControl({ statsInitial, statsCurrent }: PolylineComparisonControlProps) {
   return (
-    <div className='leaflet-top leaflet-center'>
-      <div className="leaflet-control leaflet-bar">Polyline Comparison Stats</div>
+    <div className="leaflet-bar top-center">
+      <h2>Polyline Comparison Stats</h2>
+      <PolylineStatsComparison statsInitial={statsInitial} statsCurrent={statsCurrent} />
     </div>
+
   )
 }
