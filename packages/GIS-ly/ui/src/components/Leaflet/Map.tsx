@@ -556,16 +556,20 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             <ControlHeaderExpand
               category="file"
               children={[
-                <ControlItem
-                  key={'file open'}
-                  type="file"
-                  criteria="open..."
-                  cb={handleTrimCruft}
-                />,
+                <div key={'file open'} className="leaflet-bar item">
+                  <input type="file" onChange={handleFileSelection} />
+                </div>,
+                // <ControlItem
+                //   key={'file open'}
+                //   type="file"
+                //   criteria="open..."
+                //   cb={handleTrimCruft}
+                // />,
                 <ControlHeaderExpand
                   key={'file save'}
                   category="save selected..."
                   childrenBeside={true}
+                  isDisabled={!currentTrack}
                   children={[
                     <ControlItem
                       key={'save gpx'}
@@ -584,118 +588,122 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               ]}
             />
           </Control>
-          <Control position="topleft">
-            <ControlHeaderSwap
-              category="options"
-              children={[
-                <div key="animatePan">
-                  <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
-                  <label htmlFor="animatePan">Set View On Click</label>
-                </div>,
-                <div key="showPreview">
-                  <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
-                  <label htmlFor="showPreview">Show Clean Previews</label>
-                </div>
-              ]}
-            />
-          </Control>
-          <Control position="topleft">
-            <ControlHeaderExpand
-              category="clean"
-              children={[
-                <ControlHeaderExpand
-                  key={'trim'}
-                  category="trim"
-                  childrenBeside={true}
+          {currentTrack ?
+            <>
+              <Control position="topleft">
+                <ControlHeaderSwap
+                  category="options"
                   children={[
-                    <ControlItem
-                      key={'trim cruft'}
-                      type="trim"
-                      criteria="cruft"
-                      cb={handleTrimCruft}
-                    />
+                    <div key="animatePan">
+                      <input type="checkbox" onClick={handleSetViewOnClick} id="animatePan" defaultChecked />
+                      <label htmlFor="animatePan">Set View On Click</label>
+                    </div>,
+                    <div key="showPreview">
+                      <input type="checkbox" onClick={handleShowPreview} id="showPreview" defaultChecked />
+                      <label htmlFor="showPreview">Show Clean Previews</label>
+                    </div>
                   ]}
-                />,
+                />
+              </Control>
+              <Control position="topleft">
                 <ControlHeaderExpand
-                  key={'smooth'}
-                  category="smooth"
-                  childrenBeside={true}
+                  category="clean"
                   children={[
-                    <ControlItem
-                      key={'smooth stopped'}
-                      type="smooth"
-                      criteria="stopped"
-                      cb={handleSmoothStationary}
+                    <ControlHeaderExpand
+                      key={'trim'}
+                      category="trim"
+                      childrenBeside={true}
+                      children={[
+                        <ControlItem
+                          key={'trim cruft'}
+                          type="trim"
+                          criteria="cruft"
+                          cb={handleTrimCruft}
+                        />
+                      ]}
                     />,
-                    <ControlItem
-                      key={'smooth noise cloud'}
-                      type="smooth"
-                      criteria="noise cloud"
-                      cb={handleSmoothNoiseCloud}
+                    <ControlHeaderExpand
+                      key={'smooth'}
+                      category="smooth"
+                      childrenBeside={true}
+                      children={[
+                        <ControlItem
+                          key={'smooth stopped'}
+                          type="smooth"
+                          criteria="stopped"
+                          cb={handleSmoothStationary}
+                        />,
+                        <ControlItem
+                          key={'smooth noise cloud'}
+                          type="smooth"
+                          criteria="noise cloud"
+                          cb={handleSmoothNoiseCloud}
+                        />,
+                        <ControlItem
+                          key={'smooth speed'}
+                          type="smooth"
+                          criteria="speed"
+                          cb={handleSmoothBySpeed}
+                        />,
+                        <ControlItem
+                          key={'smooth angular speed'}
+                          type="smooth"
+                          criteria="angular speed"
+                          cb={handleSmoothByAngularSpeed}
+                        />,
+                        <ControlItem
+                          key={'smooth elevation rate'}
+                          type="smooth"
+                          criteria="elevation rate"
+                          isDisabled={!hasElevations}
+                          cb={handleSmoothByElevation}
+                        />
+                      ]}
                     />,
-                    <ControlItem
-                      key={'smooth speed'}
-                      type="smooth"
-                      criteria="speed"
-                      cb={handleSmoothBySpeed}
-                    />,
-                    <ControlItem
-                      key={'smooth angular speed'}
-                      type="smooth"
-                      criteria="angular speed"
-                      cb={handleSmoothByAngularSpeed}
-                    />,
-                    <ControlItem
-                      key={'smooth elevation rate'}
-                      type="smooth"
-                      criteria="elevation rate"
-                      isDisabled={!hasElevations}
-                      cb={handleSmoothByElevation}
-                    />
-                  ]}
-                />,
-                <ControlHeaderExpand
-                  key={'split'}
-                  category="split"
-                  childrenBeside={true}
-                  children={[
-                    <ControlItem
-                      key={'split finish'}
-                      type="split"
-                      criteria="finish"
-                      cb={handleSplitOnStop}
+                    <ControlHeaderExpand
+                      key={'split'}
+                      category="split"
+                      childrenBeside={true}
+                      children={[
+                        <ControlItem
+                          key={'split finish'}
+                          type="split"
+                          criteria="finish"
+                          cb={handleSplitOnStop}
+                        />
+                      ]}
                     />
                   ]}
                 />
-              ]}
-            />
-          </Control>
-          <Control position="topleft">
-            <ControlHeaderExpand
-              key={'edit'}
-              category="edit"
-              childrenBeside={true}
-              children={[]}
-              isDisabled={true}
-              cb={() => setIsEditing(!isEditing)}
-            />
-          </Control>
-          <Control position="bottomleft">
-            <ControlItem
-              key={'history undo'}
-              type="history"
-              criteria="undo"
-              isDisabled={!hasUndo}
-              cb={handleUndo}
-            />
-            <ControlItem
-              key={'history redo'}
-              type="history"
-              criteria="redo"
-              isDisabled={!hasRedo}
-              cb={handleRedo}
-            />
-          </Control>
+              </Control>
+              <Control position="topleft">
+                <ControlHeaderExpand
+                  key={'edit'}
+                  category="edit"
+                  childrenBeside={true}
+                  children={[]}
+                  isDisabled={true}
+                  cb={() => setIsEditing(!isEditing)}
+                />
+              </Control>
+              <Control position="bottomleft">
+                <ControlItem
+                  key={'history undo'}
+                  type="history"
+                  criteria="undo"
+                  isDisabled={!hasUndo}
+                  cb={handleUndo}
+                />
+                <ControlItem
+                  key={'history redo'}
+                  type="history"
+                  criteria="redo"
+                  isDisabled={!hasRedo}
+                  cb={handleRedo}
+                />
+              </Control>
+            </>
+            : null}
           {/* <PolylineComparisonControl /> */}
           {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
           <SetViewOnClick animateRef={animateRef} />
@@ -719,8 +727,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </div>
             : null
         }
-
-        <input type="file" onChange={handleFileSelection} />
 
         {isEditing ? <div className="editing-label">Editing</div> : null}
 
