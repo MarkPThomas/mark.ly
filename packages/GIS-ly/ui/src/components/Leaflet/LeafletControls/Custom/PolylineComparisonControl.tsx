@@ -7,7 +7,7 @@ export type PolylineComparisonControlProps = {
 
 export function PolylineComparisonControl({ statsInitial, statsCurrent }: PolylineComparisonControlProps) {
   return (
-    <div className="leaflet-bar top-center">
+    <div className="polyline-comparison">
       <h2>Polyline Comparison Stats</h2>
       <PolylineStatsComparison statsInitial={statsInitial} statsCurrent={statsCurrent} />
     </div>
