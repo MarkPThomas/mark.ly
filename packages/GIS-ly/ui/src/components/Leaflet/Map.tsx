@@ -82,7 +82,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
 
-  const [delayedHandler, setDelayedHandler] = useState<() => void>(null);
+  const [selectedFile, setSelectedFile] = useState<File>(null);
   const [showFileReplaceDialog, setShowFileReplaceDialog] = useState<boolean>(false);
   const [showElevationApiDialog, setShowElevationApiDialog] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -282,30 +282,35 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateCurrentTrackStats(track);
   }
 
+
+  const loadTrack = async () => {
+    await loadFile(selectedFile);
+  }
+
+  const swapTracks = async () => {
+    setCurrentTrack(null);
+    setTracks({});
+    await loadTrack();
+  }
+
   const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files[0];
     console.log('Read file: ', file);
 
-    const loadTrack = async () => {
-      await loadFile(file);
-    }
-
-
-    console.log('handleFileSelection->Current Track: ', currentTrack);
     if (currentTrack) {
-      console.log('Loading dialog!')
-      // handler is invoked here....
-      setDelayedHandler(loadTrack);
-      // it is then not null but not callable as a function
-      console.log('Showing dialog!')
       setShowFileReplaceDialog(true);
+      setSelectedFile(file);
     } else {
-      console.log('Loading track!')
-      await loadTrack();
+      await loadFile(file);
     }
   };
 
   const loadFile = async (file: File) => {
+    if (!file) {
+      console.log('No file specified!');
+      return;
+    }
+
     console.log('loading file!');
     toGeoJson(file, [
       // Save converted geojson to hook state
@@ -685,6 +690,38 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     Boo!
                   </p>
                 </Dialog>
+                : null}
+              {showFileReplaceDialog ?
+                <Modal
+                  setShow={setShowFileReplaceDialog}
+                  buttons={[
+                    {
+                      label: 'Replace',
+                      callback: () => {
+                        console.log('Replace')
+                        swapTracks();
+                        setShowFileReplaceDialog(false);
+                      }
+                    }, {
+                      label: 'Merge',
+                      callback: () => {
+                        console.log('Merge')
+                        loadTrack();
+                        setShowFileReplaceDialog(false);
+                      }
+                    }, {
+                      label: 'Cancel',
+                      callback: () => {
+                        console.log('Cancel')
+                        setShowFileReplaceDialog(false);
+                      }
+                    }
+                  ]}
+                  title={'Warning!'}
+                >
+                  <p>Tracks already exist.</p>
+                  <p>Please select from the following actions:</p>
+                </Modal>
                 : null}
             </Control>
             <Control position="topleft">
