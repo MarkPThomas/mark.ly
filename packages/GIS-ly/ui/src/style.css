@@ -176,6 +176,26 @@ a.disabled:visited {
   transform: translate(-50%);
 }
 
+dialog[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal-dialog-message,
+.modal-dialog-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-dialog-message {
+  flex-direction: column;
+}
+
 .polyline-comparison {
   display: flex;
   flex-wrap: wrap;
