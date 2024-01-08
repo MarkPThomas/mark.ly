@@ -83,6 +83,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [hasElevations, setHasElevations] = useState<boolean>(false);
 
   const [selectedFile, setSelectedFile] = useState<File>(null);
+  const [currentFile, setCurrentFile] = useState<File>(null);
   const [showFileReplaceDialog, setShowFileReplaceDialog] = useState<boolean>(false);
   const [showElevationApiDialog, setShowElevationApiDialog] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -282,15 +283,40 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateCurrentTrackStats(track);
   }
 
+  // TODO: Handle case where user selects a file that was selected before - redo the file prompts rather than ignore
+  //   Currently if the filename does not change, no action happens.
+  //   However, this is different than cancelling out of the selection form. This behavior should be preserved.
+  // const handleCancel = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  // }
+
+  // const acceptCurrentFile = (useSelected: boolean) => {
+  //   if (useSelected) {
+  //     setCurrentFile(selectedFile);
+  //   } else {
+  //     setSelectedFile(null);
+  //   }
+  // }
+
+  // TODO: Currently this throws an error when removing children. Fix.
+  const swapTracks = async () => {
+    setCurrentTrack(null);
+    setTracks({});
+    await loadTrack();
+  }
 
   const loadTrack = async () => {
     await loadFile(selectedFile);
   }
 
-  const swapTracks = async () => {
-    setCurrentTrack(null);
-    setTracks({});
-    await loadTrack();
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files[0];
+  //   setSelectedFile(file);
+  // };
+
+  const handleFileReplaceDialog = (show: boolean) => {
+    setShowModal(show);
+    setShowFileReplaceDialog(show);
   }
 
   const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -298,9 +324,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     console.log('Read file: ', file);
 
     if (currentTrack) {
-      setShowFileReplaceDialog(true);
       setSelectedFile(file);
+      handleFileReplaceDialog(true);
     } else {
+      // setCurrentFile(file)
       await loadFile(file);
     }
   };
@@ -627,7 +654,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     : null}
                 </div>
                 : null}
-              {showModal ?
+              {/* Below are kept for now for development convenience */}
+              {/* {showModal ?
                 <Modal
                   setShow={setShowModal}
                   buttons={[
@@ -690,46 +718,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     Boo!
                   </p>
                 </Dialog>
-                : null}
-              {showFileReplaceDialog ?
-                <Modal
-                  setShow={setShowFileReplaceDialog}
-                  buttons={[
-                    {
-                      label: 'Replace',
-                      callback: () => {
-                        console.log('Replace')
-                        swapTracks();
-                        setShowFileReplaceDialog(false);
-                      }
-                    }, {
-                      label: 'Merge',
-                      callback: () => {
-                        console.log('Merge')
-                        loadTrack();
-                        setShowFileReplaceDialog(false);
-                      }
-                    }, {
-                      label: 'Cancel',
-                      callback: () => {
-                        console.log('Cancel')
-                        setShowFileReplaceDialog(false);
-                      }
-                    }
-                  ]}
-                  title={'Warning!'}
-                >
-                  <p>Tracks already exist.</p>
-                  <p>Please select from the following actions:</p>
-                </Modal>
-                : null}
+                : null} */}
             </Control>
-            <Control position="topleft">
+            {/* <Control position="topleft">
               <ControlItem type={'NonModal'} criteria={'NonModal'} cb={() => setShowNonModal(true)} />
             </Control>
             <Control position="topleft">
               <ControlItem type={'Modal'} criteria={'Modal'} cb={() => setShowModal(true)} />
-            </Control>
+            </Control> */}
             <Control position="topleft">
               <ControlHeaderExpand
                 isDisabled={isEditing || showModal}
@@ -788,6 +784,48 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   </div>
                 ]}
               />
+            </Control>
+            <Control position="bottomleft">
+              {/* <div className="leaflet-bar"></div> */}
+              {showFileReplaceDialog ?
+                <Modal
+                  setShow={handleFileReplaceDialog}
+                  buttons={[
+                    {
+                      label: 'Replace',
+                      callback: () => {
+                        console.log('Replace')
+                        // TODO: Handle case of re-selecting existing file after cancelling in this modal.
+                        // acceptCurrentFile(true);
+                        swapTracks();
+                        handleFileReplaceDialog(false);
+                      }
+                    }, {
+                      label: 'Merge',
+                      callback: () => {
+                        console.log('Merge')
+                        // TODO: Handle case of re-selecting existing file after cancelling in this modal.
+                        // TODO: Handle case of not reloading a prior loaded file. Maybe have a list of loaded names?
+                        // acceptCurrentFile(true);
+                        loadTrack();
+                        handleFileReplaceDialog(false);
+                      }
+                    }, {
+                      label: 'Cancel',
+                      callback: () => {
+                        console.log('Cancel')
+                        // TODO: Handle case of re-selecting existing file after cancelling here.
+                        // acceptCurrentFile(false);
+                        handleFileReplaceDialog(false);
+                      }
+                    }
+                  ]}
+                  title={'Warning!'}
+                >
+                  <p>Tracks already exist.</p>
+                  <p>Please select from the following actions:</p>
+                </Modal>
+                : null}
             </Control>
             {currentTrack ?
               <>
@@ -901,6 +939,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   : null}
               </Control>
               : null}
+
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
               <LayersControl {...layers} />
