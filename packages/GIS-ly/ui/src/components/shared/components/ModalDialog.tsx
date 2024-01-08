@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react';
 import './modal.css';
+import Dialog from './DialogOld';
 
 export type ModalDialogProps = {
   isOpen: boolean;
   children: any;
+  isModal?: boolean;
 }
 
-export default function ModalDialog({ isOpen, children }: ModalDialogProps) {
+export default function ModalDialog({ isOpen, children, isModal }: ModalDialogProps) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -20,10 +22,11 @@ export default function ModalDialog({ isOpen, children }: ModalDialogProps) {
     };
   }, [isOpen]);
 
+  const className = `modal ${(isModal && isOpen) ? ` display-block` : ` display-none`}`;
+
   return (
-    <dialog ref={ref}>
-      <section className="modal-main">
-        {children}
-      </section>
-    </dialog>);
+    <div className={className}>
+      <Dialog isOpen={isOpen} children={children} />
+    </div>
+  );
 }

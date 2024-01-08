@@ -1,0 +1,21 @@
+dialog[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dialog-main {}
+
+.dialog-message,
+.dialog-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.dialog-message {
+  flex-direction: column;
+}

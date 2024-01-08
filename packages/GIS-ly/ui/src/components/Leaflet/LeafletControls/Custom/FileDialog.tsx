@@ -12,9 +12,8 @@ export function FileDialog({ isOpen, cbYes, cbNo }: FileDialogProps) {
       isOpen={isOpen}
     >
       <div className="modal-dialog-message">
-        <p>Warning!</p>
-        <p>Loading a new Track will replace the existing Tracks.</p>
-        <p>Do you want to continue loading the new Track?</p>
+        <p>Warning! A track is already loaded!</p>
+        <p>For the selected Track, do you want to:</p>
       </div>
       <br />
       <div className="modal-dialog-buttons">
@@ -23,14 +22,21 @@ export function FileDialog({ isOpen, cbYes, cbNo }: FileDialogProps) {
             cbYes();
           }
         }}>
-          Yes
+          Add Track to Scene
         </button>
         <button onClick={() => {
           if (cbNo) {
             cbNo();
           }
         }}>
-          No
+          Replace Tracks in Scene
+        </button>
+        <button onClick={() => {
+          if (cbNo) {
+            cbNo();
+          }
+        }}>
+          Cancel
         </button>
       </div>
     </ModalDialog>

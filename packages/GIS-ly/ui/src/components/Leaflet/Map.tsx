@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, SetStateAction } from 'react';
 import {
   LatLngBoundsExpression,
   LatLngTuple,
@@ -50,6 +50,9 @@ import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
 import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComparisonControl';
 import { TrackStatsControl } from './LeafletControls/Custom/TrackStatsControl';
 import ModalDialog from '../shared/components/ModalDialog';
+import DialogOld from '../shared/components/DialogOld';
+import { ContactModal } from '../shared/components/ContactModal';
+import Dialog from '../shared/components/Dialog';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -84,6 +87,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [delayedHandler, setDelayedHandler] = useState<() => void>(null);
   const [showFileReplaceDialog, setShowFileReplaceDialog] = useState<boolean>(false);
   const [showElevationApiDialog, setShowElevationApiDialog] = useState<boolean>(false);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showNonModal, setShowNonModal] = useState<boolean>(false);
 
   useEffect(() => {
     console.log('Initializing map with config: ', config);
@@ -581,273 +587,339 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   return (
     layers ?
-      <div id="map-container">
-        <MapContainer
-          center={position.point}
-          zoom={position.zoom}
-          scrollWheelZoom={false}
-          style={{ width: '100%', height: '700px' }}
-        >
-          {layers.baseLayers[0].item}
-          <MiniMapControl
-            position={POSITION_CLASSES.bottomright}
-            zoom={Math.floor(position.zoom / 2)}
-            tileSourceUrl={config.miniMap.url}
-          />
-          <Control position="topleft" prepend>
-            {currentTrack ?
-              <div className="leaflet-bar top-center">
-                <div className="selected-track">
-                  {tracksValues.length > 1 ?
-                    <div className="selected-track-select">
-                      <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
-                      <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
-                        {
-                          tracksValues.map((track) =>
-                            <option value={track.time} key={track.time}>{track.name}</option>
-                          )
-                        }
-                      </select>
-                    </div>
-                    :
-                    <h2>Selected Track: {currentTrack.name}</h2>
-                  }
-                </div>
-                {(showComparisonStats && originalTrackStats) ?
-                  <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
-                  : null}
-              </div>
-              : null}
-            <ModalDialog
-              isOpen={showFileReplaceDialog}
-            >
-              <div className="modal-dialog-message">
-                <p>Warning!</p>
-                {/* <br /> */}
-                <p>Loading a new Track will replace the existing Tracks.</p>
-                {/* <br /> */}
-                <p>Do you want to continue loading the new Track?</p>
-              </div>
-              <br />
-              <div className="modal-dialog-buttons">
-                <button onClick={() => {
-                  if (delayedHandler) {
-                    console.log('CLIIIIIICK MEEEEEEEEE!!!!')
-                    delayedHandler();
-                  }
-                  setShowFileReplaceDialog(false);
-                }}>
-                  Yes
-                </button>
-                <button onClick={() => {
-                  console.log('I said NOOOOOOOOO!!!')
-                  setShowFileReplaceDialog(false);
-                }}>
-                  No
-                </button>
-              </div>
-            </ModalDialog>
-          </Control>
-          <Control position="topleft">
-            <ControlHeaderExpand
-              category="file"
-              isDisabled={isEditing}
-              children={[
-                <div key={'file open'} className="leaflet-bar item">
-                  <input type="file" onChange={handleFileSelection} />
-                </div>,
-                <ControlHeaderExpand
-                  key={'file save'}
-                  category="save selected..."
-                  childrenBeside={true}
-                  isDisabled={!currentTrack}
-                  children={[
-                    <ControlItem
-                      key={'save gpx'}
-                      type="save"
-                      criteria="gpx"
-                      cb={handleGPXSaveFile}
-                    />,
-                    <ControlItem
-                      key={'save kml'}
-                      type="save"
-                      criteria="kml"
-                      cb={handleKMLSaveFile}
-                    />
-                  ]}
-                />,
-              ]}
+      <>
+        <div id="map-container">
+          <MapContainer
+            center={position.point}
+            zoom={position.zoom}
+            scrollWheelZoom={false}
+            style={{ width: '100%', height: '700px' }}
+          >
+            {layers.baseLayers[0].item}
+            <MiniMapControl
+              position={POSITION_CLASSES.bottomright}
+              zoom={Math.floor(position.zoom / 2)}
+              tileSourceUrl={config.miniMap.url}
             />
-          </Control>
-          <Control position="topleft">
-            <ControlHeaderSwap
-              category="options"
-              children={[
-                <div key="animatePan">
-                  <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
-                  <label htmlFor="animatePan">Set View On Click</label>
-                </div>,
-                <div key="showPreview">
-                  <input type="checkbox" onChange={handleShowPreview} id="showPreview" checked={showPreview} />
-                  <label htmlFor="showPreview">Show Clean Previews</label>
-                </div>,
-                <div key="display" className="options-display">
-                  <hr />
-                  <h3>Display</h3>
-                  <div key="showComparisonStats">
-                    <input type="checkbox" onChange={handleShowComparisonStats} id="showComparisonStats" checked={showComparisonStats} />
-                    <label htmlFor="showComparisonStats">Show Comparison Stats</label>
+            <Control position="topleft" prepend>
+              {currentTrack ?
+                <div className="leaflet-bar top-center">
+                  <div className="selected-track">
+                    {tracksValues.length > 1 ?
+                      <div className="selected-track-select">
+                        <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
+                        <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                          {
+                            tracksValues.map((track) =>
+                              <option value={track.time} key={track.time}>{track.name}</option>
+                            )
+                          }
+                        </select>
+                      </div>
+                      :
+                      <h2>Selected Track: {currentTrack.name}</h2>
+                    }
                   </div>
-                  <div key="showTrackStats">
-                    <input type="checkbox" onChange={handleShowTrackStats} id="showTrackStats" checked={showTrackStats} />
-                    <label htmlFor="showTrackStats">Show Track Stats</label>
-                  </div>
+                  {(showComparisonStats && originalTrackStats) ?
+                    <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
+                    : null}
                 </div>
-              ]}
-            />
-          </Control>
-          {currentTrack ?
-            <>
-              <Control position="topleft">
-                <ControlHeaderExpand
-                  category="clean"
-                  isDisabled={isEditing}
-                  children={[
-                    <ControlHeaderExpand
-                      key={'trim'}
-                      category="trim"
-                      childrenBeside={true}
-                      children={[
-                        <ControlItem
-                          key={'trim cruft'}
-                          type="trim"
-                          criteria="cruft"
-                          cb={handleTrimCruft}
-                        />
-                      ]}
-                    />,
-                    <ControlHeaderExpand
-                      key={'smooth'}
-                      category="smooth"
-                      childrenBeside={true}
-                      children={[
-                        <ControlItem
-                          key={'smooth stopped'}
-                          type="smooth"
-                          criteria="stopped"
-                          cb={handleSmoothStationary}
-                        />,
-                        <ControlItem
-                          key={'smooth noise cloud'}
-                          type="smooth"
-                          criteria="noise cloud"
-                          cb={handleSmoothNoiseCloud}
-                        />,
-                        <ControlItem
-                          key={'smooth speed'}
-                          type="smooth"
-                          criteria="speed"
-                          cb={handleSmoothBySpeed}
-                        />,
-                        <ControlItem
-                          key={'smooth angular speed'}
-                          type="smooth"
-                          criteria="angular speed"
-                          cb={handleSmoothByAngularSpeed}
-                        />,
-                        <ControlItem
-                          key={'smooth elevation rate'}
-                          type="smooth"
-                          criteria="elevation rate"
-                          isDisabled={!hasElevations}
-                          cb={handleSmoothByElevation}
-                        />
-                      ]}
-                    />,
-                    <ControlHeaderExpand
-                      key={'split'}
-                      category="split"
-                      childrenBeside={true}
-                      children={[
-                        <ControlItem
-                          key={'split finish'}
-                          type="split"
-                          criteria="finish"
-                          cb={handleSplitOnStop}
-                        />
-                      ]}
-                    />
-                  ]}
-                />
-              </Control>
-              <Control position="topleft">
-                <ControlHeaderExpand
-                  key={'edit'}
-                  category="edit"
-                  childrenBeside={true}
-                  children={[]}
-                  // isDisabled={true}
-                  cb={handleOnEditClick}
-                />
-              </Control>
-              <Control position="topleft">
-                <ControlItem
-                  key={'history undo'}
-                  type="history"
-                  criteria="undo"
-                  isDisabled={!hasUndo}
-                  cb={handleUndo}
-                />
-                <ControlItem
-                  key={'history redo'}
-                  type="history"
-                  criteria="redo"
-                  isDisabled={!hasRedo}
-                  cb={handleRedo}
-                />
-              </Control>
-
-            </>
-            : null}
-
-          {(trackStats !== null) ?
-            <Control position="topright">
-              {showTrackStats ?
-                <TrackStatsControl stats={trackStats} />
                 : null}
+              <ModalDialog
+                isOpen={showFileReplaceDialog}
+              >
+                <div className="modal-dialog-message">
+                  <p>Warning!</p>
+                  {/* <br /> */}
+                  <p>Loading a new Track will replace the existing Tracks.</p>
+                  {/* <br /> */}
+                  <p>Do you want to continue loading the new Track?</p>
+                </div>
+                <br />
+                <div className="modal-dialog-buttons">
+                  <button onClick={() => {
+                    if (delayedHandler) {
+                      console.log('CLIIIIIICK MEEEEEEEEE!!!!')
+                      delayedHandler();
+                    }
+                    setShowFileReplaceDialog(false);
+                  }}>
+                    Yes
+                  </button>
+                  <button onClick={() => {
+                    console.log('I said NOOOOOOOOO!!!')
+                    setShowFileReplaceDialog(false);
+                  }}>
+                    No
+                  </button>
+                </div>
+              </ModalDialog>
+
+              {showModal && <ContactModal setShowModal={setShowModal} />}
+              {showNonModal ?
+                <Dialog
+                  setShowDialog={setShowNonModal}
+                  buttons={[
+                    {
+                      label: 'Yes',
+                      callback: () => {
+                        console.log('I said Yes!!!')
+                        setShowNonModal(true);
+                      }
+                    }, {
+                      label: 'No',
+                      callback: () => {
+                        console.log('I said NOOOOOOOOO!!!')
+                        setShowNonModal(false);
+                      }
+                    }
+                  ]}
+                  title={'Dialog'}
+                >
+                  <p>Warning!</p>
+                  <p>Loading a new Track will replace the existing Tracks.</p>
+                  <p>Do you want to continue loading the new Track?</p>
+                  <p>Scroll<br />
+                    ...<br />
+                    ...<br />
+                    ...<br />
+                    ...<br />
+                    Boo!
+                  </p>
+                </Dialog> : null}
+              <DialogOld
+                isOpen={showDialog}
+              >
+                <div className="dialog-message">
+                  Dialog
+                </div>
+                <div className="dialog-buttons">
+                  <button onClick={() => {
+                    console.log('I said Yes!!!')
+                    setShowDialog(false);
+                  }}>
+                    Yes
+                  </button>
+                  <button onClick={() => {
+                    console.log('I said NOOOOOOOOO!!!')
+                    setShowDialog(false);
+                  }}>
+                    No
+                  </button>
+                </div>
+              </DialogOld>
             </Control>
-            : null}
+            <Control position="topleft">
+              <ControlItem type={'Dialog'} criteria={'Dialog'} cb={() => setShowDialog(true)} />
+            </Control>
+            <Control position="topleft">
+              <ControlItem type={'NonModal'} criteria={'NonModal'} cb={() => setShowNonModal(true)} />
+            </Control>
+            <Control position="topleft">
+              <ControlItem type={'Modal'} criteria={'Modal'} cb={() => setShowModal(true)} />
+            </Control>
+            <Control position="topleft">
+              <ControlHeaderExpand
+                category="file"
+                isDisabled={isEditing}
+                children={[
+                  <div key={'file open'} className="leaflet-bar item">
+                    <input type="file" onChange={handleFileSelection} />
+                  </div>,
+                  <ControlHeaderExpand
+                    key={'file save'}
+                    category="save selected..."
+                    childrenBeside={true}
+                    isDisabled={!currentTrack}
+                    children={[
+                      <ControlItem
+                        key={'save gpx'}
+                        type="save"
+                        criteria="gpx"
+                        cb={handleGPXSaveFile}
+                      />,
+                      <ControlItem
+                        key={'save kml'}
+                        type="save"
+                        criteria="kml"
+                        cb={handleKMLSaveFile}
+                      />
+                    ]}
+                  />,
+                ]}
+              />
+            </Control>
+            <Control position="topleft">
+              <ControlHeaderSwap
+                category="options"
+                children={[
+                  <div key="animatePan">
+                    <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
+                    <label htmlFor="animatePan">Set View On Click</label>
+                  </div>,
+                  <div key="showPreview">
+                    <input type="checkbox" onChange={handleShowPreview} id="showPreview" checked={showPreview} />
+                    <label htmlFor="showPreview">Show Clean Previews</label>
+                  </div>,
+                  <div key="display" className="options-display">
+                    <hr />
+                    <h3>Display</h3>
+                    <div key="showComparisonStats">
+                      <input type="checkbox" onChange={handleShowComparisonStats} id="showComparisonStats" checked={showComparisonStats} />
+                      <label htmlFor="showComparisonStats">Show Comparison Stats</label>
+                    </div>
+                    <div key="showTrackStats">
+                      <input type="checkbox" onChange={handleShowTrackStats} id="showTrackStats" checked={showTrackStats} />
+                      <label htmlFor="showTrackStats">Show Track Stats</label>
+                    </div>
+                  </div>
+                ]}
+              />
+            </Control>
+            {currentTrack ?
+              <>
+                <Control position="topleft">
+                  <ControlHeaderExpand
+                    category="clean"
+                    isDisabled={isEditing}
+                    children={[
+                      <ControlHeaderExpand
+                        key={'trim'}
+                        category="trim"
+                        childrenBeside={true}
+                        children={[
+                          <ControlItem
+                            key={'trim cruft'}
+                            type="trim"
+                            criteria="cruft"
+                            cb={handleTrimCruft}
+                          />
+                        ]}
+                      />,
+                      <ControlHeaderExpand
+                        key={'smooth'}
+                        category="smooth"
+                        childrenBeside={true}
+                        children={[
+                          <ControlItem
+                            key={'smooth stopped'}
+                            type="smooth"
+                            criteria="stopped"
+                            cb={handleSmoothStationary}
+                          />,
+                          <ControlItem
+                            key={'smooth noise cloud'}
+                            type="smooth"
+                            criteria="noise cloud"
+                            cb={handleSmoothNoiseCloud}
+                          />,
+                          <ControlItem
+                            key={'smooth speed'}
+                            type="smooth"
+                            criteria="speed"
+                            cb={handleSmoothBySpeed}
+                          />,
+                          <ControlItem
+                            key={'smooth angular speed'}
+                            type="smooth"
+                            criteria="angular speed"
+                            cb={handleSmoothByAngularSpeed}
+                          />,
+                          <ControlItem
+                            key={'smooth elevation rate'}
+                            type="smooth"
+                            criteria="elevation rate"
+                            isDisabled={!hasElevations}
+                            cb={handleSmoothByElevation}
+                          />
+                        ]}
+                      />,
+                      <ControlHeaderExpand
+                        key={'split'}
+                        category="split"
+                        childrenBeside={true}
+                        children={[
+                          <ControlItem
+                            key={'split finish'}
+                            type="split"
+                            criteria="finish"
+                            cb={handleSplitOnStop}
+                          />
+                        ]}
+                      />
+                    ]}
+                  />
+                </Control>
+                <Control position="topleft">
+                  <ControlHeaderExpand
+                    key={'edit'}
+                    category="edit"
+                    childrenBeside={true}
+                    children={[]}
+                    // isDisabled={true}
+                    cb={handleOnEditClick}
+                  />
+                </Control>
+                <Control position="topleft">
+                  <ControlItem
+                    key={'history undo'}
+                    type="history"
+                    criteria="undo"
+                    isDisabled={!hasUndo}
+                    cb={handleUndo}
+                  />
+                  <ControlItem
+                    key={'history redo'}
+                    type="history"
+                    criteria="redo"
+                    isDisabled={!hasRedo}
+                    cb={handleRedo}
+                  />
+                </Control>
 
-          {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
-            <LayersControl {...layers} />
-            : null}
+              </>
+              : null}
 
-          {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
-          <SetViewOnClick animateRef={animateRef} />
-        </MapContainer>
+            {(trackStats !== null) ?
+              <Control position="topright">
+                {showTrackStats ?
+                  <TrackStatsControl stats={trackStats} />
+                  : null}
+              </Control>
+              : null}
 
-        {isEditing ? <div className="editing-label">Editing</div> : null}
+            {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
+              <LayersControl {...layers} />
+              : null}
 
-        <br />
-        <hr />
+            {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
+            <SetViewOnClick animateRef={animateRef} />
+          </MapContainer>
 
-        <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
-        {!currentTrack
-          ? <input type="button" disabled value="Get Cached Elevation Data" />
-          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
-        }
+          {isEditing ? <div className="editing-label">Editing</div> : null}
 
-        <br />
-        <hr />
+          <br />
+          <hr />
 
-        <div className="stats-container">
-          {config.trackCriteria ?
-            <TrackCriteria criteria={config.trackCriteria} /> : null
+          <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
+          {!currentTrack
+            ? <input type="button" disabled value="Get Cached Elevation Data" />
+            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
           }
-          {config.trackCriteriaNormalized ?
-            <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
-          }
-        </div>
-      </div > : null
+
+          <br />
+          <hr />
+
+          <div className="stats-container">
+            {config.trackCriteria ?
+              <TrackCriteria criteria={config.trackCriteria} /> : null
+            }
+            {config.trackCriteriaNormalized ?
+              <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
+            }
+          </div>
+        </div >
+      </>
+      : null
   )
 }
