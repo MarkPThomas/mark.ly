@@ -49,9 +49,7 @@ import { ControlItem } from './LeafletControls/Custom/ControlItem';
 import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
 import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComparisonControl';
 import { TrackStatsControl } from './LeafletControls/Custom/TrackStatsControl';
-import ModalDialog from '../shared/components/ModalDialog';
-import DialogOld from '../shared/components/DialogOld';
-import { ContactModal } from '../shared/components/ContactModal';
+import { Modal } from '../shared/components/Modal';
 import Dialog from '../shared/components/Dialog';
 
 export interface IInitialPosition {
@@ -87,7 +85,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [delayedHandler, setDelayedHandler] = useState<() => void>(null);
   const [showFileReplaceDialog, setShowFileReplaceDialog] = useState<boolean>(false);
   const [showElevationApiDialog, setShowElevationApiDialog] = useState<boolean>(false);
-  const [showDialog, setShowDialog] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showNonModal, setShowNonModal] = useState<boolean>(false);
 
@@ -625,40 +622,41 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     : null}
                 </div>
                 : null}
-              <ModalDialog
-                isOpen={showFileReplaceDialog}
-              >
-                <div className="modal-dialog-message">
-                  <p>Warning!</p>
-                  {/* <br /> */}
-                  <p>Loading a new Track will replace the existing Tracks.</p>
-                  {/* <br /> */}
-                  <p>Do you want to continue loading the new Track?</p>
-                </div>
-                <br />
-                <div className="modal-dialog-buttons">
-                  <button onClick={() => {
-                    if (delayedHandler) {
-                      console.log('CLIIIIIICK MEEEEEEEEE!!!!')
-                      delayedHandler();
+              {showModal ?
+                <Modal
+                  setShow={setShowModal}
+                  buttons={[
+                    {
+                      label: 'Yes',
+                      callback: () => {
+                        console.log('I said Yes!!!')
+                        setShowModal(true);
+                      }
+                    }, {
+                      label: 'No',
+                      callback: () => {
+                        console.log('I said NOOOOOOOOO!!!')
+                        setShowModal(false);
+                      }
                     }
-                    setShowFileReplaceDialog(false);
-                  }}>
-                    Yes
-                  </button>
-                  <button onClick={() => {
-                    console.log('I said NOOOOOOOOO!!!')
-                    setShowFileReplaceDialog(false);
-                  }}>
-                    No
-                  </button>
-                </div>
-              </ModalDialog>
-
-              {showModal && <ContactModal setShowModal={setShowModal} />}
+                  ]}
+                  title={'Dialog'}
+                >
+                  <p>Warning!</p>
+                  <p>Loading a new Track will replace the existing Tracks.</p>
+                  <p>Do you want to continue loading the new Track?</p>
+                  <p>Scroll<br />
+                    ...<br />
+                    ...<br />
+                    ...<br />
+                    ...<br />
+                    Boo!
+                  </p>
+                </Modal>
+                : null}
               {showNonModal ?
                 <Dialog
-                  setShowDialog={setShowNonModal}
+                  setShow={setShowNonModal}
                   buttons={[
                     {
                       label: 'Yes',
@@ -686,31 +684,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     ...<br />
                     Boo!
                   </p>
-                </Dialog> : null}
-              <DialogOld
-                isOpen={showDialog}
-              >
-                <div className="dialog-message">
-                  Dialog
-                </div>
-                <div className="dialog-buttons">
-                  <button onClick={() => {
-                    console.log('I said Yes!!!')
-                    setShowDialog(false);
-                  }}>
-                    Yes
-                  </button>
-                  <button onClick={() => {
-                    console.log('I said NOOOOOOOOO!!!')
-                    setShowDialog(false);
-                  }}>
-                    No
-                  </button>
-                </div>
-              </DialogOld>
-            </Control>
-            <Control position="topleft">
-              <ControlItem type={'Dialog'} criteria={'Dialog'} cb={() => setShowDialog(true)} />
+                </Dialog>
+                : null}
             </Control>
             <Control position="topleft">
               <ControlItem type={'NonModal'} criteria={'NonModal'} cb={() => setShowNonModal(true)} />
@@ -720,8 +695,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </Control>
             <Control position="topleft">
               <ControlHeaderExpand
+                isDisabled={isEditing || showModal}
                 category="file"
-                isDisabled={isEditing}
                 children={[
                   <div key={'file open'} className="leaflet-bar item">
                     <input type="file" onChange={handleFileSelection} />
@@ -751,6 +726,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </Control>
             <Control position="topleft">
               <ControlHeaderSwap
+                isDisabled={showModal}
                 category="options"
                 children={[
                   <div key="animatePan">
@@ -781,7 +757,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 <Control position="topleft">
                   <ControlHeaderExpand
                     category="clean"
-                    isDisabled={isEditing}
+                    isDisabled={isEditing || showModal}
                     children={[
                       <ControlHeaderExpand
                         key={'trim'}
@@ -856,6 +832,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     category="edit"
                     childrenBeside={true}
                     children={[]}
+                    isDisabled={showModal}
                     // isDisabled={true}
                     cb={handleOnEditClick}
                   />
@@ -865,14 +842,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     key={'history undo'}
                     type="history"
                     criteria="undo"
-                    isDisabled={!hasUndo}
+                    isDisabled={!hasUndo || showModal}
                     cb={handleUndo}
                   />
                   <ControlItem
                     key={'history redo'}
                     type="history"
                     criteria="redo"
-                    isDisabled={!hasRedo}
+                    isDisabled={!hasRedo || showModal}
                     cb={handleRedo}
                   />
                 </Control>

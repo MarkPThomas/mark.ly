@@ -20,7 +20,14 @@ const Dialog = styled.div`
   z-index: 1;
 `;
 
-const DialogMain = styled.section`
+const DialogMain = styled.div`
+  // Main section styles
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 `;
 
 const DialogTitle = styled.h2`
@@ -32,6 +39,14 @@ const DialogTitle = styled.h2`
   text-align: center;
 `;
 
+const Icon = styled.img`
+  // Icon styles
+`;
+
+const Text = styled.div`
+  // Text styles
+`;
+
 const FlowControl = styled.div`
   max-width: 25rem;
   max-height: 18rem;
@@ -39,24 +54,19 @@ const FlowControl = styled.div`
   overflow-x: hidden;
 `;
 
-const DialogChildren = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+const DialogChildren = styled(DialogMain)`
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
 `;
 
-const DialogButtons = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+const DialogButtons = styled(DialogMain)`
+  flex-direction: row;
 `;
 
-const CancelButton = styled.button`
+const Button = styled.button`
+  // Button styles
+`;
+
+const CancelButton = styled(Button)`
   // Cancel button styles
 `;
 
@@ -79,11 +89,11 @@ type DialogButtonProps = {
 
 type DialogButtonsProps = DialogButtonProps[];
 
-type DialogProps = {
+export type DialogProps = {
   buttons?: DialogButtonsProps;
   children?: ReactNode;
   hasCancelButton?: boolean;
-  setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
   title?: string;
 };
 
@@ -93,7 +103,7 @@ export default ({
   buttons,
   children,
   hasCancelButton,
-  setShowDialog,
+  setShow,
   title
 }: DialogProps) => {
   return (
@@ -108,21 +118,21 @@ export default ({
         <br />
         <DialogButtons>
           {buttons ? buttons.map((button) =>
-            <button
+            <Button
               key={`button-${buttonKey++}`}
               onClick={button.callback}
             >
               {button.label}
-            </button>
+            </Button>
           ) : null}
           {hasCancelButton ?
-            <CancelButton onClick={() => setShowDialog(false)} >
+            <CancelButton onClick={() => setShow(false)} >
               Cancel
             </CancelButton>
             : null}
         </DialogButtons>
         {!hasCancelButton ?
-          <CloseButton onClick={() => setShowDialog(false)}>
+          <CloseButton onClick={() => setShow(false)}>
             x
           </CloseButton>
           : null}
