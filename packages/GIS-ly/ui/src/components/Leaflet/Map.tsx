@@ -49,6 +49,7 @@ import { ControlItem } from './LeafletControls/Custom/ControlItem';
 import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
 import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComparisonControl';
 import { TrackStatsControl } from './LeafletControls/Custom/TrackStatsControl';
+import ModalDialog from '../shared/components/ModalDialog';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -79,6 +80,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [showPreview, setShowPreview] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
+
+  const [delayedHandler, setDelayedHandler] = useState<() => void>(null);
+  const [showFileReplaceDialog, setShowFileReplaceDialog] = useState<boolean>(false);
+  const [showElevationApiDialog, setShowElevationApiDialog] = useState<boolean>(false);
 
   useEffect(() => {
     console.log('Initializing map with config: ', config);
@@ -278,6 +283,27 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const file = e.target.files[0];
     console.log('Read file: ', file);
 
+    const loadTrack = async () => {
+      await loadFile(file);
+    }
+
+
+    console.log('handleFileSelection->Current Track: ', currentTrack);
+    if (currentTrack) {
+      console.log('Loading dialog!')
+      // handler is invoked here....
+      setDelayedHandler(loadTrack);
+      // it is then not null but not callable as a function
+      console.log('Showing dialog!')
+      setShowFileReplaceDialog(true);
+    } else {
+      console.log('Loading track!')
+      await loadTrack();
+    }
+  };
+
+  const loadFile = async (file: File) => {
+    console.log('loading file!');
     toGeoJson(file, [
       // Save converted geojson to hook state
       // SetLayer
@@ -306,7 +332,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           setOriginalTrackStats(trackStats);
         }
       }]);
-  };
+  }
+
 
   const handleGPXSaveFile = () => {
     toGpxFile(currentTrack.toJson());
@@ -481,6 +508,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSmoothByElevation = () => {
     console.log('handleSmoothByElevation')
     if (currentTrack) {
+      // if (missingElevations) {
+      //   setShowElevationApiDialog(true);
+      // }
       handleCmd(() => {
         const manager = new ElevationSpeedSmoother(currentTrack);
 
@@ -588,6 +618,35 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   : null}
               </div>
               : null}
+            <ModalDialog
+              isOpen={showFileReplaceDialog}
+            >
+              <div className="modal-dialog-message">
+                <p>Warning!</p>
+                {/* <br /> */}
+                <p>Loading a new Track will replace the existing Tracks.</p>
+                {/* <br /> */}
+                <p>Do you want to continue loading the new Track?</p>
+              </div>
+              <br />
+              <div className="modal-dialog-buttons">
+                <button onClick={() => {
+                  if (delayedHandler) {
+                    console.log('CLIIIIIICK MEEEEEEEEE!!!!')
+                    delayedHandler();
+                  }
+                  setShowFileReplaceDialog(false);
+                }}>
+                  Yes
+                </button>
+                <button onClick={() => {
+                  console.log('I said NOOOOOOOOO!!!')
+                  setShowFileReplaceDialog(false);
+                }}>
+                  No
+                </button>
+              </div>
+            </ModalDialog>
           </Control>
           <Control position="topleft">
             <ControlHeaderExpand
