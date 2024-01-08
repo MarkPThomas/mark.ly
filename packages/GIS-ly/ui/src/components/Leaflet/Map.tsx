@@ -319,6 +319,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     setShowFileReplaceDialog(show);
   }
 
+  const handleElevationApiDialog = (show: boolean) => {
+    setShowModal(show);
+    setShowElevationApiDialog(show);
+  }
+
   const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files[0];
     console.log('Read file: ', file);
@@ -521,48 +526,53 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
-  const handleGetCachedElevation = () => {
+  const handleGetCachedElevation = async () => {
     if (currentTrack) {
-      handleCmd(() => {
-        const cachedDataMap = {};
+      // handleCmd(() => {
+      const cachedDataMap = {};
 
-        cachedData.forEach((apiCall) => {
-          apiCall.results.forEach((response) => {
-            cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
-          });
+      cachedData.forEach((apiCall) => {
+        apiCall.results.forEach((response) => {
+          cachedDataMap[`${response.location.lat},${response.location.lng}`] = response.elevation;
         });
-
-        currentTrack.addElevations(cachedDataMap);
-
-        updateFromTrack(currentTrack);
-        setHasElevations(true);
       });
+
+      currentTrack.addElevations(cachedDataMap);
+
+      updateFromTrack(currentTrack);
+      setHasElevations(true);
+      // });
     }
   }
 
   const handleSmoothByElevation = () => {
     console.log('handleSmoothByElevation')
     if (currentTrack) {
-      // if (missingElevations) {
-      //   setShowElevationApiDialog(true);
-      // }
-      handleCmd(() => {
-        const manager = new ElevationSpeedSmoother(currentTrack);
-
-        //0.254 meters/second = 3000 ft / hr
-        // const ascentSpeedLimitMPS = 0.254;
-        // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
-        const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
-        console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
-        const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
-        console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
-
-        let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
-        console.log('numberNodesRemoved: ', numberNodesRemoved);
-
-        updateFromTrack(currentTrack);
-      });
+      if (!hasElevations) {
+        setShowElevationApiDialog(true);
+      } else {
+        handleSmoothByElevationWithElevations();
+      }
     }
+  }
+
+  const handleSmoothByElevationWithElevations = () => {
+    handleCmd(() => {
+      const manager = new ElevationSpeedSmoother(currentTrack);
+
+      //0.254 meters/second = 3000 ft / hr
+      // const ascentSpeedLimitMPS = 0.254;
+      // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
+      const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
+      console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
+      const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
+      console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
+
+      let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
+      console.log('numberNodesRemoved: ', numberNodesRemoved);
+
+      updateFromTrack(currentTrack);
+    });
   }
 
   const handleCmd = (command: () => void) => {
@@ -786,7 +796,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               />
             </Control>
             <Control position="bottomleft">
-              {/* <div className="leaflet-bar"></div> */}
               {showFileReplaceDialog ?
                 <Modal
                   setShow={handleFileReplaceDialog}
@@ -824,6 +833,37 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 >
                   <p>Tracks already exist.</p>
                   <p>Please select from the following actions:</p>
+                </Modal>
+                : null}
+
+              {showElevationApiDialog ?
+                <Modal
+                  setShow={handleElevationApiDialog}
+                  buttons={[{
+                    label: 'Fetch from API',
+                    callback: async () => {
+                      await handleGetCachedElevation();
+                      // await handleGetApiElevation(); // TODO: Activate this & remove cached elevations method once API fixed
+                      handleSmoothByElevationWithElevations();
+                      handleElevationApiDialog(false);
+                    }
+                  }, {
+                    label: 'Use existing',
+                    callback: async () => {
+                      handleSmoothByElevationWithElevations();
+                      handleElevationApiDialog(false);
+                    }
+                  }, {
+                    label: 'Cancel',
+                    callback: () => {
+                      handleElevationApiDialog(false);
+                    }
+                  }
+                  ]}
+                  title={'Elevations'}
+                >
+                  <p>Some Track Points are missing terrain elevations. <br />
+                    Stats may be off if using incomplete or GPS-recorded altitudes.</p>
                 </Modal>
                 : null}
             </Control>
@@ -880,7 +920,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                             key={'smooth elevation rate'}
                             type="smooth"
                             criteria="elevation rate"
-                            isDisabled={!hasElevations}
+                            // isDisabled={!hasElevations}
                             cb={handleSmoothByElevation}
                           />
                         ]}
