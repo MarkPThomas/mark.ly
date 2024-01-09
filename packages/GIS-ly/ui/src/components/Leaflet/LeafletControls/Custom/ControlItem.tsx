@@ -5,15 +5,22 @@ export type ControlItemProps = {
   criteria: string;
   cb: () => void;
   isDisabled?: boolean;
+  title?: string;
 }
 
-export function ControlItem({ cb, criteria: label, type, isDisabled }: ControlItemProps) {
+export function ControlItem({
+  cb,
+  criteria,
+  type,
+  isDisabled,
+  title
+}: ControlItemProps) {
   const className = `item-control
     ${isDisabled ? ` disabled` : ''}`;
 
   const typeUpperFirst = toUpperFirstLetter(type);
-  const criteriaUppers = toUpperFirstLetterOfEach(label);
-  const title = `${typeUpperFirst} by ${criteriaUppers}`;
+  const criteriaUppers = toUpperFirstLetterOfEach(criteria);
+  const localTitle = `${typeUpperFirst} by ${criteriaUppers}`;
 
   const handleClick = () => {
     if (!isDisabled && cb) {
@@ -25,8 +32,8 @@ export function ControlItem({ cb, criteria: label, type, isDisabled }: ControlIt
     <div className="leaflet-bar item">
       <a className={className}
         href="#"
-        title={title}
-        aria-label={title}
+        title={title ?? localTitle}
+        aria-label={title ?? localTitle}
         aria-disabled="false"
         role="button"
         onClick={handleClick}
