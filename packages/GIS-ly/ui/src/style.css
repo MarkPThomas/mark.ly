@@ -107,7 +107,12 @@ table,
 th,
 td {
   border: 1px solid black;
-  border-collapse: collapse
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+table {
+  margin-bottom: 5px;
 }
 
 .stats-container {
@@ -207,17 +212,23 @@ dialog[open] {
   flex-direction: column;
 }
 
-.polyline-comparison {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  background-color: rgb(134, 251, 255, 0.7);
-}
-
 .leaflet-bar.top-center h2 {
   margin: 0;
   padding-left: 5px;
   padding-right: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#polyline-table-comparison {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .options-display h3 {
@@ -241,6 +252,8 @@ dialog[open] {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .stats-control h2 {

@@ -1,4 +1,17 @@
+import styled from "styled-components";
+
 import { IEditedPolylineStats, PolylineStatsComparison } from "../../Custom/Stats/Paths/PolylineStatsComparison";
+import { ToggleGroup } from "../../Custom/ToggleGroup";
+
+const Group = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: rgb(134, 251, 255, 0.7);
+`;
 
 export type PolylineComparisonControlProps = {
   statsInitial: IEditedPolylineStats,
@@ -7,10 +20,18 @@ export type PolylineComparisonControlProps = {
 
 export function PolylineComparisonControl({ statsInitial, statsCurrent }: PolylineComparisonControlProps) {
   return (
-    <div className="polyline-comparison">
-      <h2>Polyline Comparison Stats</h2>
-      <PolylineStatsComparison statsInitial={statsInitial} statsCurrent={statsCurrent} />
-    </div>
+    <Group>
+      <ToggleGroup
+        value={'Polyline Comparison Stats'}
+        level={1}
+        isToggled={true}
+        id={'polyline-table-comparison'}
+        children={[
+          <hr key={Date() + '1'} />,
+          <PolylineStatsComparison key={Date() + '2'} statsInitial={statsInitial} statsCurrent={statsCurrent} />
+        ]}
+      />
+    </Group>
 
   )
 }

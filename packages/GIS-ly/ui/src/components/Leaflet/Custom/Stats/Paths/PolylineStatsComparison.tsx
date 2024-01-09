@@ -15,23 +15,23 @@ export function PolylineStatsComparison({ statsInitial, statsCurrent }: Polyline
     <table className="track-comparison">
       <thead>
         <tr>
-          <th>Track</th>
-          <th>Points</th>
-          <th>Segments</th>
+          <th align="center">Track</th>
+          <th align="center">Points</th>
+          <th align="center">Segments</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Initial</td>
-          <td>{statsInitial.size.vertices}</td>
-          <td>{statsInitial.size.segments}</td>
+          <td align="left">Initial</td>
+          <td align="right">{statsInitial.size.vertices}</td>
+          <td align="right">{statsInitial.size.segments}</td>
         </tr>
         {
           statsCurrent ?
             <tr>
-              <td>Current</td>
-              <td>{statsCurrent.size.vertices}</td>
-              <td>{statsCurrent.size.segments}</td>
+              <td align="left">Current</td>
+              <td align="right">{statsCurrent.size.vertices}</td>
+              <td align="right">{statsCurrent.size.segments}</td>
             </tr>
             : null
         }
