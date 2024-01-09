@@ -738,7 +738,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </Control> */}
             <Control position="topleft">
               <ControlHeaderExpand
-                isDisabled={isEditing || showModal}
+                isDisabled={isEditing}
                 category="file"
                 children={[
                   <div key={'file open'} className="leaflet-bar item">
@@ -754,12 +754,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                         key={'save gpx'}
                         type="save"
                         criteria="gpx"
+                        title="Save selected Track to GPX file"
                         cb={handleGPXSaveFile}
                       />,
                       <ControlItem
                         key={'save kml'}
                         type="save"
                         criteria="kml"
+                        title="Save selected Track to KML file"
                         cb={handleKMLSaveFile}
                       />
                     ]}
@@ -769,7 +771,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </Control>
             <Control position="topleft">
               <ControlHeaderSwap
-                isDisabled={showModal}
                 category="options"
                 children={[
                   <div key="animatePan">
@@ -872,7 +873,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 <Control position="topleft">
                   <ControlHeaderExpand
                     category="clean"
-                    isDisabled={isEditing || showModal}
+                    isDisabled={isEditing}
                     children={[
                       <ControlHeaderExpand
                         key={'trim'}
@@ -931,9 +932,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                         childrenBeside={true}
                         children={[
                           <ControlItem
-                            key={'split finish'}
+                            key={'split different movements'}
                             type="split"
-                            criteria="finish"
+                            criteria="different movements"
                             cb={handleSplitOnStop}
                           />
                         ]}
@@ -957,14 +958,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     key={'history undo'}
                     type="history"
                     criteria="undo"
-                    isDisabled={!hasUndo || showModal}
+                    title="Undo"
+                    isDisabled={!hasUndo}
                     cb={handleUndo}
                   />
                   <ControlItem
                     key={'history redo'}
                     type="history"
                     criteria="redo"
-                    isDisabled={!hasRedo || showModal}
+                    title="Redo"
+                    isDisabled={!hasRedo}
                     cb={handleRedo}
                   />
                 </Control>
