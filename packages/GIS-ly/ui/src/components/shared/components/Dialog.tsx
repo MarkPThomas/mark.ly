@@ -21,7 +21,6 @@ const Dialog = styled.div`
 `;
 
 const DialogMain = styled.div`
-  // Main section styles
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
