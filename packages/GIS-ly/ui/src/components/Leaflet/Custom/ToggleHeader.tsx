@@ -1,10 +1,10 @@
 import { ToggleButton } from "./ToggleButton";
 
 export type ToggleHeaderProps = {
-  value: string
-  level?: number
-  isToggled?: boolean,
-  isEnabled?: boolean,
+  value: string;
+  level?: number;
+  isToggled?: boolean;
+  isEnabled?: boolean;
   cb?: () => void;
 };
 

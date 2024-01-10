@@ -2,28 +2,34 @@ import { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../common/utils/stringFormatting";
 import { ControlItem } from "./ControlItem";
+import React from "react";
 
 export type ControlHeaderExpandProps = {
-  isToggled?: boolean;
-  isDisabled?: boolean;
-  forceClosedIfToggled?: boolean;
   category: string;
-  children: React.ReactNode[];
-  childrenBeside?: boolean;
-  childrenAlignedBeside?: boolean;
-  forceClosed?: boolean;
   cb?: () => void;
+  children: React.ReactNode[];
+  childrenAlignedBeside?: boolean;
+  childrenBeside?: boolean;
+  forceClosed?: boolean;
+  forceClosedIfToggled?: boolean;
+  iconSvg?: React.ReactNode;
+  isDisabled?: boolean;
+  isToggled?: boolean;
+  showLabelWithIcon?: boolean;
 }
 
 export function ControlHeaderExpand({
-  isToggled,
-  isDisabled,
   category,
+  cb,
   children,
-  childrenBeside,
   childrenAlignedBeside,
-  cb
+  childrenBeside,
+  iconSvg,
+  isDisabled,
+  isToggled,
+  showLabelWithIcon
 }: ControlHeaderExpandProps) {
+  const [hover, setHover] = useState<boolean>(false);
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>((isToggled && !isDisabled) ? true : false);
 
   const setToggle = () => {
@@ -55,7 +61,14 @@ export function ControlHeaderExpand({
           role="button"
           onClick={setToggle}
         >
-          <span aria-hidden="true">{categoryUpperFirst}</span>
+          {(showLabelWithIcon && iconSvg) ?
+            <span aria-hidden="true" className="icon-label">
+              {iconSvg}
+              {categoryUpperFirst}
+            </span>
+            :
+            iconSvg ?? <span aria-hidden="true">{categoryUpperFirst}</span>
+          }
         </a>
         {(currentlyToggled && !isDisabled) ?
           <div className={classNameChildren}>

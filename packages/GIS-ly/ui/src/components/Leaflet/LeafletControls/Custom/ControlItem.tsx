@@ -1,19 +1,23 @@
 import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../../common/utils/stringFormatting";
 
 export type ControlItemProps = {
-  type: string;
-  criteria: string;
   cb: () => void;
+  criteria: string;
+  iconSvg?: React.ReactNode;
   isDisabled?: boolean;
+  showLabelWithIcon?: boolean;
   title?: string;
+  type: string;
 }
 
 export function ControlItem({
   cb,
   criteria,
-  type,
+  iconSvg,
   isDisabled,
-  title
+  showLabelWithIcon,
+  title,
+  type,
 }: ControlItemProps) {
   const className = `item-control
     ${isDisabled ? ` disabled` : ''}`;
@@ -38,7 +42,11 @@ export function ControlItem({
         role="button"
         onClick={handleClick}
       >
-        <span aria-hidden="true">{criteriaUppers}</span>
+        {(showLabelWithIcon && iconSvg) ?
+          <span aria-hidden="true" className="icon-label">{iconSvg}{criteriaUppers}</span>
+          :
+          iconSvg ?? <span aria-hidden="true">{criteriaUppers}</span>
+        }
       </a>
     </div>
   );

@@ -51,6 +51,12 @@ import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComp
 import { TrackStatsControl } from './LeafletControls/Custom/TrackStatsControl';
 import { Modal } from '../shared/components/Modal';
 import Dialog from '../shared/components/Dialog';
+import { FileIcon } from '../shared/components/Icons/FileIcon';
+import { OptionsIcon } from '../shared/components/Icons/OptionsIcon';
+import { UndoRedoIcon } from '../shared/components/Icons/UndoRedoIcon';
+import { EditIcon } from '../shared/components/Icons/EditIcon';
+import { CleanIcon } from '../shared/components/Icons/CleanIcon';
+import { SaveIcon } from '../shared/components/Icons/SaveIcon';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -740,6 +746,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               <ControlHeaderExpand
                 isDisabled={isEditing}
                 category="file"
+                iconSvg={
+                  <FileIcon isDisabled={isEditing} />
+                }
                 children={[
                   <div key={'file open'} className="leaflet-bar item">
                     <input type="file" onChange={handleFileSelection} />
@@ -749,6 +758,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     category="save selected..."
                     childrenBeside={true}
                     isDisabled={!currentTrack}
+                    iconSvg={<SaveIcon isDisabled={!currentTrack} />}
+                    showLabelWithIcon={true}
                     children={[
                       <ControlItem
                         key={'save gpx'}
@@ -772,6 +783,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             <Control position="topleft">
               <ControlHeaderSwap
                 category="options"
+                iconSvg={
+                  <OptionsIcon height="24px" />
+                }
                 children={[
                   <div key="animatePan">
                     <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
@@ -874,6 +888,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   <ControlHeaderExpand
                     category="clean"
                     isDisabled={isEditing}
+                    iconSvg={
+                      <CleanIcon isDisabled={isEditing} />
+                    }
                     children={[
                       <ControlHeaderExpand
                         key={'trim'}
@@ -951,6 +968,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     isDisabled={showModal}
                     // isDisabled={true}
                     cb={handleOnEditClick}
+                    iconSvg={
+                      <EditIcon isDisabled={showModal} />
+                    }
                   />
                 </Control>
                 <Control position="topleft">
@@ -961,6 +981,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     title="Undo"
                     isDisabled={!hasUndo}
                     cb={handleUndo}
+                    iconSvg={
+                      <UndoRedoIcon isDisabled={!hasUndo} />
+                    }
                   />
                   <ControlItem
                     key={'history redo'}
@@ -969,6 +992,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     title="Redo"
                     isDisabled={!hasRedo}
                     cb={handleRedo}
+                    iconSvg={
+                      <UndoRedoIcon redo={true} isDisabled={!hasRedo} />
+                    }
                   />
                 </Control>
 
