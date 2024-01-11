@@ -23,10 +23,9 @@ export function PolylineComparisonControl({ statsInitial, statsCurrent }: Polyli
     <Group>
       <ToggleGroup
         value={'Polyline Comparison Stats'}
-        level={1}
+        level={2}
         id={'polyline-table-comparison'}
         children={[
-          <hr key={Date() + '1'} />,
           <PolylineStatsComparison key={Date() + '2'} statsInitial={statsInitial} statsCurrent={statsCurrent} />
         ]}
       />

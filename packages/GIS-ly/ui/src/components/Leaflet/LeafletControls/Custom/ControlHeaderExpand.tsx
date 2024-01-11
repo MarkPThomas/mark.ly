@@ -16,6 +16,7 @@ export type ControlHeaderExpandProps = {
   isDisabled?: boolean;
   isToggled?: boolean;
   showLabelWithIcon?: boolean;
+  title?: string;
 }
 
 export function ControlHeaderExpand({
@@ -27,7 +28,8 @@ export function ControlHeaderExpand({
   iconSvg,
   isDisabled,
   isToggled,
-  showLabelWithIcon
+  showLabelWithIcon,
+  title
 }: ControlHeaderExpandProps) {
   const [hover, setHover] = useState<boolean>(false);
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>((isToggled && !isDisabled) ? true : false);
@@ -42,7 +44,7 @@ export function ControlHeaderExpand({
   }
 
   const categoryUpperFirst = toUpperFirstLetter(category);
-  const title = `${categoryUpperFirst} Operations`;
+  const localTitle = `${categoryUpperFirst} Operations`;
 
   const classNameBar = `leaflet-bar header ${childrenBeside ? `child-col-beside` : ''}`;
   const classNameLink = `header-control
@@ -55,8 +57,8 @@ export function ControlHeaderExpand({
       <div className={classNameBar}>
         <a className={classNameLink}
           href="#"
-          title={title}
-          aria-label={title}
+          title={title ?? localTitle}
+          aria-label={title ?? localTitle}
           aria-disabled="false"
           role="button"
           onClick={setToggle}

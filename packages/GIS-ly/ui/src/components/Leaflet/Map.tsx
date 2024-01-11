@@ -57,6 +57,9 @@ import { UndoRedoIcon } from '../shared/components/Icons/UndoRedoIcon';
 import { EditIcon } from '../shared/components/Icons/EditIcon';
 import { CleanIcon } from '../shared/components/Icons/CleanIcon';
 import { SaveIcon } from '../shared/components/Icons/SaveIcon';
+import { GraphIcon } from '../shared/components/Icons/GraphIcon';
+import { StatsIcon } from '../shared/components/Icons/StatsIcon';
+import { EditingControl } from './LeafletControls/Custom/EditingControl';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -87,6 +90,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [showPreview, setShowPreview] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
+  const [showGraph, setShowGraph] = useState<boolean>(false);
 
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [currentFile, setCurrentFile] = useState<File>(null);
@@ -138,6 +142,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const handleOnEditClick = () => {
     setIsEditing(!isEditing)
+  }
+
+  const handleGraphClick = () => {
+    setShowGraph(!showGraph);
   }
 
   // TODO: Work out how this update should work when underlying geoJson is automatically updated
@@ -633,7 +641,31 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   return (
     layers ?
       <>
+        Testing something out
         <div id="map-container">
+          {currentTrack ?
+            <div className="top-center control">
+              <div className="selected-track">
+                {tracksValues.length > 1 ?
+                  <div className="selected-track-select">
+                    <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
+                    <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                      {
+                        tracksValues.map((track) =>
+                          <option value={track.time} key={track.time}>{track.name}</option>
+                        )
+                      }
+                    </select>
+                  </div>
+                  :
+                  <h2>Selected Track: {currentTrack.name}</h2>
+                }
+              </div>
+              {(showComparisonStats && originalTrackStats) ?
+                <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
+                : null}
+            </div>
+            : null}
           <MapContainer
             center={position.point}
             zoom={position.zoom}
@@ -647,7 +679,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               tileSourceUrl={config.miniMap.url}
             />
             <Control position="topleft" prepend>
-              {currentTrack ?
+              {/* {currentTrack ?
                 <div className="leaflet-bar top-center">
                   <div className="selected-track">
                     {tracksValues.length > 1 ?
@@ -669,7 +701,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
                     : null}
                 </div>
-                : null}
+                : null} */}
               {/* Below are kept for now for development convenience */}
               {/* {showModal ?
                 <Modal
@@ -997,17 +1029,53 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     }
                   />
                 </Control>
-
+                <Control position="bottomright" prepend>
+                  <ControlHeaderExpand
+                    key={'graph'}
+                    category="graph"
+                    title="Show Graph"
+                    children={[]}
+                    isDisabled={showModal}
+                    // isDisabled={true}
+                    cb={handleGraphClick}
+                    iconSvg={
+                      <GraphIcon isDisabled={showModal} />
+                    }
+                  />
+                </Control>
               </>
               : null}
 
             {(trackStats !== null) ?
-              <Control position="topright">
-                {showTrackStats ?
-                  <TrackStatsControl stats={trackStats} />
-                  : null}
-              </Control>
+              <>
+                <Control position="topright">
+                  {showTrackStats ?
+                    <TrackStatsControl stats={trackStats} />
+                    : null}
+                </Control>
+
+                <Control position="topright">
+                  <ControlHeaderExpand
+                    key={'stats'}
+                    category="stats"
+                    title="Show stats"
+                    children={[]}
+                    isDisabled={showModal}
+                    // isDisabled={true}
+                    cb={handleGraphClick}
+                    iconSvg={
+                      <StatsIcon isDisabled={showModal} />
+                    }
+                  />
+                </Control>
+              </>
               : null}
+
+            {/* {isEditing ?
+              <Control position="bottomleft">
+                <EditingControl />
+              </Control>
+              : null} */}
 
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
@@ -1017,30 +1085,37 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
             <SetViewOnClick animateRef={animateRef} />
           </MapContainer>
-
-          {isEditing ? <div className="editing-label">Editing</div> : null}
-
-          <br />
-          <hr />
-
-          <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
-          {!currentTrack
-            ? <input type="button" disabled value="Get Cached Elevation Data" />
-            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
-          }
-
-          <br />
-          <hr />
-
-          <div className="stats-container">
-            {config.trackCriteria ?
-              <TrackCriteria criteria={config.trackCriteria} /> : null
-            }
-            {config.trackCriteriaNormalized ?
-              <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
-            }
-          </div>
+          {showGraph ?
+            <div className="graph">
+              Track Graph to be added in next version
+            </div>
+            : null}
+          {isEditing ?
+            <div className="bottom-center control">
+              <div className="editing-label">Editing</div>
+            </div>
+            : null}
         </div >
+        <br />
+        <hr />
+
+        <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
+        {!currentTrack
+          ? <input type="button" disabled value="Get Cached Elevation Data" />
+          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        }
+
+        <br />
+        <hr />
+
+        <div className="stats-container">
+          {config.trackCriteria ?
+            <TrackCriteria criteria={config.trackCriteria} /> : null
+          }
+          {config.trackCriteriaNormalized ?
+            <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
+          }
+        </div>
       </>
       : null
   )
