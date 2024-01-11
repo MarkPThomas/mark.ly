@@ -94,8 +94,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [currentFile, setCurrentFile] = useState<File>(null);
-  const [showFileReplaceDialog, setShowFileReplaceDialog] = useState<boolean>(false);
-  const [showElevationApiDialog, setShowElevationApiDialog] = useState<boolean>(false);
+  const [showFileReplaceModal, setShowFileReplaceModal] = useState<boolean>(false);
+  const [showElevationApiModal, setShowElevationApiModal] = useState<boolean>(false);
+  const [showTrackCriteriaModal, setShowTrackCriteriaModal] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showNonModal, setShowNonModal] = useState<boolean>(false);
 
@@ -128,6 +129,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleShowPreview = () => {
     setShowPreview(!showPreview);
     console.log('Toggled showPreview!', showPreview);
+  }
+
+  const handleShowTrackCriteria = () => {
+    setShowTrackCriteriaModal(!showTrackCriteriaModal);
   }
 
   const handleShowComparisonStats = () => {
@@ -330,12 +335,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const handleFileReplaceDialog = (show: boolean) => {
     setShowModal(show);
-    setShowFileReplaceDialog(show);
+    setShowFileReplaceModal(show);
   }
 
   const handleElevationApiDialog = (show: boolean) => {
     setShowModal(show);
-    setShowElevationApiDialog(show);
+    setShowElevationApiModal(show);
   }
 
   const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -563,7 +568,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     console.log('handleSmoothByElevation')
     if (currentTrack) {
       if (!hasElevations) {
-        setShowElevationApiDialog(true);
+        setShowElevationApiModal(true);
       } else {
         handleSmoothByElevationWithElevations();
       }
@@ -641,7 +646,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   return (
     layers ?
       <>
-        Testing something out
         <div id="map-container">
           {currentTrack ?
             <div className="top-center control">
@@ -679,29 +683,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               tileSourceUrl={config.miniMap.url}
             />
             <Control position="topleft" prepend>
-              {/* {currentTrack ?
-                <div className="leaflet-bar top-center">
-                  <div className="selected-track">
-                    {tracksValues.length > 1 ?
-                      <div className="selected-track-select">
-                        <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
-                        <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
-                          {
-                            tracksValues.map((track) =>
-                              <option value={track.time} key={track.time}>{track.name}</option>
-                            )
-                          }
-                        </select>
-                      </div>
-                      :
-                      <h2>Selected Track: {currentTrack.name}</h2>
-                    }
-                  </div>
-                  {(showComparisonStats && originalTrackStats) ?
-                    <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
-                    : null}
-                </div>
-                : null} */}
               {/* Below are kept for now for development convenience */}
               {/* {showModal ?
                 <Modal
@@ -819,15 +800,20 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                   <OptionsIcon height="24px" />
                 }
                 children={[
-                  <div key="animatePan">
-                    <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
-                    <label htmlFor="animatePan">Set View On Click</label>
+                  <div key="options-config" className="options options-config">
+                    <h3>Config</h3>
+                    <a className="track-criteria-option"
+                      href="#"
+                      title="track-criteria-option"
+                      aria-label="track-criteria-option"
+                      aria-disabled="false"
+                      role="button"
+                      onClick={handleShowTrackCriteria}
+                    >
+                      <span aria-hidden="true">Track Criteria</span>
+                    </a>
                   </div>,
-                  <div key="showPreview">
-                    <input type="checkbox" onChange={handleShowPreview} id="showPreview" checked={showPreview} />
-                    <label htmlFor="showPreview">Show Clean Previews</label>
-                  </div>,
-                  <div key="display" className="options-display">
+                  <div key="options-display" className="options options-display">
                     <hr />
                     <h3>Display</h3>
                     <div key="showComparisonStats">
@@ -838,12 +824,49 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       <input type="checkbox" onChange={handleShowTrackStats} id="showTrackStats" checked={showTrackStats} />
                       <label htmlFor="showTrackStats">Show Track Stats</label>
                     </div>
-                  </div>
+                  </div>,
+                  <div key="options-misc" className="options options-misc">
+                    <hr />
+                    <h3>Misc</h3>
+                    <div key="animatePan">
+                      <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
+                      <label htmlFor="animatePan">Set View On Click</label>
+                    </div>
+                    <div key="showPreview">
+                      <input type="checkbox" onChange={handleShowPreview} id="showPreview" checked={showPreview} />
+                      <label htmlFor="showPreview">Show Clean Previews</label>
+                    </div>
+                  </div>,
                 ]}
               />
             </Control>
             <Control position="bottomleft">
-              {showFileReplaceDialog ?
+
+              {showTrackCriteriaModal ?
+                <Modal
+                  setShow={handleShowTrackCriteria}
+                  buttons={[]}
+                  title={'Track Criteria'}
+                >
+                  <div className="stats-container">
+                    {config.trackCriteria ?
+                      <TrackCriteria
+                        criteria={config.trackCriteria}
+                        title={"Specified"}
+                        level={3}
+                      /> : null
+                    }
+                    {config.trackCriteriaNormalized ?
+                      <TrackCriteria
+                        criteria={config.trackCriteriaNormalized}
+                        title={"Normalized"}
+                        level={3}
+                      /> : null
+                    }
+                  </div>
+                </Modal>
+                : null}
+              {showFileReplaceModal ?
                 <Modal
                   setShow={handleFileReplaceDialog}
                   buttons={[
@@ -883,7 +906,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 </Modal>
                 : null}
 
-              {showElevationApiDialog ?
+              {showElevationApiModal ?
                 <Modal
                   setShow={handleElevationApiDialog}
                   buttons={[{
@@ -1071,12 +1094,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               </>
               : null}
 
-            {/* {isEditing ?
-              <Control position="bottomleft">
-                <EditingControl />
-              </Control>
-              : null} */}
-
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
               <LayersControl {...layers} />
@@ -1107,15 +1124,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
         <br />
         <hr />
-
-        <div className="stats-container">
-          {config.trackCriteria ?
-            <TrackCriteria criteria={config.trackCriteria} /> : null
-          }
-          {config.trackCriteriaNormalized ?
-            <TrackCriteria criteria={config.trackCriteriaNormalized} /> : null
-          }
-        </div>
       </>
       : null
   )
