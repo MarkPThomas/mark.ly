@@ -641,7 +641,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   return (
     layers ?
       <>
-        Testing something out
         <div id="map-container">
           {currentTrack ?
             <div className="top-center control">
@@ -679,29 +678,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               tileSourceUrl={config.miniMap.url}
             />
             <Control position="topleft" prepend>
-              {/* {currentTrack ?
-                <div className="leaflet-bar top-center">
-                  <div className="selected-track">
-                    {tracksValues.length > 1 ?
-                      <div className="selected-track-select">
-                        <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
-                        <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
-                          {
-                            tracksValues.map((track) =>
-                              <option value={track.time} key={track.time}>{track.name}</option>
-                            )
-                          }
-                        </select>
-                      </div>
-                      :
-                      <h2>Selected Track: {currentTrack.name}</h2>
-                    }
-                  </div>
-                  {(showComparisonStats && originalTrackStats) ?
-                    <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
-                    : null}
-                </div>
-                : null} */}
               {/* Below are kept for now for development convenience */}
               {/* {showModal ?
                 <Modal
@@ -1070,12 +1046,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 </Control>
               </>
               : null}
-
-            {/* {isEditing ?
-              <Control position="bottomleft">
-                <EditingControl />
-              </Control>
-              : null} */}
 
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
