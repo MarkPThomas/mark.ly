@@ -31,6 +31,7 @@ export function UndoRedoIcon({
   const transformHoverProps = redo ? 'scale(-1 1) translate(-130, -1195)' : 'translate(-102, -1195)';
   const transformProps = redo ? 'scale(-1 1) translate(-128, -1193)' : 'translate(-100, -1193)';
   const transform = (hover && !isDisabled) ? transformHoverProps : transformProps;
+
   const pathClassName = `outline${isDisabled ? ' disabled' : ''}`;
 
   return (
