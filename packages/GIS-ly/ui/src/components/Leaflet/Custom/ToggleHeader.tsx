@@ -1,4 +1,5 @@
 import { ToggleButton } from "./ToggleButton";
+import { ArrowVerticalToggleIcon } from '../../shared/components/Icons/ArrowVerticalToggleIcon';
 
 export type ToggleHeaderProps = {
   value: string;
@@ -14,7 +15,8 @@ export function ToggleHeader(props: ToggleHeaderProps) {
   return (
     <div className='toggle-header'>
       <CustomTag>{props.value}</CustomTag>
-      <ToggleButton {...props} />
+      {/* <ToggleButton {...props} /> */}
+      <ArrowVerticalToggleIcon {...props} />
     </div>
   );
 }
