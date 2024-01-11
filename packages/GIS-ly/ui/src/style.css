@@ -12,7 +12,8 @@ html {
 }
 
 #map-container {
-  height: 1000px;
+  /* height: 1000px; */
+  position: relative;
 }
 
 .leaflet-container {
@@ -170,7 +171,6 @@ span.icon-label {
 
 .icon.toggle-button {
   background-color: #aed9ff;
-  /* border-radius: 10px; */
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border-bottom-left-radius: 0;
@@ -215,10 +215,59 @@ a.disabled:visited {
   cursor: not-allowed;
 }
 
-.leaflet-bar.top-center {
-  position: fixed;
+.top-center {
+  position: absolute;
+  top: 12px;
   left: 50%;
-  transform: translate(-50%);
+  transform: translate(-50%, 0%);
+  width: fit-content;
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
+}
+
+.top-center .selected-track {
+  background-color: #84ff84;
+}
+
+.top-center .selected-track-select {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.bottom-center {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translate(-50%, 0%);
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
+}
+
+.control {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.editing-label {
+  white-space: nowrap;
+}
+
+.top-center h2,
+.bottom-center h2 {
+  margin: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 dialog[open] {
@@ -241,17 +290,6 @@ dialog[open] {
   flex-direction: column;
 }
 
-.leaflet-bar.top-center h2 {
-  margin: 0;
-  padding-left: 5px;
-  padding-right: 5px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
 #polyline-table-comparison {
   display: flex;
   flex-wrap: wrap;
@@ -268,23 +306,6 @@ dialog[open] {
   margin: 0;
 }
 
-.leaflet-bar.top-center {
-  margin: 10px;
-}
-
-.leaflet-bar.top-center .selected-track {
-  background-color: #84ff84;
-}
-
-.leaflet-bar.top-center .selected-track-select {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
 .stats-control h2 {
   margin: 0;
 }
@@ -296,4 +317,28 @@ dialog[open] {
 
 svg {
   margin: 3px;
+}
+
+.leaflet-bottom.leaflet-right .header {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+}
+
+.graph {
+  background-color: yellow;
+  border: 1px solid black;
+}
+
+
+.edit-control {
+  background-color: yellow;
+  border: 1px solid black;
+  white-space: nowrap;
+}
+
+.editing-label {
+  background-color: yellow;
+  border: 1px solid black;
+  white-space: nowrap;
 }
