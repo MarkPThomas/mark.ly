@@ -1,5 +1,5 @@
 import { GeoJsonObject } from 'geojson';
-import { ControlPosition } from 'leaflet';
+import { ControlPosition, PathOptions } from 'leaflet';
 import {
   FeatureGroup,
   FeatureGroupProps,
@@ -8,7 +8,7 @@ import {
 } from 'react-leaflet';
 import { ReactNode } from 'react';
 
-
+import { randomColor } from '../../../../../../../common/utils';
 import { hashString } from '../../../../../../../common/utils';//'common/utils';
 
 import { TrackPoint, TrackSegment } from '../../../../model/GIS/Core/Track';
@@ -41,6 +41,47 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
   console.log('overlays: ', overlays)
   console.log('baseLayers: ', baseLayers)
 
+  // pathOptions {
+  //   stroke?: boolean | undefined;
+  //   color?: string | undefined;
+  //   weight?: number | undefined;
+  //   opacity?: number | undefined;
+  //   lineCap?: LineCapShape | undefined;
+  //   lineJoin?: LineJoinShape | undefined;
+  //   dashArray?: string | number[] | undefined;
+  //   dashOffset?: string | undefined;
+  //   fill?: boolean | undefined;
+  //   fillColor?: string | undefined;
+  //   fillOpacity?: number | undefined;
+  //   fillRule?: FillRule | undefined;
+  //   renderer?: Renderer | undefined;
+  //   className?: string | undefined;
+  // }
+
+  // selected - color: #84ff84, weight: 4 (default is 3)
+  // non-selected - weight: 2  (default is 3)
+
+  const useAltColors: boolean[] = [];
+  let useAltColor = false;
+
+  const colors: string[] = [
+    '#3388FF',
+    '#00F7FF'
+  ];
+
+  const overlaysPathOptions: PathOptions[] = [];
+  if (overlays && overlays.length > 1) {
+    overlays.forEach((_overlay, index) => {
+      overlaysPathOptions.push({
+        color: colors[index % 2],
+        weight: 2
+      });
+
+      useAltColors.push(useAltColor);
+      useAltColor = !useAltColor;
+    })
+  }
+
   return (
     (overlays || baseLayers) ?
       <LC position={position}>
@@ -52,7 +93,7 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
           )) : null
         }
         {
-          overlays ? overlays.map((overlay) => (
+          overlays ? overlays.map((overlay, index) => (
             <LC.Overlay checked={true} name={overlay.name} key={hashString(JSON.stringify(overlay.name))}>
               {/* {('groupOptions' in overlay)
                 ?
@@ -67,10 +108,12 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
                   key={hashString(JSON.stringify(overlay.points[0]))}
                   data={overlay.geoJSON}
                   onEachFeature={overlay.onEachFeature}
+                  pathOptions={overlaysPathOptions[index]}
                   children={[<CoordinateMarkersLayer
                     key={hashString(JSON.stringify(overlay.points[0]))}
                     points={overlay.points as TrackPoint[]}
                     segments={overlay.segments as TrackSegment[]}
+                    useAltColor={useAltColors[index]}
                   />]}
                 />
               </LayerGroup>
