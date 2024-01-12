@@ -1,8 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../common/utils/stringFormatting";
 import { ControlItem } from "./ControlItem";
-import React from "react";
 
 export type ControlHeaderExpandProps = {
   category: string;
@@ -12,6 +11,7 @@ export type ControlHeaderExpandProps = {
   childrenBeside?: boolean;
   forceClosed?: boolean;
   forceClosedIfToggled?: boolean;
+  iconRight?: boolean;
   iconSvg?: React.ReactNode;
   isDisabled?: boolean;
   isToggled?: boolean;
@@ -25,13 +25,13 @@ export function ControlHeaderExpand({
   children,
   childrenAlignedBeside,
   childrenBeside,
+  iconRight,
   iconSvg,
   isDisabled,
   isToggled,
   showLabelWithIcon,
   title
 }: ControlHeaderExpandProps) {
-  const [hover, setHover] = useState<boolean>(false);
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>((isToggled && !isDisabled) ? true : false);
 
   const setToggle = () => {
@@ -65,8 +65,18 @@ export function ControlHeaderExpand({
         >
           {(showLabelWithIcon && iconSvg) ?
             <span aria-hidden="true" className="icon-label">
-              {iconSvg}
-              {categoryUpperFirst}
+              {iconRight ?
+                <>
+                  {categoryUpperFirst}
+                  {iconSvg}
+                </>
+                :
+                <>
+                  {iconSvg}
+                  {categoryUpperFirst}
+                </>
+
+              }
             </span>
             :
             iconSvg ?? <span aria-hidden="true">{categoryUpperFirst}</span>

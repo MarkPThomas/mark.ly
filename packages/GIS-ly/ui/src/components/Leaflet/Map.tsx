@@ -820,10 +820,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       <input type="checkbox" onChange={handleShowComparisonStats} id="showComparisonStats" checked={showComparisonStats} />
                       <label htmlFor="showComparisonStats">Show Comparison Stats</label>
                     </div>
-                    <div key="showTrackStats">
-                      <input type="checkbox" onChange={handleShowTrackStats} id="showTrackStats" checked={showTrackStats} />
-                      <label htmlFor="showTrackStats">Show Track Stats</label>
-                    </div>
                   </div>,
                   <div key="options-misc" className="options options-misc">
                     <hr />
@@ -840,7 +836,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 ]}
               />
             </Control>
-            <Control position="bottomleft">
+            {/* <Control position="bottomleft">
 
               {showTrackCriteriaModal ?
                 <Modal
@@ -936,7 +932,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     Stats may be off if using incomplete or GPS-recorded altitudes.</p>
                 </Modal>
                 : null}
-            </Control>
+            </Control> */}
             {currentTrack ?
               <>
                 <Control position="topleft">
@@ -1072,20 +1068,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             {(trackStats !== null) ?
               <>
                 <Control position="topright">
-                  {showTrackStats ?
-                    <TrackStatsControl stats={trackStats} />
-                    : null}
-                </Control>
-
-                <Control position="topright">
-                  <ControlHeaderExpand
+                  <TrackStatsControl
                     key={'stats'}
                     category="stats"
                     title="Show stats"
+                    stats={trackStats}
                     children={[]}
                     isDisabled={showModal}
                     // isDisabled={true}
-                    cb={handleGraphClick}
+                    cb={handleShowTrackStats}
                     iconSvg={
                       <StatsIcon isDisabled={showModal} />
                     }
@@ -1102,15 +1093,113 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
             <SetViewOnClick animateRef={animateRef} />
           </MapContainer>
+
           {showGraph ?
             <div className="graph">
               Track Graph to be added in next version
             </div>
             : null}
+
           {isEditing ?
             <div className="bottom-center control">
               <div className="editing-label">Editing</div>
             </div>
+            : null}
+
+          {showTrackCriteriaModal ?
+            <Modal
+              setShow={handleShowTrackCriteria}
+              buttons={[]}
+              title={'Track Criteria'}
+            >
+              <div className="stats-container">
+                {config.trackCriteria ?
+                  <TrackCriteria
+                    criteria={config.trackCriteria}
+                    title={"Specified"}
+                    level={3}
+                  /> : null
+                }
+                {config.trackCriteriaNormalized ?
+                  <TrackCriteria
+                    criteria={config.trackCriteriaNormalized}
+                    title={"Normalized"}
+                    level={3}
+                  /> : null
+                }
+              </div>
+            </Modal>
+            : null}
+
+          {showFileReplaceModal ?
+            <Modal
+              setShow={handleFileReplaceDialog}
+              buttons={[
+                {
+                  label: 'Replace',
+                  callback: () => {
+                    console.log('Replace')
+                    // TODO: Handle case of re-selecting existing file after cancelling in this modal.
+                    // acceptCurrentFile(true);
+                    swapTracks();
+                    handleFileReplaceDialog(false);
+                  }
+                }, {
+                  label: 'Merge',
+                  callback: () => {
+                    console.log('Merge')
+                    // TODO: Handle case of re-selecting existing file after cancelling in this modal.
+                    // TODO: Handle case of not reloading a prior loaded file. Maybe have a list of loaded names?
+                    // acceptCurrentFile(true);
+                    loadTrack();
+                    handleFileReplaceDialog(false);
+                  }
+                }, {
+                  label: 'Cancel',
+                  callback: () => {
+                    console.log('Cancel')
+                    // TODO: Handle case of re-selecting existing file after cancelling here.
+                    // acceptCurrentFile(false);
+                    handleFileReplaceDialog(false);
+                  }
+                }
+              ]}
+              title={'Warning!'}
+            >
+              <p>Tracks already exist.</p>
+              <p>Please select from the following actions:</p>
+            </Modal>
+            : null}
+
+          {showElevationApiModal ?
+            <Modal
+              setShow={handleElevationApiDialog}
+              buttons={[{
+                label: 'Fetch from API',
+                callback: async () => {
+                  await handleGetCachedElevation();
+                  // await handleGetApiElevation(); // TODO: Activate this & remove cached elevations method once API fixed
+                  handleSmoothByElevationWithElevations();
+                  handleElevationApiDialog(false);
+                }
+              }, {
+                label: 'Use existing',
+                callback: async () => {
+                  handleSmoothByElevationWithElevations();
+                  handleElevationApiDialog(false);
+                }
+              }, {
+                label: 'Cancel',
+                callback: () => {
+                  handleElevationApiDialog(false);
+                }
+              }
+              ]}
+              title={'Elevations'}
+            >
+              <p>Some Track Points are missing terrain elevations. <br />
+                Stats may be off if using incomplete or GPS-recorded altitudes.</p>
+            </Modal>
             : null}
         </div >
         <br />
