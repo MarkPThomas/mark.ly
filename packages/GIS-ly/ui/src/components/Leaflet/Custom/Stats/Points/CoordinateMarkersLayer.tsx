@@ -10,11 +10,12 @@ import { CoordinateMarker } from './CoordinateMarker';
 import { TrackSegment } from '../../../../../model/GIS/Core/Track';
 
 export type CoordinateMarkersLayerProps = {
-  points: TrackPoint[],
-  segments?: TrackSegment[]
+  points: TrackPoint[];
+  segments?: TrackSegment[];
+  useAltColor?: boolean;
 }
 
-export function CoordinateMarkersLayer({ points, segments }: CoordinateMarkersLayerProps) {
+export function CoordinateMarkersLayer({ points, segments, useAltColor }: CoordinateMarkersLayerProps) {
   const getPrevSegment = (index: number) => {
     return index === 0 ? null : segments[index];
   }
@@ -33,6 +34,7 @@ export function CoordinateMarkersLayer({ points, segments }: CoordinateMarkersLa
           point={point}
           segmentPrev={getPrevSegment(index)}
           segmentNext={getNextSegment(index + 1)}
+          useAltColor={useAltColor}
         />
       )}
     </LayerGroup>
