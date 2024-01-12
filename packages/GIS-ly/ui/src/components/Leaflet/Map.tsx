@@ -183,13 +183,14 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
-  const updateLayersProps = (): LayersControlProps => {
+  const updateLayersProps = (selectedTrack?: Track): LayersControlProps => {
     const overlays = Object.values(tracks).map((track) => overlayDefinition(track));
     console.log('updateLayersProps->overlays: ', overlays)
 
     const layersProps = overlays.length ? {
       ...layers,
-      overlays
+      overlays,
+      selectedTrack: selectedTrack ?? currentTrack
     } : layers;
     console.log('layersProps: ', layersProps)
 
@@ -214,17 +215,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         layer.bindTooltip(`Track: ${trackName}`, { sticky: true });
       }
       layer.on({
-        mouseover: onMouseOver,
+        // mouseover: onMouseOver,
         click: onClick
       });
     };
-    const onMouseOver = (e) => { console.log('mous-e!', e) }
-    const onClick = (e) => {
+    // const onMouseOver = (e) => { console.log('mous-e!', e) }
+    const onClick = (_e: any) => {
       if (trackName !== currentTrack.name) {
         const selectedTrack = tracks[trackName];
         changeCurrentTrack(selectedTrack);
-      } else {
-        console.log('click-e!', e)
       }
     }
     // Note: e for both events contain the following properties of interest:
@@ -300,6 +299,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
     setCurrentTrack(track);
     updateCurrentTrackStats(track);
+    setLayers(updateLayersProps(track));
   }
 
   // TODO: Handle case where user selects a file that was selected before - redo the file prompts rather than ignore

@@ -11,7 +11,7 @@ import { ReactNode } from 'react';
 import { randomColor } from '../../../../../../../common/utils';
 import { hashString } from '../../../../../../../common/utils';//'common/utils';
 
-import { TrackPoint, TrackSegment } from '../../../../model/GIS/Core/Track';
+import { Track, TrackPoint, TrackSegment } from '../../../../model/GIS/Core/Track';
 
 import { CoordinateMarkersLayer } from '../../Custom/Stats/Points/CoordinateMarkersLayer';
 import GeoJsonWithUpdates from './GeoJsonWithUpdates';
@@ -33,10 +33,11 @@ type BaseLayer = {
 export type LayersControlProps = {
   position: ControlPosition,
   overlays?: Overlay[],
-  baseLayers?: BaseLayer[]
+  baseLayers?: BaseLayer[],
+  selectedTrack?: Track,
 }
 
-export function LayersControl({ position, overlays, baseLayers }: LayersControlProps) {
+export function LayersControl({ position, overlays, baseLayers, selectedTrack }: LayersControlProps) {
   console.log('position: ', position)
   console.log('overlays: ', overlays)
   console.log('baseLayers: ', baseLayers)
@@ -58,28 +59,32 @@ export function LayersControl({ position, overlays, baseLayers }: LayersControlP
   //   className?: string | undefined;
   // }
 
-  // selected - color: #84ff84, weight: 4 (default is 3)
-  // non-selected - weight: 2  (default is 3)
-
-  const useAltColors: boolean[] = [];
-  let useAltColor = false;
-
-  const colors: string[] = [
+  const defaultColors: string[] = [
     '#3388FF',
     '#00F7FF'
   ];
+  const defaultWeight = 2;
 
+  const selectedColor = '#84ff84';
+  const selectedWeight = 3;
+
+  let useAltColor = false;
+
+  const isSelected = (overlay: Overlay) => selectedTrack === undefined || selectedTrack === null
+    || overlay.points[0].timestamp === selectedTrack.firstPoint.val.timestamp;
+
+  const useAltColors: boolean[] = [];
   const overlaysPathOptions: PathOptions[] = [];
-  if (overlays && overlays.length > 1) {
-    overlays.forEach((_overlay, index) => {
+  if (overlays) {
+    overlays.forEach((overlay, index) => {
       overlaysPathOptions.push({
-        color: colors[index % 2],
-        weight: 2
+        color: isSelected(overlay) ? selectedColor : defaultColors[index % 2],
+        weight: isSelected(overlay) ? selectedWeight : defaultWeight
       });
 
       useAltColors.push(useAltColor);
       useAltColor = !useAltColor;
-    })
+    });
   }
 
   return (
