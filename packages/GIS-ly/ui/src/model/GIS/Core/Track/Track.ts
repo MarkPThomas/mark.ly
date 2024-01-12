@@ -182,7 +182,7 @@ export class Track implements ITrack {
   // Work out a reasonable & efficient way to maintain the hooked state while exposing
   //    the geoJSON object for external hooking.
   toJson() {
-    return this._geoJsonTrack.toFeatureCollection().toJson();
+    return this._geoJsonTrack.toJson();
   }
 
   vertexNodeByTime(timestamp: string): VertexNode<TrackPoint, TrackSegment> | null | undefined {
