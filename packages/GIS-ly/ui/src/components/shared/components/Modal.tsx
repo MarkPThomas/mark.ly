@@ -14,6 +14,7 @@ const Overlay = styled.div`
   background-color: rgba(52, 64, 84, 0.6);
   backdrop-filter: blur(8px);
   animation: fadein 0.5s;
+  z-index: 3000;
 
   @keyframes fadein {
     from {

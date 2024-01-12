@@ -7,10 +7,12 @@ import { RouteStats } from "./RouteStats";
 import { TrackStats } from "./TrackStats";
 
 const FlowControl = styled.div`
-  //max-width: 25rem;
-  max-height: 30rem;
+  max-height: 27rem;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
 `;
 
 export interface IEditedStats extends ITrackStats {
@@ -26,26 +28,21 @@ export function Stats({ stats }: StatsProps) {
 
   return (
     <div>
-      <ToggleGroup
-        value={'Stats'}
-        level={level - 1}
-        children={[
-          <hr key={Date() + '1'} />,
-          <FlowControl key={Date() + '2'} >
-            <ToggleGroup
-              value={'Route'}
-              level={level}
-              children={[<RouteStats key={Date()} stats={stats} level={level + 1} />]}
-            />
-            <hr />
-            <ToggleGroup
-              value={'Track'}
-              level={level}
-              children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
-            />
-          </FlowControl>
-        ]}
-      />
+      <FlowControl key={Date() + '2'} >
+        <ToggleGroup
+          value={'Route'}
+          level={level}
+          children={[<RouteStats key={Date()} stats={stats} level={level + 1} />]}
+        />
+        <hr />
+        <ToggleGroup
+          value={'Track'}
+          level={level}
+          children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
+        />
+      </FlowControl>
+      {/* ]}
+      /> */}
     </div>
   )
 }
