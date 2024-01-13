@@ -378,7 +378,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         track.addProperties();
 
         if (track) {
-          setHistory(new StateHistory<Track>()); // TODO: Consider adding GUID for Tracks as keys
+          setHistory(new StateHistory<Track>());
 
           changeCurrentTrack(track);
           addTracks([track]);
@@ -633,9 +633,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateFromTrack(history.getState(key));
   }
 
-  // TODO: time is not the best key, as this can change as the track is modified. Add GUID.
   const getKey = (): string => {
-    return currentTrack?.time;
+    return currentTrack?.id;
   }
 
   const hasUndo = history?.hasUndo(getKey());
