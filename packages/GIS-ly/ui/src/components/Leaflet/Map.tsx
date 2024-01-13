@@ -161,7 +161,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     console.log('currentTrack: ', currentTrack);
     console.log('Tracks: ', tracks);
 
-    setLayers(updateLayersProps());
+    setLayers(updateLayersProps(track));
 
     // Current Track
     const newBounds = track.boundingBox().toCornerLatLng();
@@ -378,7 +378,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         track.addProperties();
 
         if (track) {
-          setHistory(new StateHistory<Track>(track.time, track));
+          setHistory(new StateHistory<Track>()); // TODO: Consider adding GUID for Tracks as keys
 
           changeCurrentTrack(track);
           addTracks([track]);
@@ -603,6 +603,13 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
+  // Was partway through instantiating class with initial state
+  // This seems to not work, as handleCmd can only save state before the command is executed
+  // Undo can save state before moving backward
+  // However, this must only be done once, at the furthest action state
+  //    Histories recorded as prior state + next action
+  //    Then current state when first undo
+  //    Object could record history length & state length, where current state is saved if state length not = history length +1
   const handleUndo = () => {
     const key = getKey();
     history.undo(key, currentTrack);
@@ -626,6 +633,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateFromTrack(history.getState(key));
   }
 
+  // TODO: time is not the best key, as this can change as the track is modified. Add GUID.
   const getKey = (): string => {
     return currentTrack?.time;
   }
