@@ -675,6 +675,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               zoom={Math.floor(position.zoom / 2)}
               tileSourceUrl={config.miniMap.url}
             />
+            <Control position="topleft" prepend>
+              {/* Keep this control component here. For some reason the zoom control margin is broken without it. */}
+            </Control>
             <Control position="topleft">
               <ControlHeaderExpand
                 isDisabled={isEditing}
