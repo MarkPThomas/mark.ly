@@ -1,5 +1,4 @@
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
-import randomUuid from '../../../../../../../common/utils/uuid';
 
 import { FeatureCollection } from '../../../GeoJSON';
 import { VertexNode, SegmentNode, IPolylineSize } from '../../../Geometry/Polyline';
@@ -60,10 +59,7 @@ export class Track implements ITrack {
   private _geoJsonTrack: GeoJsonTrack;
   private _polylineTrack: PolylineTrack;
 
-  private _id: string;
-  get id(): string {
-    return this._id;
-  }
+  public id: string;
 
   get name(): string {
     return this._geoJsonTrack.trackMetaData.name;
@@ -104,9 +100,7 @@ export class Track implements ITrack {
   // TODO: This class should be initialized & returned from GeoJsonManager as part of track merging process.
   //  This ensures that the FeatureCollection is always a single LineString
   //  Other option in that class is to return a set of Track classes, one for each LineString in a collection of LineStrings or MultiLineStrings
-  protected constructor() {
-    this._id = randomUuid();
-  }
+  protected constructor() { }
 
   static fromGeoJson(geoJson: FeatureCollection): Track {
     // TODO: Check/enforce single LineString collections - Perhaps derive new type?
@@ -145,6 +139,7 @@ export class Track implements ITrack {
   clone(): Track {
     const track = new Track();
 
+    track.id = this.id;
     track._geoJsonTrack = this._geoJsonTrack.clone();
     track._polylineTrack = this._polylineTrack.clone();
 
