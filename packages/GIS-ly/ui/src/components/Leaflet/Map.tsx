@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 import {
   LatLngBoundsExpression,
   LatLngTuple,
@@ -59,7 +59,6 @@ import { CleanIcon } from '../shared/components/Icons/CleanIcon';
 import { SaveIcon } from '../shared/components/Icons/SaveIcon';
 import { GraphIcon } from '../shared/components/Icons/GraphIcon';
 import { StatsIcon } from '../shared/components/Icons/StatsIcon';
-import { EditingControl } from './LeafletControls/Custom/EditingControl';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -72,6 +71,8 @@ export type MapProps = {
 };
 
 export const Map = ({ config, restHandlers }: MapProps) => {
+  const [sessionId, setSessionId] = useState<number>(1);
+
   const [position, setPosition] = useState<IInitialPosition>(config.initialPosition);
   const [bounds, setBounds] = useState<LatLngBoundsExpression | null>(null);
   const [trackCriteria, setTrackCriteria] = useState<ITrackCriteria>(config.trackCriteriaNormalized);
@@ -80,7 +81,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [tracks, setTracks] = useState<{ [key: string]: Track }>({});
-  const [history, setHistory] = useState<StateHistory<Track>>(null);
+  const [history, setHistory] = useState<StateHistory<Track>>(new StateHistory<Track>());
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
@@ -120,6 +121,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     // });
   }, []);
 
+  const getNextId = () => {
+    let id = sessionId;
+    setSessionId(sessionId + 1);
+    return id.toString();
+  }
+
   const handleSetViewOnClick = () => {
     setAnimateRef(!animateRef);
     console.log('Toggled animateRef!', animateRef);
@@ -157,7 +164,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const updateFromTrack = (track: Track, updateStats: boolean = true) => {
     console.log('updateFromTrack');
     console.log('Track: ', track);
-
     console.log('currentTrack: ', currentTrack);
     console.log('Tracks: ', tracks);
 
@@ -165,7 +171,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
     // Current Track
     const newBounds = track.boundingBox().toCornerLatLng();
-    console.log('newBounds: ', newBounds);
     setBounds(newBounds);
 
     // TODO: Automate this when adding undo/redo by using key of track key & track version.
@@ -221,8 +226,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     };
     // const onMouseOver = (e) => { console.log('mous-e!', e) }
     const onClick = (_e: any) => {
-      if (trackName !== currentTrack.name) {
-        const selectedTrack = tracks[trackName];
+      if (track.id !== currentTrack.id) {
+        const selectedTrack = tracks[track.id];
         changeCurrentTrack(selectedTrack);
       }
     }
@@ -250,37 +255,41 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const addTracks = (newTracks: Track[]) => {
-    console.log(`Adding ${newTracks.length} tracks`);
     const tracksModify = tracks;
 
-    newTracks.forEach((track) => {
-      tracksModify[track.time] = track;
-    })
+    if (newTracks.length) {
+      let id = sessionId;
+      newTracks.forEach((track) => {
+        track.id = id.toString();
+        tracksModify[track.id] = track;
+        history.addNewStateHistory(track.id);
+        id++;
+      });
+      setHistory(history);
+      setSessionId(id);
+    }
 
     setTracks(tracksModify);
   }
 
   const removeTrack = (track: Track) => {
-    console.log('Removing track: ', track);
     const tracksModify = tracks;
 
     if (currentTrack === track) {
       changeCurrentTrackToNext(track);
     }
 
-    delete tracksModify[track.time];
+    delete tracksModify[track.id];
 
     setTracks(tracksModify);
   }
 
-  // Changes track to next one alphabetically by time keys
   const changeCurrentTrackToNext = (track: Track) => {
-    console.log('changeCurrentTrackToNext');
-    const trackTimes = Object.keys(tracks);
+    const trackIds = Object.keys(tracks);
 
-    if (trackTimes) {
-      const sortedTimes = trackTimes.sort();
-      const trackIndex = sortedTimes.indexOf(track.time);
+    if (trackIds) {
+      const sortedIds = trackIds.sort();
+      const trackIndex = sortedIds.indexOf(track.id);
       const nextTrack = tracks[trackIndex + 1] ?? null;
 
       changeCurrentTrack(nextTrack);
@@ -288,15 +297,12 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const handleTrackSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedTrackTime = e.target.value;
-    const selectedTrack = tracks[selectedTrackTime];
+    const selectedTrackId = e.target.value;
+    const selectedTrack = tracks[selectedTrackId];
     changeCurrentTrack(selectedTrack);
   }
 
   const changeCurrentTrack = (track: Track) => {
-    console.log('Changing current track', track)
-    // TODO: Placeholder for saving state for later under/redo operations here...
-
     setCurrentTrack(track);
     updateCurrentTrackStats(track);
     setLayers(updateLayersProps(track));
@@ -368,17 +374,19 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       // SetLayer
       (geoJson: FeatureCollectionSerial) => {
         console.log('geoJson/Layer: ', geoJson)
-        console.log('Tracks before set: ', tracks);
 
         // save converted geoJson to hook within Track
         // Generate track for CRUD that is reflected in geoJson via hooks
         const track = GeoJsonManager.TrackFromJson(geoJson);
 
-        // TODO: Can withold this to when user selects to enter 'Trackly' mode for editing.
-        track.addProperties();
-
         if (track) {
-          setHistory(new StateHistory<Track>());
+          track.id = getNextId();
+
+          history.addNewStateHistory(track.id);
+          setHistory(history);
+
+          // TODO: Can withold this to when user selects to enter 'Trackly' mode for editing.
+          track.addProperties();
 
           changeCurrentTrack(track);
           addTracks([track]);
@@ -422,6 +430,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
+  // TODO: Note that undo history is lost before this.
+  // Should it be retained? Or a warning modal given? A preview shown? Or nothing?
   const handleSplitOnStop = () => {
     console.log('handleSplitOnStop')
     if (currentTrack) {
@@ -597,40 +607,44 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleCmd = (command: () => void) => {
     if (command) {
       history.executeCmd(getKey(), currentTrack.clone(), command);
-
       console.log('handleCmd: ', history)
       setHistory(history);
     }
   }
 
-  // Was partway through instantiating class with initial state
-  // This seems to not work, as handleCmd can only save state before the command is executed
-  // Undo can save state before moving backward
-  // However, this must only be done once, at the furthest action state
-  //    Histories recorded as prior state + next action
-  //    Then current state when first undo
-  //    Object could record history length & state length, where current state is saved if state length not = history length +1
   const handleUndo = () => {
     const key = getKey();
-    history.undo(key, currentTrack);
+    const state = history.undo(key, currentTrack);
+
     console.log('Undo: ', history)
-
-    console.log('# vertices: ', currentTrack.trackPoints().length)
-    const currentTrackState = history.getState(key);
-    console.log('currentTrackState: ', currentTrackState);
-    console.log('# vertices: ', currentTrackState.trackPoints().length)
-
+    console.log('History', history)
     setHistory(history);
-    updateFromTrack(currentTrackState);
+
+    updateByHistory(state, key);
   }
 
   const handleRedo = () => {
     const key = getKey();
-    history.redo(key);
-    console.log('Redo: ', history)
+    const state = history.redo(key, currentTrack);
 
+    console.log('Redo: ', history)
+    console.log('History', history)
     setHistory(history);
-    updateFromTrack(history.getState(key));
+
+    updateByHistory(state, key);
+  }
+
+
+  const updateByHistory = (currentTrackState: Track, key: string) => {
+    console.log('prior # vertices: ', currentTrack.trackPoints().length)
+    console.log('currentTrackState: ', currentTrackState);
+    console.log('# vertices: ', currentTrackState.trackPoints().length)
+
+    setCurrentTrack(currentTrackState);
+    tracks[currentTrackState.id] = currentTrackState;
+    setTracks(tracks);
+
+    updateFromTrack(currentTrackState);
   }
 
   const getKey = (): string => {
@@ -645,8 +659,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
 
   console.log('layersProps:', layers)
-  console.log('position.zoom: ', position.zoom)
-  console.log('bounds:', bounds)
 
   const tracksValues = Object.values(tracks);
 
@@ -660,7 +672,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 {tracksValues.length > 1 ?
                   <div className="selected-track-select">
                     <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
-                    <select name="tracks" id="tracks-selection" value={currentTrack.time} onChange={handleTrackSelection}>
+                    <select name="tracks" id="tracks-selection" value={currentTrack.id} onChange={handleTrackSelection}>
                       {
                         tracksValues.map((track) =>
                           <option value={track.time} key={track.time}>{track.name}</option>
@@ -1109,7 +1121,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
           {isEditing ?
             <div className="bottom-center control">
-              <div className="editing-label">Editing</div>
+              <div className="editing-label">Editing to be added in next version</div>
             </div>
             : null}
 
