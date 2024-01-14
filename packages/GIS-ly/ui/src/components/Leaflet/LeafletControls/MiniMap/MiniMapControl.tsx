@@ -18,7 +18,6 @@ export function MiniMapControl({ position, zoom, tileSourceUrl }: Props) {
 
   // TODO: Adjust this to update for zoom changes - needs to be done in Map.tsx by calling setPosition
   // Memoize the minimap so it's not affected by position changes
-  console.log('zoom: ', zoom)
   const minimap = useMemo(
     () => (
       <MapContainer

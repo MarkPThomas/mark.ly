@@ -17,15 +17,21 @@ import { CoordinateContainerBuilder } from './CoordinateContainerBuilder';
 
 class GeometryCollectionDelegate extends GeoCollection<GeometryType, SerialGeometry> {
   clone(): GeometryCollectionDelegate {
-    const featureCollectionDelegate = new GeometryCollectionDelegate();
+    const collectionDelegate = new GeometryCollectionDelegate();
 
-    featureCollectionDelegate._items = this._items;
-    featureCollectionDelegate._length = this._length;
+    const items = [];
+    this._items.forEach((item) => {
+      items.push(item.clone());
+    })
+    collectionDelegate._items = items;
+
+    collectionDelegate._length = this._length;
+
     if (this._bbox) {
-      featureCollectionDelegate._bbox = this._bbox;
+      collectionDelegate._bbox = this._bbox;
     }
 
-    return featureCollectionDelegate;
+    return collectionDelegate;
   }
 
   getGeometriesByType(type: GeoJsonGeometryTypes): GeometryType[] {
@@ -234,7 +240,7 @@ export class GeometryCollection
   }
 
   clone(): GeometryCollection {
-    return GeometryCollection.fromGeometries(this._collection.items as GeometryType[], this._bbox);
+    return GeometryCollection.fromGeometries(this._collection.clone().items as GeometryType[], this._bbox);
   }
 
   protected constructor() {
