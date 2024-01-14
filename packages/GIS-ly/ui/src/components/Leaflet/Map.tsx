@@ -121,12 +121,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     // });
   }, []);
 
-  const getNextId = () => {
-    let id = sessionId;
-    setSessionId(sessionId + 1);
-    return id.toString();
-  }
-
   const handleSetViewOnClick = () => {
     setAnimateRef(!animateRef);
     console.log('Toggled animateRef!', animateRef);
@@ -160,7 +154,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     setShowGraph(!showGraph);
   }
 
-  // TODO: Work out how this update should work when underlying geoJson is automatically updated
   const updateFromTrack = (track: Track, updateStats: boolean = true) => {
     console.log('updateFromTrack');
     console.log('Track: ', track);
@@ -169,12 +162,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
     setLayers(updateLayersProps(track));
 
-    // Current Track
     const newBounds = track.boundingBox().toCornerLatLng();
     setBounds(newBounds);
 
-    // TODO: Automate this when adding undo/redo by using key of track key & track version.
-    //  Removes updateStats & any coordinated updateCurrentTrackStats calls
     if (updateStats) {
       updateCurrentTrackStats(track);
     }
@@ -262,7 +252,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       newTracks.forEach((track) => {
         track.id = id.toString();
         tracksModify[track.id] = track;
-        history.addNewStateHistory(track.id);
+        history.addHistorySet(track.id);
         id++;
       });
       setHistory(history);
@@ -365,40 +355,28 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const loadFile = async (file: File) => {
     if (!file) {
       console.log('No file specified!');
-      return;
+    } else {
+      console.log('Loading file!');
+      toGeoJson(file, [loadGeoJsonAsTrack]);
     }
+  }
 
-    console.log('loading file!');
-    toGeoJson(file, [
-      // Save converted geojson to hook state
-      // SetLayer
-      (geoJson: FeatureCollectionSerial) => {
-        console.log('geoJson/Layer: ', geoJson)
+  const loadGeoJsonAsTrack = (geoJson: FeatureCollectionSerial) => {
+    console.log('geoJson/Layer: ', geoJson)
 
-        // save converted geoJson to hook within Track
-        // Generate track for CRUD that is reflected in geoJson via hooks
-        const track = GeoJsonManager.TrackFromJson(geoJson);
+    const track = GeoJsonManager.TrackFromJson(geoJson);
 
-        if (track) {
-          track.id = getNextId();
+    if (track) {
+      track.addProperties();
 
-          history.addNewStateHistory(track.id);
-          setHistory(history);
+      changeCurrentTrack(track);
+      addTracks([track]);
 
-          // TODO: Can withold this to when user selects to enter 'Trackly' mode for editing.
-          track.addProperties();
+      updateFromTrack(track, false);
 
-          changeCurrentTrack(track);
-          addTracks([track]);
-          console.log('currentTrack: ', currentTrack);
-          console.log('Tracks after set: ', tracks);
-
-          updateFromTrack(track, false);
-
-          const trackStats = track.getStats();
-          setOriginalTrackStats(trackStats);
-        }
-      }]);
+      const trackStats = track.getStats();
+      setOriginalTrackStats(trackStats);
+    }
   }
 
 
@@ -617,10 +595,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const state = history.undo(key, currentTrack);
 
     console.log('Undo: ', history)
-    console.log('History', history)
     setHistory(history);
 
-    updateByHistory(state, key);
+    updateTrackState(state);
   }
 
   const handleRedo = () => {
@@ -628,19 +605,19 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const state = history.redo(key, currentTrack);
 
     console.log('Redo: ', history)
-    console.log('History', history)
     setHistory(history);
 
-    updateByHistory(state, key);
+    updateTrackState(state);
   }
 
 
-  const updateByHistory = (currentTrackState: Track, key: string) => {
+  const updateTrackState = (currentTrackState: Track) => {
     console.log('prior # vertices: ', currentTrack.trackPoints().length)
     console.log('currentTrackState: ', currentTrackState);
     console.log('# vertices: ', currentTrackState.trackPoints().length)
 
     setCurrentTrack(currentTrackState);
+
     tracks[currentTrackState.id] = currentTrackState;
     setTracks(tracks);
 
@@ -652,10 +629,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const hasUndo = history?.hasUndo(getKey());
-  console.log('hasUndo: ', hasUndo);
-
   const hasRedo = history?.hasRedo(getKey());
-  console.log('hasRedo: ', hasRedo);
 
 
   console.log('layersProps:', layers)
@@ -701,79 +675,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               zoom={Math.floor(position.zoom / 2)}
               tileSourceUrl={config.miniMap.url}
             />
-            <Control position="topleft" prepend>
-              {/* Below are kept for now for development convenience */}
-              {/* {showModal ?
-                <Modal
-                  setShow={setShowModal}
-                  buttons={[
-                    {
-                      label: 'Yes',
-                      callback: () => {
-                        console.log('I said Yes!!!')
-                        setShowModal(true);
-                      }
-                    }, {
-                      label: 'No',
-                      callback: () => {
-                        console.log('I said NOOOOOOOOO!!!')
-                        setShowModal(false);
-                      }
-                    }
-                  ]}
-                  title={'Dialog'}
-                >
-                  <p>Warning!</p>
-                  <p>Loading a new Track will replace the existing Tracks.</p>
-                  <p>Do you want to continue loading the new Track?</p>
-                  <p>Scroll<br />
-                    ...<br />
-                    ...<br />
-                    ...<br />
-                    ...<br />
-                    Boo!
-                  </p>
-                </Modal>
-                : null}
-              {showNonModal ?
-                <Dialog
-                  setShow={setShowNonModal}
-                  buttons={[
-                    {
-                      label: 'Yes',
-                      callback: () => {
-                        console.log('I said Yes!!!')
-                        setShowNonModal(true);
-                      }
-                    }, {
-                      label: 'No',
-                      callback: () => {
-                        console.log('I said NOOOOOOOOO!!!')
-                        setShowNonModal(false);
-                      }
-                    }
-                  ]}
-                  title={'Dialog'}
-                >
-                  <p>Warning!</p>
-                  <p>Loading a new Track will replace the existing Tracks.</p>
-                  <p>Do you want to continue loading the new Track?</p>
-                  <p>Scroll<br />
-                    ...<br />
-                    ...<br />
-                    ...<br />
-                    ...<br />
-                    Boo!
-                  </p>
-                </Dialog>
-                : null} */}
-            </Control>
-            {/* <Control position="topleft">
-              <ControlItem type={'NonModal'} criteria={'NonModal'} cb={() => setShowNonModal(true)} />
-            </Control>
-            <Control position="topleft">
-              <ControlItem type={'Modal'} criteria={'Modal'} cb={() => setShowModal(true)} />
-            </Control> */}
             <Control position="topleft">
               <ControlHeaderExpand
                 isDisabled={isEditing}
@@ -855,103 +756,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 ]}
               />
             </Control>
-            {/* <Control position="bottomleft">
-
-              {showTrackCriteriaModal ?
-                <Modal
-                  setShow={handleShowTrackCriteria}
-                  buttons={[]}
-                  title={'Track Criteria'}
-                >
-                  <div className="stats-container">
-                    {config.trackCriteria ?
-                      <TrackCriteria
-                        criteria={config.trackCriteria}
-                        title={"Specified"}
-                        level={3}
-                      /> : null
-                    }
-                    {config.trackCriteriaNormalized ?
-                      <TrackCriteria
-                        criteria={config.trackCriteriaNormalized}
-                        title={"Normalized"}
-                        level={3}
-                      /> : null
-                    }
-                  </div>
-                </Modal>
-                : null}
-              {showFileReplaceModal ?
-                <Modal
-                  setShow={handleFileReplaceDialog}
-                  buttons={[
-                    {
-                      label: 'Replace',
-                      callback: () => {
-                        console.log('Replace')
-                        // TODO: Handle case of re-selecting existing file after cancelling in this modal.
-                        // acceptCurrentFile(true);
-                        swapTracks();
-                        handleFileReplaceDialog(false);
-                      }
-                    }, {
-                      label: 'Merge',
-                      callback: () => {
-                        console.log('Merge')
-                        // TODO: Handle case of re-selecting existing file after cancelling in this modal.
-                        // TODO: Handle case of not reloading a prior loaded file. Maybe have a list of loaded names?
-                        // acceptCurrentFile(true);
-                        loadTrack();
-                        handleFileReplaceDialog(false);
-                      }
-                    }, {
-                      label: 'Cancel',
-                      callback: () => {
-                        console.log('Cancel')
-                        // TODO: Handle case of re-selecting existing file after cancelling here.
-                        // acceptCurrentFile(false);
-                        handleFileReplaceDialog(false);
-                      }
-                    }
-                  ]}
-                  title={'Warning!'}
-                >
-                  <p>Tracks already exist.</p>
-                  <p>Please select from the following actions:</p>
-                </Modal>
-                : null}
-
-              {showElevationApiModal ?
-                <Modal
-                  setShow={handleElevationApiDialog}
-                  buttons={[{
-                    label: 'Fetch from API',
-                    callback: async () => {
-                      await handleGetCachedElevation();
-                      // await handleGetApiElevation(); // TODO: Activate this & remove cached elevations method once API fixed
-                      handleSmoothByElevationWithElevations();
-                      handleElevationApiDialog(false);
-                    }
-                  }, {
-                    label: 'Use existing',
-                    callback: async () => {
-                      handleSmoothByElevationWithElevations();
-                      handleElevationApiDialog(false);
-                    }
-                  }, {
-                    label: 'Cancel',
-                    callback: () => {
-                      handleElevationApiDialog(false);
-                    }
-                  }
-                  ]}
-                  title={'Elevations'}
-                >
-                  <p>Some Track Points are missing terrain elevations. <br />
-                    Stats may be off if using incomplete or GPS-recorded altitudes.</p>
-                </Modal>
-                : null}
-            </Control> */}
             {currentTrack ?
               <>
                 <Control position="topleft">
