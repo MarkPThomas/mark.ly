@@ -6,7 +6,7 @@ describe('##StateHistory', () => {
       it('should do nothing for an empty key', () => {
         const history = new StateHistory<number>();
 
-        const resultFirst = history.addNewStateHistory('');
+        const resultFirst = history.addHistorySet('');
 
         expect(resultFirst).toBeFalsy();
       });
@@ -14,11 +14,11 @@ describe('##StateHistory', () => {
       it('should do nothing for a key that already exists', () => {
         const history = new StateHistory<number>();
 
-        const resultFirst = history.addNewStateHistory('A');
+        const resultFirst = history.addHistorySet('A');
 
         expect(resultFirst).toBeTruthy();
 
-        const resultRedundant = history.addNewStateHistory('A');
+        const resultRedundant = history.addHistorySet('A');
 
         expect(resultRedundant).toBeFalsy();
       });
@@ -26,7 +26,7 @@ describe('##StateHistory', () => {
       it('should add a new state history set with a placeholder state', () => {
         const history = new StateHistory<number>();
 
-        const resultFirst = history.addNewStateHistory('A');
+        const resultFirst = history.addHistorySet('A');
 
         expect(resultFirst).toBeTruthy();
       });
@@ -58,7 +58,7 @@ describe('##StateHistory', () => {
         const history = new StateHistory<number>();
         expect(history.numberOfStates(key)).toEqual(0);
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         expect(history.numberOfStates(key)).toEqual(1);
 
         history.executeCmd(key, 1, command);
@@ -97,7 +97,7 @@ describe('##StateHistory', () => {
         const command2State = 3;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         expect(history.hasUndo(key)).toBeFalsy();
 
         history.executeCmd(key, initialState, command);
@@ -116,7 +116,7 @@ describe('##StateHistory', () => {
         const command2State = 3;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
         expect(history.hasUndo(key)).toBeTruthy();
@@ -155,7 +155,7 @@ describe('##StateHistory', () => {
         const history = new StateHistory<number>();
 
         // At tail of history as it accrues
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         expect(history.hasRedo(key)).toBeFalsy();
 
         history.executeCmd(key, initialState, command);
@@ -187,7 +187,7 @@ describe('##StateHistory', () => {
         const command2State = 3;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         history.executeCmd(key, initialState, command);
         history.executeCmd(key, command1State, command);
 
@@ -210,7 +210,7 @@ describe('##StateHistory', () => {
         const initialState = 1;
         const command = () => { };
         const history = new StateHistory<number>();
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         const originalNumberOfStates = history.numberOfStates(key);
         expect(originalNumberOfStates).toEqual(1);
@@ -229,7 +229,7 @@ describe('##StateHistory', () => {
         const command = () => { };
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         expect(history.numberOfStates(key)).toEqual(1);
 
         history.executeCmd(key, initialState, command)
@@ -245,7 +245,7 @@ describe('##StateHistory', () => {
         const command3State = 4;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         expect(history.numberOfStates(key)).toEqual(1);
 
         history.executeCmd(key, initialState, command);
@@ -278,7 +278,7 @@ describe('##StateHistory', () => {
         const command3State = 4;
         const history = new StateHistory<number>(2);
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
         expect(history.numberOfStates(key)).toEqual(1);
 
         history.executeCmd(key, initialState, command);
@@ -311,7 +311,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -327,7 +327,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -344,7 +344,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         expect(history.numberOfStates(key)).toEqual(1);
 
@@ -366,7 +366,7 @@ describe('##StateHistory', () => {
         const command2State = 3;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         expect(history.numberOfStates(key)).toEqual(1);
 
@@ -394,7 +394,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -420,7 +420,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -438,7 +438,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -456,7 +456,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -474,7 +474,7 @@ describe('##StateHistory', () => {
         const command1State = 2;
         const history = new StateHistory<number>();
 
-        history.addNewStateHistory(key);
+        history.addHistorySet(key);
 
         history.executeCmd(key, initialState, command);
 
@@ -496,7 +496,7 @@ describe('##StateHistory', () => {
       const history = new StateHistory<number>();
 
       // At single state
-      history.addNewStateHistory(key);
+      history.addHistorySet(key);
       expect(history.hasRedo(key)).toBeFalsy();
       expect(history.hasUndo(key)).toBeFalsy();
 

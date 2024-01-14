@@ -19,7 +19,7 @@ export interface IStateHistory<T> {
   executeCmd(key: string, state: T, command: () => void): void;
 }
 
-export class StateHistory<T> {
+export class StateHistory<T> implements IStateHistory<T> {
   private _stateLimit = 0;
   private _histories: IStateHistories<T> = {};
 
@@ -27,7 +27,7 @@ export class StateHistory<T> {
     this._stateLimit = Math.max(stateLimit, 0);
   }
 
-  addNewStateHistory(key: string): boolean {
+  addHistorySet(key: string): boolean {
     if (key && !this._histories[key]) {
       const states = new LinkedListDouble<T | null>();
       states.append(new NodeDouble<T | null>(null));
