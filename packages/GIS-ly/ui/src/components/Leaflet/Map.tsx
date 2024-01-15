@@ -58,6 +58,7 @@ import { CleanIcon } from '../shared/components/Icons/CleanIcon';
 import { SaveIcon } from '../shared/components/Icons/SaveIcon';
 import { GraphIcon } from '../shared/components/Icons/GraphIcon';
 import { StatsIcon } from '../shared/components/Icons/StatsIcon';
+import { GeoJsonPreview } from './Layers/GeoJsonPreview';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -141,10 +142,23 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     console.log('Toggled showPreview!', showPreview);
   }
 
-  // TODO: hook this into modal prompt for track split
   const handleIsShowingPreview = () => {
     setIsShowingPreview(!isShowingPreview);
-    console.log('Toggled showPreview!', showPreview);
+  }
+
+  const handleAccept = () => {
+    setIsShowingPreview(false);
+
+    removeTrack(currentTrack);
+    addTracks(previewTracks);
+
+    const newCurrentTrack = previewTracks[0];
+    changeCurrentTrack(newCurrentTrack);
+    updateFromTrack(newCurrentTrack, false);
+  }
+
+  const handleReject = () => {
+    setIsShowingPreview(false);
   }
 
   const handleShowTrackPoints = () => {
@@ -433,6 +447,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           setPreviewTracks(splitResults.tracks);
           setPreviewPoints(splitResults.points);
           setPreviewSegments(splitResults.segments);
+          handleIsShowingPreview();
         }
       } else {
         handleCmd(() => {
@@ -661,6 +676,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const tracksValues = Object.values(tracks);
 
+  const isGlobalDisabled = showModal || isShowingPreview;
+
   return (
     layers ?
       <>
@@ -793,9 +810,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                 <Control position="topleft">
                   <ControlHeaderExpand
                     category="clean"
-                    isDisabled={isEditing}
+                    isDisabled={isEditing || isGlobalDisabled}
                     iconSvg={
-                      <CleanIcon isDisabled={isEditing} />
+                      <CleanIcon isDisabled={isEditing || isGlobalDisabled} />
                     }
                     children={[
                       <ControlHeaderExpand
@@ -871,11 +888,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     category="edit"
                     childrenBeside={true}
                     children={[]}
-                    isDisabled={showModal}
-                    // isDisabled={true}
+                    isDisabled={isGlobalDisabled}
                     cb={handleOnEditClick}
                     iconSvg={
-                      <EditIcon isDisabled={showModal} />
+                      <EditIcon isDisabled={isGlobalDisabled} />
                     }
                   />
                 </Control>
@@ -888,7 +904,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     isDisabled={!hasUndo}
                     cb={handleUndo}
                     iconSvg={
-                      <UndoRedoIcon isDisabled={!hasUndo} />
+                      <UndoRedoIcon isDisabled={!hasUndo || isGlobalDisabled} />
                     }
                   />
                   <ControlItem
@@ -899,7 +915,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     isDisabled={!hasRedo}
                     cb={handleRedo}
                     iconSvg={
-                      <UndoRedoIcon redo={true} isDisabled={!hasRedo} />
+                      <UndoRedoIcon redo={true} isDisabled={!hasRedo || isGlobalDisabled} />
                     }
                   />
                 </Control>
@@ -909,11 +925,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     category="graph"
                     title="Show Graph"
                     children={[]}
-                    isDisabled={showModal}
+                    isDisabled={isGlobalDisabled}
                     // isDisabled={true}
                     cb={handleGraphClick}
                     iconSvg={
-                      <GraphIcon isDisabled={showModal} />
+                      <GraphIcon isDisabled={isGlobalDisabled} />
                     }
                   />
                 </Control>
@@ -929,9 +945,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     title="Show stats"
                     stats={trackStats}
                     children={[]}
-                    isDisabled={showModal}
+                    isDisabled={isGlobalDisabled}
                     iconSvg={
-                      <StatsIcon isDisabled={showModal} />
+                      <StatsIcon isDisabled={isGlobalDisabled} />
                     }
                   />
                 </Control>
@@ -941,6 +957,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
               <LayersControl {...layers} />
+              : null}
+
+
+            {isShowingPreview ?
+              <GeoJsonPreview tracks={previewTracks} />
               : null}
 
             {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
@@ -956,6 +977,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
           {isEditing ?
             <div className="bottom-center control">
               <div className="editing-label">Editing to be added in next version</div>
+            </div>
+            : null}
+
+          {isShowingPreview ?
+            <div className="bottom-center control">
+              <div className="preview-label">
+                <input type="button" onClick={handleAccept} value="Accept" />
+                <input type="button" onClick={handleReject} value="Reject" />
+              </div>
             </div>
             : null}
 

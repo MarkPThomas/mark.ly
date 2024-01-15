@@ -8,13 +8,12 @@ import {
 } from 'react-leaflet';
 import { ReactNode } from 'react';
 
-import { randomColor } from '../../../../../../../common/utils';
 import { hashString } from '../../../../../../../common/utils';//'common/utils';
 
 import { Track, TrackPoint, TrackSegment } from '../../../../model/GIS/Core/Track';
 
 import { CoordinateMarkersLayer } from '../../Custom/Stats/Points/CoordinateMarkersLayer';
-import GeoJsonWithUpdates from './GeoJsonWithUpdates';
+import GeoJsonWithUpdates from '../../Layers/GeoJsonWithUpdates';
 
 export interface IOverlay {
   name: string;
