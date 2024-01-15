@@ -5,7 +5,7 @@ import {
   Layer
 } from 'leaflet';
 import { MapContainer } from 'react-leaflet';
-import { FeatureCollection as FeatureCollectionSerial } from 'geojson';
+import { Feature, FeatureCollection as FeatureCollectionSerial, Geometry } from 'geojson';
 import Control from "react-leaflet-custom-control";
 
 
@@ -18,10 +18,9 @@ import {
   toKmlFile
 } from '../../model/Files';
 
-import { Feature } from '../../model/GeoJSON';
 import { GeoJsonManager } from '../../model/GIS';
 import { ITrackCriteria } from '../../model/GIS/settings';
-import { Track } from '../../model/GIS/Core/Track';
+import { Track, TrackPoint, TrackSegment } from '../../model/GIS/Core/Track';
 import {
   StationarySmoother,
   SpeedSmoother,
@@ -36,7 +35,7 @@ import { Settings } from '../../Settings';
 
 import { createTileLayers, appendTilesApiKey } from './Layers/TileLayers';
 import { MiniMapControl } from './LeafletControls/MiniMap/MiniMapControl';
-import { LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
+import { IOverlay, LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
 import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
@@ -75,20 +74,30 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
   const [position, setPosition] = useState<IInitialPosition>(config.initialPosition);
   const [bounds, setBounds] = useState<LatLngBoundsExpression | null>(null);
+
   const [trackCriteria, setTrackCriteria] = useState<ITrackCriteria>(config.trackCriteriaNormalized);
+  const [showTrackCriteriaModal, setShowTrackCriteriaModal] = useState<boolean>(false);
 
   const [layers, setLayers] = useState<LayersControlProps | null>(null)
+  const [showTrackPoints, setShowTrackPoints] = useState<boolean>(true);
 
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [tracks, setTracks] = useState<{ [key: string]: Track }>({});
   const [history, setHistory] = useState<StateHistory<Track>>(new StateHistory<Track>());
+
   const [originalTrackStats, setOriginalTrackStats] = useState<IEditedStats>(null);
+  const [showComparisonStats, setShowComparisonStats] = useState<boolean>(true);
+
   const [trackStats, setTrackStats] = useState<IEditedStats>(null);
 
-  const [showComparisonStats, setShowComparisonStats] = useState<boolean>(true);
-  const [showTrackStats, setShowTrackStats] = useState<boolean>(true);
-  const [animateRef, setAnimateRef] = useState<boolean>(true);
+  const [previewTracks, setPreviewTracks] = useState<Track[]>(null);
+  const [previewPoints, setPreviewPoints] = useState<any[]>(null);
+  const [previewSegments, setPreviewSegments] = useState<any[]>(null);
   const [showPreview, setShowPreview] = useState<boolean>(true);
+  const [isShowingPreview, setIsShowingPreview] = useState<boolean>(false);
+
+
+  const [animateRef, setAnimateRef] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasElevations, setHasElevations] = useState<boolean>(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
@@ -96,8 +105,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const [selectedFile, setSelectedFile] = useState<File>(null);
   const [currentFile, setCurrentFile] = useState<File>(null);
   const [showFileReplaceModal, setShowFileReplaceModal] = useState<boolean>(false);
+
   const [showElevationApiModal, setShowElevationApiModal] = useState<boolean>(false);
-  const [showTrackCriteriaModal, setShowTrackCriteriaModal] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showNonModal, setShowNonModal] = useState<boolean>(false);
 
@@ -132,6 +141,17 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     console.log('Toggled showPreview!', showPreview);
   }
 
+  // TODO: hook this into modal prompt for track split
+  const handleIsShowingPreview = () => {
+    setIsShowingPreview(!isShowingPreview);
+    console.log('Toggled showPreview!', showPreview);
+  }
+
+  const handleShowTrackPoints = () => {
+    setShowTrackPoints(!showTrackPoints);
+    setLayers(updateLayersProps(currentTrack, !showTrackPoints));
+  }
+
   const handleShowTrackCriteria = () => {
     setShowTrackCriteriaModal(!showTrackCriteriaModal);
   }
@@ -139,11 +159,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleShowComparisonStats = () => {
     setShowComparisonStats(!showComparisonStats);
     console.log('Toggled showComparisonStats!', showComparisonStats);
-  }
-
-  const handleShowTrackStats = () => {
-    setShowTrackStats(!showTrackStats);
-    console.log('Toggled showTrackStats!', showTrackStats);
   }
 
   const handleOnEditClick = () => {
@@ -178,14 +193,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
-  const updateLayersProps = (selectedTrack?: Track): LayersControlProps => {
-    const overlays = Object.values(tracks).map((track) => overlayDefinition(track));
+  const updateLayersProps = (selectedTrack?: Track, showTrackPoints: boolean = true): LayersControlProps => {
+    const overlays: IOverlay[] = Object.values(tracks).map((track) => overlayDefinition(track));
     console.log('updateLayersProps->overlays: ', overlays)
 
     const layersProps = overlays.length ? {
       ...layers,
       overlays,
-      selectedTrack: selectedTrack ?? currentTrack
+      selectedTrack: selectedTrack ?? currentTrack,
+      showTrackPoints
     } : layers;
     console.log('layersProps: ', layersProps)
 
@@ -193,19 +209,17 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
 
-  const overlayDefinition = (track: Track) => {
+  const overlayDefinition = (track: Track): IOverlay => {
     const coords = track.trackPoints();
-    console.log('newCoords: ', coords);
-
     const segments = track.trackSegments();
-
     const geoJson = track.toJson();
-    console.log('newGeoJson: ', geoJson);
-
     const trackName = track.name;
+
+    console.log('newCoords: ', coords);
+    console.log('newGeoJson: ', geoJson);
     console.log('trackName: ', trackName);
 
-    const onEachFeature = (feature: Feature, layer: Layer) => {
+    const onEachFeature = (feature: Feature<Geometry, any>, layer: Layer) => {
       if (feature.properties) {
         layer.bindTooltip(`Track: ${trackName}`, { sticky: true });
       }
@@ -413,30 +427,41 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const handleSplitOnStop = () => {
     console.log('handleSplitOnStop')
     if (currentTrack) {
-      handleCmd(() => {
-        const manager = new DurationSplitter(currentTrack);
-
-        // const triggerStopDurationS: number = 3 hrs = 10,800 sec;
-        const maxStopDurationS = trackCriteria.split.stopDurationMax;
-        console.log('maxStopDurationS: ', maxStopDurationS)
-        // const minMoveDurationS: number = 5 min = 300 sec;
-        const minMoveDurationS = trackCriteria.split.moveDurationMin;
-        console.log('minMoveDurationS: ', minMoveDurationS)
-        const splitResults = manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
-
-        console.log(`number tracks returned: ${splitResults.tracks.length}`);
-        console.log(`number segments split on: ${splitResults.segments.length}`);
-        console.log(`number points split by: ${splitResults.points.length}`);
-
+      if (showPreview) {
+        const splitResults = splitOnStop(currentTrack.clone());
         if (splitResults.tracks.length > 1) {
-          removeTrack(currentTrack);
-          addTracks(splitResults.tracks);
-
-          const newCurrentTrack = splitResults.tracks[0];
-          changeCurrentTrack(newCurrentTrack);
-          updateFromTrack(newCurrentTrack, false);
+          setPreviewTracks(splitResults.tracks);
+          setPreviewPoints(splitResults.points);
+          setPreviewSegments(splitResults.segments);
         }
-      });
+      } else {
+        handleCmd(() => {
+          const splitResults = splitOnStop(currentTrack);
+
+          // console.log(`number tracks returned: ${splitResults.tracks.length}`);
+          // console.log(`number segments split on: ${splitResults.segments.length}`);
+          // console.log(`number points split by: ${splitResults.points.length}`);
+
+          if (splitResults.tracks.length > 1) {
+            removeTrack(currentTrack);
+            addTracks(splitResults.tracks);
+
+            const newCurrentTrack = splitResults.tracks[0];
+            changeCurrentTrack(newCurrentTrack);
+            updateFromTrack(newCurrentTrack, false);
+          }
+        });
+      }
+    }
+  }
+
+  const splitOnStop = (track: Track) => {
+    if (track) {
+      const manager = new DurationSplitter(track);
+
+      const maxStopDurationS = trackCriteria.split.stopDurationMax;
+      const minMoveDurationS = trackCriteria.split.moveDurationMin;
+      return manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
     }
   }
 
@@ -743,6 +768,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       <input type="checkbox" onChange={handleShowComparisonStats} id="showComparisonStats" checked={showComparisonStats} />
                       <label htmlFor="showComparisonStats">Show Comparison Stats</label>
                     </div>
+                    <div key="showTrackPoints">
+                      <input type="checkbox" onChange={handleShowTrackPoints} id="showTrackPoints" checked={showTrackPoints} />
+                      <label htmlFor="showTrackPoints">Show TrackPoints</label>
+                    </div>
                   </div>,
                   <div key="options-misc" className="options options-misc">
                     <hr />
@@ -901,8 +930,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                     stats={trackStats}
                     children={[]}
                     isDisabled={showModal}
-                    // isDisabled={true}
-                    cb={handleShowTrackStats}
                     iconSvg={
                       <StatsIcon isDisabled={showModal} />
                     }
