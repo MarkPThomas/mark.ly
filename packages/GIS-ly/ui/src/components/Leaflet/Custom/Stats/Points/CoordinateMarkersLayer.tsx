@@ -13,9 +13,15 @@ export type CoordinateMarkersLayerProps = {
   points: TrackPoint[];
   segments?: TrackSegment[];
   useAltColor?: boolean;
+  isVisible?: boolean
 }
 
-export function CoordinateMarkersLayer({ points, segments, useAltColor }: CoordinateMarkersLayerProps) {
+export function CoordinateMarkersLayer({
+  points,
+  segments,
+  useAltColor,
+  isVisible = true
+}: CoordinateMarkersLayerProps) {
   const getPrevSegment = (index: number) => {
     return index === 0 ? null : segments[index];
   }
@@ -24,9 +30,7 @@ export function CoordinateMarkersLayer({ points, segments, useAltColor }: Coordi
     return index < segments.length ? segments[index] : null;
   }
 
-  return (
-    // (points as TrackPoint[])
-    //   ?
+  return (isVisible ?
     <LayerGroup key={hashString(JSON.stringify(points))}>
       {points.map((point: TrackPoint, index: number) =>
         <CoordinateMarker
@@ -38,6 +42,6 @@ export function CoordinateMarkersLayer({ points, segments, useAltColor }: Coordi
         />
       )}
     </LayerGroup>
-    // : null
+    : null
   )
 }

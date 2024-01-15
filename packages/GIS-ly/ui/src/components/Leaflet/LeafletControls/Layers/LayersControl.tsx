@@ -1,5 +1,5 @@
-import { GeoJsonObject } from 'geojson';
-import { ControlPosition, PathOptions } from 'leaflet';
+import { Feature, GeoJsonObject, Geometry } from 'geojson';
+import { ControlPosition, Layer, PathOptions } from 'leaflet';
 import {
   FeatureGroup,
   FeatureGroupProps,
@@ -16,28 +16,35 @@ import { Track, TrackPoint, TrackSegment } from '../../../../model/GIS/Core/Trac
 import { CoordinateMarkersLayer } from '../../Custom/Stats/Points/CoordinateMarkersLayer';
 import GeoJsonWithUpdates from './GeoJsonWithUpdates';
 
-type Overlay = {
-  name: string,
-  points: TrackPoint[],
-  segments?: TrackSegment[],
-  groupOptions?: FeatureGroupProps
-  geoJSON?: GeoJsonObject
-  onEachFeature?: (feature, layer) => void
+export interface IOverlay {
+  name: string;
+  points: TrackPoint[];
+  segments?: TrackSegment[];
+  groupOptions?: FeatureGroupProps;
+  geoJSON?: GeoJsonObject;
+  onEachFeature?: (feature: Feature<Geometry, any>, layer: Layer) => void;
 }
 
-type BaseLayer = {
-  name: string,
-  item: ReactNode
+export interface IBaseLayer {
+  name: string;
+  item: ReactNode;
 }
 
 export type LayersControlProps = {
-  position: ControlPosition,
-  overlays?: Overlay[],
-  baseLayers?: BaseLayer[],
-  selectedTrack?: Track,
+  position: ControlPosition;
+  overlays?: IOverlay[];
+  baseLayers?: IBaseLayer[];
+  selectedTrack?: Track;
+  showTrackPoints?: boolean;
 }
 
-export function LayersControl({ position, overlays, baseLayers, selectedTrack }: LayersControlProps) {
+export function LayersControl({
+  position,
+  overlays,
+  baseLayers,
+  selectedTrack,
+  showTrackPoints = true
+}: LayersControlProps) {
   console.log('position: ', position)
   console.log('overlays: ', overlays)
   console.log('baseLayers: ', baseLayers)
@@ -70,7 +77,7 @@ export function LayersControl({ position, overlays, baseLayers, selectedTrack }:
 
   let useAltColor = false;
 
-  const isSelected = (overlay: Overlay) => selectedTrack === undefined || selectedTrack === null
+  const isSelected = (overlay: IOverlay) => selectedTrack === undefined || selectedTrack === null
     || overlay.points[0].timestamp === selectedTrack.firstPoint.val.timestamp;
 
   const useAltColors: boolean[] = [];
@@ -109,17 +116,22 @@ export function LayersControl({ position, overlays, baseLayers, selectedTrack }:
                 overlay.geoJSON ? */}
               {/* {('groupOptions' in overlay && overlay.geoJSON) ? */}
               <LayerGroup>
+                {/* GeoJsonPreview */}
+                {/* Points Preview */}
                 <GeoJsonWithUpdates
                   key={hashString(JSON.stringify(overlay.points[0]))}
                   data={overlay.geoJSON}
                   onEachFeature={overlay.onEachFeature}
                   pathOptions={overlaysPathOptions[index]}
-                  children={[<CoordinateMarkersLayer
-                    key={hashString(JSON.stringify(overlay.points[0]))}
-                    points={overlay.points as TrackPoint[]}
-                    segments={overlay.segments as TrackSegment[]}
-                    useAltColor={useAltColors[index]}
-                  />]}
+                  children={[
+                    <CoordinateMarkersLayer
+                      key={hashString(JSON.stringify(overlay.points[0]))}
+                      points={overlay.points as TrackPoint[]}
+                      segments={overlay.segments as TrackSegment[]}
+                      useAltColor={useAltColors[index]}
+                      isVisible={showTrackPoints}
+                    />
+                  ]}
                 />
               </LayerGroup>
               {/* : null} */}
