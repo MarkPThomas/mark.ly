@@ -59,6 +59,7 @@ import { SaveIcon } from '../shared/components/Icons/SaveIcon';
 import { GraphIcon } from '../shared/components/Icons/GraphIcon';
 import { StatsIcon } from '../shared/components/Icons/StatsIcon';
 import { GeoJsonPreview } from './Layers/GeoJsonPreview';
+import { ActivitySplitter } from '../../model/GIS/Actions/Split/ActivitySplitter';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -443,19 +444,17 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     if (currentTrack) {
       if (showPreview) {
         const splitResults = splitOnStop(currentTrack.clone());
+
         if (splitResults.tracks.length > 1) {
           setPreviewTracks(splitResults.tracks);
           setPreviewPoints(splitResults.points);
           setPreviewSegments(splitResults.segments);
+
           handleIsShowingPreview();
         }
       } else {
         handleCmd(() => {
           const splitResults = splitOnStop(currentTrack);
-
-          // console.log(`number tracks returned: ${splitResults.tracks.length}`);
-          // console.log(`number segments split on: ${splitResults.segments.length}`);
-          // console.log(`number points split by: ${splitResults.points.length}`);
 
           if (splitResults.tracks.length > 1) {
             removeTrack(currentTrack);
@@ -477,6 +476,47 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       const maxStopDurationS = trackCriteria.split.stopDurationMax;
       const minMoveDurationS = trackCriteria.split.moveDurationMin;
       return manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
+
+      // console.log(`number tracks returned: ${splitResults.tracks.length}`);
+      // console.log(`number segments split on: ${splitResults.segments.length}`);
+      // console.log(`number points split by: ${splitResults.points.length}`);
+    }
+  }
+
+  const handleSplitOnActivity = () => {
+    console.log('handleSplitOnActivity')
+    if (currentTrack) {
+      if (showPreview) {
+        const splitResults = splitOnActivity(currentTrack.clone());
+        if (splitResults.tracks.length > 1) {
+          setPreviewTracks(splitResults.tracks);
+          setPreviewPoints(splitResults.points);
+          setPreviewSegments(splitResults.segments);
+          handleIsShowingPreview();
+        }
+      } else {
+        handleCmd(() => {
+          const splitResults = splitOnActivity(currentTrack);
+
+          if (splitResults.tracks.length > 1) {
+            removeTrack(currentTrack);
+            addTracks(splitResults.tracks);
+
+            const newCurrentTrack = splitResults.tracks[0];
+            changeCurrentTrack(newCurrentTrack);
+            updateFromTrack(newCurrentTrack, false);
+          }
+        });
+      }
+    }
+  }
+
+  const splitOnActivity = (track: Track) => {
+    if (track) {
+      const manager = new ActivitySplitter(track);
+
+      const activity = trackCriteria.activities['hiking'];
+      return manager.splitByActivity(activity);
     }
   }
 
@@ -872,10 +912,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                         childrenBeside={true}
                         children={[
                           <ControlItem
-                            key={'split different movements'}
+                            key={'split movements'}
                             type="split"
-                            criteria="different movements"
+                            criteria="movements"
                             cb={handleSplitOnStop}
+                          />,
+                          <ControlItem
+                            key={'split activities'}
+                            type="split"
+                            criteria="activities"
+                            cb={handleSplitOnActivity}
                           />
                         ]}
                       />
