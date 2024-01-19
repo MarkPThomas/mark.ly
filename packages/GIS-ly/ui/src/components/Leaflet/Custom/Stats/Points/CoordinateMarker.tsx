@@ -1,54 +1,69 @@
-import React from 'react';
 import {
   Popup,
   Circle
 } from 'react-leaflet';
 
 import { hashString } from '../../../../../../../../common/utils'; //'common/utils';
-import { Conversion } from '../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
-import { Angle } from '../../../../../../../../common/utils/math/Coordinates/Angle';
 
 import { TrackPoint } from '../../../../../model/GIS/Core/Track/TrackPoint';
 
 import { LabelValue } from '../../LabelValueList';
+import { PointStats } from './Categories/PointStats';
+import { PointPathStats } from './Categories/PointPathStats';
+import { TrackSegment } from '../../../../../model/GIS/Core/Track';
+import { SegmentStats } from './Categories/SegmentStats';
+import { ToggleGroup } from '../../ToggleGroup';
+import { PathOptions } from 'leaflet';
 
 
 export type CoordinateMarkerProps = {
-  coord: TrackPoint
+  point: TrackPoint,
+  segmentPrev?: TrackSegment,
+  segmentNext?: TrackSegment,
+  pathOptions?: PathOptions,
+  radius?: number
+  useAltColor?: boolean;
 }
 
-export function CoordinateMarker({ coord }: CoordinateMarkerProps) {
-  const elevationMeasuredMetersFeet = coord.alt ? `${coord.alt} m / ${Math.round(Conversion.Length.Meters.toFeet(coord.alt))} ft` : '';
-  const elevationMappedMetersFeet = coord.elevation ? `${coord.elevation} m / ${Math.round(Conversion.Length.Meters.toFeet(coord.elevation))} ft` : '';
-  const elevationRateFeetPerHour = coord.path?.ascentRate ? `${Conversion.Length.Meters.toFeet(coord.path.ascentRate).toFixed(1)} ft/hr` : '';
-  const speedMPH = coord.path.speed ? `${Conversion.Speed.kphToMph(Conversion.Speed.metersPerSecondToKph(coord.path.speed)).toFixed(1)} mph` : '';
-  const rotationDeg = coord.path?.rotation ? `${Math.abs(Angle.RadiansToDegrees(coord.path.rotation)).toFixed(2)} deg ${coord.path.rotation > 0 ? 'CCW' : 'CW'}` : '';
-  const angularSpeedDegPerSec = coord.path?.rotationRate ? `${Angle.RadiansToDegrees(coord.path.rotationRate).toFixed(5)} deg/sec` : '';
+export function CoordinateMarker({ point, segmentPrev, segmentNext, pathOptions, radius, useAltColor }: CoordinateMarkerProps) {
+  const level = 1;
+
+  const pathOptionsDefault: PathOptions = {
+    fillColor: useAltColor ? 'yellow' : 'red',
+    color: 'black',
+    weight: 1,
+    opacity: 0.5
+  }
+
+  const radiusDefault = 30;
+
+  const pathOptionsUse: PathOptions = {
+    ...pathOptionsDefault,
+    ...pathOptions
+  }
+
+  const radiusUse = radius ?? radiusDefault;
 
   return <Circle
-    key={hashString(JSON.stringify(coord))}
-    center={[coord.lat, coord.lng]}
-    pathOptions={{ fillColor: 'red', color: 'black', weight: 1 }}
-    radius={30}
+    key={hashString(JSON.stringify(point))}
+    center={[point.lat, point.lng]}
+    pathOptions={pathOptionsUse}
+    radius={radiusUse}
   >
     <Popup>
-      <span>
-        {coord.timestamp ?
-          <LabelValue label={'Timestamp'} value={coord.timestamp} /> : null}
-        <LabelValue label={'Latitude'} value={coord.lat} />
-        <LabelValue label={'Longitude'} value={coord.lng} />
-        {coord.elevation ?
-          <LabelValue label={'Elevation (DEM)'} value={elevationMappedMetersFeet} /> : null}
-        {coord.alt ?
-          <LabelValue label={'Elevation (GPS)'} value={elevationMeasuredMetersFeet} /> : null}
-        {(coord.path && coord.path.ascentRate) ?
-          <LabelValue label={'Elevation Rate'} value={elevationRateFeetPerHour} /> : null}
-        {coord.path.speed ?
-          <LabelValue label={'Speed (average)'} value={speedMPH} /> : null}
-        {(coord.path && coord.path.rotation) ?
-          <LabelValue label={'Rotation'} value={rotationDeg} /> : null}
-        {(coord.path && coord.path.rotationRate) ?
-          <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} /> : null}
+      <span className={"popup-point"} >
+        <h1>Track Point</h1>
+        <LabelValue label={'Timestamp'} value={point.timestamp} />
+        <PointStats point={point} />
+        {point.path ?
+          <ToggleGroup value={'Path'} level={level} children={[<PointPathStats key={Date()} path={point.path} />]} />
+          : null}
+        {segmentPrev ?
+          <ToggleGroup value={'Previous Segment'} level={level} children={[<SegmentStats key={Date()} segment={segmentPrev} />]} />
+          : null}
+        {segmentNext ?
+          <ToggleGroup value={'Next Segment'} level={level} children={[<SegmentStats key={Date()} segment={segmentNext} />]} />
+          : null}
       </span>
     </Popup>
   </Circle>

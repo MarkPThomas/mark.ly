@@ -9,14 +9,119 @@ html {
   background-color: #ddd;
   background-image: linear-gradient(to bottom, #eee, #999);
   background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
+#app {
+  position: absolute;
+  left: 14px;
+  right: 14px;
 }
 
 #map-container {
-  height: 1000px;
+  position: relative;
+  display: flex;
+  width: 100%;
 }
 
 .leaflet-container {
-  height: inherit;
+  width: 100%;
+}
+
+.label-value {
+  font-size: 0.75em;
+}
+
+.height-rate-header,
+.slope-header {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+
+.range-extra {
+  color: #545454;
+  font-style: italic;
+}
+
+.toggle-header {
+  display: flex;
+  padding-top: 0.5em;
+  padding-bottom: 0.2em;
+}
+
+.toggle-header h1,
+.toggle-header h2,
+.toggle-header h3,
+.toggle-header h4,
+.toggle-header h5,
+.toggle-header h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.toggle-header-show-all h1,
+.toggle-header-show-all h2,
+.toggle-header-show-all h3,
+.toggle-header-show-all h4,
+.toggle-header-show-all h5,
+.toggle-header-show-all h6 {
+  background-color: #d7e4e8;
+  border: 1px solid gray;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+
+.toggle-button {
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: lightblue;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  height: 1em;
+}
+
+.toggle-button:hover {
+  border: 1px solid gray;
+  background-color: rgb(185, 215, 13);
+  cursor: pointer;
+}
+
+
+.popup-point .toggle-header h2 {
+  font-size: 1.2em;
+  margin: 0.2em 0.2em 0.2em 0;
+  text-decoration: underline;
+}
+
+.popup-point .toggle-button {
+  height: 1.2em;
+}
+
+.popup-point h1 {
+  font-size: 1.5em;
+  text-decoration: underline;
+  margin-bottom: 0.1em;
+}
+
+.popup-point .path-stats,
+.popup-point .segment-stats {
+  padding-left: 1em;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+table {
+  margin-bottom: 5px;
 }
 
 .stats-container {
@@ -28,9 +133,249 @@ html {
   padding: 10px
 }
 
-table,
-th,
-td {
+.leaflet-bar.header {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.leaflet-bar div.header-control.swap {
+  background-color: rgba(255, 255, 255, 1);
+  padding: 5px;
+}
+
+.leaflet-bar.header.child-col-beside {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: center;
+}
+
+.leaflet-bar.header .beside {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.leaflet-bar a.header-control,
+.leaflet-bar a.item-control {
+  width: 100%;
+}
+
+.leaflet-bar a.header-control span,
+.leaflet-bar a.item-control span {
+  margin: 5px;
+}
+
+span.icon-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: start;
+}
+
+.leaflet-bar a.header-control span.icon-label {
+  margin: 0;
+}
+
+.icon.toggle-button {
+  background-color: #aed9ff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+}
+
+.icon.toggle-button:hover {
+  background-color: #ffd5ae;
   border: 1px solid black;
-  border-collapse: collapse
+}
+
+.icon.toggle-button.toggled {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+
+.icon.toggle-button svg {
+  margin: 0;
+}
+
+.leaflet-bar.header.child-col-beside a.header-control.toggled {
+  width: fit-content;
+}
+
+.leaflet-bar a.header-control.toggled {
+  background-color: #f8ffac;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+}
+
+a.disabled,
+a.disabled:hover,
+a.disabled:visited {
+  background-color: rgb(266, 266, 266);
+  color: rgba(16, 16, 16, 0.5);
+  cursor: not-allowed;
+}
+
+.top-center {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  width: fit-content;
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
+}
+
+.top-center .selected-track {
+  background-color: #84ff84;
+}
+
+.top-center .selected-track-select {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.bottom-center {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translate(-50%, 0%);
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
+}
+
+.control {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.editing-label {
+  white-space: nowrap;
+}
+
+.top-center h2,
+.bottom-center h2 {
+  margin: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+dialog[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal-dialog-message,
+.modal-dialog-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-dialog-message {
+  flex-direction: column;
+}
+
+#polyline-table-comparison {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.options h3 {
+  margin: 0;
+}
+
+.leaflet-bar a.track-criteria-option {
+  white-space: nowrap;
+  font-weight: bold;
+  color: blue;
+  width: fit-content;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.leaflet-bar a.track-criteria-option:hover {
+  font-style: underline;
+  color: red;
+}
+
+.track-criteria h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.track-criteria {
+  text-align: left;
+}
+
+.leaflet-top.leaflet-left>.leaflet-control:first-child {
+  margin: 0;
+}
+
+.stats-label {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+span.icon-label.stats-label {
+  justify-content: space-evenly;
+}
+
+.stats-label h2 {
+  margin: 0;
+}
+
+svg {
+  margin: 3px;
+}
+
+.leaflet-bottom.leaflet-right .header {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+}
+
+.graph {
+  background-color: yellow;
+  border: 1px solid black;
+}
+
+
+.edit-control {
+  background-color: yellow;
+  border: 1px solid black;
+  white-space: nowrap;
+}
+
+.editing-label {
+  background-color: yellow;
+  border: 1px solid black;
+  white-space: nowrap;
 }
