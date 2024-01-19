@@ -1,17 +1,10 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useMap, MapContainer, TileLayer } from 'react-leaflet';
 
 import { MiniMapBounds } from './MiniMapBounds'
+import { POSITION_CLASSES } from '../controlSettings';
 
 // Note: from https://react-leaflet.js.org/docs/example-react-control/
-
-// TODO: Extract this to another file? Or revert this to an object and type the limited values?
-export enum POSITION_CLASSES {
-  bottomleft = 'leaflet-bottom leaflet-left',
-  bottomright = 'leaflet-bottom leaflet-right',
-  topleft = 'leaflet-top leaflet-left',
-  topright = 'leaflet-top leaflet-right',
-}
 
 type Props = {
   position?: POSITION_CLASSES,
@@ -25,7 +18,6 @@ export function MiniMapControl({ position, zoom, tileSourceUrl }: Props) {
 
   // TODO: Adjust this to update for zoom changes - needs to be done in Map.tsx by calling setPosition
   // Memoize the minimap so it's not affected by position changes
-  console.log('zoom: ', zoom)
   const minimap = useMemo(
     () => (
       <MapContainer
