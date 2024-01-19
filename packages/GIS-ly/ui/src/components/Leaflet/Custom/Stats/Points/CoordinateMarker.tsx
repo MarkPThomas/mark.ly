@@ -13,22 +13,42 @@ import { PointPathStats } from './Categories/PointPathStats';
 import { TrackSegment } from '../../../../../model/GIS/Core/Track';
 import { SegmentStats } from './Categories/SegmentStats';
 import { ToggleGroup } from '../../ToggleGroup';
+import { PathOptions } from 'leaflet';
 
 
 export type CoordinateMarkerProps = {
   point: TrackPoint,
   segmentPrev?: TrackSegment,
-  segmentNext?: TrackSegment
+  segmentNext?: TrackSegment,
+  pathOptions?: PathOptions,
+  radius?: number
+  useAltColor?: boolean;
 }
 
-export function CoordinateMarker({ point, segmentPrev, segmentNext }: CoordinateMarkerProps) {
+export function CoordinateMarker({ point, segmentPrev, segmentNext, pathOptions, radius, useAltColor }: CoordinateMarkerProps) {
   const level = 1;
+
+  const pathOptionsDefault: PathOptions = {
+    fillColor: useAltColor ? 'yellow' : 'red',
+    color: 'black',
+    weight: 1,
+    opacity: 0.5
+  }
+
+  const radiusDefault = 30;
+
+  const pathOptionsUse: PathOptions = {
+    ...pathOptionsDefault,
+    ...pathOptions
+  }
+
+  const radiusUse = radius ?? radiusDefault;
 
   return <Circle
     key={hashString(JSON.stringify(point))}
     center={[point.lat, point.lng]}
-    pathOptions={{ fillColor: 'red', color: 'black', weight: 1 }}
-    radius={30}
+    pathOptions={pathOptionsUse}
+    radius={radiusUse}
   >
     <Popup>
       <span className={"popup-point"} >

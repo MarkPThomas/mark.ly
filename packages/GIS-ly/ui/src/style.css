@@ -9,14 +9,23 @@ html {
   background-color: #ddd;
   background-image: linear-gradient(to bottom, #eee, #999);
   background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
+#app {
+  position: absolute;
+  left: 14px;
+  right: 14px;
 }
 
 #map-container {
-  height: 1000px;
+  position: relative;
+  display: flex;
+  width: 100%;
 }
 
 .leaflet-container {
-  height: inherit;
+  width: 100%;
 }
 
 .label-value {
@@ -107,7 +116,12 @@ table,
 th,
 td {
   border: 1px solid black;
-  border-collapse: collapse
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+table {
+  margin-bottom: 5px;
 }
 
 .stats-container {
@@ -152,6 +166,45 @@ td {
   margin: 5px;
 }
 
+span.icon-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: start;
+}
+
+.leaflet-bar a.header-control span.icon-label {
+  margin: 0;
+}
+
+.icon.toggle-button {
+  background-color: #aed9ff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+}
+
+.icon.toggle-button:hover {
+  background-color: #ffd5ae;
+  border: 1px solid black;
+}
+
+.icon.toggle-button.toggled {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+
+.icon.toggle-button svg {
+  margin: 0;
+}
+
 .leaflet-bar.header.child-col-beside a.header-control.toggled {
   width: fit-content;
 }
@@ -170,53 +223,159 @@ a.disabled:visited {
   cursor: not-allowed;
 }
 
-.leaflet-bar.top-center {
-  position: fixed;
+.top-center {
+  position: absolute;
+  top: 12px;
   left: 50%;
-  transform: translate(-50%);
+  transform: translate(-50%, 0%);
+  width: fit-content;
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
 }
 
-.polyline-comparison {
+.top-center .selected-track {
+  background-color: #84ff84;
+}
+
+.top-center .selected-track-select {
   display: flex;
   flex-wrap: wrap;
-  flex-direction: column;
-  background-color: rgb(134, 251, 255, 0.7);
-}
-
-.leaflet-bar.top-center h2 {
-  margin: 0;
+  justify-content: center;
+  align-items: center;
   padding-left: 5px;
   padding-right: 5px;
 }
 
-.options-display h3 {
+.bottom-center {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translate(-50%, 0%);
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
+}
+
+.control {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.editing-label {
+  white-space: nowrap;
+}
+
+.top-center h2,
+.bottom-center h2 {
   margin: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+dialog[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal-dialog-message,
+.modal-dialog-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-dialog-message {
+  flex-direction: column;
+}
+
+#polyline-table-comparison {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.options h3 {
+  margin: 0;
+}
+
+.leaflet-bar a.track-criteria-option {
+  white-space: nowrap;
+  font-weight: bold;
+  color: blue;
+  width: fit-content;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.leaflet-bar a.track-criteria-option:hover {
+  font-style: underline;
+  color: red;
+}
+
+.track-criteria h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.track-criteria {
+  text-align: left;
 }
 
 .leaflet-top.leaflet-left>.leaflet-control:first-child {
   margin: 0;
 }
 
-.leaflet-bar.top-center {
-  margin: 10px;
+.stats-label {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.leaflet-bar.top-center .selected-track {
-  background-color: #84ff84;
+span.icon-label.stats-label {
+  justify-content: space-evenly;
 }
 
-.leaflet-bar.top-center .selected-track-select {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.stats-control h2 {
+.stats-label h2 {
   margin: 0;
 }
 
-.stats-control {
-  background-color: rgb(134, 251, 255, 0.7);
-  padding: 5px;
+svg {
+  margin: 3px;
+}
+
+.leaflet-bottom.leaflet-right .header {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+}
+
+.graph {
+  background-color: yellow;
+  border: 1px solid black;
+}
+
+
+.edit-control {
+  background-color: yellow;
+  border: 1px solid black;
+  white-space: nowrap;
+}
+
+.editing-label {
+  background-color: yellow;
+  border: 1px solid black;
+  white-space: nowrap;
 }

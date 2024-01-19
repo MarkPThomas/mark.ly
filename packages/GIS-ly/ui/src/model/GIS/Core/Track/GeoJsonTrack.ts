@@ -1,10 +1,16 @@
+import {
+  FeatureCollection as SerialFeatureCollection,
+  Geometry as SerialGeometry
+} from "geojson";
+
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 
 import {
   FeatureCollection,
   Feature,
   Point,
-  LineString
+  LineString,
+  BBoxState
 } from '../../../GeoJSON';
 
 
@@ -58,6 +64,8 @@ export interface IGeoJsonTrack
    * @memberof IGeoJsonTrackManager
    */
   copyBySegmentData(segData: TrackSegmentData): FeatureCollection;
+
+  toJson(includeBBox: BBoxState): SerialFeatureCollection<SerialGeometry, { [name: string]: any; }>;
 }
 
 interface IBaseTrackProperty {
@@ -72,6 +80,10 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   protected _baseTrackProperty: IBaseTrackProperty;
   get trackMetaData(): IBaseTrackProperty {
     return { ...this._baseTrackProperty };
+  }
+
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeatureCollection<SerialGeometry, { [name: string]: any; }> {
+    return this._geoJson.toJson(includeBBox);
   }
 
   boundingBox(): BoundingBox {

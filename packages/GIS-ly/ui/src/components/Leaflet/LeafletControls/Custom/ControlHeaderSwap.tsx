@@ -4,19 +4,21 @@ import { toUpperFirstLetter } from "../../../../../../../common/utils/stringForm
 import { ControlItem } from "./ControlItem";
 
 export type ControlHeaderSwapProps = {
-  isToggled?: boolean;
-  isDisabled?: boolean;
   category: string;
-  children: React.ReactNode[];
   cb?: () => void;
+  children: React.ReactNode[];
+  iconSvg?: React.ReactNode;
+  isDisabled?: boolean;
+  isToggled?: boolean;
 }
 
 export function ControlHeaderSwap({
+  category,
+  cb,
+  children,
+  iconSvg,
   isToggled,
   isDisabled,
-  category,
-  children,
-  cb
 }: ControlHeaderSwapProps) {
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>(isToggled ?? false);
 
@@ -50,7 +52,9 @@ export function ControlHeaderSwap({
             aria-disabled="false"
             role="button"
           >
-            <span aria-hidden="true">{categoryUpperFirst}</span>
+            {
+              iconSvg ?? <span aria-hidden="true">{categoryUpperFirst}</span>
+            }
           </a>
           :
           <div className="header-control swap" >
