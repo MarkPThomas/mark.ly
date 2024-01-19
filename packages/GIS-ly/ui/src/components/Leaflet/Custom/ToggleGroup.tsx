@@ -4,6 +4,7 @@ import { ToggleHeader, ToggleHeaderProps } from "./ToggleHeader";
 export type ToggleGroupProps = {
   children: ReactNode[];
   level?: number;
+  id?: string;
 } & ToggleHeaderProps;
 
 export function ToggleGroup(props: ToggleGroupProps) {
@@ -22,14 +23,14 @@ export function ToggleGroup(props: ToggleGroupProps) {
     cb: handleToggleClick
   }
 
+  const itemProps = props.id ? { id: props.id } : {};
+
   return (
-    <div>
+    <div className="toggle-group">
       <ToggleHeader {...childProps} />
       {showChildren ? children.map((child, index) =>
-        <div key={index + Date()}>
-          {/* <React.Fragment key={index + Date()}> */}
+        <div key={index + Date()} className="toggle-item" {...itemProps}>
           {child}
-          {/* </React.Fragment> */}
         </div>
       ) : null}
     </div>

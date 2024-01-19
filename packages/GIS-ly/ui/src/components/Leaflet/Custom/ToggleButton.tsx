@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 export type ToggleButtonProps = {
-  isToggled?: boolean,
-  isEnabled?: boolean,
+  isToggled?: boolean;
+  isEnabled?: boolean;
   cb?: () => void;
   values?: {
-    on: any,
-    off: any
-  }
+    on: any;
+    off: any;
+  };
 };
 
 export function ToggleButton({ isToggled, isEnabled, values, cb }: ToggleButtonProps) {
