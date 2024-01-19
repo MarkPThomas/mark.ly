@@ -1,7 +1,7 @@
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 
 import { FeatureCollection } from '../../../GeoJSON';
-import { VertexNode, SegmentNode } from '../../../Geometry/Polyline';
+import { VertexNode, SegmentNode, IPolylineSize } from '../../../Geometry/Polyline';
 import { GeoJsonManager } from '../GeoJsonManager';
 
 import { TrackPoint } from './TrackPoint';
@@ -11,9 +11,14 @@ import { GeoJsonTrack } from './GeoJsonTrack';
 import { PolylineTrack } from './PolylineTrack';
 import { BoundingBox } from '../BoundingBox';
 import { IPointProperties } from '../Point/Point';
+import { ITrackStats, TimeStats, TrackStats } from './Stats';
 
 
 export type EvaluatorArgs = { [name: string]: number };
+
+export interface IEditedTrackStats extends ITrackStats {
+  size: IPolylineSize
+}
 
 export interface ITrack
   extends
@@ -47,15 +52,23 @@ export interface ITrack
     evaluator: (target: number | EvaluatorArgs, coord: VertexNode<TrackPoint, TrackSegment>) => boolean
   ): VertexNode<TrackPoint, TrackSegment>[];
 
-  getDuration(): number;
+  getStats(): IEditedTrackStats;
 }
 
 export class Track implements ITrack {
   private _geoJsonTrack: GeoJsonTrack;
   private _polylineTrack: PolylineTrack;
 
+  public id: string;
+
   get name(): string {
     return this._geoJsonTrack.trackMetaData.name;
+  }
+  set name(name: string) {
+    name = name?.trim();
+    if (name) {
+      this._geoJsonTrack.trackMetaData.name = name;
+    }
   }
 
   get time(): string {
@@ -101,22 +114,22 @@ export class Track implements ITrack {
     return track;
   }
 
-  static fromPoints(trkPts: TrackPoint[]): Track {
+  static fromPoints(trkPts: TrackPoint[], name?: string): Track {
     const track = new Track();
 
     const featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trkPts);
 
-    track._geoJsonTrack = new GeoJsonTrack(featureCollection);
+    track._geoJsonTrack = new GeoJsonTrack(featureCollection, name);
     track._polylineTrack = new PolylineTrack(trkPts);
 
     return track;
   }
 
-  static fromPolyline(trkPolyline: PolylineTrack) {
+  static fromPolyline(trkPolyline: PolylineTrack, name?: string) {
     const track = new Track();
 
     const featureCollection = GeoJsonManager.FeatureCollectionFromTrackPoints(trkPolyline.vertices());
-    track._geoJsonTrack = new GeoJsonTrack(featureCollection);
+    track._geoJsonTrack = new GeoJsonTrack(featureCollection, name);
 
     track._polylineTrack = trkPolyline;
 
@@ -126,6 +139,7 @@ export class Track implements ITrack {
   clone(): Track {
     const track = new Track();
 
+    track.id = this.id;
     track._geoJsonTrack = this._geoJsonTrack.clone();
     track._polylineTrack = this._polylineTrack.clone();
 
@@ -171,7 +185,7 @@ export class Track implements ITrack {
   // Work out a reasonable & efficient way to maintain the hooked state while exposing
   //    the geoJSON object for external hooking.
   toJson() {
-    return this._geoJsonTrack.toFeatureCollection().toJson();
+    return this._geoJsonTrack.toJson();
   }
 
   vertexNodeByTime(timestamp: string): VertexNode<TrackPoint, TrackSegment> | null | undefined {
@@ -191,12 +205,22 @@ export class Track implements ITrack {
 
   // === Property Methods
 
-  // getNetHeight(): number | undefined {
-  //   return this._polylineTrack.getNetHeight();
-  // }
+  getStats() {
+    const size = this._polylineTrack.size();
+    const trackStats = TrackStats.fromTrack(this._polylineTrack);
+    const statsResults = trackStats.stats;
+
+    return {
+      size,
+      ...statsResults
+    }
+  }
 
   getDuration() {
-    return this._polylineTrack.getDuration();
+    const timeStats = new TimeStats();
+    timeStats.of(this._polylineTrack);
+
+    return timeStats.duration;
   }
 
   updateGeoJsonTrack(trackChanged: boolean | number) {

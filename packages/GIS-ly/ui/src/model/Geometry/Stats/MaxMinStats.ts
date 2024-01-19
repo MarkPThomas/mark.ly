@@ -28,7 +28,7 @@ export class MaxMinStats<TVertex extends Vertex, TSegment extends Segment>
   }
 
   protected override initializeProperties() {
-    if (this._startVertex) {
+    if (this._firstVertex) {
       this._range = new MaxMin<TVertex, TSegment>(this._getProperty, this._isConsidered, this._tolerance);
     } else {
       this._range = null;

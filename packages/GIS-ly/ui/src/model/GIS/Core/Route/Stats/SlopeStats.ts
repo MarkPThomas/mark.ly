@@ -3,7 +3,11 @@ import {
 } from "../../../../Geometry/Polyline";
 import {
   BasicStats,
+  IRangeStatsResults,
   MaxMinStats,
+  Median,
+  RangeStatsResults,
+  StandardDeviationStats,
   Sum
 } from "../../../../Geometry/Stats";
 import { INodeOfInterest } from "../../../../Geometry/Stats/INodeOfInterest";
@@ -11,20 +15,15 @@ import { INodeOfInterest } from "../../../../Geometry/Stats/INodeOfInterest";
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
 
-interface ISlopeSigned {
-  avg: number;
-  max: INodeOfInterest<RoutePoint, RouteSegment>;
-}
-
 export interface ISlope {
   avg: number;
-  uphill: ISlopeSigned;
-  downhill: ISlopeSigned;
+  uphill: IRangeStatsResults<RoutePoint, RouteSegment>;
+  downhill: IRangeStatsResults<RoutePoint, RouteSegment>;
 };
 
 class SlopeStatsSigned
   extends BasicStats<RoutePoint, RouteSegment>
-  implements ISlopeSigned {
+  implements IRangeStatsResults<RoutePoint, RouteSegment> {
 
   private _maxMin: MaxMinStats<RoutePoint, RouteSegment>;
   private _heightChange: Sum;
@@ -35,16 +34,38 @@ class SlopeStatsSigned
   }
 
   get max(): INodeOfInterest<RoutePoint, RouteSegment> {
-    return this._maxMin && (this._isConsidered && this._isConsidered(1))
-      ? this._maxMin.range.max
-      : this._maxMin.range.min;
+    // return this._maxMin && (this._isConsidered && this._isConsidered(1))
+    //   ? this._maxMin.range.max
+    //   : this._maxMin.range.min;
+    return this._maxMin?.range.max;
+
+  }
+  get min(): INodeOfInterest<RoutePoint, RouteSegment> {
+    return this._maxMin?.range.min;
+  }
+
+  private _median: Median<RoutePoint, RouteSegment>;
+  get mdn(): INodeOfInterest<RoutePoint, RouteSegment> {
+    return this._median.median;
+  }
+
+  private _standardDev: StandardDeviationStats<RoutePoint, RouteSegment>;
+  get std(): number {
+    return this._standardDev.sigma;
   }
 
   protected override initializeProperties() {
     this._heightChange = new Sum();
     this._length = new Sum();
 
-    this._maxMin = new MaxMinStats<RoutePoint, RouteSegment>(this.getSegSlope, true);
+    this._median = new Median<RoutePoint, RouteSegment>(this.getSegSlope, this._isConsidered);
+
+    const isSegmentProperty = true;
+    this._maxMin = new MaxMinStats<RoutePoint, RouteSegment>(this.getSegSlope, isSegmentProperty, this._isConsidered);
+    this._standardDev = new StandardDeviationStats<RoutePoint, RouteSegment>(
+      this.getSegSlope,
+      isSegmentProperty,
+      this._isConsidered);
   }
 
   protected getSegSlope(segment: RouteSegment): number {
@@ -60,6 +81,9 @@ class SlopeStatsSigned
     this._length.add(segment.val.length);
 
     this._maxMin.add(segment);
+
+    this._median.add(segment);
+    this._standardDev.add(segment);
   }
 
   protected override removeProperties(segment: SegmentNode<RoutePoint, RouteSegment>) {
@@ -71,13 +95,15 @@ class SlopeStatsSigned
     this._length.remove(segment.val.length);
 
     this._maxMin.remove(segment);
+
+    this._median.remove(segment);
+    this._standardDev.remove(segment);
   }
 
-  serialize(): ISlopeSigned {
-    return {
-      avg: this.avg,
-      max: this.max
-    }
+  serialize(): IRangeStatsResults<RoutePoint, RouteSegment> {
+    const rangeResults = new RangeStatsResults(this);
+
+    return rangeResults.serialize();
   }
 }
 
@@ -92,19 +118,13 @@ export class SlopeStats
   }
 
   private _uphill: SlopeStatsSigned;
-  get uphill(): ISlopeSigned {
-    return {
-      avg: this._uphill.avg,
-      max: this._uphill.max
-    }
+  get uphill(): IRangeStatsResults<RoutePoint, RouteSegment> {
+    return this._uphill.serialize();
   }
 
   private _downhill: SlopeStatsSigned;
-  get downhill(): ISlopeSigned {
-    return {
-      avg: this._downhill.avg,
-      max: this._downhill.max
-    }
+  get downhill(): IRangeStatsResults<RoutePoint, RouteSegment> {
+    return this._downhill.serialize();
   }
 
   protected override initializeProperties() {

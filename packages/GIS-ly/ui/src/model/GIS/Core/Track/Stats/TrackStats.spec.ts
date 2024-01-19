@@ -56,7 +56,7 @@ describe('##TrackStats', () => {
 
       const stats = TrackStats.fromTrackPoints(firstPoint, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
 
     it('should initialize a new object from a polyline', () => {
@@ -71,12 +71,12 @@ describe('##TrackStats', () => {
 
       const stats = TrackStats.fromTrack(polyline);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
   });
 
   describe('#setDirty', () => {
-    it('should set object to dirty', () => {
+    it('should set object to dirty if initialized with vertices', () => {
       const vertices: TrackPoint[] = [
         new TrackPoint(1, 2, 3, '4'),
         new TrackPoint(2, 3, 4, '5'),
@@ -90,15 +90,38 @@ describe('##TrackStats', () => {
 
       const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
 
       stats.addStats();
 
-      expect(stats.isDirty).toBeFalsy();
+      expect(stats.isDirty()).toBeFalsy();
 
       stats.setDirty();
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
+    });
+
+    it('do nothing if initialized with polyline', () => {
+      const vertices: TrackPoint[] = [
+        new TrackPoint(1, 2, 3, '4'),
+        new TrackPoint(2, 3, 4, '5'),
+        new TrackPoint(3, 4, 5, '6'),
+        new TrackPoint(4, 5, 6, '7'),
+      ];
+
+      const polyline = new PolylineTrack(vertices);
+
+      const stats = TrackStats.fromPolyline(polyline);
+
+      expect(stats.isDirty()).toBeTruthy();
+
+      stats.addStats();
+
+      expect(stats.isDirty()).toBeFalsy();
+
+      stats.setDirty();
+
+      expect(stats.isDirty()).toBeFalsy();
     });
   });
 
@@ -125,21 +148,21 @@ describe('##TrackStats', () => {
       it('should do nothing for a stats object with no first vertex', () => {
         const stats = TrackStats.fromTrackPoints(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
 
@@ -153,21 +176,27 @@ describe('##TrackStats', () => {
       it('should do nothing for a stats object with no polyline', () => {
         const stats = TrackStats.fromTrack(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrack(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(0);
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
   });
@@ -188,11 +217,11 @@ describe('##TrackStats', () => {
       it('should do nothing & return undefined for a stats object with no first vertex', () => {
         const stats = TrackStats.fromTrackPoints(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -200,11 +229,11 @@ describe('##TrackStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(result.length).toBeCloseTo(389.18, 2);
@@ -224,8 +253,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(result.time.duration).toEqual(240);
-        expect(result.time.maxInterval.value).toEqual(60);
-        expect(result.time.minInterval.value).toEqual(15);
+        expect(result.time.max.value).toEqual(60);
+        expect(result.time.min.value).toEqual(15);
 
         expect(result.speed.avg).toBeCloseTo(1.62, 2);
         expect(result.speed.max.value).toBeCloseTo(3.71, 2);
@@ -245,11 +274,11 @@ describe('##TrackStats', () => {
       //     { isLengthConsidered }
       //   );
 
-      //   expect(stats.isDirty).toBeTruthy();
+      //   expect(stats.isDirty()).toBeTruthy();
 
       //   const result = stats.stats;
 
-      //   expect(stats.isDirty).toBeFalsy();
+      //   expect(stats.isDirty()).toBeFalsy();
 
       //   expect(result).toEqual({
       //     length: 5
@@ -259,11 +288,11 @@ describe('##TrackStats', () => {
       it('should return updated stats when middle vertex is changed & stats reset to dirty', () => {
         const stats = TrackStats.fromTrackPoints(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const initialResult = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(initialResult.length).toBeCloseTo(389.18, 2);
@@ -283,8 +312,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(initialResult.time.duration).toEqual(240);
-        expect(initialResult.time.maxInterval.value).toEqual(60);
-        expect(initialResult.time.minInterval.value).toEqual(15);
+        expect(initialResult.time.max.value).toEqual(60);
+        expect(initialResult.time.min.value).toEqual(15);
 
         expect(initialResult.speed.avg).toBeCloseTo(1.62, 2);
         expect(initialResult.speed.max.value).toBeCloseTo(3.71, 2);
@@ -308,7 +337,7 @@ describe('##TrackStats', () => {
 
         polyline.insertAfter(vertexBeforeRemove, pointToRemove);
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         const insertResultDirty = stats.stats;
 
@@ -331,8 +360,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(insertResultDirty.time.duration).toEqual(initialResult.time.duration);
-        expect(insertResultDirty.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(insertResultDirty.time.minInterval.value).toEqual(initialResult.time.minInterval.value);
+        expect(insertResultDirty.time.max.value).toEqual(initialResult.time.max.value);
+        expect(insertResultDirty.time.min.value).toEqual(initialResult.time.min.value);
 
         expect(insertResultDirty.speed.avg).toBeCloseTo(initialResult.speed.avg, 2);
         expect(insertResultDirty.speed.max.value).toBeCloseTo(initialResult.speed.max.value, 2);
@@ -344,11 +373,11 @@ describe('##TrackStats', () => {
         expect(insertResultDirty.heightRate.descent.max.value).toBeCloseTo(initialResult.heightRate.descent.max.value, 2);
 
         // Manually reset state
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const insertResult = stats.stats;
 
@@ -370,8 +399,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(insertResult.time.duration).toEqual(initialResult.time.duration);
-        expect(insertResult.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(insertResult.time.minInterval.value).toEqual(12);
+        expect(insertResult.time.max.value).toEqual(initialResult.time.max.value);
+        expect(insertResult.time.min.value).toEqual(12);
 
         expect(insertResult.speed.avg).toBeCloseTo(41699.49, 2);
         expect(insertResult.speed.max.value).toBeCloseTo(416980.97, 2);
@@ -407,8 +436,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(removedResultDirty.time.duration).toEqual(initialResult.time.duration);
-        expect(removedResultDirty.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(removedResultDirty.time.minInterval.value).toEqual(12);
+        expect(removedResultDirty.time.max.value).toEqual(initialResult.time.max.value);
+        expect(removedResultDirty.time.min.value).toEqual(12);
 
         expect(removedResultDirty.speed.avg).toBeCloseTo(41699.49, 2);
         expect(removedResultDirty.speed.max.value).toBeCloseTo(416980.97, 2);
@@ -420,15 +449,15 @@ describe('##TrackStats', () => {
         expect(removedResultDirty.heightRate.descent.max.value).toBeCloseTo(-2500.09, 2);
 
         // Manually reset state
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const removedResult = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // State should be back to original polyine
         // Polyline-based stats
@@ -449,8 +478,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(removedResult.time.duration).toEqual(initialResult.time.duration);
-        expect(removedResult.time.maxInterval.value).toEqual(initialResult.time.maxInterval.value);
-        expect(removedResult.time.minInterval.value).toEqual(initialResult.time.minInterval.value);
+        expect(removedResult.time.max.value).toEqual(initialResult.time.max.value);
+        expect(removedResult.time.min.value).toEqual(initialResult.time.min.value);
 
         expect(removedResult.speed.avg).toBeCloseTo(initialResult.speed.avg, 2);
         expect(removedResult.speed.max.value).toBeCloseTo(initialResult.speed.max.value, 2);
@@ -467,11 +496,11 @@ describe('##TrackStats', () => {
       it('should do nothing & return undefined for a stats object with no polyline', () => {
         const stats = TrackStats.fromTrack(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -479,11 +508,11 @@ describe('##TrackStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = TrackStats.fromTrack(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         // Polyline-based stats
         expect(result.length).toBeCloseTo(389.18, 2);
@@ -503,8 +532,8 @@ describe('##TrackStats', () => {
 
         // Track Stats
         expect(result.time.duration).toEqual(240);
-        expect(result.time.maxInterval.value).toEqual(60);
-        expect(result.time.minInterval.value).toEqual(15);
+        expect(result.time.max.value).toEqual(60);
+        expect(result.time.min.value).toEqual(15);
 
         expect(result.speed.avg).toBeCloseTo(1.62, 2);
         expect(result.speed.max.value).toBeCloseTo(3.71, 2);

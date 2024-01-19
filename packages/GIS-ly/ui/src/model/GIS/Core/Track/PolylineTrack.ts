@@ -7,18 +7,14 @@ import {
 
 import { ITimeRange } from '../Time/TimeRange';
 import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';
-import { TimeStamp } from '../Time';
 
 import { ITrackPointProperties, TrackPoint } from './TrackPoint';
 import { TrackSegment } from './TrackSegment';
-import { HeightRateStats, SpeedStats, ITrackStats, TrackStats } from './Stats';
 
 type CoordNode = VertexNode<TrackPoint, TrackSegment>;
 
 export interface IPolylineTrackMethods
   extends IPolylineRouteMethods<TrackPoint, TrackSegment> {
-  duration: number;
-
   // Properties Methods
 
   // Misc Methods
@@ -138,7 +134,6 @@ export interface IPolylineTrack
   IPolylineTrackMethods,
   ICloneable<PolylineTrack> {
 
-  stats: ITrackStats;
 }
 
 export class PolylineTrack
@@ -146,18 +141,6 @@ export class PolylineTrack
   implements IPolylineTrack {
 
   protected _pointsByTimestamp: Map<string, CoordNode>;
-
-  protected override _stats: TrackStats;
-  override get stats(): ITrackStats {
-    if (!this._stats || this._stats.isDirty) {
-      this._stats = new TrackStats(this.firstVertex, this.lastVertex);
-    }
-    return this._stats.stats as ITrackStats;
-  }
-
-  get duration(): number {
-    return TrackStats.duration(this.firstVertex.val, this.lastVertex.val)
-  }
 
   constructor(
     coords: VertexNode<TrackPoint, TrackSegment> | VertexNode<TrackPoint, TrackSegment>[] | TrackPoint[],
@@ -171,7 +154,9 @@ export class PolylineTrack
   }
 
   protected override createPolyline(coords: VertexNode<TrackPoint, TrackSegment>[] = []): PolylineTrack {
-    return new PolylineTrack(coords);
+    const includeTimeStampMap: boolean = this._pointsByTimestamp?.size > 0;
+
+    return new PolylineTrack(coords, includeTimeStampMap);
   }
 
   generateTimestampMap() {
@@ -275,7 +260,7 @@ export class PolylineTrack
 
   // === Property Methods
   protected override updatePathProperties(vertices: CoordNode[]) {
-    this.setDirty();
+    this.incrementVersion();
     vertices.forEach((vertex) => {
       vertex.val.path.addPropertiesFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
       if (vertex.val.elevation || vertex.val.alt) {
@@ -314,14 +299,6 @@ export class PolylineTrack
         (timestamp: string, coord: CoordNode) => coord.val.timestamp === timestamp
       )[0];
     }
-  }
-
-  override statsFromTo(
-    startVertex: VertexNode<TrackPoint, TrackSegment>,
-    endVertex: VertexNode<TrackPoint, TrackSegment>
-  ): ITrackStats {
-    const stats = new TrackStats(startVertex, endVertex);
-    return stats.stats as ITrackStats;
   }
 
   // TODO: What is a unique property. By node value?

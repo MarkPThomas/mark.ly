@@ -13,11 +13,8 @@ import { IPointProperties } from '../Point/Point';
 
 import { IRoutePointProperties, RoutePoint } from './RoutePoint';
 import { RouteSegment } from './RouteSegment';
-import { IRouteStats, RouteStats } from './Stats';
 
 type CoordNode = VertexNode<RoutePoint, RouteSegment>;
-
-
 
 export interface IPolylineRouteMethods<
   TVertex extends RoutePoint = RoutePoint,
@@ -145,21 +142,12 @@ export interface IPolylineRoute<
   extends
   IPolyline<TVertex, TSegment>,
   IPolylineRouteMethods<TVertex, TSegment> {
-
-  stats: IRouteStats;
 }
 
 export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSegment>
   extends Polyline<TVertex, TSegment>
   implements IPolylineRoute<TVertex, TSegment>
 {
-  protected override _stats: RouteStats<TVertex, TSegment>;
-  override get stats(): IRouteStats {
-    if (!this._stats || this._stats.isDirty) {
-      this._stats = new RouteStats(this.firstVertex, this.lastVertex);
-    }
-    return this._stats.stats as IRouteStats;
-  }
 
   constructor(coords: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[]) {
     super(coords);
@@ -239,7 +227,7 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   protected override updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
-    this.setDirty();
+    this.incrementVersion();
     vertices.forEach((vertex) => {
       vertex.val.path.addPropertiesFromPath(vertex.prevSeg?.val, vertex.nextSeg?.val);
     });
@@ -353,14 +341,6 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
         && (!target.alt || vertexNode.val.alt === target.alt)
         && (!target.elevation || vertexNode.val.elevation === target.elevation)
     );
-  }
-
-  override statsFromTo(
-    startVertex: VertexNode<TVertex, TSegment>,
-    endVertex: VertexNode<TVertex, TSegment>
-  ): IRouteStats {
-    const stats = new RouteStats(startVertex, endVertex);
-    return stats.stats as IRouteStats;
   }
 
   // TODO: What is a unique property. By node value?

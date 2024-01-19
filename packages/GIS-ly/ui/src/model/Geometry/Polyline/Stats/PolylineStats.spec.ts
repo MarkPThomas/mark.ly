@@ -37,7 +37,7 @@ describe('##PoylineStats', () => {
 
       const stats = PolylineStats.fromVertices(firstVertex, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
 
     it('should initialize a new object from a polyline', () => {
@@ -52,12 +52,12 @@ describe('##PoylineStats', () => {
 
       const stats = PolylineStats.fromPolyline(polyline);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
     });
   });
 
   describe('#setDirty', () => {
-    it('should set object to dirty', () => {
+    it('should set object to dirty if initialized with vertices', () => {
       const vertices: TestVertex[] = [
         new TestVertex(1),
         new TestVertex(2),
@@ -70,18 +70,40 @@ describe('##PoylineStats', () => {
 
       const stats = PolylineStats.fromVertices(firstVertex, lastVertex);
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
 
       stats.addStats();
 
-      expect(stats.isDirty).toBeFalsy();
+      expect(stats.isDirty()).toBeFalsy();
 
       stats.setDirty();
 
-      expect(stats.isDirty).toBeTruthy();
+      expect(stats.isDirty()).toBeTruthy();
+    });
+
+    it('do nothing if initialized with polyline', () => {
+      const vertices: TestVertex[] = [
+        new TestVertex(1),
+        new TestVertex(2),
+        new TestVertex(3),
+        new TestVertex(4),
+      ];
+
+      const polyline = new Polyline<TestVertex, Segment>(vertices);
+
+      const stats = PolylineStats.fromPolyline(polyline);
+
+      expect(stats.isDirty()).toBeTruthy();
+
+      stats.addStats();
+
+      expect(stats.isDirty()).toBeFalsy();
+
+      stats.setDirty();
+
+      expect(stats.isDirty()).toBeFalsy();
     });
   });
-
 
   describe('#addStats', () => {
     describe('with first/last vertices', () => {
@@ -103,21 +125,28 @@ describe('##PoylineStats', () => {
       it('should do nothing for a stats object with no first vertex', () => {
         const stats = PolylineStats.fromVertices(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = PolylineStats.fromVertices(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
       });
     });
 
@@ -138,21 +167,27 @@ describe('##PoylineStats', () => {
       it('should do nothing for a stats object with no polyline', () => {
         const stats = PolylineStats.fromPolyline(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
       });
 
       it('should explicitly add stats & reset dirty flag', () => {
         const stats = PolylineStats.fromPolyline(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.isDirty()).toBeTruthy();
 
         stats.addStats();
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.polylineVersion).not.toEqual(-1);
+        expect(stats.isDirty()).toBeFalsy();
       });
     });
   });
@@ -179,22 +214,25 @@ describe('##PoylineStats', () => {
       lastVertex = polyline.lastVertex;
     });
 
-    const remove2ndVertex = () => {
-      const vertexRemove = polyline.firstVertex.next as VertexNode<TestVertex, Segment>;
-      polyline.removeAt(vertexRemove);
-      const lengths = [1, 3];
-      addSegmentLengths(lengths, polyline);
-    }
-
     describe('with first/last vertices', () => {
+      const remove2ndVertex = () => {
+        const vertexRemove = polyline.firstVertex.next as VertexNode<TestVertex, Segment>;
+        polyline.removeAt(vertexRemove);
+        const lengths = [1, 3];
+        addSegmentLengths(lengths, polyline);
+      }
+
       it('should do nothing & return undefined for a stats object with no first vertex', () => {
         const stats = PolylineStats.fromVertices(null, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         expect(result).toBeUndefined();
       });
@@ -202,11 +240,14 @@ describe('##PoylineStats', () => {
       it('should lazy load stats & reset dirty flag', () => {
         const stats = PolylineStats.fromVertices(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.polylineVersion).toEqual(-1);
+
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         expect(result).toEqual({
           length: 6
@@ -221,11 +262,11 @@ describe('##PoylineStats', () => {
           { isLengthConsidered }
         );
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         expect(result).toEqual({
           length: 5
@@ -235,11 +276,11 @@ describe('##PoylineStats', () => {
       it('should return updated stats when middle vertex is changed & stats reset to dirty', () => {
         const stats = PolylineStats.fromVertices(firstVertex, lastVertex);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         expect(result).toEqual({
           length: 6
@@ -250,7 +291,7 @@ describe('##PoylineStats', () => {
 
         const resultModifed = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         expect(resultModifed).toEqual({
           length: 6
@@ -258,11 +299,11 @@ describe('##PoylineStats', () => {
 
         stats.setDirty();
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const resultModifedSetDirty = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
 
         expect(resultModifedSetDirty).toEqual({
           length: 4
@@ -274,26 +315,276 @@ describe('##PoylineStats', () => {
       it('should do nothing & return undefined for a stats object with no polyline', () => {
         const stats = PolylineStats.fromPolyline(null);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.hasPolyline()).toBeFalsy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
 
         expect(result).toBeUndefined();
       });
 
-      it('should lazy load stats & reset dirty flag', () => {
+      it('should lazy load stats, sync polyline versions & reset dirty flag', () => {
         const stats = PolylineStats.fromPolyline(polyline);
 
-        expect(stats.isDirty).toBeTruthy();
+        expect(stats.polylineVersion).toEqual(-1);
+        expect(stats.hasPolyline()).toBeTruthy();
+        expect(stats.isDirty()).toBeTruthy();
 
         const result = stats.stats;
 
-        expect(stats.isDirty).toBeFalsy();
+        expect(stats.isDirty()).toBeFalsy();
+        expect(stats.polylineVersion).not.toEqual(-1);
 
         expect(result).toEqual({
           length: 6
+        });
+      });
+
+      describe('Updating Stats After Polyline Modification', () => {
+        let polyline: Polyline<TestVertex, Segment>;
+
+        beforeEach(() => {
+          const vertices: TestVertex[] = [
+            new TestVertex(1),
+            new TestVertex(2),
+            new TestVertex(3),
+            new TestVertex(4),
+            new TestVertex(5),
+          ];
+
+          polyline = new Polyline<TestVertex, Segment>(vertices);
+
+          const lengths = [1, 2, 3, 4];
+          addSegmentLengths(lengths, polyline);
+        });
+
+        describe('Remove Vertices', () => {
+          const removeFirstVertex = () => {
+            polyline.trimBefore(polyline.firstVertex.next as VertexNode<TestVertex, Segment>);
+            const lengths = [2, 3, 4];
+            addSegmentLengths(lengths, polyline);
+          }
+
+          const removeLastVertex = () => {
+            polyline.trimAfter(polyline.lastVertex.prev as VertexNode<TestVertex, Segment>);
+            const lengths = [1, 2, 3];
+            addSegmentLengths(lengths, polyline);
+          }
+
+          const remove2ndVertex = () => {
+            const vertexRemove = polyline.firstVertex.next as VertexNode<TestVertex, Segment>;
+            polyline.removeAt(vertexRemove);
+            const lengths = [1, 3, 4];
+            addSegmentLengths(lengths, polyline);
+          }
+
+          it('should return updated stats & sync polyline versions when start vertex is removed', () => {
+            const stats = PolylineStats.fromPolyline(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+
+            expect(stats.polylineVersion).toEqual(-1);
+            expect(polyline.version).toEqual(0);
+
+            const result = stats.stats;
+            expect(result).toEqual({
+              length: 10
+            });
+
+            expect(stats.polylineVersion).not.toEqual(-1);
+            expect(polyline.version).toEqual(0);
+
+            // Modify polyine
+            removeFirstVertex();
+
+            expect(stats.polylineVersion).not.toEqual(-1);
+            expect(polyline.version).toEqual(1);
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(1);
+            expect(polyline.version).toEqual(1);
+
+            expect(resultModifed).toEqual({
+              length: 9
+            });
+          });
+
+          it('should return updated stats & sync polyline versions when end vertex is removed', () => {
+            const stats = PolylineStats.fromPolyline(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+
+            expect(stats.polylineVersion).toEqual(-1);
+            expect(polyline.version).toEqual(0);
+
+            const result = stats.stats;
+            expect(result).toEqual({
+              length: 10
+            });
+            expect(stats.polylineVersion).not.toEqual(-1);
+
+            // Modify polyine
+            removeLastVertex();
+
+            expect(stats.polylineVersion).not.toEqual(-1);
+            expect(polyline.version).toEqual(1);
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(1);
+            expect(polyline.version).toEqual(1);
+
+            expect(resultModifed).toEqual({
+              length: 6
+            });
+          });
+
+          it('should return updated stats & sync polyline versions when middle vertex is removed', () => {
+            const stats = PolylineStats.fromPolyline(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+
+            expect(stats.polylineVersion).toEqual(-1);
+            expect(polyline.version).toEqual(0);
+
+            const result = stats.stats;
+            expect(result).toEqual({
+              length: 10
+            });
+            expect(stats.polylineVersion).not.toEqual(-1);
+
+            // Modify polyine
+            remove2ndVertex();
+
+            expect(stats.polylineVersion).not.toEqual(-1);
+            expect(polyline.version).toEqual(1);
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(1);
+            expect(polyline.version).toEqual(1);
+
+            expect(resultModifed).toEqual({
+              length: 8
+            });
+          });
+        });
+
+        describe('Add Vertices', () => {
+          const insertFirstVertex = () => {
+            const insertedVertex = new TestVertex(10);
+            polyline.prepend(insertedVertex);
+
+            const lengths = [5, 1, 2, 3, 4];
+            addSegmentLengths(lengths, polyline);
+          }
+
+          const insertLastVertex = () => {
+            const insertedVertex = new TestVertex(10);
+            polyline.append(insertedVertex);
+
+            const lengths = [1, 2, 3, 4, 5];
+            addSegmentLengths(lengths, polyline);
+          }
+
+          const insertVertex = () => {
+            const vertexAfter = polyline.firstVertex.next as VertexNode<TestVertex, Segment>;
+            const insertedVertex = new TestVertex(10);
+            polyline.insertAfter(vertexAfter, insertedVertex);
+
+            const lengths = [1, 3, 4, 3, 4];
+            addSegmentLengths(lengths, polyline);
+          }
+
+          it('should return updated stats & sync polyline versions when start vertex is inserted', () => {
+            const stats = PolylineStats.fromPolyline(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+
+            const result = stats.stats;
+            expect(result).toEqual({
+              length: 10
+            });
+            expect(stats.polylineVersion).toEqual(polyline.version);
+
+            // Modify polyine
+            insertFirstVertex();
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+
+            expect(resultModifed).toEqual({
+              length: 15
+            });
+          });
+
+          it('should return updated stats & sync polyline versions when end vertex is inserted', () => {
+            const stats = PolylineStats.fromPolyline(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+
+            const result = stats.stats;
+            expect(result).toEqual({
+              length: 10
+            });
+            expect(stats.polylineVersion).toEqual(polyline.version);
+
+            // Modify polyine
+            insertLastVertex();
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+
+            expect(resultModifed).toEqual({
+              length: 15
+            });
+          });
+
+          it('should return updated stats & sync polyline versions when middle vertex is inserted', () => {
+            const stats = PolylineStats.fromPolyline(polyline);
+
+            expect(stats.hasPolyline()).toBeTruthy();
+            expect(stats.polylineVersion).toEqual(-1);
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+
+            const result = stats.stats;
+            expect(result).toEqual({
+              length: 10
+            });
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+
+            // Modify polyine
+            insertVertex();
+
+            expect(stats.polylineVersion).not.toEqual(polyline.version);
+
+            const resultModifed = stats.stats;
+
+            expect(stats.polylineVersion).toEqual(polyline.version);
+
+            expect(resultModifed).toEqual({
+              length: 15
+            });
+          });
         });
       });
     });

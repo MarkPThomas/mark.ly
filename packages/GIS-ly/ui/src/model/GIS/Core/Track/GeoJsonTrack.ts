@@ -1,10 +1,16 @@
+import {
+  FeatureCollection as SerialFeatureCollection,
+  Geometry as SerialGeometry
+} from "geojson";
+
 import { ICloneable, IEquatable } from '../../../../../../../common/interfaces';
 
 import {
   FeatureCollection,
   Feature,
   Point,
-  LineString
+  LineString,
+  BBoxState
 } from '../../../GeoJSON';
 
 
@@ -58,6 +64,8 @@ export interface IGeoJsonTrack
    * @memberof IGeoJsonTrackManager
    */
   copyBySegmentData(segData: TrackSegmentData): FeatureCollection;
+
+  toJson(includeBBox: BBoxState): SerialFeatureCollection<SerialGeometry, { [name: string]: any; }>;
 }
 
 interface IBaseTrackProperty {
@@ -74,15 +82,19 @@ export class GeoJsonTrack implements IGeoJsonTrack {
     return { ...this._baseTrackProperty };
   }
 
+  toJson(includeBBox: BBoxState = BBoxState.IncludeIfPresent): SerialFeatureCollection<SerialGeometry, { [name: string]: any; }> {
+    return this._geoJson.toJson(includeBBox);
+  }
+
   boundingBox(): BoundingBox {
     return BoundingBox.fromBoundingBox(this._geoJson.bbox());
   }
 
 
-  constructor(geoJson: FeatureCollection) {
+  constructor(geoJson: FeatureCollection, name?: string) {
     this._geoJson = geoJson;
 
-    this.setBaseTrackPropertyFromJson();
+    this.setBaseTrackPropertyFromJson(name);
   }
 
   clone(): GeoJsonTrack {
@@ -171,9 +183,18 @@ export class GeoJsonTrack implements IGeoJsonTrack {
   }
 
 
-  protected setBaseTrackPropertyFromJson() {
+  protected setBaseTrackPropertyFromJson(name?: string) {
     const properties = TrackProperty.fromJson(this.getFeature().properties as unknown as ITrackPropertyProperties);
     if (!this.baseTrackPropertiesSet()) {
+      if (!properties.time) {
+        const firstTime = [properties.coordinateProperties?.times[0]].flat(10)[0];
+        properties.time = firstTime;
+      }
+
+      if (!properties.name) {
+        properties.name = name ? name : `Track: ${properties.time}`;
+      }
+
       this.setBaseTrackProperty(properties);
     }
   }

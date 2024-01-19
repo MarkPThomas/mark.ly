@@ -83,6 +83,12 @@ export class SplitManager implements ISplitManager {
 
     if (splitTracksKeep.length === 0) {
       splitTracksKeep = [this._track];
+    } else {
+      let counter = 1;
+      splitTracksKeep.forEach((track) => {
+        track.name = `${track.name} (${counter})`;
+        counter++;
+      });
     }
 
     return {
