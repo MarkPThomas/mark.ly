@@ -59,6 +59,8 @@ export class Track implements ITrack {
   private _geoJsonTrack: GeoJsonTrack;
   private _polylineTrack: PolylineTrack;
 
+  public id: string;
+
   get name(): string {
     return this._geoJsonTrack.trackMetaData.name;
   }
@@ -137,6 +139,7 @@ export class Track implements ITrack {
   clone(): Track {
     const track = new Track();
 
+    track.id = this.id;
     track._geoJsonTrack = this._geoJsonTrack.clone();
     track._polylineTrack = this._polylineTrack.clone();
 
@@ -182,7 +185,7 @@ export class Track implements ITrack {
   // Work out a reasonable & efficient way to maintain the hooked state while exposing
   //    the geoJSON object for external hooking.
   toJson() {
-    return this._geoJsonTrack.toFeatureCollection().toJson();
+    return this._geoJsonTrack.toJson();
   }
 
   vertexNodeByTime(timestamp: string): VertexNode<TrackPoint, TrackSegment> | null | undefined {
