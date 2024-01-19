@@ -33,7 +33,7 @@
     "mongodb": "^4.17.0",
     "reflect-metadata": "^0.1.13",
     "sql-template-strings": "^2.2.2",
-    "typeorm": "^0.3.14"
+    "typeorm": "^0.3.18"
   },
   "devDependencies": {
     "@shopify/jest-koa-mocks": "^5.1.1",
