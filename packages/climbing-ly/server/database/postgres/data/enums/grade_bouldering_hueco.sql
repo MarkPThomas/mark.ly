@@ -1,0 +1,23 @@
+INSERT INTO "grade_bouldering_hueco"
+VALUES
+(1,'N/A',NULL),
+(2,'VB',NULL),
+(3,'V0-',NULL),
+(4,'V0',NULL),
+(5,'V0+',NULL),
+(6,'V1',NULL),
+(7,'V2',NULL),
+(8,'V3',NULL),
+(9,'V4',NULL),
+(10,'V5',NULL),
+(11,'V6',NULL),
+(12,'V7',NULL),
+(13,'V8',NULL),
+(14,'V9',NULL),
+(15,'V10',NULL),
+(16,'V11',NULL),
+(17,'V12',NULL),
+(18,'V13',NULL),
+(19,'V14',NULL),
+(20,'V15',NULL),
+(21,'V16',NULL);

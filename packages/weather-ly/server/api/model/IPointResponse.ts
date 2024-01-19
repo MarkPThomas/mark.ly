@@ -1,7 +1,7 @@
 import { ICoordinate } from "./Coordinate";
 
 export interface IPointResponse extends ICoordinate {
-  pointId: number;
+  pointId: string;
   name: string;
   gridId: string;
 }

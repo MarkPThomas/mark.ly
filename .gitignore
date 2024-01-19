@@ -19,8 +19,12 @@ coverage
 *.DS_Store
 
 packages/**/.env
+packages/**/.env.production
+packages/**/.env.development
+packages/**/.env.test
 
 .eslintcache
 
 # Build files
 dist
+build
