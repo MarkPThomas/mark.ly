@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Cloud MiddleX2.kml</name>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Placemark>
+		<name>Cloud MiddleX2</name>
+		<styleUrl>#m_ylw-pushpin</styleUrl>
+		<LineString>
+			<tessellate>1</tessellate>
+			<coordinates>
+				-105.1353814910402,39.87825432484495,0 -105.1352618135007,39.87824052403623,0 -105.1352433936513,39.8782522989425,0 -105.1352618278019,39.87825750947018,0 -105.1352684908337,39.87824948371056,0 -105.135242862249,39.87823201248165,0 -105.1352631715043,39.87823014730432,0 -105.135233590465,39.87824285433322,0 -105.1351918088743,39.87823856216351,0 -105.1351733485622,39.87824751183506,0 -105.1351936504459,39.87825320422211,0 -105.1352084650403,39.87823291651964,0 -105.1351968777954,39.87821729634359,0 -105.1351988205849,39.87825197840353,0 -105.1351756495897,39.87823106932006,0 -105.1351062708185,39.87823847144207,0 -105.1350151021305,39.87823789587544,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+</Document>
+</kml>

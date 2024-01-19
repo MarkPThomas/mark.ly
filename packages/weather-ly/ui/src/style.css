@@ -12,11 +12,29 @@ html {
   background-repeat: no-repeat;
 }
 
-.forecast-carousel {
+.forecast-group-header {
+  display: flex;
+  align-items: flex-end;
+}
+
+.forecast-group-header>h2 {
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-bottom: 0;
+}
+
+.forecast-group-header>div {
+  font-size: 9pt;
+  margin: 0 10px;
+}
+
+.forecast-tiles {
   display: flex;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 9pt;
   margin: 10px 0;
+  /* flex-direction: column;
+  justify-content: space-between; */
 }
 
 .forecast-tile {
@@ -52,4 +70,67 @@ html {
 
 .temp-high {
   color: #ef3725;
+}
+
+.pt-editor {
+  display: flex;
+}
+
+.pt-editor>.add-plus {
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 0 5px;
+  margin: 0 5px;
+  cursor: pointer;
+  color: green;
+  font-weight: bold;
+  background-color: aquamarine
+}
+
+.pt-editor>.add-plus.disabled {
+  cursor: not-allowed;
+  font-weight: normal;
+  color: gray;
+  border: gray;
+  background-color: #999;
+}
+
+.pt-editor-error {
+  background-color: ivory;
+  border: none;
+  outline: 2px solid red;
+  border-radius: 5px;
+  color: red;
+}
+
+input:invalid {
+  background-color: ivory;
+  border: none;
+  outline: 2px solid red;
+  border-radius: 5px;
+}
+
+.pt-item {
+  border: black solid 1px;
+  border-radius: 5px;
+  background-color: beige;
+  padding: 0 5px;
+}
+
+.pt-item:hover {
+  border: blue solid 2px;
+  background-color: bisque;
+  cursor: pointer;
+}
+
+.pt-item-title {
+  display: flex;
+}
+
+.pt-item-name {
+  font-weight: bold;
+}
+
+.pt-item-coords {
+  font-style: italic;
 }

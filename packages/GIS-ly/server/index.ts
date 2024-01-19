@@ -1,0 +1,10 @@
+import app from './app';
+import config from './config';
+import { Logger } from '../logger';
+
+const port = config.port;
+app.listen(port, () => {
+  Logger.log(`Listening to ${config.app.appName} on port ${port}`);
+})
+
+export default app;

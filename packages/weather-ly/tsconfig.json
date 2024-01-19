@@ -1,24 +1,55 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "lib": [
       "dom",
       "es2021",
       "scripthost"
     ],
-    "jsx": "react-jsx",
-    "allowJs": false,
-    "sourceMap": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
     "preserveSymlinks": true,
-    "resolveJsonModule": true
+    "allowJs": false,
+    "jsx": "react-jsx",
+    "paths": {
+      "common/*": [
+        "../../../common/*"
+      ],
+      "server/*": [
+        "../../server/*"
+      ]
+    }
   },
   "include": [
     "ui",
-    "server"
-  ]
+    "server",
+    "../common/utils"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "src/setupProxy.ts",
+    "src/bundle-analyze.js",
+    "server",
+    "coverage"
+  ],
 }

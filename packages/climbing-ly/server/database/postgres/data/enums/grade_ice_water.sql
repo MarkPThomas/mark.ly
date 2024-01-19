@@ -1,0 +1,22 @@
+INSERT INTO "grade_ice_water"
+VALUES
+(1,'N/A','Not specified, but might apply.'),
+(2,'WI1','Low angle ice; no tools required.'),
+(3,'WI2-','Low angle ice; no tools required.'),
+(4,'WI2','Consistent 60-degree ice with possible bulges; good protection.'),
+(5,'WI2+','Consistent 60-degree ice with possible bulges; good protection.'),
+(6,'WI3-','Consistent 60-degree ice with possible bulges; good protection.'),
+(7,'WI3','Sustained 70-degree with possible long bulges of 80-degree-90-degree; reasonable rests and good stances for placing screws.'),
+(8,'WI3+','Sustained 70-degree with possible long bulges of 80-degree-90-degree; reasonable rests and good stances for placing screws.'),
+(9,'WI4-','Sustained 70-degree with possible long bulges of 80-degree-90-degree; reasonable rests and good stances for placing screws.'),
+(10,'WI4','Continuous 80-degree ice fairly long sections of 90-degree ice broken up by occasional rests.'),
+(11,'WI4+','Continuous 80-degree ice fairly long sections of 90-degree ice broken up by occasional rests.'),
+(12,'WI5-','Continuous 80-degree ice fairly long sections of 90-degree ice broken up by occasional rests.'),
+(13,'WI5','Long and strenuous, with a ropelength of 85-degree-90-degree ice offering few good rests; or a shorter pitch of thin or bad ice with protection that''s difficult to place.'),
+(14,'WI5+','Long and strenuous, with a ropelength of 85-degree-90-degree ice offering few good rests; or a shorter pitch of thin or bad ice with protection that''s difficult to place.'),
+(15,'WI6-','Long and strenuous, with a ropelength of 85-degree-90-degree ice offering few good rests; or a shorter pitch of thin or bad ice with protection that''s difficult to place.'),
+(16,'WI6','A full ropelength of near-90-degree ice with no rests, or a shorter pitch even more tenuous than WI 5.Highly technical.'),
+(17,'WI6+','A full ropelength of near-90-degree ice with no rests, or a shorter pitch even more tenuous than WI 5.Highly technical.'),
+(18,'WI7-','A full ropelength of near-90-degree ice with no rests, or a shorter pitch even more tenuous than WI 5.Highly technical.'),
+(19,'WI7','WI6, but on thin poorly bonded ice or long, overhanging poorly adhered columns. Protection is impossible or very difficult to place and of dubious quality.'),
+(20,'WI7+','WI6, but on thin poorly bonded ice or long, overhanging poorly adhered columns. Protection is impossible or very difficult to place and of dubious quality.');

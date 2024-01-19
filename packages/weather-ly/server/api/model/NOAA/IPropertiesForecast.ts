@@ -6,5 +6,5 @@ export interface IPropertiesForecast extends IPropertiesMeta {
   "units": "us",
   "forecastGenerator": "BaselineForecastGenerator",
   "generatedAt": "2022-07-11T08:36:30+00:00",
-  "periods": [IForecastPeriod]
+  "periods": IForecastPeriod[]
 }
