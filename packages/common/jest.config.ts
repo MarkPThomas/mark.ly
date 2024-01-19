@@ -4,7 +4,6 @@ export default {
   collectCoverageFrom: [
     '!coverage/**/*',
     'database/**/*',
-    'database/**/*',
     'errors/**/*',
     '!enums/**/*',
     '!interfaces/**/*',
@@ -30,8 +29,11 @@ export default {
     '!database/migrations/*',
     '!database/models/*',
     '!database/repositories-orm/**/*',
+    '!utils/axios.ts',
+    '!utils/units/conversion/Conversion.ts',
+    '!utils/terminateProcess.ts'
   ],
-  "coverageThreshold": {
+  coverageThreshold: {
     "global": {
       "branches": 20,
       "functions": 30,

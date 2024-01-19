@@ -1,11 +1,10 @@
-
 import { IGroupResponse } from '../../../../server/api/model';
 import { Forecasts } from './Forecasts';
 
 type Prop = {
   pointGroup: IGroupResponse;
   pointGroups: IGroupResponse[];
-  forecastGroupSelectionHandler: (e) => void;
+  forecastGroupSelectionHandler: (e: Event) => void;
 };
 
 export const Forecast = (props: Prop) => {

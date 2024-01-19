@@ -1,5 +1,5 @@
 export default {
-  appName: '__.ly',
+  appName: 'gis.ly',
   title: 'Mark.ly',
   domId: 'app'
 }

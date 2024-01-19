@@ -1,3 +1,13 @@
+export type Props = {
+  title: string,
+  url: string,
+  snippet: string,
+  showSnippet: boolean,
+  temp: number,
+  tempUnit: string,
+  isDaytime: boolean
+}
+
 export const ForecastTile = ({
   title,
   url,
@@ -6,7 +16,7 @@ export const ForecastTile = ({
   temp,
   tempUnit,
   isDaytime
-}) => {
+}: Props) => {
   const tempPrefix = isDaytime ? 'High' : 'Low';
   let tempAttr = `forecast-temp ${isDaytime ? 'temp-high' : 'temp-low'}`;
 

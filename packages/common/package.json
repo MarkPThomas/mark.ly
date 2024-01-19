@@ -23,6 +23,7 @@
     "clear": "rimraf dist"
   },
   "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
     "access-log": "^0.4.1",
     "axios": "^0.27.2",
     "bunyan": "^1.8.15",

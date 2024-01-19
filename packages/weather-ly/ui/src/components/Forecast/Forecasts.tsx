@@ -10,7 +10,7 @@ import { ForecastTiles } from "./ForecastTiles";
 type Prop = {
   pointGroup: IGroupResponse;
   pointGroups: IGroupResponse[];
-  forecastGroupSelectionHandler: (e) => void;
+  forecastGroupSelectionHandler: (e: Event) => void;
 };
 
 export const Forecasts = (props: Prop) => {
@@ -27,8 +27,8 @@ export const Forecasts = (props: Prop) => {
       // const gridXs = [];
       // const gridYs = [];
 
-      const latitudes = [];
-      const longitudes = [];
+      const latitudes: string[] = [];
+      const longitudes: string[] = [];
       updatedGroupForecasts.points?.forEach(point => {
         if (point.gridId) {
           console.log('Need to get forecasts by gridId!');
@@ -38,8 +38,8 @@ export const Forecasts = (props: Prop) => {
           // gridYs.push(point.gridY);
         } else {
           console.log('Getting forecasts by coords');
-          latitudes.push(point.latitude);
-          longitudes.push(point.longitude);
+          latitudes.push(point.latitude.toString());
+          longitudes.push(point.longitude.toString());
         }
       })
 
@@ -71,9 +71,9 @@ export const Forecasts = (props: Prop) => {
 
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEventHandler<HTMLSelectElement>) => {
     e.preventDefault();
-    const id = e.target.value;
+    const id = e.target?.value;
     props.forecastGroupSelectionHandler(id);
     navigate('/weekly');
   }
@@ -108,7 +108,7 @@ export const Forecasts = (props: Prop) => {
                 <ForecastTiles
                   key={forecastPoint.pointId}
                   coordinate={forecastPoint}
-                  forecast={groupForecasts.forecasts[forecastPoint.pointId]}
+                  forecast={groupForecasts.forecasts && groupForecasts.forecasts[forecastPoint.pointId]}
                 />
               </ErrorBoundary>
             </div>

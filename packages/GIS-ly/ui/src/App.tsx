@@ -1,16 +1,24 @@
-import React from 'react';
-import { Loading } from './components/Loading/Loading';
+import { Settings } from './Settings';
+import { Tiles } from './api';
+import { Map } from './components/Leaflet/Map';
 
-export class App extends React.Component {
-  constructor(props) {
-    super(props);
+const restHandlers = {
+  handleLayerApiKeys: async (apiKeyName: string) => {
+    return await Tiles.getApiKey(apiKeyName);
   }
+}
 
-  render() {
-    return (
-      <>
-        <Loading />
-      </>
-    );
-  }
+type Props = {
+  config: Settings
+}
+
+export const App = ({ config }: Props) => {
+  return (
+    <>
+      <Map
+        config={config}
+        restHandlers={restHandlers}
+      />
+    </>
+  );
 }

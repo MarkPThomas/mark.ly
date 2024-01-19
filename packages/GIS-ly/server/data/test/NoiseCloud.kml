@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>NoiseCloud.kml</name>
+	<Style id="inline">
+		<LineStyle>
+			<color>ff0701fc</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline0">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline1">
+		<LineStyle>
+			<color>ffff0000</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline2">
+		<LineStyle>
+			<color>ffff0000</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline3">
+		<LineStyle>
+			<color>ff800080</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="inline4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline8</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline2</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="inline5">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline7</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="inline6">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline11</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="inline7">
+		<LineStyle>
+			<color>ff0701fc</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline8">
+		<LineStyle>
+			<color>ffff0000</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="inline9">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline12</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="inline10">
+		<LineStyle>
+			<color>ff800080</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline11">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="inline12">
+		<LineStyle>
+			<color>ffff0000</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="inline13">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#inline3</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#inline10</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Folder>
+		<name>Noise Cloud</name>
+		<open>1</open>
+		<Placemark>
+			<name>Radius W</name>
+			<styleUrl>#inline6</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-104.9878384093324,39.74006073378565,0
+					 -104.9874824754453,39.74007195554769,0
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>Radius E</name>
+			<styleUrl>#inline4</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-104.9874825112914,39.74007194952748,0
+					-104.9871244976278,39.74008543131328,0
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>Radius N</name>
+			<styleUrl>#inline9</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-104.9874825281767,39.74007375510967,0 
+					-104.9875155430258,39.74034786157524,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>Radius S</name>
+			<styleUrl>#inline5</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-104.98748202347,39.74007344497826,0 
+					-104.9874596036531,39.73979872191172,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>Path</name>
+			<styleUrl>#inline13</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-104.9887270489496,39.74058724135962,0 -104.9882747610813,39.74040289363106,0 -104.9879059653047,39.7401334525011,0 -104.987456729542,39.7400762256093,0 -104.9873362512036,39.74019085927178,0 -104.9876141046707,39.74016386735452,0 -104.9875946681901,39.74002488158649,0 -104.9873711367876,39.74002298093507,0 -104.9874477326449,39.74013716155815,0 -104.9870660965638,39.74014359841404,0 -104.9864502306326,39.74006734443393,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

@@ -5,19 +5,19 @@ import { DropList } from "../../shared/components/DropList";
 import { ErrorBoundary } from "../../shared/components/ErrorBoundary";
 import { ForecastTiles } from "../Forecast/ForecastTiles";
 
-type props = {
+type Props = {
   point: IPointResponse;
   pointGroups: IGroupResponse[];
   forecastGroupSelectionHandler: (groupId: string) => void;
 }
 
-export const Point = (props: props) => {
+export const Point = (props: Props) => {
   // TODO: Get groups containing from server -> later DB query
 
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showForecast, setShowForecast] = useState(false);
 
-  const handleAddToGroup = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleAddToGroup = (event: any[] | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 
   }
 

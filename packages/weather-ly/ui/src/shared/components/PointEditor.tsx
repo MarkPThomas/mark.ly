@@ -28,7 +28,7 @@ export const PointEditor = (props: props) => {
 
   // Validators upon leaving fields or submitting
 
-  const isValidName = (name) => {
+  const isValidName = (name: string) => {
     return (true
       // name
       // && name.length > 0
@@ -37,13 +37,13 @@ export const PointEditor = (props: props) => {
   }
 
   // TODO: Extract to middleware?
-  const isValidLatitude = (latitude) => {
+  const isValidLatitude = (latitude: string) => {
     const latitudeNumber = Number(latitude);
-    return latitudeNumber && -90 <= latitude && latitude <= 90;
+    return latitudeNumber && -90 <= latitudeNumber && latitudeNumber <= 90;
   }
 
   // TODO: Extract to middleware?
-  const isValidLongitude = (longitude) => {
+  const isValidLongitude = (longitude: string) => {
     const longitudeNumber = Number(longitude);
     return longitudeNumber && -180 <= longitudeNumber && longitudeNumber <= 180;
   }
