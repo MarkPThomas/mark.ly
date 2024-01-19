@@ -9,6 +9,7 @@ export interface ISettings {
   initialPosition: IInitialPosition;
   baseLayers: ITilesLayer[];
   miniMap: ITilesLayer;
+  trackCriteriaNormalized: ITrackCriteria;
   trackCriteria: ITrackCriteria;
 }
 
@@ -16,6 +17,7 @@ export class Settings implements ISettings {
   initialPosition: IInitialPosition;
   baseLayers: ITilesLayer[];
   miniMap: ITilesLayer;
+  trackCriteriaNormalized: ITrackCriteria;
   trackCriteria: ITrackCriteria;
 
   constructor(config: any) {
@@ -24,8 +26,9 @@ export class Settings implements ISettings {
     this.miniMap = config.miniMap;
 
     console.log('config.trackCriteria:', config.trackCriteria)
-    this.trackCriteria = this.normalizeUnits(config.trackCriteria);
-    console.log('converted trackCriteria:', this.trackCriteria)
+    this.trackCriteria = config.trackCriteria;
+    this.trackCriteriaNormalized = this.normalizeUnits(config.trackCriteria);
+    console.log('converted trackCriteria:', this.trackCriteriaNormalized)
   }
 
   getInitialPosition(initialPosition: IInitialPosition): IInitialPosition {
