@@ -1,0 +1,15 @@
+svg {
+  margin: 3px;
+}
+
+.outline {
+  fill: black;
+}
+
+.outline.disabled {
+  fill: rgba(16, 16, 16, 0.5);
+}
+
+.icon {
+  height: fit-content;
+}
