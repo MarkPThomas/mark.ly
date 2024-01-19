@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
 // TODO: Remove later once Median Elevation fixed. VVVVVVV
@@ -12,15 +10,9 @@ import { LabelValue } from "../../../../LabelValueList";
 import { RangeStatsProps, RangeStats } from '../../RangeStats';
 
 
-export type HeightStatsProps = { height: IHeight };
+export type HeightStatsProps = { height: IHeight, level: number };
 
-export function HeightStats({ height }: HeightStatsProps) {
-  const [showAll, setShowAll] = useState<boolean>(false);
-
-  const handleClick = () => {
-    setShowAll(!showAll);
-  }
-
+export function HeightStats({ height, level }: HeightStatsProps) {
   const heightFormat = (value: number): string => {
     return value ? `${Conversion.Length.Meters.toFeet(value).toFixed(0)} ft` : '';
   }
@@ -36,15 +28,16 @@ export function HeightStats({ height }: HeightStatsProps) {
 
   const rangeProps: RangeStatsProps = {
     ...height,
-    mdn: medianHeight
+    mdn: medianHeight,
+    level
   }
 
   return (
-    <div onClick={handleClick}>
+    <div>
       <LabelValue label={'Gain'} value={heightGainFeet} />
       <LabelValue label={'Loss'} value={heightLossFeet} />
       <LabelValue label={'Net'} value={heightNetFeet} />
-      <RangeStats {...rangeProps} showAll={showAll} formatter={heightFormat} />
-    </div>
+      <RangeStats {...rangeProps} formatter={heightFormat} />
+    </div >
   )
 }
