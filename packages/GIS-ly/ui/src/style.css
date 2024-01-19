@@ -9,14 +9,23 @@ html {
   background-color: #ddd;
   background-image: linear-gradient(to bottom, #eee, #999);
   background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
+#app {
+  position: absolute;
+  left: 14px;
+  right: 14px;
 }
 
 #map-container {
   position: relative;
+  display: flex;
+  width: 100%;
 }
 
 .leaflet-container {
-  height: inherit;
+  width: 100%;
 }
 
 .label-value {

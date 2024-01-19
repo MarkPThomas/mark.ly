@@ -20,7 +20,7 @@ import {
 
 import { GeoJsonManager } from '../../model/GIS';
 import { ITrackCriteria } from '../../model/GIS/settings';
-import { Track, TrackPoint, TrackSegment } from '../../model/GIS/Core/Track';
+import { Track } from '../../model/GIS/Core/Track';
 import {
   StationarySmoother,
   SpeedSmoother,
@@ -71,6 +71,27 @@ export type MapProps = {
 };
 
 export const Map = ({ config, restHandlers }: MapProps) => {
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  const updateWindowDimensions = () => {
+    setWindowHeight(window.innerHeight - 28);
+    console.log('Window height is: ', window.innerHeight)
+  };
+
+  useEffect(() => {
+    // Set initial window height
+    updateWindowDimensions();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', updateWindowDimensions);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', updateWindowDimensions);
+    };
+  }, []); // Empty dependency array to run effect only on mount and unmount
+
+
   const [sessionId, setSessionId] = useState<number>(1);
 
   const [position, setPosition] = useState<IInitialPosition>(config.initialPosition);
@@ -681,7 +702,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   return (
     layers ?
       <>
-        <div id="map-container">
+        <div id="map-container" style={{ width: '100%', height: windowHeight }}>
           {currentTrack ?
             <div className="top-center control">
               <div className="selected-track">
@@ -709,7 +730,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             center={position.point}
             zoom={position.zoom}
             scrollWheelZoom={false}
-            style={{ width: '100%', height: '700px' }}
           >
             {layers.baseLayers[0].item}
             <MiniMapControl
@@ -1089,9 +1109,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
         <hr />
 
         <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
-        {!currentTrack
-          ? <input type="button" disabled value="Get Cached Elevation Data" />
-          : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
+        {
+          !currentTrack
+            ? <input type="button" disabled value="Get Cached Elevation Data" />
+            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
         }
 
         <br />
