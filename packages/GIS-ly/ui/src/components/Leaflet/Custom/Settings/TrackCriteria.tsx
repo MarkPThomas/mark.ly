@@ -8,14 +8,20 @@ import { TrackCriteriaUnits } from "./TrackCriteriaUnits"
 
 export type TrackCriteriaProps = {
   criteria: ITrackCriteria
+  title?: string;
+  level?: number;
 }
 
-const level = 2;
+export function TrackCriteria({
+  criteria,
+  title = "Track Criteria",
+  level = 2
+}: TrackCriteriaProps) {
+  const CustomTag = level ? `h${level}` as keyof JSX.IntrinsicElements : `h2` as keyof JSX.IntrinsicElements;
 
-export function TrackCriteria({ criteria }: TrackCriteriaProps) {
   return (
-    <div>
-      <h2>Track Criteria</h2>
+    <div className="track-criteria">
+      <CustomTag>{title}</CustomTag>
       <ToggleGroup value={'Units'} level={level} children={[<TrackCriteriaUnits key={Date()} units={criteria.units} />]} />
 
       {(criteria.cruft || criteria.split || criteria.noiseCloud || criteria.misc) ?

@@ -12,15 +12,21 @@ import { Geometry } from './Geometries';
 
 class FeatureCollectionDelegate extends GeoCollection<Feature, SerialFeature> {
   clone(): FeatureCollectionDelegate {
-    const featureCollectionDelegate = new FeatureCollectionDelegate();
+    const collectionDelegate = new FeatureCollectionDelegate();
 
-    featureCollectionDelegate._items = this._items;
-    featureCollectionDelegate._length = this._length;
+    const items = [];
+    this._items.forEach((item) => {
+      items.push(item.clone());
+    })
+    collectionDelegate._items = items;
+
+    collectionDelegate._length = this._length;
+
     if (this._bbox) {
-      featureCollectionDelegate._bbox = this._bbox;
+      collectionDelegate._bbox = this._bbox;
     }
 
-    return featureCollectionDelegate;
+    return collectionDelegate;
   }
 
   getFeaturesByType(type: GeoJsonGeometryTypes): Feature[] {
@@ -212,7 +218,7 @@ export class FeatureCollection
   }
 
   clone(): FeatureCollection {
-    return FeatureCollection.fromFeatures(this._collection.items as Feature[], this._bbox);
+    return FeatureCollection.fromFeatures(this._collection.clone().items as Feature[], this._bbox);
   }
 
   protected constructor() {

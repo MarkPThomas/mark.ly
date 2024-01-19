@@ -1,28 +1,64 @@
 import { LinkedListDouble, NodeDouble } from ".."
 
-interface IStateHistory<T> {
-  [key: string]: {
-    states: LinkedListDouble<T>,
-    currentState: NodeDouble<T>
-  }
+interface IStateHistorySet<T> {
+  states: LinkedListDouble<T | null>;
+  currentState: NodeDouble<T | null>;
 }
 
-export class StateHistory<T> {
-  private _history: IStateHistory<T> = {};
+interface IStateHistories<T> {
+  [key: string]: IStateHistorySet<T>
+}
 
-  constructor(key: string, initialState: T) {
-    this.saveState(key, initialState);
-    // TODO: Add optional limit of how many states are saved in the LRU-like cache
+export interface IStateHistory<T> {
+  addHistorySet(key: string): boolean;
+  numberOfStates(key: string): number;
+  hasUndo(key: string): boolean;
+  hasRedo(key: string): boolean;
+  undo(key: string, state: T): T | null;
+  redo(key: string, state: T): T | null;
+  executeCmd(key: string, state: T, command: () => void): void;
+}
+
+export class StateHistory<T> implements IStateHistory<T> {
+  private _stateLimit = 0;
+  private _histories: IStateHistories<T> = {};
+
+  constructor(stateLimit: number = 0) {
+    this._stateLimit = Math.max(stateLimit, 0);
   }
 
-  getState(key: string): T {
-    console.log('getState: ', this._history[key]?.currentState)
-    return this._history[key]?.currentState?.val;
+  addHistorySet(key: string): boolean {
+    if (key && !this._histories[key]) {
+      const states = new LinkedListDouble<T | null>();
+      states.append(new NodeDouble<T | null>(null));
+
+      const currentState = states.head;
+
+      if (currentState) {
+        this._histories[key] = {
+          states,
+          currentState
+        };
+        return true;
+      }
+    }
+    return false;
+  }
+
+  numberOfStates(key: string): number {
+    if (key) {
+      const history = this._histories[key];
+      if (history) {
+        return history.states.size();
+      }
+    }
+    return 0;
   }
 
   hasUndo(key: string): boolean {
     if (key) {
-      const currentState = this._history[key]?.currentState;
+      const history = this._histories[key];
+      const currentState = history?.currentState;
 
       return !!currentState && !!currentState.prev;
     }
@@ -31,60 +67,86 @@ export class StateHistory<T> {
 
   hasRedo(key: string): boolean {
     if (key) {
-      const currentState = this._history[key]?.currentState;
+      const currentState = this._histories[key]?.currentState;
 
       return !!currentState && !!currentState.next;
     }
     return false;
   }
 
-  executeCmd(key: string, state: T, command: () => void) {
-    if (command) {
-      command();
-      this.saveState(key, state);
-      // TODO: Handle case of this being called after some 'undos', as this should drop the remaining states
-    }
-  }
-
   undo(key: string, state: T) {
-    console.log('Undo!')
+    if (key) {
+      const history = this._histories[key];
 
-    // this.saveState(key, state);
+      if (history) {
+        let currentState: NodeDouble<T> = history.currentState as NodeDouble<T>;
 
-    const currentState = this._history[key]?.currentState?.prev;
-    this.updateCurrentState(key, currentState);
-  }
+        if (currentState.val === null) {
+          currentState.val = state;
+        }
 
-  redo(key: string) {
-    console.log('Redo!')
-    const currentState = this._history[key]?.currentState?.next as NodeDouble<T>;
-    this.updateCurrentState(key, currentState);
-  }
-
-  protected saveState(key: string, state: T) {
-    if (key && state) {
-      const states = this._history[key]
-        ? this._history[key].states
-        : new LinkedListDouble<T>();
-
-      states.append(state);
-
-      const currentState = this._history[key]
-        ? this._history[key].currentState.next as NodeDouble<T>
-        : states.head;
-
-      if (states && currentState) {
-        this._history[key] = { states, currentState };
+        if (currentState.prev) {
+          history.currentState = currentState.prev as NodeDouble<T>;
+        }
       }
     }
-  };
 
-  protected updateCurrentState(
-    key: string,
-    state: NodeDouble<T> | null
-  ) {
-    if (this._history[key] && state) {
-      this._history[key].currentState = state;
+    return this.getState(key);
+  }
+
+  redo(key: string, state: T) {
+    if (key) {
+      const history = this._histories[key];
+
+      if (history) {
+        let currentState: NodeDouble<T> = history.currentState as NodeDouble<T>;
+        if (currentState.next) {
+          currentState = currentState.next as NodeDouble<T>;
+        }
+
+        if (currentState.val === null) {
+          currentState.val = state;
+        }
+
+        history.currentState = currentState;
+      }
     }
+
+    return this.getState(key);
+  }
+
+  executeCmd(key: string, state: T, command: () => void) {
+    if (key && command) {
+      command();
+
+      const history = this._histories[key];
+
+      if (history) {
+        let currentState: NodeDouble<T> = history.currentState as NodeDouble<T>;
+
+        if (currentState.val === null) {
+          currentState.val = state;
+        }
+
+        const states = history.states;
+        if (currentState.next) {
+          states.trim(states.head, history.currentState);
+        }
+
+        if (!currentState.next) {
+          states.append(new NodeDouble<T | null>(null));
+        }
+
+        history.currentState = currentState.next as NodeDouble<T>;
+
+        while (this._stateLimit && states.size() > this._stateLimit) {
+          states.removeHead();
+        }
+      }
+    }
+  }
+
+  private getState(key: string): T | null {
+    return this._histories[key]?.currentState?.val;
   }
 }
