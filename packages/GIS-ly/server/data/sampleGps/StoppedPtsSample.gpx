@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtrkx="http://www.garmin.com/xmlschemas/TrackStatsExtension/v1" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" creator="GPSMAP 66i" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackStatsExtension/v1 http://www8.garmin.com/xmlschemas/TrackStatsExtension.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd"><metadata><link href="http://www.garmin.com"><text>Garmin International</text></link><time>2023-07-07T22:15:24Z</time></metadata><trk><name>2023-07-08 14:34:13</name><extensions><gpxtrkx:TrackStatsExtension><gpxtrkx:Distance>2587.000</gpxtrkx:Distance><gpxtrkx:TimerTime>9049</gpxtrkx:TimerTime><gpxtrkx:TotalElapsedTime>76728</gpxtrkx:TotalElapsedTime><gpxtrkx:MovingTime>5910</gpxtrkx:MovingTime><gpxtrkx:StoppedTime>3140</gpxtrkx:StoppedTime><gpxtrkx:MovingSpeed>0.438</gpxtrkx:MovingSpeed><gpxtrkx:MaxSpeed>1.870</gpxtrkx:MaxSpeed><gpxtrkx:MaxElevation>4774.888</gpxtrkx:MaxElevation><gpxtrkx:MinElevation>4123.067</gpxtrkx:MinElevation><gpxtrkx:Ascent>656.000</gpxtrkx:Ascent><gpxtrkx:Descent>16.882</gpxtrkx:Descent><gpxtrkx:AvgAscentRate>0.093</gpxtrkx:AvgAscentRate><gpxtrkx:MaxAscentRate>0.196</gpxtrkx:MaxAscentRate><gpxtrkx:AvgDescentRate>0.040</gpxtrkx:AvgDescentRate><gpxtrkx:MaxDescentRate>-0.075</gpxtrkx:MaxDescentRate><gpxtrkx:Calories>145</gpxtrkx:Calories></gpxtrkx:TrackStatsExtension></extensions>
+<trkseg>
+	<trkpt lat="-8.8925807644" lon="-77.6343857031"><ele>4147.31</ele><time>2023-07-07T22:15:24Z</time></trkpt>
+	<trkpt lat="-8.8925800100" lon="-77.6343854517"><ele>4147.55</ele><time>2023-07-07T22:15:28Z</time></trkpt>
+<!-- New track segment, merged -->
+	<trkpt lat="-8.8927118573" lon="-77.6342397742"><ele>4143.20</ele><time>2023-07-07T22:33:22Z</time></trkpt>
+	<trkpt lat="-8.8927138690" lon="-77.6342583820"><ele>4142.71</ele><time>2023-07-07T22:33:33Z</time></trkpt>
+<!-- New track segment, merged -->
+	<trkpt lat="-8.8926509209" lon="-77.6343435422"><ele>4146.83</ele><time>2023-07-08T00:01:04Z</time></trkpt>
+	<trkpt lat="-8.8927183114" lon="-77.6343066618"><ele>4145.35</ele><time>2023-07-08T00:01:19Z</time></trkpt>
+<!-- New track segment, merged -->
+	<trkpt lat="-8.8930060621" lon="-77.6346162893"><ele>4124.91</ele><time>2023-07-08T17:03:57Z</time></trkpt>
+	<trkpt lat="-8.8930711057" lon="-77.6345589571"><ele>4123.97</ele><time>2023-07-08T17:04:38Z</time></trkpt>
+	<trkpt lat="-8.8930357341" lon="-77.6346878707"><ele>4124.41</ele><time>2023-07-08T17:05:14Z</time></trkpt>
+	<trkpt lat="-8.8930873666" lon="-77.6346846856"><ele>4126.27</ele><time>2023-07-08T17:05:55Z</time></trkpt>
+	<trkpt lat="-8.8931048848" lon="-77.6346785668"><ele>4127.87</ele><time>2023-07-08T17:06:32Z</time></trkpt>
+	<trkpt lat="-8.8931065612" lon="-77.6346780639"><ele>4128.18</ele><time>2023-07-08T17:07:25Z</time></trkpt>
+	<trkpt lat="-8.8930568565" lon="-77.6346847694"><ele>4129.23</ele><time>2023-07-08T17:08:05Z</time></trkpt>
+	<trkpt lat="-8.8930554315" lon="-77.6346960012"><ele>4128.58</ele><time>2023-07-08T17:08:28Z</time></trkpt>
+	<trkpt lat="-8.8930561021" lon="-77.6347037964"><ele>4128.38</ele><time>2023-07-08T17:08:45Z</time></trkpt>
+	<trkpt lat="-8.8930515759" lon="-77.6346744597"><ele>4128.11</ele><time>2023-07-08T17:08:55Z</time></trkpt>
+	<trkpt lat="-8.8929745462" lon="-77.6346949954"><ele>4127.93</ele><time>2023-07-08T17:09:01Z</time></trkpt>
+	<trkpt lat="-8.8928898051" lon="-77.6346826740"><ele>4128.26</ele><time>2023-07-08T17:09:12Z</time></trkpt>
+	<trkpt lat="-8.8928598817" lon="-77.6346898824"><ele>4128.23</ele><time>2023-07-08T17:09:15Z</time></trkpt>
+	<trkpt lat="-8.8928150386" lon="-77.6347037964"><ele>4129.25</ele><time>2023-07-08T17:09:28Z</time></trkpt>
+</trkseg></trk></gpx>	

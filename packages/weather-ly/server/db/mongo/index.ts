@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { MongoClient } from 'mongodb';
 import Repo from './repos';
-import pointsData from './data/weather_ly.points.json';
-import gridsData from './data/weather_ly.grids.json';
+import pointsData from '../../data/weather_ly.points.json';
+import gridsData from '../../data/weather_ly.grids.json';
 
 const url = 'mongodb://localhost:27017';
 const dbName = 'weather_ly';

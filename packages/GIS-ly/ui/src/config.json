@@ -1,0 +1,139 @@
+{
+  "initialPosition": {
+    "point": [
+      37.7749,
+      -122.4194
+    ],
+    "zoom": 13
+  },
+  "miniMap": {
+    "name": "OpenStreetMap",
+    "attributions": [
+      {
+        "label": "OpenStreetMap",
+        "url": "https://openstreetmap.org/copyright"
+      }
+    ],
+    "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  },
+  "baseLayers": [
+    {
+      "name": "OpenStreetMap",
+      "attributions": [
+        {
+          "label": "OpenStreetMap",
+          "url": "https://openstreetmap.org/copyright"
+        }
+      ],
+      "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    },
+    {
+      "name": "Topo Map",
+      "attributions": [
+        {
+          "label": "Thunderforest",
+          "url": "http://thunderforest.com/"
+        },
+        {
+          "label": "OpenStreetMap",
+          "url": "https://openstreetmap.org/copyright"
+        }
+      ],
+      "url": "https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png",
+      "apiKey": "thunderforest"
+    },
+    {
+      "name": "ESRI Topo Map",
+      "attributions": [
+        {
+          "label": "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"
+        }
+      ],
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+    },
+    {
+      "name": "ESRI Satellite Map",
+      "attributions": [
+        {
+          "label": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+        }
+      ],
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+    }
+  ],
+  "trackCriteria": {
+    "units": {
+      "length": "miles",
+      "time": "hours",
+      "angle": "degrees"
+    },
+    "activities": {
+      "hiking": {
+        "name": "Hiking",
+        "speed": {
+          "min": 0.25,
+          "max": 4
+        },
+        "rotation": {
+          "units": {
+            "angle": "degrees",
+            "time": "seconds"
+          },
+          "angularVelocityMax": 60
+        },
+        "elevation": {
+          "units": {
+            "length": "feet"
+          },
+          "ascentRateMax": 3000,
+          "descentRateMax": 4500
+        },
+        "gapDistanceMax": 2
+      },
+      "cycling": {
+        "name": "Cycling",
+        "speed": {
+          "min": 0.25,
+          "max": 60
+        },
+        "rotation": {
+          "units": {
+            "angle": "degrees",
+            "time": "seconds"
+          },
+          "angularVelocityMax": 120
+        },
+        "elevation": {
+          "units": {
+            "length": "feet"
+          },
+          "ascentRateMax": 2000,
+          "descentRateMax": 6000
+        },
+        "slope": {
+          "units": {
+            "angle": "percent"
+          },
+          "max": 30
+        },
+        "gapDistanceMax": 4
+      }
+    },
+    "cruft": {
+      "gapDistanceMax": 3
+    },
+    "noiseCloud": {
+      "speedMin": 0.25
+    },
+    "split": {
+      "stopDurationMax": 3,
+      "moveDurationMin": 0.08333
+    },
+    "misc": {
+      "units": {
+        "time": "seconds"
+      },
+      "gpsTimeInterval": 30
+    }
+  }
+}

@@ -1,0 +1,21 @@
+INSERT INTO "gis_marker_route"
+VALUES
+(1,8,'Thumb Rock','10760',1,1,3279.65,NULL),
+(2,8,'Ptarmigan Ridge Crest','10300',2,2,3139.44,NULL),
+(3,8,'Camp Schurman','9460',3,3,2883.41,NULL),
+(4,8,'Camp Muir','10080',4,4,3072.38,NULL),
+(5,8,'The Turtle','10000',5,5,3048,NULL),
+(6,8,'Curtis Ridge','10200',6,6,3108.96,NULL),
+(7,8,'Willis Wall Carbon Glacier','8500',7,7,2590.8,NULL),
+(8,8,'Liberty Wall Carbon Glacier','8500',8,8,2590.8,NULL),
+(9,8,'Edmunds Glacier Nunatak','9200',9,9,2804.16,NULL),
+(10,8,'Edmunds Glacier Nunatak','9600',10,10,2926.08,NULL),
+(11,8,'South Mowich-Edmunds Glaciers','9200',11,11,2804.16,NULL),
+(12,8,'Puyallup Cleaver','9200',12,12,2804.16,NULL),
+(13,8,'Red Gendarme','10500',13,13,3200.4,NULL),
+(14,8,'Success Cleaver','8300',14,14,2529.84,NULL),
+(15,8,'Success Cleaver','9500',15,15,2895.6,NULL),
+(16,8,'Pyramid-Success Glaciers','8500',16,16,2590.8,NULL),
+(17,8,'Wawpowety Cleaver','10000',17,17,3048,NULL),
+(18,8,'Wilson Glacier','9200',18,18,2804.16,NULL),
+(19,8,'Meany Crest','7573',19,19,2308.25,NULL);
