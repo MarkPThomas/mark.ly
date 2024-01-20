@@ -1420,14 +1420,12 @@ axios@0.21.4:
   dependencies:
     follow-redirects "^1.14.0"
 
-
 axios@^1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.4.tgz#184ee1f63d412caffcf30d2c50982253c3ee86e0"
   integrity sha512-heJnIs6N4aa1eSthhN9M5ioILu8Wi8vmQW9iHQ9NUvfkJb0lEEDUiIdQNAuBtfUt3FxReaKdpQA5DbmMOqzF/A==
   dependencies:
     follow-redirects "^1.15.4"
-
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
@@ -2370,10 +2368,10 @@ domain-browser@^4.22.0:
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-4.22.0.tgz#6ddd34220ec281f9a65d3386d267ddd35c491f9f"
   integrity sha512-IGBwjF7tNk3cwypFNH/7bfzBcgSCbaMOD3GsaY1AU/JRrnHnYgEM0+9kQt52iZxjNsjBtJYtao146V+f8jFZNw==
 
-dotenv@^16.0.3:
-  version "16.0.3"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.0.3.tgz#115aec42bac5053db3c456db30cc243a5a836a07"
-  integrity sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==
+dotenv@^16.3.1:
+  version "16.3.2"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.2.tgz#3cb611ce5a63002dbabf7c281bc331f69d28f03f"
+  integrity sha512-HTlk5nmhkm8F6JcdXvHIzaorzCoziNQT9mGxLPVXW8wJF1TiGSL60ZGB4gHWabHOaMmWmhvk2/lPHfnBiT78AQ==
 
 dynamic-dedupe@^0.3.0:
   version "0.3.0"
@@ -2944,12 +2942,10 @@ follow-redirects@^1.0.0, follow-redirects@^1.14.0:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
   integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
 
-
 follow-redirects@^1.15.4:
   version "1.15.4"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
   integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
-
 
 for-each@^0.3.3:
   version "0.3.3"
