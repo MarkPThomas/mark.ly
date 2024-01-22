@@ -85,10 +85,10 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
   const localUnits: IUnits = getLocalUnits(trackCriteria.units, globalUnits);
   const sessionTrackCriteria = globalDefaults;
 
-  convertCruftToGlobalUnits(trackCriteria.cruft, localUnits, sessionTrackCriteria);
-  convertNoiseCloudToGlobalUnits(trackCriteria.noiseCloud, localUnits, sessionTrackCriteria);
-  convertSplitToGlobalUnits(trackCriteria.split, localUnits, sessionTrackCriteria);
-  convertMiscToGlobalUnits(trackCriteria.misc, localUnits, sessionTrackCriteria);
+  convertCruftToGlobalUnits(trackCriteria.cruft, sessionTrackCriteria, localUnits);
+  convertNoiseCloudToGlobalUnits(trackCriteria.noiseCloud, sessionTrackCriteria, localUnits);
+  convertSplitToGlobalUnits(trackCriteria.split, sessionTrackCriteria, localUnits);
+  convertMiscToGlobalUnits(trackCriteria.misc, sessionTrackCriteria, localUnits);
 
   if (trackCriteria.activities) {
     const activityKeys = Object.keys(trackCriteria.activities);
@@ -97,7 +97,7 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
       const sessionActivity = sessionTrackCriteria.activities[activityKey];
 
       if (configActivity && sessionActivity) {
-        convertActivityToGlobalUnits(configActivity, localUnits, sessionActivity);
+        convertActivityToGlobalUnits(configActivity, sessionActivity, localUnits);
       } else {
         sessionTrackCriteria[activityKey] = configActivity;
       }
@@ -109,7 +109,7 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
   return sessionTrackCriteria;
 }
 
-function convertCruftToGlobalUnits(cruft: ICruft, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
+function convertCruftToGlobalUnits(cruft: ICruft, sessionTrackCriteria: ITrackCriteria, units: IUnits) {
   if (!cruft) {
     return;
   }
@@ -125,7 +125,7 @@ function convertCruftToGlobalUnits(cruft: ICruft, units: IUnits, sessionTrackCri
   delete sessionTrackCriteria.cruft.units;
 }
 
-function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
+function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, sessionTrackCriteria: ITrackCriteria, units: IUnits) {
   if (!noiseCloud) {
     return;
   }
@@ -141,7 +141,7 @@ function convertNoiseCloudToGlobalUnits(noiseCloud: INoiseCloud, units: IUnits, 
   delete sessionTrackCriteria.noiseCloud.units;
 }
 
-function convertSplitToGlobalUnits(split: ISplit, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
+function convertSplitToGlobalUnits(split: ISplit, sessionTrackCriteria: ITrackCriteria, units: IUnits) {
   if (!split) {
     return;
   }
@@ -154,7 +154,7 @@ function convertSplitToGlobalUnits(split: ISplit, units: IUnits, sessionTrackCri
   delete sessionTrackCriteria.split.units;
 }
 
-function convertMiscToGlobalUnits(misc: IMisc, units: IUnits, sessionTrackCriteria: ITrackCriteria) {
+function convertMiscToGlobalUnits(misc: IMisc, sessionTrackCriteria: ITrackCriteria, units: IUnits) {
   if (!misc) {
     return;
   }
@@ -166,24 +166,24 @@ function convertMiscToGlobalUnits(misc: IMisc, units: IUnits, sessionTrackCriter
   delete sessionTrackCriteria.misc.units;
 }
 
-function convertActivityToGlobalUnits(activity: IActivity, units: IUnits, sessionActivity: IActivity) {
+function convertActivityToGlobalUnits(activity: IActivity, sessionActivity: IActivity, units: IUnits) {
   if (!activity) {
     return;
   }
 
   const localUnits = getLocalUnits(activity.units, units);
 
-  convertActivitySpeedToGlobalUnits(activity.speed, localUnits, sessionActivity.speed);
-  convertActivityRotationToGlobalUnits(activity.rotation, localUnits, sessionActivity.rotation);
-  convertActivityElevationToGlobalUnits(activity.elevation, localUnits, sessionActivity.elevation);
-  convertActivitySlopeToGlobalUnits(activity.slope, localUnits, sessionActivity.slope);
+  convertActivitySpeedToGlobalUnits(activity.speed, sessionActivity.speed, localUnits);
+  convertActivityRotationToGlobalUnits(activity.rotation, sessionActivity.rotation, localUnits);
+  convertActivityElevationToGlobalUnits(activity.elevation, sessionActivity.elevation, localUnits);
+  convertActivitySlopeToGlobalUnits(activity.slope, sessionActivity.slope, localUnits);
 
   sessionActivity.gapDistanceMax = converter.convertLength(activity.gapDistanceMax, localUnits);
 
   delete sessionActivity.units;
 }
 
-function convertActivitySpeedToGlobalUnits(criteria: ISpeedCriteria, units: IUnits, sessionCriteria: ISpeedCriteria) {
+function convertActivitySpeedToGlobalUnits(criteria: ISpeedCriteria, sessionCriteria: ISpeedCriteria, units: IUnits) {
   if (!criteria) {
     return;
   }
@@ -196,7 +196,7 @@ function convertActivitySpeedToGlobalUnits(criteria: ISpeedCriteria, units: IUni
   delete sessionCriteria.units;
 }
 
-function convertActivityRotationToGlobalUnits(criteria: IRotationCriteria, units: IUnits, sessionCriteria: IRotationCriteria) {
+function convertActivityRotationToGlobalUnits(criteria: IRotationCriteria, sessionCriteria: IRotationCriteria, units: IUnits) {
   if (!criteria) {
     return;
   }
@@ -208,7 +208,7 @@ function convertActivityRotationToGlobalUnits(criteria: IRotationCriteria, units
   delete sessionCriteria.units;
 }
 
-function convertActivityElevationToGlobalUnits(criteria: IElevationCriteria, units: IUnits, sessionCriteria: IElevationCriteria) {
+function convertActivityElevationToGlobalUnits(criteria: IElevationCriteria, sessionCriteria: IElevationCriteria, units: IUnits) {
   if (!criteria) {
     return;
   }
@@ -221,7 +221,7 @@ function convertActivityElevationToGlobalUnits(criteria: IElevationCriteria, uni
   delete sessionCriteria.units;
 }
 
-function convertActivitySlopeToGlobalUnits(criteria: ISlopeCriteria, units: IUnits, sessionCriteria: ISlopeCriteria) {
+function convertActivitySlopeToGlobalUnits(criteria: ISlopeCriteria, sessionCriteria: ISlopeCriteria, units: IUnits) {
   if (!criteria) {
     return;
   }
@@ -260,7 +260,8 @@ const globalDefaults: ITrackCriteria = {
         },
         ascentRateMax: 3000,
         descentRateMax: 4500
-      }
+      },
+      gapDistanceMax: 0.25
     },
     cycling: {
       name: "Cycling",
@@ -287,7 +288,8 @@ const globalDefaults: ITrackCriteria = {
           angle: eAngle.percent
         },
         max: 30
-      }
+      },
+      gapDistanceMax: 1
     }
   },
   cruft: {
