@@ -8,8 +8,6 @@ import { MapContainer } from 'react-leaflet';
 import { Feature, FeatureCollection as FeatureCollectionSerial, Geometry } from 'geojson';
 import Control from "react-leaflet-custom-control";
 
-
-import { Conversion } from '../../../../../common/utils/units/conversion/Conversion';
 import { StateHistory } from '../../../../../common/utils/history/StateHistory';
 
 import {
@@ -40,7 +38,7 @@ import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
 import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
-import { IEditedStats, Stats } from './Custom/Stats/Paths/Stats';
+import { IEditedStats } from './Custom/Stats/Paths/Stats';
 import { TrackCriteria } from './Custom/Settings/TrackCriteria';
 import { POSITION_CLASSES } from './LeafletControls/controlSettings';
 import { ControlHeaderExpand } from './LeafletControls/Custom/ControlHeaderExpand';
@@ -440,17 +438,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
 
   const handleTrimCruft = () => {
-    console.log('handleTrimCruft')
     if (currentTrack) {
       handleCmd(() => {
         const manager = new CruftManager(currentTrack);
-
-        // const triggerDistanceM: number = 5000;
         const triggerDistanceM = trackCriteria.cruft.gapDistanceMax;
-        console.log('triggerDistanceM: ', triggerDistanceM)
-        const numberTrimmed = manager.trimTrackByCruft(triggerDistanceM);
-
-        console.log(`number nodes removed: ${numberTrimmed}`);
+        manager.trimTrackByCruft(triggerDistanceM);
 
         updateFromTrack(currentTrack);
       });
@@ -460,10 +452,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   // TODO: Note that undo history is lost before this.
   // Should it be retained? Or a warning modal given? A preview shown? Or nothing?
   const handleSplitOnStop = () => {
-    console.log('handleSplitOnStop')
     if (currentTrack) {
       if (showPreview) {
         const splitResults = splitOnStop(currentTrack.clone());
+
         if (splitResults.tracks.length > 1) {
           setPreviewTracks(splitResults.tracks);
           setPreviewPoints(splitResults.points);
@@ -473,10 +465,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
       } else {
         handleCmd(() => {
           const splitResults = splitOnStop(currentTrack);
-
-          // console.log(`number tracks returned: ${splitResults.tracks.length}`);
-          // console.log(`number segments split on: ${splitResults.segments.length}`);
-          // console.log(`number points split by: ${splitResults.points.length}`);
 
           if (splitResults.tracks.length > 1) {
             removeTrack(currentTrack);
@@ -502,18 +490,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const handleSmoothStationary = () => {
-    console.log('handleSmoothStationary')
     if (currentTrack) {
       handleCmd(() => {
         const manager = new StationarySmoother(currentTrack);
-
-        // 0.11176 meters/sec = 0.25 mph is essentially stationary
-        // const minSpeedMS = 0.11176;
         const minSpeedMS = trackCriteria.activities.hiking.speed.min;
-        console.log('minSpeedMS: ', minSpeedMS)
-
-        let numberNodesRemoved = manager.smoothStationary(minSpeedMS, true);
-        console.log('numberNodesRemoved: ', numberNodesRemoved);
+        manager.smoothStationary(minSpeedMS, true);
 
         updateFromTrack(currentTrack);
       });
@@ -521,22 +502,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const handleSmoothBySpeed = () => {
-    console.log('handleSmoothBySpeed')
     if (currentTrack) {
       handleCmd(() => {
         const manager = new SpeedSmoother(currentTrack);
-
-        // 1.78816 meters/sec = 4 mph
-        const speedLimitKph = Conversion.Speed.mphToKph(4);
-        const speedLimitMpS = Conversion.Speed.kphToMetersPerSecond(speedLimitKph);
-        console.log('old speedLimitMS: ', speedLimitMpS)
-
-
         const speedLimitMS = trackCriteria.activities.hiking.speed.max;
-        console.log('speedLimitMS: ', speedLimitMS)
-
-        let numberNodesRemoved = manager.smoothBySpeed(speedLimitMS, true);
-        console.log('numberNodesRemoved: ', numberNodesRemoved);
+        manager.smoothBySpeed(speedLimitMS, true);
 
         updateFromTrack(currentTrack);
       });
@@ -544,18 +514,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
   const handleSmoothByAngularSpeed = () => {
-    console.log('handleSmoothByAngularSpeed')
     if (currentTrack) {
       handleCmd(() => {
         const manager = new AngularSpeedSmoother(currentTrack);
-
-        //1.0472; // 60 deg/sec = 3 seconds to walk around a switchback
-        // const angularSpeedLimitRadS = 1.0472;
         const angularSpeedLimitRadS = trackCriteria.activities.hiking.rotation.angularVelocityMax;
-        console.log('angularSpeedLimitRadS: ', angularSpeedLimitRadS)
-
-        let numberNodesRemoved = manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
-        console.log('numberNodesRemoved: ', numberNodesRemoved);
+        manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
 
         updateFromTrack(currentTrack);
       });
@@ -567,16 +530,10 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     if (currentTrack) {
       handleCmd(() => {
         const gpsTimeIntervalS = trackCriteria.misc.gpsTimeInterval;
-        console.log('gpsTimeIntervalS: ', gpsTimeIntervalS)
         const manager = new NoiseCloudSmoother(currentTrack, gpsTimeIntervalS);
 
-        // 0.11176 meters/sec = 0.25 mph is essentially stationary
-        // const minSpeedMS = 0.11176;
         const minSpeedMS = trackCriteria.noiseCloud.speedMin;
-        console.log('minSpeedMS: ', minSpeedMS)
-
-        let numberNodesRemoved = manager.smoothNoiseClouds(minSpeedMS, true);
-        console.log('numberNodesRemoved: ', numberNodesRemoved);
+        manager.smoothNoiseClouds(minSpeedMS, true);
 
         updateFromTrack(currentTrack);
       });
@@ -628,16 +585,9 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     handleCmd(() => {
       const manager = new ElevationSpeedSmoother(currentTrack);
 
-      //0.254 meters/second = 3000 ft / hr
-      // const ascentSpeedLimitMPS = 0.254;
-      // const descentSpeedLimitMPS = 1.5 * ascentSpeedLimitMPS;
       const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
-      console.log('ascentSpeedLimitMS: ', ascentSpeedLimitMS)
       const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
-      console.log('descentSpeedLimitMS: ', descentSpeedLimitMS)
-
-      let numberNodesRemoved = manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
-      console.log('numberNodesRemoved: ', numberNodesRemoved);
+      manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
 
       updateFromTrack(currentTrack);
     });
@@ -655,7 +605,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const key = getKey();
     const state = history.undo(key, currentTrack);
 
-    console.log('Undo: ', history)
     setHistory(history);
 
     updateTrackState(state);
@@ -665,7 +614,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     const key = getKey();
     const state = history.redo(key, currentTrack);
 
-    console.log('Redo: ', history)
     setHistory(history);
 
     updateTrackState(state);
@@ -673,10 +621,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
 
   const updateTrackState = (currentTrackState: Track) => {
-    console.log('prior # vertices: ', currentTrack.trackPoints().length)
-    console.log('currentTrackState: ', currentTrackState);
-    console.log('# vertices: ', currentTrackState.trackPoints().length)
-
     setCurrentTrack(currentTrackState);
 
     tracks[currentTrackState.id] = currentTrackState;
@@ -1105,18 +1049,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             </Modal>
             : null}
         </div >
-        <br />
-        <hr />
-
-        <input type="button" disabled onClick={handleGetApiElevation} value="Get Elevation Data from API" />
-        {
-          !currentTrack
-            ? <input type="button" disabled value="Get Cached Elevation Data" />
-            : <input type="button" onClick={handleGetCachedElevation} value="Get Cached Elevation Data" />
-        }
-
-        <br />
-        <hr />
       </>
       : null
   )
