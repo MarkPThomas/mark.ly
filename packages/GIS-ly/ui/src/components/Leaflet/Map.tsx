@@ -600,8 +600,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
 
   const cleanCallbacks = getCleanCallbacks(
-    config.trackCriteria.activities.hiking,
-    config.trackCriteria,
+    config.trackCriteriaNormalized.activities.hiking,
+    config.trackCriteriaNormalized,
     handleClean,
     handleNoiseCloud,
     handleSplitWithPreview

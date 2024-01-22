@@ -86,6 +86,8 @@ const trimByCruft = (track: Track, criteria: ICruft) => {
   if (track && criteria) {
     const manager = new CruftManager(track);
 
+    console.log('trimByCruft')
+    console.log('criteria.gapDistanceMax', criteria.gapDistanceMax)
     const triggerDistanceM = criteria.gapDistanceMax;
     return manager.trimTrackByCruft(triggerDistanceM);
   }
