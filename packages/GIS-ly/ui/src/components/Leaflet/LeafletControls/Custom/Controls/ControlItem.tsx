@@ -1,4 +1,4 @@
-import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../../common/utils/stringFormatting";
+import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
 export type ControlItemProps = {
   cb: () => void;

@@ -1,37 +1,28 @@
 import React, { useState } from "react";
 
-import { toUpperFirstLetter } from "../../../../../../../common/utils/stringFormatting";
-import { ControlItem } from "./ControlItem";
+import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
+import { IEditedStats, Stats } from "../../../Custom/Stats/Paths/Stats";
 
-export type ControlHeaderExpandProps = {
+export type StatsDisplayProps = {
+  stats: IEditedStats;
   category: string;
   cb?: () => void;
   children: React.ReactNode[];
-  childrenAlignedBeside?: boolean;
-  childrenBeside?: boolean;
-  forceClosed?: boolean;
-  forceClosedIfToggled?: boolean;
-  iconRight?: boolean;
   iconSvg?: React.ReactNode;
   isDisabled?: boolean;
   isToggled?: boolean;
-  showLabelWithIcon?: boolean;
   title?: string;
 }
 
-export function ControlHeaderExpand({
+export function StatsDisplay({
+  stats,
   category,
   cb,
-  children,
-  childrenAlignedBeside,
-  childrenBeside,
-  iconRight,
   iconSvg,
   isDisabled,
   isToggled,
-  showLabelWithIcon,
   title
-}: ControlHeaderExpandProps) {
+}: StatsDisplayProps) {
   const [currentlyToggled, setCurrentlyToggled] = useState<boolean>((isToggled && !isDisabled) ? true : false);
 
   const setToggle = () => {
@@ -46,11 +37,10 @@ export function ControlHeaderExpand({
   const categoryUpperFirst = toUpperFirstLetter(category);
   const localTitle = `${categoryUpperFirst} Operations`;
 
-  const classNameBar = `leaflet-bar header ${childrenBeside ? `child-col-beside` : ''}`;
+  const classNameBar = `leaflet-bar header`;
   const classNameLink = `header-control
     ${(currentlyToggled && !isDisabled) ? ' toggled' : ''}
     ${isDisabled ? ` disabled` : ''}`;
-  const classNameChildren = `${childrenAlignedBeside ? `beside` : ''}`;
 
   return (
     <>
@@ -63,31 +53,21 @@ export function ControlHeaderExpand({
           role="button"
           onClick={setToggle}
         >
-          {(showLabelWithIcon && iconSvg) ?
-            <span aria-hidden="true" className="icon-label">
-              {iconRight ?
-                <>
-                  {categoryUpperFirst}
-                  {iconSvg}
-                </>
-                :
-                <>
-                  {iconSvg}
-                  {categoryUpperFirst}
-                </>
-
-              }
+          {(currentlyToggled && !isDisabled) ?
+            <span aria-hidden="true" className="icon-label stats-label">
+              <h2>{categoryUpperFirst}</h2>
+              {iconSvg}
             </span>
             :
-            iconSvg ?? <span aria-hidden="true">{categoryUpperFirst}</span>
+            iconSvg
           }
         </a>
         {(currentlyToggled && !isDisabled) ?
-          <div className={classNameChildren}>
-            {children.map((child) => child)}
+          <div className="leaflet-bar item stats-control">
+            <Stats stats={stats} />
           </div>
           : null}
       </div>
     </>
-  );
+  )
 }

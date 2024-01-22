@@ -8,55 +8,52 @@ import { MapContainer } from 'react-leaflet';
 import { Feature, FeatureCollection as FeatureCollectionSerial, Geometry } from 'geojson';
 import Control from "react-leaflet-custom-control";
 
+import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
+
 import { StateHistory } from '../../../../../common/utils/history/StateHistory';
 
-import {
-  toGeoJson,
-  toGpxFile,
-  toKmlFile
-} from '../../model/Files';
-
+import { toGeoJson } from '../../model/Files';
 import { GeoJsonManager } from '../../model/GIS';
-import { ITrackCriteria } from '../../model/GIS/settings';
+import { IActivity, ISplit, ITrackCriteria } from '../../model/GIS/settings';
 import { Track } from '../../model/GIS/Core/Track';
-import {
-  StationarySmoother,
-  SpeedSmoother,
-  NoiseCloudSmoother,
-  AngularSpeedSmoother,
-  ElevationSpeedSmoother
-} from '../../model/GIS/Actions/Smooth';
-import { DurationSplitter } from '../../model/GIS/Actions/Split';
-import { CruftManager } from '../../model/GIS/Actions/Cruft/CruftManager';
+import { ISplitResult } from '../../model/GIS/Actions/Split/SplitManager';
 
 import { Settings } from '../../Settings';
 
 import { createTileLayers, appendTilesApiKey } from './Layers/TileLayers';
+import { POSITION_CLASSES } from './LeafletControls/controlSettings';
+import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
+import { SetViewOnLoad } from './LeafletControls/SetViewOnLoad';
+import { getCleanCallbacks } from './LeafletControls/Custom/Clean/CleanCallbacks';
+
 import { MiniMapControl } from './LeafletControls/MiniMap/MiniMapControl';
 import { IOverlay, LayersControl, LayersControlProps } from './LeafletControls/Layers/LayersControl';
-import { SetViewOnClick } from './LeafletControls/SetViewOnClick';
-import { SetViewOnTrackLoad } from './LeafletControls/SetViewOnTrackLoad';
 
-import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
-import { IEditedStats } from './Custom/Stats/Paths/Stats';
-import { TrackCriteria } from './Custom/Settings/TrackCriteria';
-import { POSITION_CLASSES } from './LeafletControls/controlSettings';
-import { ControlHeaderExpand } from './LeafletControls/Custom/ControlHeaderExpand';
-import { ControlItem } from './LeafletControls/Custom/ControlItem';
-import { ControlHeaderSwap } from './LeafletControls/Custom/ControlHeaderSwap';
-import { PolylineComparisonControl } from './LeafletControls/Custom/PolylineComparisonControl';
-import { TrackStatsControl } from './LeafletControls/Custom/TrackStatsControl';
+import { ControlCenter } from './LeafletControls/Custom/Controls/ControlCenter';
+import { PreviewControl } from './LeafletControls/Custom/Preview/PreviewControl';
+import { PathSelectedControl } from './LeafletControls/Custom/PathSelected/PathSelectedControl';
+import { EditingControl } from './LeafletControls/Custom/Editing/EditingControl';
+import { HistoryControls } from './LeafletControls/Custom/History/HistoryControls';
+import { PathGraphControl } from './LeafletControls/Custom/PathGraph/PathGraphControl';
+import { StatsControl } from './LeafletControls/Custom/Stats/StatsControl';
+import { FileControl } from './LeafletControls/Custom/File/FileControl';
+import { OptionsControl } from './LeafletControls/Custom/Options/OptionsControl';
+import { ICheckboxGroup } from './LeafletControls/Custom/Options/CheckboxGroup';
+import { IDialogGroup } from './LeafletControls/Custom/Options/DialogGroup';
+import { CleanControls, ICleanGroup } from './LeafletControls/Custom/Clean/CleanControls';
+
 import { Modal } from '../shared/components/Modal';
 import Dialog from '../shared/components/Dialog';
-import { FileIcon } from '../shared/components/Icons/FileIcon';
-import { OptionsIcon } from '../shared/components/Icons/OptionsIcon';
-import { UndoRedoIcon } from '../shared/components/Icons/UndoRedoIcon';
-import { EditIcon } from '../shared/components/Icons/EditIcon';
-import { CleanIcon } from '../shared/components/Icons/CleanIcon';
-import { SaveIcon } from '../shared/components/Icons/SaveIcon';
-import { GraphIcon } from '../shared/components/Icons/GraphIcon';
-import { StatsIcon } from '../shared/components/Icons/StatsIcon';
+import { TrackCriteriaModal } from './LeafletControls/Custom/Modals/TrackCriteriaModal';
+import { FileReplaceModal } from './LeafletControls/Custom/Modals/FileReplaceModal';
+import { ElevationsModal } from './LeafletControls/Custom/Modals/ElevationsModal';
+
+import { PolylineComparisonDisplay } from './LeafletControls/Custom/Stats/PolylineComparisonDisplay';
 import { GeoJsonPreview } from './Layers/GeoJsonPreview';
+import { PathGraphDisplay } from './LeafletControls/Custom/PathGraph/PathGraphDisplay';
+import { EditingDisplay } from './LeafletControls/Custom/Editing/EditingDisplay';
+
+import { IEditedStats } from './Custom/Stats/Paths/Stats';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -150,58 +147,30 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     // });
   }, []);
 
-  const handleSetViewOnClick = () => {
-    setAnimateRef(!animateRef);
-    console.log('Toggled animateRef!', animateRef);
-
-  }
-
-  const handleShowPreview = () => {
-    setShowPreview(!showPreview);
-    console.log('Toggled showPreview!', showPreview);
-  }
-
+  // == Previews ==
   const handleIsShowingPreview = () => {
     setIsShowingPreview(!isShowingPreview);
   }
 
-  const handleAccept = () => {
+  const handleAcceptPreview = () => {
     setIsShowingPreview(false);
+    acceptNewTracks(previewTracks);
+  }
 
+  const handleRejectPreview = () => {
+    setIsShowingPreview(false);
+  }
+
+  const acceptNewTracks = (tracks: Track[]) => {
     removeTrack(currentTrack);
-    addTracks(previewTracks);
+    addTracks(tracks);
 
-    const newCurrentTrack = previewTracks[0];
+    const newCurrentTrack = tracks[0];
     changeCurrentTrack(newCurrentTrack);
     updateFromTrack(newCurrentTrack, false);
   }
 
-  const handleReject = () => {
-    setIsShowingPreview(false);
-  }
-
-  const handleShowTrackPoints = () => {
-    setShowTrackPoints(!showTrackPoints);
-    setLayers(updateLayersProps(currentTrack, !showTrackPoints));
-  }
-
-  const handleShowTrackCriteria = () => {
-    setShowTrackCriteriaModal(!showTrackCriteriaModal);
-  }
-
-  const handleShowComparisonStats = () => {
-    setShowComparisonStats(!showComparisonStats);
-    console.log('Toggled showComparisonStats!', showComparisonStats);
-  }
-
-  const handleOnEditClick = () => {
-    setIsEditing(!isEditing)
-  }
-
-  const handleGraphClick = () => {
-    setShowGraph(!showGraph);
-  }
-
+  // == Updates ==
   const updateFromTrack = (track: Track, updateStats: boolean = true) => {
     console.log('updateFromTrack');
     console.log('Track: ', track);
@@ -226,6 +195,16 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
+  const updateTrackState = (currentTrackState: Track) => {
+    setCurrentTrack(currentTrackState);
+
+    tracks[currentTrackState.id] = currentTrackState;
+    setTracks(tracks);
+
+    updateFromTrack(currentTrackState);
+  }
+
+
   const updateLayersProps = (selectedTrack?: Track, showTrackPoints: boolean = true): LayersControlProps => {
     const overlays: IOverlay[] = Object.values(tracks).map((track) => overlayDefinition(track));
     console.log('updateLayersProps->overlays: ', overlays)
@@ -240,7 +219,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
     return layersProps;
   }
-
 
   const overlayDefinition = (track: Track): IOverlay => {
     const coords = track.trackPoints();
@@ -381,24 +359,6 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     setShowFileReplaceModal(show);
   }
 
-  const handleElevationApiDialog = (show: boolean) => {
-    setShowModal(show);
-    setShowElevationApiModal(show);
-  }
-
-  const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files[0];
-    console.log('Read file: ', file);
-
-    if (currentTrack) {
-      setSelectedFile(file);
-      handleFileReplaceDialog(true);
-    } else {
-      // setCurrentFile(file)
-      await loadFile(file);
-    }
-  };
-
   const loadFile = async (file: File) => {
     if (!file) {
       console.log('No file specified!');
@@ -427,117 +387,11 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   }
 
 
-  const handleGPXSaveFile = () => {
-    toGpxFile(currentTrack.toJson());
-  }
 
-  const handleKMLSaveFile = () => {
-    toKmlFile(currentTrack.toJson());
-  }
-
-
-
-  const handleTrimCruft = () => {
-    if (currentTrack) {
-      handleCmd(() => {
-        const manager = new CruftManager(currentTrack);
-        const triggerDistanceM = trackCriteria.cruft.gapDistanceMax;
-        manager.trimTrackByCruft(triggerDistanceM);
-
-        updateFromTrack(currentTrack);
-      });
-    }
-  }
-
-  // TODO: Note that undo history is lost before this.
-  // Should it be retained? Or a warning modal given? A preview shown? Or nothing?
-  const handleSplitOnStop = () => {
-    if (currentTrack) {
-      if (showPreview) {
-        const splitResults = splitOnStop(currentTrack.clone());
-
-        if (splitResults.tracks.length > 1) {
-          setPreviewTracks(splitResults.tracks);
-          setPreviewPoints(splitResults.points);
-          setPreviewSegments(splitResults.segments);
-          handleIsShowingPreview();
-        }
-      } else {
-        handleCmd(() => {
-          const splitResults = splitOnStop(currentTrack);
-
-          if (splitResults.tracks.length > 1) {
-            removeTrack(currentTrack);
-            addTracks(splitResults.tracks);
-
-            const newCurrentTrack = splitResults.tracks[0];
-            changeCurrentTrack(newCurrentTrack);
-            updateFromTrack(newCurrentTrack, false);
-          }
-        });
-      }
-    }
-  }
-
-  const splitOnStop = (track: Track) => {
-    if (track) {
-      const manager = new DurationSplitter(track);
-
-      const maxStopDurationS = trackCriteria.split.stopDurationMax;
-      const minMoveDurationS = trackCriteria.split.moveDurationMin;
-      return manager.splitByMaxDuration(maxStopDurationS, minMoveDurationS);
-    }
-  }
-
-  const handleSmoothStationary = () => {
-    if (currentTrack) {
-      handleCmd(() => {
-        const manager = new StationarySmoother(currentTrack);
-        const minSpeedMS = trackCriteria.activities.hiking.speed.min;
-        manager.smoothStationary(minSpeedMS, true);
-
-        updateFromTrack(currentTrack);
-      });
-    }
-  }
-
-  const handleSmoothBySpeed = () => {
-    if (currentTrack) {
-      handleCmd(() => {
-        const manager = new SpeedSmoother(currentTrack);
-        const speedLimitMS = trackCriteria.activities.hiking.speed.max;
-        manager.smoothBySpeed(speedLimitMS, true);
-
-        updateFromTrack(currentTrack);
-      });
-    }
-  }
-
-  const handleSmoothByAngularSpeed = () => {
-    if (currentTrack) {
-      handleCmd(() => {
-        const manager = new AngularSpeedSmoother(currentTrack);
-        const angularSpeedLimitRadS = trackCriteria.activities.hiking.rotation.angularVelocityMax;
-        manager.smoothByAngularSpeed(angularSpeedLimitRadS, true);
-
-        updateFromTrack(currentTrack);
-      });
-    }
-  }
-
-  const handleSmoothNoiseCloud = () => {
-    console.log('handleSmoothNoiseCloud')
-    if (currentTrack) {
-      handleCmd(() => {
-        const gpsTimeIntervalS = trackCriteria.misc.gpsTimeInterval;
-        const manager = new NoiseCloudSmoother(currentTrack, gpsTimeIntervalS);
-
-        const minSpeedMS = trackCriteria.noiseCloud.speedMin;
-        manager.smoothNoiseClouds(minSpeedMS, true);
-
-        updateFromTrack(currentTrack);
-      });
-    }
+  // == Elevations ==
+  const handleElevationApiDialog = (show: boolean) => {
+    setShowModal(show);
+    setShowElevationApiModal(show);
   }
 
   const handleGetApiElevation = () => {
@@ -570,8 +424,194 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
+
+  // == Command Pattern ==
+  const handleCmd = (command: () => void) => {
+    if (command) {
+      history.executeCmd(getKey(), currentTrack.clone(), command);
+      console.log('handleCmd: ', history)
+      setHistory(history);
+    }
+  }
+
+  const getKey = (): string => {
+    return currentTrack?.id;
+  }
+
+
+  // == Controls ==
+  // ==== Files Control ====
+  const handleFileSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files[0];
+    console.log('Read file: ', file);
+
+    if (currentTrack) {
+      setSelectedFile(file);
+      handleFileReplaceDialog(true);
+    } else {
+      // setCurrentFile(file)
+      await loadFile(file);
+    }
+  };
+
+  // ==== Options Control ====
+  const handleShowTrackCriteria = () => {
+    setShowTrackCriteriaModal(!showTrackCriteriaModal);
+  }
+
+  const optionDialogItems: IDialogGroup = {
+    title: 'Config',
+    items: [
+      {
+        name: 'Track Criteria',
+        cb: handleShowTrackCriteria
+      }
+    ]
+  };
+
+
+  const handleShowComparisonStats = () => {
+    setShowComparisonStats(!showComparisonStats);
+    console.log('Toggled showComparisonStats!', showComparisonStats);
+  }
+
+  const handleShowTrackPoints = () => {
+    setShowTrackPoints(!showTrackPoints);
+    setLayers(updateLayersProps(currentTrack, !showTrackPoints));
+  }
+
+  const optionDisplayItems: ICheckboxGroup = {
+    title: 'Display',
+    items: [
+      {
+        name: 'Show Comparison Stats',
+        isChecked: showComparisonStats,
+        cb: handleShowComparisonStats
+      },
+      {
+        name: 'Show TrackPoints',
+        isChecked: showTrackPoints,
+        cb: handleShowTrackPoints
+      },
+    ]
+  };
+
+
+  const handleSetViewOnClick = () => {
+    setAnimateRef(!animateRef);
+  }
+
+  const handleShowPreview = () => {
+    setShowPreview(!showPreview);
+  }
+
+  const optionMiscItems: ICheckboxGroup = {
+    title: 'Misc',
+    items: [
+      {
+        name: 'Animate Click Move',
+        isChecked: animateRef,
+        cb: handleSetViewOnClick
+      },
+      {
+        name: 'Show Clean Previews',
+        isChecked: showPreview,
+        cb: handleShowPreview
+      },
+    ]
+  };
+
+  // ==== Cleaning Control ====
+  const handleClean = (
+    cleanCb: (track: Track, criteria: {}) => number,
+    criteria: {}
+  ) => {
+    if (currentTrack) {
+      handleCmd(() => {
+        const cleanResults = cleanCb(currentTrack, criteria);
+        acceptCleanResults(cleanResults, currentTrack);
+      });
+    }
+  }
+
+  const handleNoiseCloud = (
+    noiseCloudCb: (track: Track, criteria: ITrackCriteria) => { nodes: number; clouds: number; },
+    criteria: ITrackCriteria
+  ) => {
+    if (currentTrack) {
+      handleCmd(() => {
+        const cleanResults = noiseCloudCb(currentTrack, criteria);
+        const numResults = Math.max(cleanResults.clouds, cleanResults.nodes);
+        acceptCleanResults(numResults, currentTrack);
+      });
+    }
+  }
+
+  const acceptCleanResults = (cleanResults: number, track: Track) => {
+    if (cleanResults) {
+      updateFromTrack(track);
+    }
+  }
+
+  // TODO: Note that undo history is lost before this.
+  // Should it be retained? Or a warning modal given? A preview shown? Or nothing?
+  const handleSplitWithPreview = (
+    splitCb: (track: Track, criteria: ISplit | IActivity) => ISplitResult,
+    criteria: ISplit | IActivity
+  ) => {
+
+    if (currentTrack) {
+      if (showPreview) {
+        const splitResults = splitCb(currentTrack.clone(), criteria);
+        saveSplitResultsPreview(splitResults);
+      } else {
+        handleSplit(splitCb, criteria);
+      }
+    }
+  }
+
+  const handleSplit = (
+    splitCb: (track: Track, criteria: ISplit | IActivity) => ISplitResult,
+    criteria: ISplit | IActivity
+  ) => {
+    if (currentTrack) {
+      handleCmd(() => {
+        const cleanResults = splitCb(currentTrack, criteria);
+        acceptSplitResults(cleanResults);
+      });
+    }
+  }
+
+  const saveSplitResultsPreview = (splitResults: ISplitResult) => {
+    if (splitResults.tracks.length > 1) {
+      setPreviewTracks(splitResults.tracks);
+      setPreviewPoints(splitResults.points);
+      setPreviewSegments(splitResults.segments);
+      handleIsShowingPreview();
+    }
+  }
+
+  const acceptSplitResults = (splitResults: ISplitResult) => {
+    if (splitResults.tracks.length > 1) {
+      acceptNewTracks(splitResults.tracks);
+    }
+  }
+
+
+
+  const cleanCallbacks = getCleanCallbacks(
+    config.trackCriteriaNormalized.activities.hiking,
+    config.trackCriteriaNormalized,
+    handleClean,
+    handleNoiseCloud,
+    handleSplitWithPreview
+  );
+
+  const handleSmoothByElevationWithElevations = () => {
+    cleanCallbacks.smooth.elevationSpeed.cb()
+  }
+
   const handleSmoothByElevation = () => {
-    console.log('handleSmoothByElevation')
     if (currentTrack) {
       if (!hasElevations) {
         setShowElevationApiModal(true);
@@ -581,26 +621,43 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     }
   }
 
-  const handleSmoothByElevationWithElevations = () => {
-    handleCmd(() => {
-      const manager = new ElevationSpeedSmoother(currentTrack);
+  const cleanTrim: ICleanGroup = {
+    type: 'trim',
+    items: Object.values(cleanCallbacks.trim).map((item) => item)
+  };
 
-      const ascentSpeedLimitMS = trackCriteria.activities.hiking.elevation.ascentRateMax;
-      const descentSpeedLimitMS = trackCriteria.activities.hiking.elevation.descentRateMax;
-      manager.smoothByElevationSpeed(ascentSpeedLimitMS, descentSpeedLimitMS, true);
+  const cleanSmooth: ICleanGroup = {
+    type: 'smooth',
+    items: Object.values(cleanCallbacks.smooth).map((item) => {
+      if (item.criteria !== cleanCallbacks.smooth.elevationSpeed.criteria) {
+        return item;
+      } else {
+        return {
+          criteria: item.criteria,
+          cb: handleSmoothByElevation
+        }
+      }
+    })
+  };
 
-      updateFromTrack(currentTrack);
-    });
+  const cleanSplit: ICleanGroup = {
+    type: 'split',
+    items: Object.values(cleanCallbacks.split).map((item) => item)
+  };
+
+  const cleanGroups: ICleanGroup[] = [
+    cleanTrim,
+    cleanSmooth,
+    cleanSplit
+  ];
+
+  // ==== Editing Control ====
+  const handleOnEditClick = () => {
+    setIsEditing(!isEditing)
   }
 
-  const handleCmd = (command: () => void) => {
-    if (command) {
-      history.executeCmd(getKey(), currentTrack.clone(), command);
-      console.log('handleCmd: ', history)
-      setHistory(history);
-    }
-  }
-
+  // ==== History Control ====
+  const hasUndo = history?.hasUndo(getKey());
   const handleUndo = () => {
     const key = getKey();
     const state = history.undo(key, currentTrack);
@@ -610,6 +667,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateTrackState(state);
   }
 
+  const hasRedo = history?.hasRedo(getKey());
   const handleRedo = () => {
     const key = getKey();
     const state = history.redo(key, currentTrack);
@@ -619,57 +677,37 @@ export const Map = ({ config, restHandlers }: MapProps) => {
     updateTrackState(state);
   }
 
-
-  const updateTrackState = (currentTrackState: Track) => {
-    setCurrentTrack(currentTrackState);
-
-    tracks[currentTrackState.id] = currentTrackState;
-    setTracks(tracks);
-
-    updateFromTrack(currentTrackState);
+  // ==== Path Graph Control ====
+  const handleGraphClick = () => {
+    setShowGraph(!showGraph);
   }
-
-  const getKey = (): string => {
-    return currentTrack?.id;
-  }
-
-  const hasUndo = history?.hasUndo(getKey());
-  const hasRedo = history?.hasRedo(getKey());
 
 
   console.log('layersProps:', layers)
-
   const tracksValues = Object.values(tracks);
-
   const isGlobalDisabled = showModal || isShowingPreview;
+  const showControlTopCenter = currentTrack || (showComparisonStats && originalTrackStats);
+  const showControlBottomCenter = isEditing || isShowingPreview;
 
   return (
     layers ?
       <>
         <div id="map-container" style={{ width: '100%', height: windowHeight }}>
-          {currentTrack ?
-            <div className="top-center control">
-              <div className="selected-track">
-                {tracksValues.length > 1 ?
-                  <div className="selected-track-select">
-                    <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
-                    <select name="tracks" id="tracks-selection" value={currentTrack.id} onChange={handleTrackSelection}>
-                      {
-                        tracksValues.map((track) =>
-                          <option value={track.time} key={track.time}>{track.name}</option>
-                        )
-                      }
-                    </select>
-                  </div>
-                  :
-                  <h2>Selected Track: {currentTrack.name}</h2>
-                }
-              </div>
-              {(showComparisonStats && originalTrackStats) ?
-                <PolylineComparisonControl statsInitial={originalTrackStats} statsCurrent={trackStats} />
+          {showControlTopCenter ?
+            <ControlCenter position={'top'}>
+              {currentTrack ?
+                <PathSelectedControl
+                  currentTrack={currentTrack}
+                  tracksValues={tracksValues}
+                  handleTrackSelection={handleTrackSelection}
+                />
                 : null}
-            </div>
+              {(showComparisonStats && originalTrackStats) ?
+                <PolylineComparisonDisplay statsInitial={originalTrackStats} statsCurrent={trackStats} />
+                : null}
+            </ControlCenter>
             : null}
+
           <MapContainer
             center={position.point}
             zoom={position.zoom}
@@ -681,97 +719,19 @@ export const Map = ({ config, restHandlers }: MapProps) => {
               zoom={Math.floor(position.zoom / 2)}
               tileSourceUrl={config.miniMap.url}
             />
-            <Control position="topleft" prepend>
-              {/* Keep this control component here. For some reason the zoom control margin is broken without it. */}
-            </Control>
-            <Control position="topleft">
-              <ControlHeaderExpand
-                isDisabled={isEditing}
-                category="file"
-                iconSvg={
-                  <FileIcon isDisabled={isEditing} />
-                }
-                children={[
-                  <div key={'file open'} className="leaflet-bar item">
-                    <input type="file" onChange={handleFileSelection} />
-                  </div>,
-                  <ControlHeaderExpand
-                    key={'file save'}
-                    category="save selected..."
-                    childrenBeside={true}
-                    isDisabled={!currentTrack}
-                    iconSvg={<SaveIcon isDisabled={!currentTrack} />}
-                    showLabelWithIcon={true}
-                    children={[
-                      <ControlItem
-                        key={'save gpx'}
-                        type="save"
-                        criteria="gpx"
-                        title="Save selected Track to GPX file"
-                        cb={handleGPXSaveFile}
-                      />,
-                      <ControlItem
-                        key={'save kml'}
-                        type="save"
-                        criteria="kml"
-                        title="Save selected Track to KML file"
-                        cb={handleKMLSaveFile}
-                      />
-                    ]}
-                  />,
-                ]}
-              />
-            </Control>
-            <Control position="topleft">
-              <ControlHeaderSwap
-                category="options"
-                iconSvg={
-                  <OptionsIcon height="24px" />
-                }
-                children={[
-                  <div key="options-config" className="options options-config">
-                    <h3>Config</h3>
-                    <a className="track-criteria-option"
-                      href="#"
-                      title="track-criteria-option"
-                      aria-label="track-criteria-option"
-                      aria-disabled="false"
-                      role="button"
-                      onClick={handleShowTrackCriteria}
-                    >
-                      <span aria-hidden="true">Track Criteria</span>
-                    </a>
-                  </div>,
-                  <div key="options-display" className="options options-display">
-                    <hr />
-                    <h3>Display</h3>
-                    <div key="showComparisonStats">
-                      <input type="checkbox" onChange={handleShowComparisonStats} id="showComparisonStats" checked={showComparisonStats} />
-                      <label htmlFor="showComparisonStats">Show Comparison Stats</label>
-                    </div>
-                    <div key="showTrackPoints">
-                      <input type="checkbox" onChange={handleShowTrackPoints} id="showTrackPoints" checked={showTrackPoints} />
-                      <label htmlFor="showTrackPoints">Show TrackPoints</label>
-                    </div>
-                  </div>,
-                  <div key="options-misc" className="options options-misc">
-                    <hr />
-                    <h3>Misc</h3>
-                    <div key="animatePan">
-                      <input type="checkbox" onChange={handleSetViewOnClick} id="animatePan" checked={animateRef} />
-                      <label htmlFor="animatePan">Set View On Click</label>
-                    </div>
-                    <div key="showPreview">
-                      <input type="checkbox" onChange={handleShowPreview} id="showPreview" checked={showPreview} />
-                      <label htmlFor="showPreview">Show Clean Previews</label>
-                    </div>
-                  </div>,
-                ]}
-              />
-            </Control>
+            {/* Keep this control component here. For some reason the zoom control margin is broken without it. */}
+            <Control position="topleft" prepend />
+            <FileControl track={currentTrack} onFileSelection={handleFileSelection} />
+            <OptionsControl
+              dialogGroups={[optionDialogItems]}
+              checkboxGroups={[optionDisplayItems, optionMiscItems]}
+            />
             {currentTrack ?
               <>
-                <Control position="topleft">
+                <CleanControls isDisabled={isGlobalDisabled || isEditing}
+                  groups={cleanGroups}
+                />
+                {/* <Control position="topleft">
                   <ControlHeaderExpand
                     category="clean"
                     isDisabled={isEditing || isGlobalDisabled}
@@ -845,210 +805,59 @@ export const Map = ({ config, restHandlers }: MapProps) => {
                       />
                     ]}
                   />
-                </Control>
-                <Control position="topleft">
-                  <ControlHeaderExpand
-                    key={'edit'}
-                    category="edit"
-                    childrenBeside={true}
-                    children={[]}
-                    isDisabled={isGlobalDisabled}
-                    cb={handleOnEditClick}
-                    iconSvg={
-                      <EditIcon isDisabled={isGlobalDisabled} />
-                    }
-                  />
-                </Control>
-                <Control position="topleft">
-                  <ControlItem
-                    key={'history undo'}
-                    type="history"
-                    criteria="undo"
-                    title="Undo"
-                    isDisabled={!hasUndo}
-                    cb={handleUndo}
-                    iconSvg={
-                      <UndoRedoIcon isDisabled={!hasUndo || isGlobalDisabled} />
-                    }
-                  />
-                  <ControlItem
-                    key={'history redo'}
-                    type="history"
-                    criteria="redo"
-                    title="Redo"
-                    isDisabled={!hasRedo}
-                    cb={handleRedo}
-                    iconSvg={
-                      <UndoRedoIcon redo={true} isDisabled={!hasRedo || isGlobalDisabled} />
-                    }
-                  />
-                </Control>
-                <Control position="bottomright" prepend>
-                  <ControlHeaderExpand
-                    key={'graph'}
-                    category="graph"
-                    title="Show Graph"
-                    children={[]}
-                    isDisabled={isGlobalDisabled}
-                    // isDisabled={true}
-                    cb={handleGraphClick}
-                    iconSvg={
-                      <GraphIcon isDisabled={isGlobalDisabled} />
-                    }
-                  />
-                </Control>
+                </Control> */}
+                <EditingControl isDisabled={isGlobalDisabled} onClick={handleOnEditClick} />
+                <HistoryControls isDisabled={isGlobalDisabled} hasUndo={hasUndo} hasRedo={hasRedo} onUndo={handleUndo} onRedo={handleRedo} />
+                <PathGraphControl isDisabled={isGlobalDisabled} onClick={handleGraphClick} position="bottomright" prepend />
               </>
               : null}
 
-            {(trackStats !== null) ?
-              <>
-                <Control position="topright">
-                  <TrackStatsControl
-                    key={'stats'}
-                    category="stats"
-                    title="Show stats"
-                    stats={trackStats}
-                    children={[]}
-                    isDisabled={isGlobalDisabled}
-                    iconSvg={
-                      <StatsIcon isDisabled={isGlobalDisabled} />
-                    }
-                  />
-                </Control>
-              </>
-              : null}
-
+            {trackStats ?
+              <StatsControl isDisabled={isGlobalDisabled} stats={trackStats} position="topright" /> : null}
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
-              <LayersControl {...layers} />
-              : null}
-
+              <LayersControl {...layers} /> : null}
 
             {isShowingPreview ?
-              <GeoJsonPreview tracks={previewTracks} />
-              : null}
-
-            {bounds ? <SetViewOnTrackLoad bounds={bounds} /> : null}
+              <GeoJsonPreview tracks={previewTracks} /> : null}
+            {bounds ?
+              <SetViewOnLoad bounds={bounds} /> : null}
             <SetViewOnClick animateRef={animateRef} />
           </MapContainer>
 
-          {showGraph ?
-            <div className="graph">
-              Track Graph to be added in next version
-            </div>
-            : null}
-
-          {isEditing ?
-            <div className="bottom-center control">
-              <div className="editing-label">Editing to be added in next version</div>
-            </div>
-            : null}
-
-          {isShowingPreview ?
-            <div className="bottom-center control">
-              <div className="preview-label">
-                <input type="button" onClick={handleAccept} value="Accept" />
-                <input type="button" onClick={handleReject} value="Reject" />
-              </div>
-            </div>
-            : null}
-
-          {showTrackCriteriaModal ?
-            <Modal
-              setShow={handleShowTrackCriteria}
-              buttons={[]}
-              title={'Track Criteria'}
-            >
-              <div className="stats-container">
-                {config.trackCriteria ?
-                  <TrackCriteria
-                    criteria={config.trackCriteria}
-                    title={"Specified"}
-                    level={3}
-                  /> : null
-                }
-                {config.trackCriteriaNormalized ?
-                  <TrackCriteria
-                    criteria={config.trackCriteriaNormalized}
-                    title={"Normalized"}
-                    level={3}
-                  /> : null
-                }
-              </div>
-            </Modal>
-            : null}
-
-          {showFileReplaceModal ?
-            <Modal
-              setShow={handleFileReplaceDialog}
-              buttons={[
-                {
-                  label: 'Replace',
-                  callback: () => {
-                    console.log('Replace')
-                    // TODO: Handle case of re-selecting existing file after cancelling in this modal.
-                    // acceptCurrentFile(true);
-                    swapTracks();
-                    handleFileReplaceDialog(false);
-                  }
-                }, {
-                  label: 'Merge',
-                  callback: () => {
-                    console.log('Merge')
-                    // TODO: Handle case of re-selecting existing file after cancelling in this modal.
-                    // TODO: Handle case of not reloading a prior loaded file. Maybe have a list of loaded names?
-                    // acceptCurrentFile(true);
-                    loadTrack();
-                    handleFileReplaceDialog(false);
-                  }
-                }, {
-                  label: 'Cancel',
-                  callback: () => {
-                    console.log('Cancel')
-                    // TODO: Handle case of re-selecting existing file after cancelling here.
-                    // acceptCurrentFile(false);
-                    handleFileReplaceDialog(false);
-                  }
-                }
-              ]}
-              title={'Warning!'}
-            >
-              <p>Tracks already exist.</p>
-              <p>Please select from the following actions:</p>
-            </Modal>
-            : null}
-
-          {showElevationApiModal ?
-            <Modal
-              setShow={handleElevationApiDialog}
-              buttons={[{
-                label: 'Fetch from API',
-                callback: async () => {
-                  await handleGetCachedElevation();
-                  // await handleGetApiElevation(); // TODO: Activate this & remove cached elevations method once API fixed
-                  handleSmoothByElevationWithElevations();
-                  handleElevationApiDialog(false);
-                }
-              }, {
-                label: 'Use existing',
-                callback: async () => {
-                  handleSmoothByElevationWithElevations();
-                  handleElevationApiDialog(false);
-                }
-              }, {
-                label: 'Cancel',
-                callback: () => {
-                  handleElevationApiDialog(false);
-                }
-              }
-              ]}
-              title={'Elevations'}
-            >
-              <p>Some Track Points are missing terrain elevations. <br />
-                Stats may be off if using incomplete or GPS-recorded altitudes.</p>
-            </Modal>
-            : null}
+          {showControlBottomCenter ?
+            <ControlCenter position={'bottom'}>
+              {isEditing ?
+                <EditingDisplay /> : null}
+              {isShowingPreview ?
+                <PreviewControl cbAccept={handleAcceptPreview} cbReject={handleRejectPreview} /> : null}
+            </ControlCenter> : null
+          }
         </div >
+
+        {/* TODO: When adding graph, subtract it's height from windowHeight for the map */}
+        {showGraph ?
+          <PathGraphDisplay /> : null}
+
+        {showTrackCriteriaModal ?
+          <TrackCriteriaModal
+            handleShow={handleShowTrackCriteria}
+            trackCriteria={config.trackCriteria}
+            trackCriteriaNormalized={config.trackCriteriaNormalized}
+          /> : null}
+
+        {showFileReplaceModal ?
+          <FileReplaceModal
+            handleFileReplaceDialog={handleFileReplaceDialog}
+            swapTracks={swapTracks}
+            loadTrack={loadTrack}
+          /> : null}
+
+        {showElevationApiModal ?
+          <ElevationsModal
+            handleElevationApiDialog={handleElevationApiDialog}
+            handleGetElevation={handleGetCachedElevation}  // handleGetApiElevation(); // TODO: Activate this & remove cached elevations method once API fixed
+            handleSmoothByElevationWithElevations={handleSmoothByElevationWithElevations} /> : null}
       </>
       : null
   )

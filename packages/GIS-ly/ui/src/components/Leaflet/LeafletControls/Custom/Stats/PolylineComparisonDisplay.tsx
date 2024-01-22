@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import { IEditedPolylineStats, PolylineStatsComparison } from "../../Custom/Stats/Paths/PolylineStatsComparison";
-import { ToggleGroup } from "../../Custom/ToggleGroup";
+import { IEditedPolylineStats, PolylineStatsComparison } from "../../../Custom/Stats/Paths/PolylineStatsComparison";
+import { ToggleGroup } from "../../../Custom/ToggleGroup";
 
 const Group = styled.div`
   display: flex;
@@ -13,12 +13,12 @@ const Group = styled.div`
   background-color: rgb(134, 251, 255, 0.7);
 `;
 
-export type PolylineComparisonControlProps = {
+export type PolylineComparisonDisplayProps = {
   statsInitial: IEditedPolylineStats,
   statsCurrent: IEditedPolylineStats
 }
 
-export function PolylineComparisonControl({ statsInitial, statsCurrent }: PolylineComparisonControlProps) {
+export function PolylineComparisonDisplay({ statsInitial, statsCurrent }: PolylineComparisonDisplayProps) {
   return (
     <Group>
       <ToggleGroup

@@ -84,7 +84,7 @@ export class ActivitySplitter extends Splitter {
     gapDistanceMax?: number
   ): ISplitResult {
     track = track ?? this._splitManager.track;
-    gapDistanceMax = gapDistanceMax ?? activity.gapDistanceMax;
+    gapDistanceMax = gapDistanceMax ?? activity?.gapDistanceMax;
 
     if (!gapDistanceMax) {
       return {

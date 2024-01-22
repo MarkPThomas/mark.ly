@@ -278,6 +278,11 @@ a.disabled:visited {
   text-align: center;
 }
 
+.top-center .hidden,
+.bottom-center .hidden {
+  border: none;
+}
+
 dialog[open] {
   position: fixed;
   top: 50%;
