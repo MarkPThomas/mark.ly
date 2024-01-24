@@ -18,10 +18,10 @@ export function SegmentStats({ segment }: SegmentStatsProps) {
   const durationSec = segment.duration ? timeDHHMMSSFormat(segment.duration) : '';
 
   const lengthFt = segment.length ? `${Conversion.Length.Meters.toFeet(segment.length).toFixed(0)} ft` : '';
-  const speedMph = segment.speed ? `${Conversion.Speed.metersPerSecondToMph(segment.speed).toFixed(1)} mph` : '';
+  const speedMph = segment.speed ? `${Conversion.Speed.MetersPerSecond.toMph(segment.speed).toFixed(1)} mph` : '';
 
   const heightFt = segment.height ? `${Conversion.Length.Meters.toFeet(segment.height).toFixed(0)} ft` : '';
-  const heightRateFtPerHour = segment.heightRate ? `${Conversion.Speed.metersPerSecondToFeetPerHour(segment.heightRate).toFixed(0)} ft/hr` : '';
+  const heightRateFtPerHour = segment.heightRate ? `${Conversion.Speed.MetersPerSecond.toFeetPerHour(segment.heightRate).toFixed(0)} ft/hr` : '';
 
   const slope = segment.slope ? `${(100 * segment.slope).toFixed(0)}% / ${Conversion.Angle.Percent.toDegrees(100 * segment.slope).toFixed(0)}°` : '';
 

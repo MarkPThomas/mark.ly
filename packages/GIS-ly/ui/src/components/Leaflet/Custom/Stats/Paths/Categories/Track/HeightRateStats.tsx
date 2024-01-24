@@ -11,7 +11,7 @@ export function HeightRateStats({ heightRate, level }: HeightRateStatsProps) {
 
 
   const heightRateFormat = (valMetersPerSecond: number) => {
-    return valMetersPerSecond ? `${Conversion.Speed.metersPerSecondToFeetPerHour(valMetersPerSecond).toFixed(0)} ft/hr` : '';
+    return valMetersPerSecond ? `${Conversion.Speed.MetersPerSecond.toFeetPerHour(valMetersPerSecond).toFixed(0)} ft/hr` : '';
   }
 
   return (
