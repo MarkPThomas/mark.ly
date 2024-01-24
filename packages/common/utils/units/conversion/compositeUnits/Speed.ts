@@ -71,3 +71,5 @@ export class Speed {
   static FeetPerHour = FeetPerHour;
   static MilesPerHour = MilesPerHour;
 }
+
+// TODO: Add Knots = 1 = 1.15078 mph
