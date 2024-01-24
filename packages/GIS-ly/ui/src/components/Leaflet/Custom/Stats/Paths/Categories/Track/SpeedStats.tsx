@@ -10,7 +10,7 @@ export type SpeedStatsProps = { speed: IRangeStatsResults<TrackPoint, TrackSegme
 export function SpeedStats({ speed, level }: SpeedStatsProps) {
 
   const speedFormat = (valMetersPerSecond: number) => {
-    return valMetersPerSecond ? `${Conversion.Speed.metersPerSecondToMph(valMetersPerSecond).toFixed(1)} mph` : '';
+    return valMetersPerSecond ? `${Conversion.Speed.MetersPerSecond.toMph(valMetersPerSecond).toFixed(1)} mph` : '';
   }
 
   return (
