@@ -247,7 +247,7 @@ describe('##TrackStats', () => {
 
         expect(result.slope.avg).toBeCloseTo(-0.02, 2);
         expect(result.slope.downhill.avg).toBeCloseTo(-0.07, 2);
-        expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
+        expect(result.slope.downhill.min.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
 
@@ -263,7 +263,7 @@ describe('##TrackStats', () => {
         expect(result.heightRate.ascent.avg).toBeCloseTo(0.066, 3);  // 0.081 - Wrong?
         expect(result.heightRate.ascent.max.value).toBeCloseTo(0.167, 3);
         expect(result.heightRate.descent.avg).toBeCloseTo(-0.12, 2);  // -0.11 - Wrong?
-        expect(result.heightRate.descent.max.value).toBeCloseTo(-0.14, 2);
+        expect(result.heightRate.descent.min.value).toBeCloseTo(-0.14, 2);
       });
 
       // it('should skip nodes not meeting callback criteria provided', () => {
@@ -306,7 +306,7 @@ describe('##TrackStats', () => {
 
         expect(initialResult.slope.avg).toBeCloseTo(-0.02, 2);
         expect(initialResult.slope.downhill.avg).toBeCloseTo(-0.07, 2);
-        expect(initialResult.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
+        expect(initialResult.slope.downhill.min.value).toBeCloseTo(-0.15, 2);
         expect(initialResult.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(initialResult.slope.uphill.max.value).toBeCloseTo(0.09, 2);
 
@@ -322,7 +322,7 @@ describe('##TrackStats', () => {
         expect(initialResult.heightRate.ascent.avg).toBeCloseTo(0.066, 3);  // 0.081 - Wrong?
         expect(initialResult.heightRate.ascent.max.value).toBeCloseTo(0.167, 3);
         expect(initialResult.heightRate.descent.avg).toBeCloseTo(-0.12, 2);  // -0.11 - Wrong?
-        expect(initialResult.heightRate.descent.max.value).toBeCloseTo(-0.14, 2);
+        expect(initialResult.heightRate.descent.min.value).toBeCloseTo(-0.14, 2);
 
         // Insert node
         const vertexBeforeRemove = polyline.firstVertex.next as VertexNode<TrackPoint, TrackSegment>;
@@ -354,7 +354,7 @@ describe('##TrackStats', () => {
 
         expect(insertResultDirty.slope.avg).toBeCloseTo(initialResult.slope.avg, 2);
         expect(insertResultDirty.slope.downhill.avg).toBeCloseTo(initialResult.slope.downhill.avg, 2);
-        expect(insertResultDirty.slope.downhill.max.value).toBeCloseTo(initialResult.slope.downhill.max.value, 2);
+        expect(insertResultDirty.slope.downhill.min.value).toBeCloseTo(initialResult.slope.downhill.min.value, 2);
         expect(insertResultDirty.slope.uphill.avg).toBeCloseTo(initialResult.slope.uphill.avg, 2);
         expect(insertResultDirty.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
 
@@ -370,7 +370,7 @@ describe('##TrackStats', () => {
         expect(insertResultDirty.heightRate.ascent.avg).toBeCloseTo(initialResult.heightRate.ascent.avg, 2);
         expect(insertResultDirty.heightRate.ascent.max.value).toBeCloseTo(initialResult.heightRate.ascent.max.value, 2);
         expect(insertResultDirty.heightRate.descent.avg).toBeCloseTo(initialResult.heightRate.descent.avg, 2);
-        expect(insertResultDirty.heightRate.descent.max.value).toBeCloseTo(initialResult.heightRate.descent.max.value, 2);
+        expect(insertResultDirty.heightRate.descent.min.value).toBeCloseTo(initialResult.heightRate.descent.min.value, 2);
 
         // Manually reset state
         expect(stats.isDirty()).toBeFalsy();
@@ -393,7 +393,7 @@ describe('##TrackStats', () => {
 
         expect(insertResult.slope.avg).toBeCloseTo(-8e-7, 7);
         expect(insertResult.slope.downhill.avg).toBeCloseTo(-0.006, 3);
-        expect(insertResult.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
+        expect(insertResult.slope.downhill.min.value).toBeCloseTo(-0.148, 3);
         expect(insertResult.slope.uphill.avg).toBeCloseTo(0.006, 3);
         expect(insertResult.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
@@ -409,7 +409,7 @@ describe('##TrackStats', () => {
         expect(insertResult.heightRate.ascent.avg).toBeCloseTo(243.95, 2);
         expect(insertResult.heightRate.ascent.max.value).toBeCloseTo(2307.56, 2);
         expect(insertResult.heightRate.descent.avg).toBeCloseTo(-256.53, 2);
-        expect(insertResult.heightRate.descent.max.value).toBeCloseTo(-2500.09, 2);
+        expect(insertResult.heightRate.descent.min.value).toBeCloseTo(-2500.09, 2);
 
         // Remove node
         const vertexToRemove = vertexBeforeRemove.next as VertexNode<TrackPoint, TrackSegment>;
@@ -430,7 +430,7 @@ describe('##TrackStats', () => {
 
         expect(removedResultDirty.slope.avg).toBeCloseTo(-8e-7, 7);
         expect(removedResultDirty.slope.downhill.avg).toBeCloseTo(-0.006, 3);
-        expect(removedResultDirty.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
+        expect(removedResultDirty.slope.downhill.min.value).toBeCloseTo(-0.148, 3);
         expect(removedResultDirty.slope.uphill.avg).toBeCloseTo(0.006, 3);
         expect(removedResultDirty.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
@@ -446,7 +446,7 @@ describe('##TrackStats', () => {
         expect(removedResultDirty.heightRate.ascent.avg).toBeCloseTo(243.95, 2);
         expect(removedResultDirty.heightRate.ascent.max.value).toBeCloseTo(2307.56, 2);
         expect(removedResultDirty.heightRate.descent.avg).toBeCloseTo(-256.53, 2);
-        expect(removedResultDirty.heightRate.descent.max.value).toBeCloseTo(-2500.09, 2);
+        expect(removedResultDirty.heightRate.descent.min.value).toBeCloseTo(-2500.09, 2);
 
         // Manually reset state
         expect(stats.isDirty()).toBeFalsy();
@@ -472,7 +472,7 @@ describe('##TrackStats', () => {
 
         expect(removedResult.slope.avg).toBeCloseTo(initialResult.slope.avg, 2);
         expect(removedResult.slope.downhill.avg).toBeCloseTo(initialResult.slope.downhill.avg, 2);
-        expect(removedResult.slope.downhill.max.value).toBeCloseTo(initialResult.slope.downhill.max.value, 2);
+        expect(removedResult.slope.downhill.min.value).toBeCloseTo(initialResult.slope.downhill.min.value, 2);
         expect(removedResult.slope.uphill.avg).toBeCloseTo(initialResult.slope.uphill.avg, 2);
         expect(removedResult.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
 
@@ -488,7 +488,7 @@ describe('##TrackStats', () => {
         expect(removedResult.heightRate.ascent.avg).toBeCloseTo(initialResult.heightRate.ascent.avg, 2);
         expect(removedResult.heightRate.ascent.max.value).toBeCloseTo(initialResult.heightRate.ascent.max.value, 2);
         expect(removedResult.heightRate.descent.avg).toBeCloseTo(initialResult.heightRate.descent.avg, 2);
-        expect(removedResult.heightRate.descent.max.value).toBeCloseTo(initialResult.heightRate.descent.max.value, 2);
+        expect(removedResult.heightRate.descent.min.value).toBeCloseTo(initialResult.heightRate.descent.min.value, 2);
       });
     });
 
@@ -526,7 +526,7 @@ describe('##TrackStats', () => {
 
         expect(result.slope.avg).toBeCloseTo(-0.02, 2);
         expect(result.slope.downhill.avg).toBeCloseTo(-0.07, 2);
-        expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
+        expect(result.slope.downhill.min.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
 
@@ -542,7 +542,7 @@ describe('##TrackStats', () => {
         expect(result.heightRate.ascent.avg).toBeCloseTo(0.066, 3);
         expect(result.heightRate.ascent.max.value).toBeCloseTo(0.167, 3);
         expect(result.heightRate.descent.avg).toBeCloseTo(-0.12, 2);
-        expect(result.heightRate.descent.max.value).toBeCloseTo(-0.14, 2);
+        expect(result.heightRate.descent.min.value).toBeCloseTo(-0.14, 2);
       });
     });
   });

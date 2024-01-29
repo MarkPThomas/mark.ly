@@ -22,11 +22,11 @@ export class TimeStamp implements ITimeStamp {
   * @memberof Track
   */
   static calcIntervalSec(timeStampI: string, timeStampJ: string): number | undefined {
-    if (TimeStamp.isNullOrUndefined(timeStampI) && TimeStamp.isNullOrUndefined(timeStampJ)) {
+    if (TimeStamp.isMalformed(timeStampI) && TimeStamp.isMalformed(timeStampJ)) {
       // Assumed points providing timestamps do not have timestamps, therefore no time can elapse
       return 0;
     }
-    if (TimeStamp.isNullOrUndefined(timeStampI) || TimeStamp.isNullOrUndefined(timeStampJ)) {
+    if (TimeStamp.isMalformed(timeStampI) || TimeStamp.isMalformed(timeStampJ)) {
       // If one point has a timestamp to provide, the other should as well
       return undefined;
     }
@@ -37,12 +37,12 @@ export class TimeStamp implements ITimeStamp {
     const dateJ = new Date(timeStampJ);
     const timeJ = dateJ.getTime();
 
-    return (!TimeStamp.isNullOrUndefined(timeI) && !TimeStamp.isNullOrUndefined(timeJ))
+    return (!Number.isNaN(timeI) && !Number.isNaN(timeJ))
       ? Math.round((timeJ - timeI) / 1000)
       : undefined;
   }
 
-  private static isNullOrUndefined(val: any) {
-    return val === null || val === undefined;
+  private static isMalformed(val: any) {
+    return val === '' || val === null || val === undefined;
   }
 }

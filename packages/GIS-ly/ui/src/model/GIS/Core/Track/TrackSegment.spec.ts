@@ -176,15 +176,15 @@ describe('##TrackSegment', () => {
       it('should add height rate properties from the adjacent Points if they contain mapped elevations', () => {
         const coord1 = new TrackPoint(-8.957287, -77.777452);
         coord1.timestamp = '2023-07-04T17:22:15Z';
-        coord1.elevation = 200;
         const coord2 = new TrackPoint(-8.957069, -77.777400);
         coord2.timestamp = '2023-07-04T17:22:35Z';
-        coord2.elevation = 500;
         const segment = new TrackSegment();
 
         segment.addSegmentProperties(coord1, coord2);
         expect(segment.height).toBeUndefined();
 
+        coord1.elevation = 200;
+        coord2.elevation = 500;
         segment.addElevationData(coord1, coord2);
 
         expect(segment.height).toBeCloseTo(300, 0);
@@ -194,9 +194,7 @@ describe('##TrackSegment', () => {
 
       it('should replace height rate properties from measured altitudes if the Points also contain mapped elevations', () => {
         const coord1 = new TrackPoint(-8.957287, -77.777452, 100, '2023-07-04T17:22:15Z');
-        coord1.elevation = 200;
         const coord2 = new TrackPoint(-8.957069, -77.777400, 200, '2023-07-04T17:22:35Z');
-        coord2.elevation = 500;
         const segment = new TrackSegment();
 
         segment.addSegmentProperties(coord1, coord2);
@@ -205,6 +203,8 @@ describe('##TrackSegment', () => {
 
         expect(segment.heightRate).toBeCloseTo(5, 0);
 
+        coord1.elevation = 200;
+        coord2.elevation = 500;
         segment.addElevationData(coord1, coord2);
 
         expect(segment.height).toBeCloseTo(300, 0);

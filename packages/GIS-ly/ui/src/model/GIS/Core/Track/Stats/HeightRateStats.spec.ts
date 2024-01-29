@@ -107,7 +107,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
     });
 
@@ -118,7 +118,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
     });
   });
@@ -136,21 +136,21 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.06, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.06, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
 
       heightRateStats.add(segments[1]); // -2.8
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.06, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.06, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.09, 2);
 
       heightRateStats.add(segments[2]); // -0.6
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.06, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.06, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.06, 2);
 
 
@@ -158,7 +158,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.11, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.06, 2);
 
 
@@ -166,7 +166,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.06, 2);
 
 
@@ -174,7 +174,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.28, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.28, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.13, 2);
 
 
@@ -182,7 +182,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.30, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.30, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.17, 2);
     });
 
@@ -194,21 +194,21 @@ describe('##HeightRateStats', () => {
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.06, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.06, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
 
       // heightRateStats.add(segments[1]); // -2.8
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.06, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.06, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(-0.09, 2);
 
       // heightRateStats.add(segments[2]); // -0.6
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.06, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.06, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(-0.06, 2);
 
 
@@ -216,7 +216,7 @@ describe('##HeightRateStats', () => {
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.11, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(-0.06, 2);
 
 
@@ -224,7 +224,7 @@ describe('##HeightRateStats', () => {
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(-0.09, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(-0.09, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(-0.06, 2);
 
 
@@ -232,7 +232,7 @@ describe('##HeightRateStats', () => {
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(-0.28, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(-0.28, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(-0.13, 2);
 
 
@@ -240,7 +240,7 @@ describe('##HeightRateStats', () => {
 
       // expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       // expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      // expect(heightRateStats.descent.max.value).toBeCloseTo(-0.30, 2);
+      // expect(heightRateStats.descent.min.value).toBeCloseTo(-0.30, 2);
       // expect(heightRateStats.descent.avg).toBeCloseTo(-0.17, 2);
     });
   });
@@ -262,7 +262,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
     });
 
@@ -276,7 +276,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
     });
 
@@ -290,7 +290,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.09, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.28, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.28, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.13, 2);
     });
 
@@ -304,7 +304,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.09, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.30, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.30, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.17, 2);
     });
   });
@@ -323,7 +323,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
     });
 
@@ -334,7 +334,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(0, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(0, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(0, 2);
     });
 
@@ -345,7 +345,7 @@ describe('##HeightRateStats', () => {
 
       expect(heightRateStats.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(heightRateStats.ascent.avg).toBeCloseTo(0.08, 2);
-      expect(heightRateStats.descent.max.value).toBeCloseTo(-0.30, 2);
+      expect(heightRateStats.descent.min.value).toBeCloseTo(-0.30, 2);
       expect(heightRateStats.descent.avg).toBeCloseTo(-0.17, 2);
     });
   });
@@ -485,7 +485,7 @@ describe('##HeightRateStats', () => {
 
       expect(result.ascent.max.value).toBeCloseTo(0, 2);
       expect(result.ascent.avg).toBeCloseTo(0, 2);
-      expect(result.descent.max.value).toBeCloseTo(0, 2);
+      expect(result.descent.min.value).toBeCloseTo(0, 2);
       expect(result.descent.avg).toBeCloseTo(0, 2);
     });
 
@@ -496,7 +496,7 @@ describe('##HeightRateStats', () => {
 
       expect(result.ascent.max.value).toBeCloseTo(0.17, 2);
       expect(result.ascent.avg).toBeCloseTo(0.08, 2);
-      expect(result.descent.max.value).toBeCloseTo(-0.30, 2);
+      expect(result.descent.min.value).toBeCloseTo(-0.30, 2);
       expect(result.descent.avg).toBeCloseTo(-0.17, 2);
     });
   });

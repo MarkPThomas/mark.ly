@@ -238,7 +238,7 @@ describe('##RouteStats', () => {
 
         expect(result.slope.avg).toBeCloseTo(-0.02, 2);
         expect(result.slope.downhill.avg).toBeCloseTo(-0.07, 2);
-        expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
+        expect(result.slope.downhill.min.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
       });
@@ -283,7 +283,7 @@ describe('##RouteStats', () => {
 
         expect(initialResult.slope.avg).toBeCloseTo(-0.02, 2);
         expect(initialResult.slope.downhill.avg).toBeCloseTo(-0.07, 2);
-        expect(initialResult.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
+        expect(initialResult.slope.downhill.min.value).toBeCloseTo(-0.15, 2);
         expect(initialResult.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(initialResult.slope.uphill.max.value).toBeCloseTo(0.09, 2);
 
@@ -317,7 +317,7 @@ describe('##RouteStats', () => {
 
         expect(insertResultDirty.slope.avg).toBeCloseTo(initialResult.slope.avg, 2);
         expect(insertResultDirty.slope.downhill.avg).toBeCloseTo(initialResult.slope.downhill.avg, 2);
-        expect(insertResultDirty.slope.downhill.max.value).toBeCloseTo(initialResult.slope.downhill.max.value, 2);
+        expect(insertResultDirty.slope.downhill.min.value).toBeCloseTo(initialResult.slope.downhill.min.value, 2);
         expect(insertResultDirty.slope.uphill.avg).toBeCloseTo(initialResult.slope.uphill.avg, 2);
         expect(insertResultDirty.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
 
@@ -342,7 +342,7 @@ describe('##RouteStats', () => {
 
         expect(insertResult.slope.avg).toBeCloseTo(-8e-7, 7);
         expect(insertResult.slope.downhill.avg).toBeCloseTo(-0.006, 3);
-        expect(insertResult.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
+        expect(insertResult.slope.downhill.min.value).toBeCloseTo(-0.148, 3);
         expect(insertResult.slope.uphill.avg).toBeCloseTo(0.006, 3);
         expect(insertResult.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
@@ -363,7 +363,7 @@ describe('##RouteStats', () => {
 
         expect(removedResultDirty.slope.avg).toBeCloseTo(-8e-7, 7);
         expect(removedResultDirty.slope.downhill.avg).toBeCloseTo(-0.006, 3);
-        expect(removedResultDirty.slope.downhill.max.value).toBeCloseTo(-0.148, 3);
+        expect(removedResultDirty.slope.downhill.min.value).toBeCloseTo(-0.148, 3);
         expect(removedResultDirty.slope.uphill.avg).toBeCloseTo(0.006, 3);
         expect(removedResultDirty.slope.uphill.max.value).toBeCloseTo(0.09, 3);
 
@@ -391,7 +391,7 @@ describe('##RouteStats', () => {
 
         expect(removedResult.slope.avg).toBeCloseTo(initialResult.slope.avg, 2);
         expect(removedResult.slope.downhill.avg).toBeCloseTo(initialResult.slope.downhill.avg, 2);
-        expect(removedResult.slope.downhill.max.value).toBeCloseTo(initialResult.slope.downhill.max.value, 2);
+        expect(removedResult.slope.downhill.min.value).toBeCloseTo(initialResult.slope.downhill.min.value, 2);
         expect(removedResult.slope.uphill.avg).toBeCloseTo(initialResult.slope.uphill.avg, 2);
         expect(removedResult.slope.uphill.max.value).toBeCloseTo(initialResult.slope.uphill.max.value, 2);
       });
@@ -431,7 +431,7 @@ describe('##RouteStats', () => {
 
         expect(result.slope.avg).toBeCloseTo(-0.02, 2);
         expect(result.slope.downhill.avg).toBeCloseTo(-0.07, 2);
-        expect(result.slope.downhill.max.value).toBeCloseTo(-0.15, 2);
+        expect(result.slope.downhill.min.value).toBeCloseTo(-0.15, 2);
         expect(result.slope.uphill.avg).toBeCloseTo(0.04, 2);
         expect(result.slope.uphill.max.value).toBeCloseTo(0.09, 2);
       });
@@ -475,7 +475,7 @@ describe('##RouteStats', () => {
 
             expect(resultModifed.slope.avg).not.toBeCloseTo(result.slope.avg, 2);
             expect(resultModifed.slope.downhill.avg).toBeCloseTo(result.slope.downhill.avg, 2);
-            expect(resultModifed.slope.downhill.max.value).toBeCloseTo(result.slope.downhill.max.value, 2);
+            expect(resultModifed.slope.downhill.min.value).toBeCloseTo(result.slope.downhill.min.value, 2);
             expect(resultModifed.slope.uphill.avg).not.toBeCloseTo(result.slope.uphill.avg, 2);
             expect(resultModifed.slope.uphill.max.value).toBeCloseTo(result.slope.uphill.max.value, 2);
           });

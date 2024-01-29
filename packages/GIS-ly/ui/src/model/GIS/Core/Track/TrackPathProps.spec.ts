@@ -7,11 +7,11 @@ describe('##TrackPathProps', () => {
       it('should initialize an empty object', () => {
         const pathProps = new TrackPathProps();
 
-        expect(pathProps.rotation).toBeUndefined();
-        expect(pathProps.speed).toBeUndefined();
-        expect(pathProps.rotationRate).toBeUndefined();
-        expect(pathProps.ascentRate).toBeUndefined();
-        expect(pathProps.descentRate).toBeUndefined();
+        expect(pathProps.rotation).toBeNull();
+        expect(pathProps.speed).toEqual(0);
+        expect(pathProps.rotationRate).toBeNull();
+        expect(pathProps.ascentRate).toEqual(0);
+        expect(pathProps.descentRate).toEqual(0);
       });
 
       it('should initialize an object with the specified properties', () => {
@@ -111,12 +111,12 @@ describe('##TrackPathProps', () => {
         };
 
         const routePathProps = new TrackPathProps();
-        expect(routePathProps.rotation).toBeUndefined();
-        expect(routePathProps.speed).toBeUndefined();
-        expect(routePathProps.rotationRate).toBeUndefined();
+        expect(routePathProps.rotation).toBeNull();
+        expect(routePathProps.speed).toEqual(0);
+        expect(routePathProps.rotationRate).toBeNull();
 
-        expect(routePathProps.ascentRate).toBeUndefined();
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
+        expect(routePathProps.descentRate).toEqual(0);
 
         routePathProps.addPropertiesFromPath(prevSegment, nextSegment);
 
@@ -125,8 +125,8 @@ describe('##TrackPathProps', () => {
         expect(routePathProps.speed).toBeCloseTo(15, 0);
         expect(routePathProps.rotationRate).toBeCloseTo(routePathProps.rotation / 30, 3);
 
-        expect(routePathProps.ascentRate).toBeUndefined();
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
+        expect(routePathProps.descentRate).toEqual(0);
       });
     });
 
@@ -145,8 +145,8 @@ describe('##TrackPathProps', () => {
         };
 
         const routePathProps = new TrackPathProps();
-        expect(routePathProps.ascentRate).toBeUndefined();
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
+        expect(routePathProps.descentRate).toEqual(0);
 
         routePathProps.addElevationSpeedsFromPath(prevSegment, nextSegment);
         expect(routePathProps.ascentRate).toBeCloseTo(10, 0);
@@ -167,8 +167,8 @@ describe('##TrackPathProps', () => {
         };
 
         const routePathProps = new TrackPathProps();
-        expect(routePathProps.ascentRate).toBeUndefined();
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
+        expect(routePathProps.descentRate).toEqual(0);
 
         routePathProps.addElevationSpeedsFromPath(prevSegment, nextSegment);
         expect(routePathProps.ascentRate).toBeCloseTo(20, 0);
@@ -189,12 +189,12 @@ describe('##TrackPathProps', () => {
         };
 
         const routePathProps = new TrackPathProps();
-        expect(routePathProps.ascentRate).toBeUndefined();
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
+        expect(routePathProps.descentRate).toEqual(0);
 
         routePathProps.addElevationSpeedsFromPath(prevSegment, nextSegment);
         expect(routePathProps.ascentRate).toBeCloseTo(15, 0);
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.descentRate).toEqual(0);
       });
 
       it('should determine the average descent rate at a Point from the adjacent Segments', () => {
@@ -211,11 +211,11 @@ describe('##TrackPathProps', () => {
         };
 
         const routePathProps = new TrackPathProps();
-        expect(routePathProps.ascentRate).toBeUndefined();
-        expect(routePathProps.descentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
+        expect(routePathProps.descentRate).toEqual(0);
 
         routePathProps.addElevationSpeedsFromPath(prevSegment, nextSegment);
-        expect(routePathProps.ascentRate).toBeUndefined();
+        expect(routePathProps.ascentRate).toEqual(0);
         expect(routePathProps.descentRate).toBeCloseTo(15, 0);
       });
     });

@@ -153,14 +153,14 @@ describe('##TrackSegment', () => {
     describe('#addElevationData', () => {
       it('should add height properties from the adjacent Points if they contain mapped elevations', () => {
         const coord1 = new RoutePoint(-8.957287, -77.777452);
-        coord1.elevation = 200;
         const coord2 = new RoutePoint(-8.957069, -77.777400);
-        coord2.elevation = 500;
         const segment = new RouteSegment();
 
         segment.addSegmentProperties(coord1, coord2);
         expect(segment.height).toBeUndefined();
 
+        coord1.elevation = 200;
+        coord2.elevation = 500;
         segment.addElevationData(coord1, coord2);
 
         expect(segment.height).toBeCloseTo(300, 0);
@@ -168,15 +168,15 @@ describe('##TrackSegment', () => {
 
       it('should replace height properties from measured altitudes if the Points also contain mapped elevations', () => {
         const coord1 = new RoutePoint(-8.957287, -77.777452, 100);
-        coord1.elevation = 200;
         const coord2 = new RoutePoint(-8.957069, -77.777400, 200);
-        coord2.elevation = 500;
         const segment = new RouteSegment();
 
         segment.addSegmentProperties(coord1, coord2);
 
         expect(segment.height).toBeCloseTo(100, 0);
 
+        coord1.elevation = 200;
+        coord2.elevation = 500;
         segment.addElevationData(coord1, coord2);
 
         expect(segment.height).toBeCloseTo(300, 0);

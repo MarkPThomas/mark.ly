@@ -50,7 +50,7 @@ export class BoundingBox extends GeoBoundingBox {
   }
 
   static fromJson(json: SerialBBox): BoundingBox {
-    const bbox = BoundingBox.fromJson(json);
+    const bbox = GeoBoundingBox.fromJson(json);
     return BoundingBox.fromBoundingBox(bbox);
   }
 
