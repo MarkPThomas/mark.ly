@@ -1,0 +1,200 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5
+  # docker: circleci/docker@1.5.0
+
+parameters:
+  common-modified:
+    type: boolean
+    default: false
+  run-gis-ly-workflow:
+    type: boolean
+    default: false
+
+commands:
+  azure-cli-install-login: # sample entry. Replace for deployment
+    steps:
+      - run:
+          name: install azure cli
+          command: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - azure-cli/login-with-service-principal
+
+executors:
+  my-executor:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    working_directory: /packages
+
+jobs:
+  # test-node:
+  #   # Install node dependencies and run tests
+  #   executor: node/default
+  #   steps:
+  #     - checkout
+  #     - node/install-packages:
+  #         pkg-manager: yarn
+  #     - run:
+  #         name: Print node install help instructions
+  #         command: |-
+  #           echo "One cause for node package install failure is if you have private repositories that it can't reach
+  #           One way to fix this for private npm packages:
+  #             1. Use the npm CLI's \"login\" command to create a token (usually saved in your user's \"~/.npmrc\" file)
+  #               For more info, see https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/#:~:text=set%20the%20%24npm_token%20environment%20variable%20in%20circleci
+  #             2. Add a NPM_TOKEN to an org context
+  #               For info on how to use contexts, see https://circleci.com/docs/contexts/
+  #             3. Add a .circleci/config.yml to your repository or use this config.yml as a starting template
+  #             4. Configure the jobs to use the context that includes NPM_TOKEN
+  #             5. Add a step to inject your NPM_TOKEN environment variable into npm before \"install-packages\"
+  #               For an example, see https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/#:~:text=the%20deploy%20job%20has%20several%20steps%20that%20run%20to%20authenticate%20with%20and%20publish%20to"
+  #         when: on_fail
+  #     - run:
+  #         name: Run tests
+  #         command: echo \"No test specified in package.json\"
+  # deploy:
+  #   # This is an example deploy job, not actually used by the workflow
+  #   docker:
+  #     - image: cimg/base:stable
+  #   steps:
+  #     # Replace this with steps to deploy to users
+  #     - run:
+  #         name: deploy
+  #         command: "#e.g. ./deploy.sh"
+  install-dependencies-common:
+    executor: my-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: install common dependencies
+          command: cd common && yarn ci
+      - persist_to_workspace:
+          root: common
+          paths:
+            - node_modules
+  build-common:
+    executor: my-executor
+    steps:
+      - attach_workspace:
+          at: packages/common
+      - run:
+          name: lint common
+          command: cd common && yarn run lint
+      - run:
+          name: build common
+          command: cd common && yarn run build
+      - persist_to_workspace:
+          root: common
+          paths:
+            - build
+  unit_tests-common:
+    executor: my-executor
+    steps:
+      - attach_workspace:
+          at: packages/common
+      - run:
+          name: Run tests
+          command: echo \"No test specified in package.json\"
+  deploy-common:
+    executor: my-executor
+    steps:
+      - azure-cli-install-login # sample entry. Replace for deployment
+      - attach_workspace:
+          at: packages/common
+      - run:
+          name: deploy common
+          command: |
+            ... here there be dragons
+
+  install-dependencies-gis-ly-ui:
+    executor: my-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: install gis-ly dependencies
+          command: cd gis-ly && yarn ci
+      - persist_to_workspace:
+          root: gis-ly
+          paths:
+            - node_modules
+  build-gis-ly-ui:
+    executor: my-executor
+    steps:
+      - attach_workspace:
+          at: packages/gis-ly
+      - run:
+          name: lint gis-ly
+          command: cd gis-ly && yarn run lint
+      - run:
+          name: build gis-ly
+          command: cd gis-ly && yarn run build
+      - persist_to_workspace:
+          root: gis-ly
+          paths:
+            - dist
+  unit_tests-gis-ly-ui:
+    executor: my-executor
+    steps:
+      - attach_workspace:
+          at: packages/gis-ly
+      - run:
+          name: Run tests
+          command: echo \"No test specified in package.json\"
+  deploy-gis-ly-ui:
+    executor: my-executor
+    steps:
+      - azure-cli-install-login # sample entry. Replace for deployment
+      - attach_workspace:
+          at: packages/gis-ly
+      - run:
+          name: deploy gis-ly
+          command: |
+            ... here there be dragons
+
+workflows:
+  # build-and-test:
+  #   jobs:
+  #     - test-node
+  #   # - deploy:
+  #   #     requires:
+  #   #       - test-node
+
+  common:
+    when: << pipeline.parameters.common-modified >>
+    jobs:
+      - install-dependencies-common
+      - build-common:
+          requires:
+            - install-dependencies-common
+      - unit_tests-common:
+          requires:
+            - build-common
+      # - deploy-common:
+      #     requires:
+      #       - build-common
+      #     filters:
+      #       branches:
+      #         only: main
+  gis-ly-ui:
+    when:
+      or:
+        - << pipeline.parameters.run-gis-ly-workflow >>
+        - << pipeline.parameters.common-modified >>
+    jobs:
+      - install-dependencies-gis-ly-ui
+      - build-gis-ly-ui:
+          requires:
+            - install-dependencies-gis-ly-ui
+      - unit_tests-gis-ly-ui:
+          requires:
+            - build-gis-ly-ui
+      # - deploy-gis-ly-ui:
+      #     requires:
+      #       - build-gis-ly-ui
+      #     filters:
+      #       branches:
+      #         only: main
