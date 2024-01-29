@@ -124,13 +124,15 @@ describe('##TrackBoundingBox', () => {
 
       it('should return an array of a SW Point & a NE Point with an altitude specified', () => {
         const expectedResult = [
-          [2, 1, 5],
-          [4, 3, 6]
+          [2, 1],
+          [4, 3]
         ];
         const boundingBox = BoundingBox.fromJson(bboxWithAltitudeJson);
 
         const result = boundingBox.toCornerLatLng();
 
+        // Note: Leaflet does not include elevations with Bounding Boxes, so LatLngBounds drops those to be compatible.
+        // If these are still needed, use the GeoJSON Bounding Box rather than the GIS one.
         expect(result).toEqual(expectedResult);
       });
     });
