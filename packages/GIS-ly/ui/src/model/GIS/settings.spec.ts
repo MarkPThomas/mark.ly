@@ -185,7 +185,6 @@ describe('#convertToGlobalDefaults', () => {
     expect(convertedTrackCriteria.activities.cycling.slope.max).toBeCloseTo(0.2915, 4);
   });
 
-  // TODO: Fix programmed settings. They are changed by tests above, affecting tests below.
   it('should fill in defaults where not specified in the config file', () => {
     const trackCriteria = {};
 

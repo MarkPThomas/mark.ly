@@ -81,10 +81,11 @@ export interface IUnitOverrideable {
   units?: IUnitOverrides
 }
 
-export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrackCriteria {
-  const localUnits: IUnits = getLocalUnits(trackCriteria.units, globalUnits);
-  const sessionTrackCriteria = globalDefaults;
+function convertGlobalDefaults(globalDefaults: ITrackCriteria, localUnits: IUnits) {
+  return convertTracks(globalDefaults, globalDefaults, localUnits);
+}
 
+function convertTracks(trackCriteria: ITrackCriteria, sessionTrackCriteria: ITrackCriteria, localUnits: IUnits) {
   convertCruftToGlobalUnits(trackCriteria.cruft, sessionTrackCriteria, localUnits);
   convertNoiseCloudToGlobalUnits(trackCriteria.noiseCloud, sessionTrackCriteria, localUnits);
   convertSplitToGlobalUnits(trackCriteria.split, sessionTrackCriteria, localUnits);
@@ -99,7 +100,7 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
       if (configActivity && sessionActivity) {
         convertActivityToGlobalUnits(configActivity, sessionActivity, localUnits);
       } else {
-        sessionTrackCriteria[activityKey] = configActivity;
+        sessionTrackCriteria[activityKey] = convertActivityToGlobalUnits(configActivity, configActivity, localUnits);
       }
     });
   }
@@ -107,6 +108,16 @@ export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrack
   sessionTrackCriteria.units = globalUnits;
 
   return sessionTrackCriteria;
+}
+
+export function convertTrackToGlobalUnits(trackCriteria: ITrackCriteria): ITrackCriteria {
+  const globalDefaults = getGlobalDefaults();
+  const localUnits: IUnits = trackCriteria.units
+    ? getLocalUnits(trackCriteria.units, globalUnits)
+    : getLocalUnits(globalDefaults.units, globalUnits);
+  const sessionTrackCriteria = convertGlobalDefaults(globalDefaults, localUnits);
+
+  return convertTracks(trackCriteria, sessionTrackCriteria, localUnits);
 }
 
 function convertCruftToGlobalUnits(cruft: ICruft, sessionTrackCriteria: ITrackCriteria, units: IUnits) {
@@ -234,79 +245,81 @@ function convertActivitySlopeToGlobalUnits(criteria: ISlopeCriteria, sessionCrit
 }
 
 
-const globalDefaults: ITrackCriteria = {
-  units: {
-    length: eLength.miles,
-    time: eTime.hours,
-    angle: eAngle.degrees
-  },
-  activities: {
-    hiking: {
-      name: "Hiking",
-      speed: {
-        min: 0.25,
-        max: 4
-      },
-      rotation: {
-        units: {
-          angle: eAngle.degrees,
-          time: eTime.seconds
-        },
-        angularVelocityMax: 60
-      },
-      elevation: {
-        units: {
-          length: eLength.feet
-        },
-        ascentRateMax: 3000,
-        descentRateMax: 4500
-      },
-      gapDistanceMax: 0.25
-    },
-    cycling: {
-      name: "Cycling",
-      speed: {
-        min: 0.25,
-        max: 60
-      },
-      rotation: {
-        units: {
-          angle: eAngle.degrees,
-          time: eTime.seconds
-        },
-        angularVelocityMax: 120
-      },
-      elevation: {
-        units: {
-          length: eLength.feet
-        },
-        ascentRateMax: 2000,
-        descentRateMax: 6000
-      },
-      slope: {
-        units: {
-          angle: eAngle.percent
-        },
-        max: 30
-      },
-      gapDistanceMax: 1
-    }
-  },
-  cruft: {
-    gapDistanceMax: 3
-  },
-  split: {
-    stopDurationMax: 3,
-    moveDurationMin: 0.083
-  },
-  noiseCloud: {
-    speedMin: 0.25
-  },
-  misc: {
+const getGlobalDefaults = (): ITrackCriteria => {
+  return {
     units: {
-      time: eTime.seconds
+      length: eLength.miles,
+      time: eTime.hours,
+      angle: eAngle.degrees
     },
-    gpsTimeInterval: 30
+    activities: {
+      hiking: {
+        name: "Hiking",
+        speed: {
+          min: 0.25,
+          max: 4
+        },
+        rotation: {
+          units: {
+            angle: eAngle.degrees,
+            time: eTime.seconds
+          },
+          angularVelocityMax: 60
+        },
+        elevation: {
+          units: {
+            length: eLength.feet
+          },
+          ascentRateMax: 3000,
+          descentRateMax: 4500
+        },
+        gapDistanceMax: 0.25
+      },
+      cycling: {
+        name: "Cycling",
+        speed: {
+          min: 0.25,
+          max: 60
+        },
+        rotation: {
+          units: {
+            angle: eAngle.degrees,
+            time: eTime.seconds
+          },
+          angularVelocityMax: 120
+        },
+        elevation: {
+          units: {
+            length: eLength.feet
+          },
+          ascentRateMax: 2000,
+          descentRateMax: 6000
+        },
+        slope: {
+          units: {
+            angle: eAngle.percent
+          },
+          max: 30
+        },
+        gapDistanceMax: 1
+      }
+    },
+    cruft: {
+      gapDistanceMax: 3
+    },
+    split: {
+      stopDurationMax: 3,
+      moveDurationMin: 0.083
+    },
+    noiseCloud: {
+      speedMin: 0.25
+    },
+    misc: {
+      units: {
+        time: eTime.seconds
+      },
+      gpsTimeInterval: 30
+    }
   }
 }
 
