@@ -34,7 +34,7 @@ export class GeometryBuilder {
   static getCoordinates<TItem extends GeoJson>(item: TItem | IGeometry<GeometryType, SerialGeometry>): Point[] {
     switch (item.type) {
       case GeoJsonTypes.Point:
-        return [(item as unknown as Point).points];
+        return [Point.fromPosition((item as unknown as Point).points.toPositions())];
       case GeoJsonTypes.MultiPoint:
         return (item as unknown as MultiPoint).points.flat(Infinity);
       case GeoJsonTypes.LineString:
