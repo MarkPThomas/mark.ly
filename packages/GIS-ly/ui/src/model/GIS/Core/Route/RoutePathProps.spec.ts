@@ -7,7 +7,7 @@ describe('##RoutePathProps', () => {
       it('should initialize an empty object', () => {
         const pathProps = new RoutePathProps();
 
-        expect(pathProps.rotation).toBeUndefined();
+        expect(pathProps.rotation).toBeNull();
       });
 
       it('should initialize an object with the specified properties', () => {
@@ -71,7 +71,7 @@ describe('##RoutePathProps', () => {
         };
 
         const routePathProps = new RoutePathProps();
-        expect(routePathProps.rotation).toBeUndefined();
+        expect(routePathProps.rotation).toBeNull();
 
         routePathProps.addPropertiesFromPath(prevSegment, nextSegment);
 

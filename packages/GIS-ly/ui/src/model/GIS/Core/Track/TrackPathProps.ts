@@ -39,18 +39,18 @@ export class TrackPathProps
   extends RoutePathProps
   implements ITrackPathProps {
 
-  speed: number = 0;
-  rotationRate: number = 0;
-  ascentRate: number = 0;
-  descentRate: number = 0;
+  speed: number;
+  rotationRate: number;
+  ascentRate: number;
+  descentRate: number;
 
-  constructor(rotation?: number, speed?: number, rotationRate?: number, ascentRate?: number, descentRate?: number) {
+  constructor(rotation?: number, speed: number = 0, rotationRate?: number, ascentRate: number = 0, descentRate: number = 0) {
     super(rotation);
 
-    this.speed = speed;
-    this.rotationRate = rotationRate;
-    this.ascentRate = ascentRate;
-    this.descentRate = descentRate;
+    this.speed = Math.abs(speed);
+    this.rotationRate = rotationRate ?? null;
+    this.ascentRate = Math.abs(ascentRate);
+    this.descentRate = Math.abs(descentRate);
   }
 
   // === Common Interfaces ===
