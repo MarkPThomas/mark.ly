@@ -92,7 +92,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0);
       expect(slopeStats.uphill.avg).toBeCloseTo(0);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0);
       expect(slopeStats.downhill.avg).toBeCloseTo(0);
       expect(slopeStats.avg).toBeCloseTo(0);
     });
@@ -104,7 +104,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0);
       expect(slopeStats.uphill.avg).toBeCloseTo(0);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0);
       expect(slopeStats.downhill.avg).toBeCloseTo(0);
       expect(slopeStats.avg).toBeCloseTo(0);
     });
@@ -123,7 +123,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.03, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.03, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(0, 2);
       expect(slopeStats.avg).toBeCloseTo(0.03, 2);
 
@@ -131,7 +131,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.03, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.03, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.05, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.05, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.05, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.01, 2);
 
@@ -139,7 +139,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.03, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.03, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.05, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.05, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.03, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.01, 2);
 
@@ -147,7 +147,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.06, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.05, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.05, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.03, 2);
       expect(slopeStats.avg).toBeCloseTo(0.01, 2);
 
@@ -155,7 +155,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.04, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.05, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.05, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.03, 2);
       expect(slopeStats.avg).toBeCloseTo(0.01, 2);
 
@@ -163,7 +163,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.04, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.15, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.15, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.07, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.01, 2);
 
@@ -171,7 +171,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.04, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.15, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.15, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.07, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.02, 2);
     });
@@ -184,7 +184,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.03, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.03, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(0, 2);
       expect(slopeStats.avg).toBeCloseTo(0.03, 2);
 
@@ -237,7 +237,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(0, 2);
       expect(slopeStats.avg).toBeCloseTo(0, 2);
     });
@@ -252,7 +252,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(0, 2);
       expect(slopeStats.avg).toBeCloseTo(0, 2);
     });
@@ -267,7 +267,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.05, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.15, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.15, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.07, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.02, 2);
     });
@@ -282,7 +282,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.05, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.15, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.15, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.07, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.03, 2);
     });
@@ -302,7 +302,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(0, 2);
       expect(slopeStats.avg).toBeCloseTo(0, 2);
     });
@@ -314,7 +314,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(0, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(0, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(0, 2);
       expect(slopeStats.avg).toBeCloseTo(0, 2);
     });
@@ -326,7 +326,7 @@ describe('##SlopeStats', () => {
 
       expect(slopeStats.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(slopeStats.uphill.avg).toBeCloseTo(0.04, 2);
-      expect(slopeStats.downhill.max.value).toBeCloseTo(-0.15, 2);
+      expect(slopeStats.downhill.min.value).toBeCloseTo(-0.15, 2);
       expect(slopeStats.downhill.avg).toBeCloseTo(-0.07, 2);
       expect(slopeStats.avg).toBeCloseTo(-0.02, 2);
     });
@@ -467,7 +467,7 @@ describe('##SlopeStats', () => {
 
       expect(result.uphill.max.value).toBeCloseTo(0, 2);
       expect(result.uphill.avg).toBeCloseTo(0, 2);
-      expect(result.downhill.max.value).toBeCloseTo(0, 2);
+      expect(result.downhill.min.value).toBeCloseTo(0, 2);
       expect(result.downhill.avg).toBeCloseTo(0, 2);
       expect(result.avg).toBeCloseTo(0, 2);
     });
@@ -479,7 +479,7 @@ describe('##SlopeStats', () => {
 
       expect(result.uphill.max.value).toBeCloseTo(0.09, 2);
       expect(result.uphill.avg).toBeCloseTo(0.04, 2);
-      expect(result.downhill.max.value).toBeCloseTo(-0.15, 2);
+      expect(result.downhill.min.value).toBeCloseTo(-0.15, 2);
       expect(result.downhill.avg).toBeCloseTo(-0.07, 2);
       expect(result.avg).toBeCloseTo(-0.02, 2);
     });
