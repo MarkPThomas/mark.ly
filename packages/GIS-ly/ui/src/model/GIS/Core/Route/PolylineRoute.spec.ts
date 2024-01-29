@@ -457,11 +457,11 @@ describe('##PolylineRoute', () => {
         expect(routeCoords[2].elevation).toEqual(1500);
         expect(routeCoords[2]).toHaveProperty('path');
 
-        expect(routeSegs[2].height).toBeUndefined();
+        expect(routeSegs[2].height).toEqual(0);
 
         expect(routeCoords[3].elevation).toBeUndefined();
 
-        expect(routeSegs[3].height).toBeUndefined();
+        expect(routeSegs[3].height).toEqual(0);
 
         expect(routeCoords[4].elevation).toEqual(5000);
         expect(routeCoords[4]).toHaveProperty('path');
@@ -538,11 +538,11 @@ describe('##PolylineRoute', () => {
         expect(routeCoords[2].elevation).toEqual(1500);
         expect(routeCoords[2]).toHaveProperty('path');
 
-        expect(routeSegs[2].height).toBeUndefined();
+        expect(routeSegs[2].height).toEqual(0);
 
         expect(routeCoords[3]).not.toHaveProperty('elevation');
 
-        expect(routeSegs[3].height).toBeUndefined();
+        expect(routeSegs[3].height).toEqual(0);
 
         expect(routeCoords[4].elevation).toEqual(5000);
         expect(routeCoords[4]).toHaveProperty('path');
