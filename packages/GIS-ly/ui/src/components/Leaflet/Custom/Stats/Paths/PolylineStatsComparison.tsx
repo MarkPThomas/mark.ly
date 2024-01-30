@@ -1,6 +1,8 @@
 import { ITrackStats } from "../../../../../model/GIS/Core/Track/Stats";
 import { IPolylineSize } from "../../../../../model/Geometry";
 
+import './PolylineStatsComparison.css';
+
 export interface IEditedPolylineStats extends ITrackStats {
   size: IPolylineSize
 }

@@ -1,0 +1,14 @@
+.stats-label {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+span.icon-label.stats-label {
+  justify-content: space-evenly;
+}
+
+.stats-label h2 {
+  margin: 0;
+}

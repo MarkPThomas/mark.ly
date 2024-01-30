@@ -1,5 +1,7 @@
 import { toTrainCase, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
+import './DialogGroup.css';
+
 export interface IDialogGroup {
   title: string;
   items: IDialogItem[];

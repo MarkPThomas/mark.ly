@@ -41,8 +41,6 @@ export function Stats({ stats }: StatsProps) {
           children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
         />
       </FlowControl>
-      {/* ]}
-      /> */}
     </div>
   )
 }

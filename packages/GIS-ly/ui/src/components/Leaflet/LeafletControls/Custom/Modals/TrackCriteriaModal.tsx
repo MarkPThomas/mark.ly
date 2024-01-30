@@ -2,6 +2,8 @@ import { ITrackCriteria } from "../../../../../model/GIS/settings";
 import { Modal } from "../../../../shared/components/Modal";
 import { TrackCriteria } from "../../../Custom/Settings/TrackCriteria";
 
+import './TrackCriteriaModal.css';
+
 export type TrackCriteriaModalProps = {
   handleShow: React.Dispatch<React.SetStateAction<boolean>>;
   trackCriteria: ITrackCriteria;

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
-import { ControlItem } from "./ControlItem";
 
 export type ControlHeaderExpandProps = {
   category: string;
