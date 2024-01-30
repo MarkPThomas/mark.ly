@@ -5,15 +5,17 @@ import { ToggleGroup } from "../../../Custom/ToggleGroup";
 
 import './PolylineComparisonDisplay.css';
 
-const Group = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background-color: rgb(134, 251, 255, 0.7);
-`;
+const S = {
+  PolylineComparisonDisplay: styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgb(134, 251, 255, 0.7);
+  `
+};
 
 export type PolylineComparisonDisplayProps = {
   statsInitial: IEditedPolylineStats,
@@ -22,7 +24,7 @@ export type PolylineComparisonDisplayProps = {
 
 export function PolylineComparisonDisplay({ statsInitial, statsCurrent }: PolylineComparisonDisplayProps) {
   return (
-    <Group>
+    <S.PolylineComparisonDisplay>
       <ToggleGroup
         value={'Polyline Comparison Stats'}
         level={2}
@@ -31,7 +33,7 @@ export function PolylineComparisonDisplay({ statsInitial, statsCurrent }: Polyli
           <PolylineStatsComparison key={Date() + '2'} statsInitial={statsInitial} statsCurrent={statsCurrent} />
         ]}
       />
-    </Group>
+    </S.PolylineComparisonDisplay>
 
   )
 }
