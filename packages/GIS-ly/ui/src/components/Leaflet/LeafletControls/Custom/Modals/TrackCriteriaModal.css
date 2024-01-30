@@ -1,0 +1,8 @@
+.stats-container {
+  display: flex;
+  align-items: top;
+}
+
+.stats-container>div {
+  padding: 10px
+}

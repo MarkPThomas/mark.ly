@@ -6,6 +6,8 @@ import { TrackCriteriaActivity } from "./TrackCriteriaActivity"
 import { TrackCriteriaGeneric } from "./TrackCriteriaGeneric"
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits"
 
+import './TrackCriteria.css';
+
 export type TrackCriteriaProps = {
   criteria: ITrackCriteria
   title?: string;

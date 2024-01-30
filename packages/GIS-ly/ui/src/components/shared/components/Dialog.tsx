@@ -10,8 +10,6 @@ const Dialog = styled.div`
   flex-direction: column;
   padding: 0 1rem 1rem 1rem;
   align-items: center;
-  // max-width: 25rem;
-  // max-height: 18rem;
   background: white;
   border-radius: 0.75rem;
   box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.1),
