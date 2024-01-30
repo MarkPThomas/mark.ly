@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RoutePoint, RouteSegment } from "../../../../../model/GIS/Core/Route";
 import { Vertex, Segment } from "../../../../../model/Geometry";
 import { INodeOfInterest } from "../../../../../model/Geometry/Stats";
-import { LabelValue } from "../../LabelValueList";
+import { LabelValueEntry } from "../../LabelValueEntry";
 import { ToggleHeader } from "../../ToggleHeader";
 
 import './RangeStats.css';
@@ -57,27 +57,27 @@ export function RangeStats(stats: RangeStatsProps) {
       <div className="toggle-header-show-all">
         <ToggleHeader value="Show All" level={stats.level} isToggled={showAll} cb={handleClick} />
       </div>
-      <LabelValue label={'Min'} value={statsFormatted.min} />
+      <LabelValueEntry label={'Min'} value={statsFormatted.min} />
       {showAll ?
         <div className="range-extra">
-          <LabelValue label={'-Std2'} value={statsFormatted.stdMin2} />
-          <LabelValue label={'-Std1'} value={statsFormatted.stdMin1} />
+          <LabelValueEntry label={'-Std2'} value={statsFormatted.stdMin2} />
+          <LabelValueEntry label={'-Std1'} value={statsFormatted.stdMin1} />
         </div> : null
       }
-      <LabelValue label={'Avg'} value={statsFormatted.avg} />
+      <LabelValueEntry label={'Avg'} value={statsFormatted.avg} />
       {showAll ?
         <div className="range-extra">
-          <LabelValue label={'Mdn'} value={statsFormatted.mdn} />
+          <LabelValueEntry label={'Mdn'} value={statsFormatted.mdn} />
         </div>
         : null
       }
       {showAll ?
         <div className="range-extra">
-          <LabelValue label={'+Std1'} value={statsFormatted.stdMax1} />
-          <LabelValue label={'+Std2'} value={statsFormatted.stdMax2} />
+          <LabelValueEntry label={'+Std1'} value={statsFormatted.stdMax1} />
+          <LabelValueEntry label={'+Std2'} value={statsFormatted.stdMax2} />
         </div> : null
       }
-      <LabelValue label={'Max'} value={statsFormatted.max} />
+      <LabelValueEntry label={'Max'} value={statsFormatted.max} />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { Conversion } from '../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
 import { ITrackPoint } from "../../../../../../model/GIS/Core/Track";
-import { LabelValue } from '../../../LabelValueList';
+import { LabelValueEntry } from '../../../LabelValueEntry';
 
 export type PointStatsProps = { point: ITrackPoint };
 
@@ -22,9 +22,9 @@ export function PointStats({ point }: PointStatsProps) {
 
   return (
     <div>
-      <LabelValue label={'Latitude'} value={latitude} />
-      <LabelValue label={'Longitude'} value={longitude} />
-      <LabelValue label={'Elevation'} value={elevationMetersFeet} />
+      <LabelValueEntry label={'Latitude'} value={latitude} />
+      <LabelValueEntry label={'Longitude'} value={longitude} />
+      <LabelValueEntry label={'Elevation'} value={elevationMetersFeet} />
     </div>
   );
 }

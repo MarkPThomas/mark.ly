@@ -2,7 +2,7 @@ import { Conversion } from '../../../../../../../../../common/utils/units/conver
 import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/Angle';
 
 import { ITrackSegment } from '../../../../../../model/GIS/Core/Track';
-import { LabelValue } from '../../../LabelValueList';
+import { LabelValueEntry } from '../../../LabelValueEntry';
 
 import './SegmentStats.css';
 
@@ -32,14 +32,14 @@ export function SegmentStats({ segment }: SegmentStatsProps) {
 
   return (
     <div className="segment-stats">
-      <LabelValue label={'Duration'} value={durationSec} />
-      <LabelValue label={'Length'} value={lengthFt} />
-      <LabelValue label={'Speed'} value={speedMph} />
-      <LabelValue label={'Height'} value={heightFt} />
-      <LabelValue label={'Height Rate'} value={heightRateFtPerHour} />
-      <LabelValue label={'Slope'} value={slope} />
-      <LabelValue label={'Orientation'} value={angleDegree} />
-      <LabelValue label={'Direction'} value={direction} />
+      <LabelValueEntry label={'Duration'} value={durationSec} />
+      <LabelValueEntry label={'Length'} value={lengthFt} />
+      <LabelValueEntry label={'Speed'} value={speedMph} />
+      <LabelValueEntry label={'Height'} value={heightFt} />
+      <LabelValueEntry label={'Height Rate'} value={heightRateFtPerHour} />
+      <LabelValueEntry label={'Slope'} value={slope} />
+      <LabelValueEntry label={'Orientation'} value={angleDegree} />
+      <LabelValueEntry label={'Direction'} value={direction} />
     </div>
   );
 }

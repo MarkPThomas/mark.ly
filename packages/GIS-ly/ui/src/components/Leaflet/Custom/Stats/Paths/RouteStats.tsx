@@ -1,6 +1,6 @@
 import { Conversion } from '../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
-import { LabelValue } from "../../LabelValueList";
+import { LabelValueEntry } from "../../LabelValueEntry";
 import { ToggleGroup } from "../../ToggleGroup";
 import { HeightStats, SlopeStats } from './Categories/Route';
 import { IEditedStats } from "./Stats";
@@ -13,7 +13,7 @@ export function RouteStats({ stats, level }: RouteStatsProp) {
 
   return (
     <div>
-      <LabelValue label={'Distance'} value={lengthMiles} />
+      <LabelValueEntry label={'Distance'} value={lengthMiles} />
       {stats.height ?
         <ToggleGroup
           value={'Elevation'}

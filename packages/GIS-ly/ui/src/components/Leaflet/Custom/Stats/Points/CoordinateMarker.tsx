@@ -7,7 +7,7 @@ import { hashString } from '../../../../../../../../common/utils'; //'common/uti
 
 import { TrackPoint } from '../../../../../model/GIS/Core/Track/TrackPoint';
 
-import { LabelValue } from '../../LabelValueList';
+import { LabelValueEntry } from '../../LabelValueEntry';
 import { PointStats } from './Categories/PointStats';
 import { PointPathStats } from './Categories/PointPathStats';
 import { TrackSegment } from '../../../../../model/GIS/Core/Track';
@@ -54,7 +54,7 @@ export function CoordinateMarker({ point, segmentPrev, segmentNext, pathOptions,
     <Popup>
       <span className={"popup-point"} >
         <h1>Track Point</h1>
-        <LabelValue label={'Timestamp'} value={point.timestamp} />
+        <LabelValueEntry label={'Timestamp'} value={point.timestamp} />
         <PointStats point={point} />
         {point.path ?
           <ToggleGroup value={'Path'} level={level} children={[<PointPathStats key={Date()} path={point.path} />]} />

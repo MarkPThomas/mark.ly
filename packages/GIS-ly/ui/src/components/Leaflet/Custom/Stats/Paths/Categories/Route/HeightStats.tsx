@@ -6,7 +6,7 @@ import { SegmentNode } from '../../../../../../../model/Geometry';
 // TODO: Remove later once Median Elevation fixed. ^^^^^^^
 
 import { IHeight } from '../../../../../../../model/GIS/Core/Route/Stats/HeightStats';
-import { LabelValue } from "../../../../LabelValueList";
+import { LabelValueEntry } from "../../../../LabelValueEntry";
 import { RangeStatsProps, RangeStats } from '../../RangeStats';
 
 
@@ -34,9 +34,9 @@ export function HeightStats({ height, level }: HeightStatsProps) {
 
   return (
     <div>
-      <LabelValue label={'Gain'} value={heightGainFeet} />
-      <LabelValue label={'Loss'} value={heightLossFeet} />
-      <LabelValue label={'Net'} value={heightNetFeet} />
+      <LabelValueEntry label={'Gain'} value={heightGainFeet} />
+      <LabelValueEntry label={'Loss'} value={heightLossFeet} />
+      <LabelValueEntry label={'Net'} value={heightNetFeet} />
       <RangeStats {...rangeProps} formatter={heightFormat} />
     </div >
   )
