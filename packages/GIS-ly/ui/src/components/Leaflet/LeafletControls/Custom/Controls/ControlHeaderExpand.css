@@ -21,3 +21,14 @@
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
 }
+
+
+/* Make a programmatic style where this is applied to a control
+if it is of the position bottom-right
+Could be done at single source if applied to 'ControlHeaderExpand'
+with data passed down as to this location */
+.leaflet-bottom.leaflet-right .header {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+}
