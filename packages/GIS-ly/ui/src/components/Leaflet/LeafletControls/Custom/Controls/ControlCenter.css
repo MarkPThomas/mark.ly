@@ -1,0 +1,50 @@
+.top-center,
+.bottom-center {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2000;
+}
+
+.top-center {
+  top: 12px;
+  width: fit-content;
+}
+
+.bottom-center {
+  bottom: 12px;
+}
+
+.top-center h2,
+.bottom-center h2 {
+  margin: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.top-center .hidden,
+.bottom-center .hidden {
+  border: none;
+}
+
+
+
+/* .top-center .selected-track {
+  background-color: #84ff84;
+}
+
+.top-center .selected-track-select {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+} */

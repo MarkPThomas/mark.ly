@@ -1,3 +1,5 @@
+import './ControlCenter.css';
+
 export type ControlCenterProps = {
   position: "top" | "bottom";
   children?: React.ReactNode;
