@@ -1,5 +1,7 @@
 import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
+import './ControlItem.css';
+
 export type ControlItemProps = {
   cb: () => void;
   criteria: string;

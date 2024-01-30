@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
-import { ControlItem } from "./ControlItem";
+
+import './ControlHeader.css';
+import './ControlHeaderSwap.css';
 
 export type ControlHeaderSwapProps = {
   category: string;

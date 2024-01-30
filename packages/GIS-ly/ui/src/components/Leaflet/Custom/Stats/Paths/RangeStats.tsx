@@ -5,6 +5,8 @@ import { INodeOfInterest } from "../../../../../model/Geometry/Stats";
 import { LabelValue } from "../../LabelValueList";
 import { ToggleHeader } from "../../ToggleHeader";
 
+import './RangeStats.css';
+
 export type RangeStatsProps<
   TVertex extends Vertex = RoutePoint,
   TSegment extends Segment = RouteSegment

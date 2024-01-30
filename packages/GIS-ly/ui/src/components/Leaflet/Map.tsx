@@ -55,6 +55,8 @@ import { EditingDisplay } from './LeafletControls/Custom/Editing/EditingDisplay'
 
 import { IEditedStats } from './Custom/Stats/Paths/Stats';
 
+import './Map.css';
+
 export interface IInitialPosition {
   point: LatLngTuple,
   zoom: number

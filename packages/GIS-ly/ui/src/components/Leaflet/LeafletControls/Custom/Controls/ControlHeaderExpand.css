@@ -1,0 +1,23 @@
+.leaflet-bar.header.child-col-beside {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: center;
+}
+
+.leaflet-bar.header.child-col-beside a.header-control.toggled {
+  width: fit-content;
+}
+
+.leaflet-bar.header .beside {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.leaflet-bar a.header-control.toggled {
+  background-color: #f8ffac;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+}

@@ -1,5 +1,7 @@
 import { toCamelCase, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
+import './CheckboxGroup.css';
+
 export interface ICheckboxGroup {
   title: string;
   items: ICheckboxItem[];

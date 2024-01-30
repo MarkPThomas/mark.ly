@@ -15,6 +15,7 @@ import { SegmentStats } from './Categories/SegmentStats';
 import { ToggleGroup } from '../../ToggleGroup';
 import { PathOptions } from 'leaflet';
 
+import './CoordinateMarker.css';
 
 export type CoordinateMarkerProps = {
   point: TrackPoint,

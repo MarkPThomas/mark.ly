@@ -2,6 +2,9 @@ import React, { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
 
+import './ControlHeader.css';
+import './ControlHeaderExpand.css';
+
 export type ControlHeaderExpandProps = {
   category: string;
   cb?: () => void;

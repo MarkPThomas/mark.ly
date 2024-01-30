@@ -1,5 +1,7 @@
 import { ArrowVerticalToggleIcon } from '../../shared/components/Icons/ArrowVerticalToggleIcon';
 
+import './ToggleHeader.css';
+
 export type ToggleHeaderProps = {
   value: string;
   level?: number;

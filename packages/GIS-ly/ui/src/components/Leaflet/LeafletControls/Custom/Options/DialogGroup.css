@@ -11,3 +11,7 @@
   font-style: underline;
   color: red;
 }
+
+.options h3 {
+  margin: 0;
+}

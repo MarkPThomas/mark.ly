@@ -4,6 +4,8 @@ import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/
 import { ITrackSegment } from '../../../../../../model/GIS/Core/Track';
 import { LabelValue } from '../../../LabelValueList';
 
+import './SegmentStats.css';
+
 export type SegmentStatsProps = { segment: ITrackSegment };
 
 export function SegmentStats({ segment }: SegmentStatsProps) {

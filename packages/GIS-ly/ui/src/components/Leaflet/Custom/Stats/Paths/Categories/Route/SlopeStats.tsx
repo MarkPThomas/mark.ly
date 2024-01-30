@@ -4,11 +4,11 @@ import { ISlope } from "../../../../../../../model/GIS/Core/Route/Stats/SlopeSta
 import { RangeStats } from '../../RangeStats';
 import { LabelValue } from "../../../../LabelValueList";
 
+import './SlopeStats.css';
 
 export type SlopeStatsProps = { slope: ISlope, level: number };
 
 export function SlopeStats({ slope, level }: SlopeStatsProps) {
-  const className = 'class="subcategory"';
   const CustomTag = level ? `h${level}` as keyof JSX.IntrinsicElements : `h2` as keyof JSX.IntrinsicElements;
 
   const slopeFormat = (slopeRatio: number) => {

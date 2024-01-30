@@ -4,6 +4,8 @@ import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/
 import { ITrackPathProps } from '../../../../../../model/GIS/Core/Track';
 import { LabelValue } from '../../../LabelValueList';
 
+import './PointPathStats.css';
+
 export type PointPathStatsProps = { path: ITrackPathProps };
 
 export function PointPathStats({ path }: PointPathStatsProps) {
