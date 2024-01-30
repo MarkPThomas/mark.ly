@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { IEditedPolylineStats, PolylineStatsComparison } from "../../../Custom/Stats/Paths/PolylineStatsComparison";
 import { ToggleGroup } from "../../../Custom/ToggleGroup";
 
+import './PolylineComparisonDisplay.css';
+
 const Group = styled.div`
   display: flex;
   flex-wrap: wrap;

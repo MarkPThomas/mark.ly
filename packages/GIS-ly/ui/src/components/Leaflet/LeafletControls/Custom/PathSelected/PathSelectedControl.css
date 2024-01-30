@@ -1,0 +1,12 @@
+.selected-track {
+  background-color: #84ff84;
+}
+
+.selected-track-select {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}

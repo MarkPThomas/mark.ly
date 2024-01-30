@@ -1,5 +1,7 @@
 import { Track } from "../../../../../model/GIS";
 
+import './PathSelectedControl.css';
+
 export type PathSelectedControProps = {
   currentTrack: Track,
   tracksValues: Track[],
