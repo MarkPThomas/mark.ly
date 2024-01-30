@@ -1,5 +1,5 @@
 import { ICruft, ISplit, INoiseCloud, IMisc } from "../../../../model/GIS/settings";
-import { LabelValueEntry } from "../LabelValueEntry";
+import { LabelValue } from "../LabelValue";
 import { ToggleGroup } from "../ToggleGroup";
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits";
 
@@ -20,8 +20,8 @@ export function TrackCriteriaGeneric({ cruft, split, noiseCloud, misc, level }: 
             cruft?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
               children={[<TrackCriteriaUnits key={Date()} units={cruft?.units} />]} />
               : null,
-            <LabelValueEntry key={Date()} label={'Max Gap Distance'} value={cruft?.gapDistanceMax} />,
-            <LabelValueEntry key={Date()} label={'Max Gap Time'} value={cruft?.gapTimeMax} />
+            <LabelValue key={Date()} label={'Max Gap Distance'} value={cruft?.gapDistanceMax} />,
+            <LabelValue key={Date()} label={'Max Gap Time'} value={cruft?.gapTimeMax} />
           ]} />
         : null}
 
@@ -31,8 +31,8 @@ export function TrackCriteriaGeneric({ cruft, split, noiseCloud, misc, level }: 
             split?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
               children={[<TrackCriteriaUnits key={Date()} units={split?.units} />]} />
               : null,
-            <LabelValueEntry key={Date()} label={'Min Move Duration'} value={split?.moveDurationMin} />,
-            <LabelValueEntry key={Date()} label={'Max Stop Duration'} value={split?.stopDurationMax} />
+            <LabelValue key={Date()} label={'Min Move Duration'} value={split?.moveDurationMin} />,
+            <LabelValue key={Date()} label={'Max Stop Duration'} value={split?.stopDurationMax} />
           ]} />
         : null}
 
@@ -42,8 +42,8 @@ export function TrackCriteriaGeneric({ cruft, split, noiseCloud, misc, level }: 
             noiseCloud?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
               children={[<TrackCriteriaUnits key={Date()} units={noiseCloud?.units} />]} />
               : null,
-            <LabelValueEntry key={Date()} label={'Min Speed'} value={noiseCloud?.speedMin} />,
-            <LabelValueEntry key={Date()} label={'Min Stop Duration'} value={noiseCloud?.stopDurationMin} />
+            <LabelValue key={Date()} label={'Min Speed'} value={noiseCloud?.speedMin} />,
+            <LabelValue key={Date()} label={'Min Stop Duration'} value={noiseCloud?.stopDurationMin} />
           ]} />
         : null}
 
@@ -53,7 +53,7 @@ export function TrackCriteriaGeneric({ cruft, split, noiseCloud, misc, level }: 
             misc?.units ? <ToggleGroup key={Date()} value={'Units'} level={level + 1}
               children={[<TrackCriteriaUnits key={Date()} units={misc?.units} />]} />
               : null,
-            <LabelValueEntry key={Date()} label={'GPS Time Interval'} value={misc?.gpsTimeInterval} />
+            <LabelValue key={Date()} label={'GPS Time Interval'} value={misc?.gpsTimeInterval} />
           ]} />
         : null}
     </div>);

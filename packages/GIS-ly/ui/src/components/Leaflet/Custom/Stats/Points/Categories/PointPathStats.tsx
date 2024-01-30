@@ -2,7 +2,7 @@ import { Conversion } from '../../../../../../../../../common/utils/units/conver
 import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/Angle';
 
 import { ITrackPathProps } from '../../../../../../model/GIS/Core/Track';
-import { LabelValueEntry } from '../../../LabelValueEntry';
+import { LabelValue } from '../../../LabelValue';
 
 import './PointPathStats.css';
 
@@ -17,11 +17,11 @@ export function PointPathStats({ path }: PointPathStatsProps) {
 
   return (
     <div className="path-stats">
-      <LabelValueEntry label={'Speed (avg)'} value={speedMph} />
-      <LabelValueEntry label={'Ascent Rate (avg)'} value={ascentRateFeetPerHour} />
-      <LabelValueEntry label={'Descent Rate (avg)'} value={descentRateFeetPerHour} />
-      <LabelValueEntry label={'Rotation'} value={rotationDeg} />
-      <LabelValueEntry label={'Angular Speed'} value={angularSpeedDegPerSec} />
+      <LabelValue label={'Speed (avg)'} value={speedMph} />
+      <LabelValue label={'Ascent Rate (avg)'} value={ascentRateFeetPerHour} />
+      <LabelValue label={'Descent Rate (avg)'} value={descentRateFeetPerHour} />
+      <LabelValue label={'Rotation'} value={rotationDeg} />
+      <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} />
     </div>
   );
 }

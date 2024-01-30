@@ -1,7 +1,7 @@
 import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
 import { ITime } from "../../../../../../../model/GIS/Core/Track/Stats/TimeStats";
-import { LabelValueEntry } from "../../../../LabelValueEntry";
+import { LabelValue } from "../../../../LabelValue";
 import { RangeStats } from '../../RangeStats';
 
 
@@ -36,7 +36,7 @@ export function TimeStats({ time, level }: TimeStatsProps) {
 
   return (
     <div>
-      <LabelValueEntry label={'Duration'} value={durationHr} />
+      <LabelValue label={'Duration'} value={durationHr} />
       <RangeStats {...time} formatter={timeIntervalFormat} level={level} />
     </div>
   )

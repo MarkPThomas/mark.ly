@@ -8,11 +8,11 @@ const S = {
 
 export type LabelValueProps = { label: string, value: string | number };
 
-export function LabelValueEntry({ label, value }: LabelValueProps) {
+export function LabelValue({ label, value }: LabelValueProps) {
   return value
     ?
     <S.LabelValue>
       <b>{label}:</b> {value}
     </S.LabelValue>
-    : <></>
+    : null;
 }

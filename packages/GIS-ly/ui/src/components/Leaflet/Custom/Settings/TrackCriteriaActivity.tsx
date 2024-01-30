@@ -1,5 +1,5 @@
 import { IActivity } from "../../../../model/GIS/settings"
-import { LabelValueEntry } from "../LabelValueEntry"
+import { LabelValue } from "../LabelValue"
 import { ToggleGroup } from "../ToggleGroup"
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits"
 
@@ -27,8 +27,8 @@ export function TrackCriteriaActivity({ activity, level }: TrackCriteriaActivity
                   <ToggleGroup key={Date()} value={'Units'} level={level + 2}
                     children={[<TrackCriteriaUnits key={Date()} units={activity.speed?.units} />]} />
                   : null,
-                <LabelValueEntry key={Date()} label={'Min'} value={activity.speed?.min} />,
-                <LabelValueEntry key={Date()} label={'Max'} value={activity.speed?.max} />
+                <LabelValue key={Date()} label={'Min'} value={activity.speed?.min} />,
+                <LabelValue key={Date()} label={'Max'} value={activity.speed?.max} />
               ]} />
               : null,
 
@@ -38,7 +38,7 @@ export function TrackCriteriaActivity({ activity, level }: TrackCriteriaActivity
                   <ToggleGroup key={Date()} value={'Units'} level={level + 2}
                     children={[<TrackCriteriaUnits key={Date()} units={activity.rotation?.units} />]} />
                   : null,
-                <LabelValueEntry key={Date()} label={'Max Angular Velocity'} value={activity.rotation?.angularVelocityMax} />
+                <LabelValue key={Date()} label={'Max Angular Velocity'} value={activity.rotation?.angularVelocityMax} />
               ]} />
               : null,
 
@@ -48,8 +48,8 @@ export function TrackCriteriaActivity({ activity, level }: TrackCriteriaActivity
                   <ToggleGroup key={Date()} value={'Units'} level={level + 2}
                     children={[<TrackCriteriaUnits key={Date()} units={activity.elevation?.units} />]} />
                   : null,
-                <LabelValueEntry key={Date()} label={'Max Ascent Rate'} value={activity.elevation?.ascentRateMax} />,
-                <LabelValueEntry key={Date()} label={'Max Descent Rate'} value={activity.elevation?.descentRateMax} />
+                <LabelValue key={Date()} label={'Max Ascent Rate'} value={activity.elevation?.ascentRateMax} />,
+                <LabelValue key={Date()} label={'Max Descent Rate'} value={activity.elevation?.descentRateMax} />
               ]} />
               : null,
 
@@ -59,13 +59,13 @@ export function TrackCriteriaActivity({ activity, level }: TrackCriteriaActivity
                   <ToggleGroup key={Date()} value={'Units'} level={level + 2}
                     children={[<TrackCriteriaUnits key={Date()} units={activity.slope?.units} />]} />
                   : null,
-                <LabelValueEntry key={Date()} label={'Max'} value={activity.slope?.max} />
+                <LabelValue key={Date()} label={'Max'} value={activity.slope?.max} />
               ]} />
               : null,
 
             activity.gapDistanceMax ? <ToggleGroup key={Date()} value={'Gap'} level={level + 1}
               children={[
-                <LabelValueEntry key={Date()} label={'Max Distance'} value={activity.gapDistanceMax} />
+                <LabelValue key={Date()} label={'Max Distance'} value={activity.gapDistanceMax} />
               ]} />
               : null
           ]} />

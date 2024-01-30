@@ -2,7 +2,7 @@ import { Conversion } from '../../../../../../../../../../common/utils/units/con
 
 import { ISlope } from "../../../../../../../model/GIS/Core/Route/Stats/SlopeStats";
 import { RangeStats } from '../../RangeStats';
-import { LabelValueEntry } from "../../../../LabelValueEntry";
+import { LabelValue } from "../../../../LabelValue";
 
 import './SlopeStats.css';
 
@@ -19,7 +19,7 @@ export function SlopeStats({ slope, level }: SlopeStatsProps) {
 
   return (
     <div>
-      <LabelValueEntry label={'Avg'} value={averageSlope} />
+      <LabelValue label={'Avg'} value={averageSlope} />
       <div>
         <CustomTag className="slope-header">Uphill</CustomTag>
         <RangeStats {...slope.uphill} formatter={slopeFormat} level={level + 1} />
