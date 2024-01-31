@@ -6,7 +6,17 @@ import { TrackCriteriaActivity } from "./TrackCriteriaActivity"
 import { TrackCriteriaGeneric } from "./TrackCriteriaGeneric"
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits"
 
-import './TrackCriteria.css';
+import styled from 'styled-components';
+
+const S = {
+  TrackCriteria: styled.div`
+    text-align: left;
+  `,
+  HGeneric: styled.div`
+    margin-top: 0;
+    margin-bottom: 0;
+  `
+};
 
 export type TrackCriteriaProps = {
   criteria: ITrackCriteria
@@ -22,8 +32,8 @@ export function TrackCriteria({
   const CustomTag = level ? `h${level}` as keyof JSX.IntrinsicElements : `h2` as keyof JSX.IntrinsicElements;
 
   return (
-    <div className="track-criteria">
-      <CustomTag>{title}</CustomTag>
+    <S.TrackCriteria>
+      <S.HGeneric as={CustomTag}>{title}</S.HGeneric>
       <ToggleGroup value={'Units'} level={level} children={[<TrackCriteriaUnits key={Date()} units={criteria.units} />]} />
 
       {(criteria.cruft || criteria.split || criteria.noiseCloud || criteria.misc) ?
@@ -46,6 +56,6 @@ export function TrackCriteria({
             (activity) => <TrackCriteriaActivity key={hashString(JSON.stringify(activity))} activity={activity} level={level + 1} />
           )} />
         : null}
-    </div>
+    </S.TrackCriteria>
   );
 }

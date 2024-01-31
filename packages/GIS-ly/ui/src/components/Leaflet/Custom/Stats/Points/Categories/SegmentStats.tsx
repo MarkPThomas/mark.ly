@@ -1,10 +1,16 @@
+import styled from 'styled-components';
+
 import { Conversion } from '../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/Angle';
 
 import { ITrackSegment } from '../../../../../../model/GIS/Core/Track';
 import { LabelValue } from '../../../LabelValue';
 
-import './SegmentStats.css';
+const S = {
+  Stats: styled.div`
+    padding-left: 1em;
+  `
+}
 
 export type SegmentStatsProps = { segment: ITrackSegment };
 
@@ -31,7 +37,7 @@ export function SegmentStats({ segment }: SegmentStatsProps) {
   const direction = segment.direction ? segment.direction.lat + segment.direction.lng : '';
 
   return (
-    <div className="segment-stats">
+    <S.Stats>
       <LabelValue label={'Duration'} value={durationSec} />
       <LabelValue label={'Length'} value={lengthFt} />
       <LabelValue label={'Speed'} value={speedMph} />
@@ -40,6 +46,6 @@ export function SegmentStats({ segment }: SegmentStatsProps) {
       <LabelValue label={'Slope'} value={slope} />
       <LabelValue label={'Orientation'} value={angleDegree} />
       <LabelValue label={'Direction'} value={direction} />
-    </div>
+    </S.Stats>
   );
 }

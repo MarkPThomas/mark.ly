@@ -1,10 +1,16 @@
+import styled from 'styled-components';
+
 import { Conversion } from '../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/Angle';
 
 import { ITrackPathProps } from '../../../../../../model/GIS/Core/Track';
 import { LabelValue } from '../../../LabelValue';
 
-import './PointPathStats.css';
+const S = {
+  Stats: styled.div`
+    padding-left: 1em;
+  `
+}
 
 export type PointPathStatsProps = { path: ITrackPathProps };
 
@@ -16,12 +22,12 @@ export function PointPathStats({ path }: PointPathStatsProps) {
   const angularSpeedDegPerSec = path?.rotationRate ? `${Angle.RadiansToDegrees(path.rotationRate).toFixed(5)}°/sec` : '';
 
   return (
-    <div className="path-stats">
+    <S.Stats>
       <LabelValue label={'Speed (avg)'} value={speedMph} />
       <LabelValue label={'Ascent Rate (avg)'} value={ascentRateFeetPerHour} />
       <LabelValue label={'Descent Rate (avg)'} value={descentRateFeetPerHour} />
       <LabelValue label={'Rotation'} value={rotationDeg} />
       <LabelValue label={'Angular Speed'} value={angularSpeedDegPerSec} />
-    </div>
+    </S.Stats>
   );
 }

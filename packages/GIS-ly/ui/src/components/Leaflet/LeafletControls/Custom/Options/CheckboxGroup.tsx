@@ -1,6 +1,11 @@
+import styled from "styled-components";
 import { toCamelCase, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
-import './CheckboxGroup.css';
+const S = {
+  OptionsTitle: styled.h3`
+    margin: 0;
+  `
+};
 
 export interface ICheckboxGroup {
   title: string;
@@ -32,7 +37,7 @@ export function CheckboxGroup({ group }: Props) {
   return (group.items.length ?
     <div key={`options-${titleLowercase}`} className={`options options-${titleLowercase}`}>
       <hr />
-      <h3>{titleFirstUpperCase}</h3>
+      <S.OptionsTitle>{titleFirstUpperCase}</S.OptionsTitle>
       {group.items.map((item, index) =>
         <div key={optionsFormatted[index].nameCamelCase}>
           <input type="checkbox" onChange={item.cb} id={optionsFormatted[index].nameCamelCase} checked={item.isChecked} />

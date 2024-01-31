@@ -1,14 +1,16 @@
 import styled from 'styled-components';
 import { ArrowVerticalToggleIcon } from '../../shared/components/Icons/ArrowVerticalToggleIcon';
 
-import './ToggleHeader.css';
-
 const S = {
   ToggleHeader: styled.div`
     display: flex;
     padding-top: 0.5em;
     padding-bottom: 0.2em;
-  `
+  `,
+  HGeneric: styled.div`
+    margin-top: 0;
+    margin-bottom: 0;
+    `
 };
 
 export type ToggleHeaderProps = {
@@ -24,7 +26,7 @@ export function ToggleHeader(props: ToggleHeaderProps) {
 
   return (
     <S.ToggleHeader>
-      <CustomTag>{props.value}</CustomTag>
+      <S.HGeneric as={CustomTag}>{props.value}</S.HGeneric>
       <ArrowVerticalToggleIcon {...props} />
     </S.ToggleHeader>
   );

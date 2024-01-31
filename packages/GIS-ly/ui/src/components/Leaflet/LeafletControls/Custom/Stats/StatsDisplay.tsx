@@ -1,10 +1,22 @@
 import React, { useState } from "react";
+import styled from "styled-components";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
 import { IEditedStats, Stats } from "../../../Custom/Stats/Paths/Stats";
 
-// import styles from './StatsDisplay.module.css';
-import './StatsDisplay.css';
+const S = {
+  StatsLabel: styled.span`
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0;
+    padding-bottom: 0;
+    justify-content: space-evenly;
+  `,
+
+  StatsTitle: styled.h2`
+    margin: 0;
+  `
+};
 
 export type StatsDisplayProps = {
   stats: IEditedStats;
@@ -57,16 +69,16 @@ export function StatsDisplay({
           onClick={setToggle}
         >
           {(currentlyToggled && !isDisabled) ?
-            <span aria-hidden="true" className="icon-label stats-label">
-              <h2>{categoryUpperFirst}</h2>
+            <S.StatsLabel aria-hidden="true" className="icon-label">
+              <S.StatsTitle>{categoryUpperFirst}</S.StatsTitle>
               {iconSvg}
-            </span>
+            </S.StatsLabel>
             :
             iconSvg
           }
         </a>
         {(currentlyToggled && !isDisabled) ?
-          <div className="leaflet-bar item stats-control">
+          <div className="leaflet-bar">
             <Stats stats={stats} />
           </div>
           : null}
