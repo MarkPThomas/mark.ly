@@ -4,6 +4,8 @@ const fs = require('fs'); // to check if the file exists
 
 const path = require('path');
 const { merge } = require('webpack-merge');
+// error css-minimizer-webpack-plugin@6.0.0: The engine "node" is incompatible with this module. Expected version ">= 18.12.0". Got "16.16.0"
+// const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const sharedConfig = require('./webpack.shared.config.js');
 
@@ -34,10 +36,16 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.css?$/i,
+        test: /\.css$/i,
         use: [
           devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-          'css-loader'
+          {
+            loader: 'css-loader',
+            // options: {
+            //   importLoaders: 1,
+            //   modules: true,
+            // },
+          },
         ],
       },
       {
@@ -47,7 +55,11 @@ const config = {
       },
     ],
   },
-
+  // optimization: {
+  //   minimizer: [].concat(devMode ? [] : [
+  //     new CssMinimizerPlugin(),
+  //   ]),
+  // },
   plugins: [].concat(devMode ? [] : [
     new MiniCssExtractPlugin({
       filename: 'styles/bundle.css',
