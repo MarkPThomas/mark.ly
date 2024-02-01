@@ -29,5 +29,5 @@ packages/**/.env.test
 dist
 build
 
-# Documentation
+# HTML API Documentation
 docs
