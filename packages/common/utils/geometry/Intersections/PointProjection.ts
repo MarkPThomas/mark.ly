@@ -1,6 +1,6 @@
 // using NMath = System.Math;
 
-import { IPathSegment } from "../Segments/IPathSegments";
+import { IPathSegment } from "../Segments/IPathSegment";
 import { PointExtents } from "../Tools/PointExtents";
 
 // using MPT.Math.Coordinates;

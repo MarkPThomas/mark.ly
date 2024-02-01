@@ -6,7 +6,7 @@ import { LinearCurve } from "../../math/Curves/LinearCurve";
 import { GeometryLibrary } from "../GeometryLibrary";
 import { PointExtents } from "../Tools/PointExtents";
 import { IPathSegmentCollision } from "./IPathSegmentCollision";
-import { IPathSegment } from "./IPathSegments";
+import { IPathSegment } from "./IPathSegment";
 import { LineSegment } from "./LineSegment";
 import { Vector } from "../../math/Vectors/Vector";
 import { Numbers } from "../../math/Numbers";

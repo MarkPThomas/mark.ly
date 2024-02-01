@@ -7,7 +7,7 @@ import { Numbers } from "../../math/Numbers";
 import { Vector } from "../../math/Vectors/Vector";
 import { ILine } from "./ILine";
 import { IPathDivisionExtension } from "./IPathDivisionExtension";
-import { IPathSegment } from "./IPathSegments";
+import { IPathSegment } from "./IPathSegment";
 import { PathSegment } from "./PathSegment";
 
 
