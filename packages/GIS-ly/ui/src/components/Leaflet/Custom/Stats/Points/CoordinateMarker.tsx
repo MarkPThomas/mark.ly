@@ -7,7 +7,7 @@ import { hashString } from '../../../../../../../../common/utils'; //'common/uti
 
 import { TrackPoint } from '../../../../../model/GIS/Core/Track/TrackPoint';
 
-import { LabelValue } from '../../LabelValueList';
+import { LabelValue } from '../../LabelValue';
 import { PointStats } from './Categories/PointStats';
 import { PointPathStats } from './Categories/PointPathStats';
 import { TrackSegment } from '../../../../../model/GIS/Core/Track';
@@ -15,6 +15,7 @@ import { SegmentStats } from './Categories/SegmentStats';
 import { ToggleGroup } from '../../ToggleGroup';
 import { PathOptions } from 'leaflet';
 
+import './CoordinateMarker.css';
 
 export type CoordinateMarkerProps = {
   point: TrackPoint,

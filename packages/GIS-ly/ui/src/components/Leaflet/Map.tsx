@@ -48,12 +48,14 @@ import { TrackCriteriaModal } from './LeafletControls/Custom/Modals/TrackCriteri
 import { FileReplaceModal } from './LeafletControls/Custom/Modals/FileReplaceModal';
 import { ElevationsModal } from './LeafletControls/Custom/Modals/ElevationsModal';
 
-import { PolylineComparisonDisplay } from './LeafletControls/Custom/Stats/PolylineComparisonDisplay';
+import { PolylineComparisonDisplay } from './LeafletControls/Custom/Comparisons/PolylineComparisonDisplay';
 import { GeoJsonPreview } from './Layers/GeoJsonPreview';
 import { PathGraphDisplay } from './LeafletControls/Custom/PathGraph/PathGraphDisplay';
 import { EditingDisplay } from './LeafletControls/Custom/Editing/EditingDisplay';
 
 import { IEditedStats } from './Custom/Stats/Paths/Stats';
+
+import './Map.css';
 
 export interface IInitialPosition {
   point: LatLngTuple,

@@ -1,7 +1,7 @@
 import { Conversion } from '../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
 import { ITrackPoint } from "../../../../../../model/GIS/Core/Track";
-import { LabelValue } from '../../../LabelValueList';
+import { LabelValue } from '../../../LabelValue';
 
 export type PointStatsProps = { point: ITrackPoint };
 

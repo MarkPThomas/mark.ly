@@ -6,14 +6,16 @@ import { ToggleGroup } from "../../ToggleGroup";
 import { RouteStats } from "./RouteStats";
 import { TrackStats } from "./TrackStats";
 
-const FlowControl = styled.div`
-  max-height: 27rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 5px;
-`;
+const S = {
+  Stats: styled.div`
+    max-height: 27rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+  `
+};
 
 export interface IEditedStats extends ITrackStats {
   size: IPolylineSize
@@ -28,7 +30,7 @@ export function Stats({ stats }: StatsProps) {
 
   return (
     <div>
-      <FlowControl key={Date() + '2'} >
+      <S.Stats key={Date() + '2'} >
         <ToggleGroup
           value={'Route'}
           level={level}
@@ -40,7 +42,7 @@ export function Stats({ stats }: StatsProps) {
           level={level}
           children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
         />
-      </FlowControl>
+      </S.Stats>
     </div>
   )
 }

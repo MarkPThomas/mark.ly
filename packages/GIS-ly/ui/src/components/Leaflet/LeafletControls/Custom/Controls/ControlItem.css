@@ -1,0 +1,14 @@
+.leaflet-bar a.item-control {
+  width: 100%;
+}
+
+.leaflet-bar a.item-control span {
+  margin: 5px;
+}
+
+span.icon-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: start;
+}

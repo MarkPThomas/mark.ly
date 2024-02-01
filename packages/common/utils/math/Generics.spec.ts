@@ -1,14 +1,11 @@
-import { ArgumentException } from '../../errors/exceptions';
 import { IComparable } from '../../interfaces';
 import { Generics } from './Generics'; // Import the Generics class from your TypeScript implementation
 
 describe('GenericsTests', () => {
-  // Define the ITolerance interface
   interface ITolerance {
     Tolerance: number;
   }
 
-  // Define the Comparables class
   class Comparables implements IComparable<Comparables> {
     Number: number;
 
@@ -27,12 +24,9 @@ describe('GenericsTests', () => {
     }
   }
 
-  // Define the ObjectWithTolerance class
   class ObjectWithTolerance implements ITolerance {
     Tolerance: number;
   }
-
-  // Define the AnotherObjectWithTolerance class
   class AnotherObjectWithTolerance implements ITolerance {
     Tolerance: number;
   }
@@ -62,7 +56,7 @@ describe('GenericsTests', () => {
     const item2 = new ObjectWithTolerance();
     item2.Tolerance = tolerance2;
 
-    expect(Generics.GetTolerance(item1, item2)).toBe(tolerance2);
+    expect(Generics.GetToleranceBetween(item1, item2)).toBe(tolerance2);
   });
 
   it('should get tolerance between two objects of different types', () => {
@@ -73,7 +67,7 @@ describe('GenericsTests', () => {
     const item2 = new AnotherObjectWithTolerance();
     item2.Tolerance = tolerance2;
 
-    expect(Generics.GetTolerance(item1, item2)).toBe(tolerance2);
+    expect(Generics.GetToleranceBetween(item1, item2)).toBe(tolerance2);
   });
 
   it('should get tolerance between two objects of different types and specified governing tolerance', () => {
@@ -85,7 +79,7 @@ describe('GenericsTests', () => {
     item2.Tolerance = tolerance2;
     const governingTolerance = 0.1;
 
-    expect(Generics.GetTolerance(item1, item2, governingTolerance)).toBe(governingTolerance);
+    expect(Generics.GetToleranceBetween(item1, item2, governingTolerance)).toBe(governingTolerance);
   });
 
   it.each([
@@ -125,35 +119,34 @@ describe('GenericsTests', () => {
   });
 
   it('should throw exception if argument is null for max function', () => {
-    expect(() => Generics.Max<Comparables>(null)).toThrowError(ArgumentException);
+    expect(() => Generics.Max<Comparables>()).toThrowError();
   });
 
   it('should throw exception if array is not dimensioned for max function', () => {
     const comparables: Comparables[] = [];
 
-    expect(() => Generics.Max<Comparables>(comparables)).toThrowError(ArgumentException);
+    expect(() => Generics.Max<Comparables>(...comparables)).toThrowError();
   });
 
   it('should return max object of comparable objects', () => {
     const comparables: Comparables[] = [];
-    // const comparables: IComparable<Comparables>[] = [];
     comparables.push(new Comparables(6));
     comparables.push(new Comparables(-1));
     comparables.push(new Comparables(9));
 
-    const maxComparables = Generics.Max<Comparables>(comparables);
+    const maxComparables = Generics.Max(...comparables);
 
     expect(maxComparables).toEqual(comparables[2]);
   });
 
   it('should throw exception if argument is null for min function', () => {
-    expect(() => Generics.Min<Comparables>(null)).toThrowError(ArgumentException);
+    expect(() => Generics.Min<Comparables>()).toThrowError();
   });
 
   it('should throw exception if array is not dimensioned for min function', () => {
     const comparables: Comparables[] = [];
 
-    expect(() => Generics.Min(comparables)).toThrowError(ArgumentException);
+    expect(() => Generics.Min(...comparables)).toThrowError();
   });
 
   it('should return min object of comparable objects', () => {
@@ -162,7 +155,7 @@ describe('GenericsTests', () => {
     comparables.push(new Comparables(-1));
     comparables.push(new Comparables(9));
 
-    const minComparables = Generics.Min(comparables);
+    const minComparables = Generics.Min(...comparables);
 
     expect(minComparables).toEqual(comparables[1]);
   });

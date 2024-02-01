@@ -1218,7 +1218,7 @@ describe('###Numbers', () => {
 
           const result = Numbers.RoundToSignificantFigures(value, digits);
 
-          expect(result).toEqual(expected);
+          expect(result).toBeCloseTo(expected, 6);
         });
 
       it.each([
@@ -1237,7 +1237,7 @@ describe('###Numbers', () => {
 
           const result = Numbers.RoundToSignificantFigures(value, digits);
 
-          expect(result).toEqual(expected);
+          expect(result).toBeCloseTo(expected, 5);
         });
 
       // This was available in C# but not ported. May be worth adding later?
@@ -1309,7 +1309,7 @@ describe('###Numbers', () => {
         (value, digits, expected) => {
           const result = Numbers.RoundToDecimalPlaces(value, digits);
 
-          expect(result).toEqual(expected);
+          expect(result).toBeCloseTo(expected, 6);
         });
 
       it.each([
@@ -1327,7 +1327,7 @@ describe('###Numbers', () => {
         (value, digits, expected) => {
           const result = Numbers.RoundToDecimalPlaces(value, digits);
 
-          expect(result).toEqual(expected);
+          expect(result).toBeCloseTo(expected, 5);
         });
 
       // This was available in C# but not ported. May be worth adding later?

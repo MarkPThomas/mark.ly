@@ -1,5 +1,5 @@
 import { IUnitOverrides } from "../../../../../../../common/utils/units/conversion"
-import { LabelValue } from "../LabelValueList"
+import { LabelValue } from "../LabelValue"
 import { ToggleHeader } from "../ToggleHeader"
 
 export type TrackCriteriaUnitsProps = {

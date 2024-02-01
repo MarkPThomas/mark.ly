@@ -1,5 +1,5 @@
 import { IActivity } from "../../../../model/GIS/settings"
-import { LabelValue } from "../LabelValueList"
+import { LabelValue } from "../LabelValue"
 import { ToggleGroup } from "../ToggleGroup"
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits"
 

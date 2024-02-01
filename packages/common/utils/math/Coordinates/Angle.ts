@@ -1,12 +1,14 @@
 import { IEquatable, IComparable } from "../../../interfaces";
+import { DivideByZeroException } from "../../../errors/exceptions";
+
+import { Generics } from "../Generics";
 import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";
-import { CartesianCoordinate } from "./CartesianCoordinate";
 import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
-import { Generics } from "../Generics";
 import { Vector } from "../Vectors/Vector";
+
+import { CartesianCoordinate } from "./CartesianCoordinate";
 import { AngularOffset } from "./AngularOffset";
-import { DivideByZeroException } from "../../../errors/exceptions";
 
 
 /**
@@ -19,13 +21,13 @@ import { DivideByZeroException } from "../../../errors/exceptions";
  * @implements {ITolerance}
  */
 export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance {
-  public readonly Tolerance: number;
+  readonly Tolerance: number;
 
   /// <summary>
   /// The raw angle as radians, without any modifications done.
   /// </summary>
   /// <value>The radians raw.</value>
-  public readonly RadiansRaw: number;
+  readonly RadiansRaw: number;
 
   /// <summary>
   /// The raw angle as degrees, without any modifications done.
@@ -38,7 +40,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// The angle as radians, which is a value between -π (clockwise) and +π (counter-clockwise).
   /// </summary>
   /// <value>The radians.</value>
-  public readonly Radians: number;
+  readonly Radians: number;
 
   /// <summary>
   /// The angle as clockwise (inverted) radians, which is a value between -π (counter-clockwise) and +π (clockwise).
@@ -65,14 +67,15 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="radians">The radian value of the angle.</param>
   /// <param name="tolerance">The tolerance to be used in relating coordinates.</param>
   constructor(
-    radians: number,
-    tolerance: number = Numbers.ZeroTolerance) {
+    radians: number = 0,
+    tolerance: number = Numbers.ZeroTolerance
+  ) {
     this.RadiansRaw = radians;
     this.Radians = Angle.WrapAngleWithinPositiveNegativePi(radians);
     this.Tolerance = tolerance;
   }
 
-  public static fromOrigin() {
+  static fromOrigin() {
     return new Angle(0);
   }
 
@@ -82,7 +85,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="radians">The radian value of the angle.</param>
   /// <param name="tolerance">The tolerance to be used in relating coordinates.</param>
   /// <returns>Angle.</returns>
-  public static CreateFromRadian(
+  static CreateFromRadian(
     radians: number,
     tolerance: number = Numbers.ZeroTolerance
   ): Angle {
@@ -95,11 +98,11 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="degrees">The degree value of the angle.</param>
   /// <param name="tolerance">The tolerance to be used in relating coordinates.</param>
   /// <returns>Angle.</returns>
-  public static CreateFromDegree(
+  static CreateFromDegree(
     degrees: number,
     tolerance: number = Numbers.ZeroTolerance
   ): Angle {
-    return new Angle(this.DegreesToRadians(degrees), tolerance);
+    return new Angle(Angle.DegreesToRadians(degrees), tolerance);
   }
 
   /// <summary>
@@ -108,11 +111,11 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="direction">The direction vector of the angle.</param>
   /// <param name="tolerance">The tolerance to be used in relating coordinates.</param>
   /// <returns>Angle.</returns>
-  public static CreateFromVector(
+  static CreateFromVector(
     direction: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): Angle {
-    return new Angle(this.AsRadians(direction.Xcomponent, direction.Ycomponent), tolerance);
+    return new Angle(Angle.AsRadians(direction.Xcomponent, direction.Ycomponent), tolerance);
   }
 
   /// <summary>
@@ -121,7 +124,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// </summary>
   /// <param name="point">The point.</param>
   /// <returns>Angle.</returns>
-  public static CreateFromPoint(point: CartesianCoordinate): Angle {
+  static CreateFromPoint(point: CartesianCoordinate): Angle {
     const vector = Vector.fromCoords(CartesianCoordinate.Origin(), point);
     return vector.Angle();
   }
@@ -133,16 +136,16 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="point1">The first point.</param>
   /// <param name="point2">The second point.</param>
   /// <returns>Angle.</returns>
-  public static CreateFromPoints(point1: CartesianCoordinate, point2: CartesianCoordinate): Angle {
+  static CreateFromPoints(point1: CartesianCoordinate, point2: CartesianCoordinate): Angle {
     const vector = Vector.fromCoords(point1, point2);
     return vector.Angle();
   }
 
-  public static RadiansToDegrees(radians: number): number {
+  static RadiansToDegrees(radians: number): number {
     return radians * (180 / Numbers.Pi);
   }
 
-  public static DegreesToRadians(degrees: number): number {
+  static DegreesToRadians(degrees: number): number {
     return degrees * (Numbers.Pi / 180);
   }
 
@@ -151,7 +154,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// </summary>
   /// <param name="coordinate">The coordinate.</param>
   /// <returns>System.Double.</returns>
-  public static AsDegreesFromCoordinate(coordinate: CartesianCoordinate): number {
+  static AsDegreesFromCoordinate(coordinate: CartesianCoordinate): number {
     return Angle.AsDegrees(coordinate.X, coordinate.Y);
   }
 
@@ -161,7 +164,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="x">The x-coordinate.</param>
   /// <param name="y">The y-coordinate.</param>
   /// <returns>System.Double.</returns>
-  public static AsDegrees(x: number, y: number): number {
+  static AsDegrees(x: number, y: number): number {
     return Angle.RadiansToDegrees(Angle.AsRadians(x, y));
   }
 
@@ -170,7 +173,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// </summary>
   /// <param name="coordinate">The coordinate.</param>
   /// <returns>System.Double.</returns>
-  public static AsRadiansFromCoordinate(coordinate: CartesianCoordinate): number {
+  static AsRadiansFromCoordinate(coordinate: CartesianCoordinate): number {
     return Angle.AsRadians(coordinate.X, coordinate.Y);
   }
 
@@ -180,7 +183,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="x">The x-coordinate.</param>
   /// <param name="y">The y-coordinate.</param>
   /// <returns>System.Double.</returns>
-  public static AsRadians(x: number, y: number): number {
+  static AsRadians(x: number, y: number): number {
     if (Numbers.IsZeroSign(x)) {
       if (Numbers.IsPositiveSign(y)) {
         return Numbers.Pi / 2;  // 90 deg
@@ -211,7 +214,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="radians">The angle in radians.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns>System.Double.</returns>
-  public static WrapAngleWithinPositiveNegativePi(
+  static WrapAngleWithinPositiveNegativePi(
     radians: number,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
@@ -233,7 +236,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
    * @return {*}
    * @memberof Angle
    */
-  public static WrapAngleWithinTwoPi(
+  static WrapAngleWithinTwoPi(
     radians: number,
     tolerance: number = Numbers.ZeroTolerance
   ) {
@@ -258,11 +261,11 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
    * @return {*}  {Angle}
    * @memberof Angle
    */
-  public static Origin(): Angle {
+  static Origin(): Angle {
     return new Angle(0);
   }
 
-  public ToString(): string {
+  ToString(): string {
     return this.toString() + " - Radians: " + this.Radians;
   }
 
@@ -273,7 +276,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
    * @return {*}  {Vector}
    * @memberof Angle
    */
-  public GetDirectionVector(): Vector {
+  GetDirectionVector(): Vector {
     return Vector.fromMagnitudesAtLocation(Math.cos(this.Radians), Math.sin(this.Radians));
   }
 
@@ -285,8 +288,8 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
    * @return {*}  {Vector}
    * @memberof Angle
    */
-  public RotateVector(vector: Vector): Vector {
-    const tolerance = Generics.GetTolerance(this, vector);
+  RotateVector(vector: Vector): Vector {
+    const tolerance = Generics.GetToleranceBetween(this, vector);
     if (Numbers.IsZeroSign(this.Radians, tolerance)) {
       return vector;
     }
@@ -304,85 +307,85 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
    * @return {*}  {AngularOffset}
    * @memberof Angle
    */
-  public OffsetFrom(angleI: Angle): AngularOffset {
+  OffsetFrom(angleI: Angle): AngularOffset {
     return AngularOffset.fromAngles(angleI, this);
   }
 
 
-  public isGreater(angle: Angle): boolean {
+  isGreaterThan(angle: Angle): boolean {
     return this.compareTo(angle) == 1;
   }
 
-  public isGreaterThanRadians(radians: number): boolean {
+  isGreaterThanRadians(radians: number): boolean {
     return this.CompareToRadians(radians) == 1;
   }
 
-  public isGreaterThanDegrees(degrees: number): boolean {
+  isGreaterThanDegrees(degrees: number): boolean {
     return this.CompareToDegrees(degrees) == 1;
   }
 
 
-  public isLess(angle: Angle): boolean {
+  isLessThan(angle: Angle): boolean {
     return this.compareTo(angle) == -1;
   }
 
-  public isLessThanRadians(radians: number): boolean {
+  isLessThanRadians(radians: number): boolean {
     return this.CompareToRadians(radians) == -1;
   }
 
-  public isLessThanDegrees(degrees: number): boolean {
+  isLessThanDegrees(degrees: number): boolean {
     return this.CompareToDegrees(degrees) == -1;
   }
 
 
-  public isGreaterOrEqual(angle: Angle): boolean {
+  isGreaterThanOrEqualTo(angle: Angle): boolean {
     return this.compareTo(angle) >= 0;
   }
 
-  public isGreaterOrEqualThanRadians(radians: number): boolean {
+  isGreaterThanOrEqualToRadians(radians: number): boolean {
     return this.CompareToRadians(radians) >= 0;
   }
 
-  public isGreaterOrEqualThanDegrees(degrees: number): boolean {
+  isGreaterThanOrEqualToDegrees(degrees: number): boolean {
     return this.CompareToDegrees(degrees) >= 0;
   }
 
 
-  public isLesserOrEqual(angle: Angle): boolean {
+  isLessThanOrEqualTo(angle: Angle): boolean {
     return this.compareTo(angle) <= 0;
   }
 
-  public isLesserOrEqualThanRadians(radians: number): boolean {
+  isLessThanOrEqualToRadians(radians: number): boolean {
     return this.CompareToRadians(radians) <= 0;
   }
 
-  public isLesserOrEqualThanDegrees(degrees: number): boolean {
+  isLessThanOrEqualToDegrees(degrees: number): boolean {
     return this.CompareToDegrees(degrees) <= 0;
   }
 
 
-  public addTo(angle: Angle): Angle {
-    return new Angle(this.Radians + angle.Radians, Generics.GetTolerance(this, angle));
+  addTo(angle: Angle): Angle {
+    return new Angle(this.Radians + angle.Radians, Generics.GetToleranceBetween(this, angle));
   }
 
-  public addToRadians(radians: number): Angle {
+  addToRadians(radians: number): Angle {
     return new Angle(this.Radians + radians, this.Tolerance);
   }
 
-  public addToDegrees(degrees: number): Angle {
+  addToDegrees(degrees: number): Angle {
     return new Angle(this.Degrees + degrees, this.Tolerance);
   }
 
 
-  public subtractBy(angle: Angle): Angle {
-    return new Angle(this.Radians - angle.Radians, Generics.GetTolerance(this, angle));
+  subtractBy(angle: Angle): Angle {
+    return new Angle(this.Radians - angle.Radians, Generics.GetToleranceBetween(this, angle));
   }
 
-  public subtractByRadians(radians: number): Angle {
+  subtractByRadians(radians: number): Angle {
     return new Angle(this.Radians - radians, this.Tolerance);
   }
 
-  public subtractByDegrees(degrees: number): Angle {
+  subtractByDegrees(degrees: number): Angle {
     return new Angle(this.Degrees - degrees, this.Tolerance);
   }
 
@@ -392,7 +395,7 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="angle">The angle.</param>
   /// <param name="multiplier">Multiplier value.</param>
   /// <returns>The result of the operator.</returns>
-  public multiplyBy(multiplier: number): Angle {
+  multiplyBy(multiplier: number): Angle {
     return new Angle(this.Radians * multiplier, this.Tolerance);
   }
 
@@ -402,22 +405,22 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// <param name="angle">The angle.</param>
   /// <param name="denominator">The denominator value.</param>
   /// <returns>The result of the operator.</returns>
-  public divideBy(denominator: number): Angle {
+  divideBy(denominator: number): Angle {
     if (denominator == 0) { throw new DivideByZeroException(); }
     return new Angle(this.Radians / denominator, this.Tolerance);
   }
 
 
-  public equals(other: Angle): boolean {
-    const tolerance = Generics.GetTolerance(this, other);
+  equals(other: Angle): boolean {
+    const tolerance = Generics.GetToleranceBetween(this, other);
     return Numbers.AreEqual(this.Radians, other.Radians, tolerance);
   }
 
-  public equalsRadians(radians: number): boolean {
+  equalsRadians(radians: number): boolean {
     return Numbers.AreEqual(this.Radians, radians, this.Tolerance);
   }
 
-  public equalsDegrees(degrees: number): boolean {
+  equalsDegrees(degrees: number): boolean {
     return Numbers.AreEqual(this.Degrees, degrees, this.Tolerance);
   }
 
@@ -434,20 +437,20 @@ export class Angle implements IEquatable<Angle>, IComparable<Angle>, ITolerance 
   /// This instance occurs in the same position in the sort order as <paramref name="other">other</paramref>.
   /// Greater than zero
   /// This instance follows <paramref name="other">other</paramref> in the sort order.</returns>
-  public compareTo(angle: Angle): number {
+  compareTo(angle: Angle): number {
     if (this.equals(angle)) { return 0; }
 
-    const tolerance = Generics.GetTolerance(this, angle);
+    const tolerance = Generics.GetToleranceBetween(this, angle);
     return Numbers.IsLessThan(this.Radians, angle.Radians, tolerance) ? -1 : 1;
   }
 
-  public CompareToRadians(radians: number): number {
+  CompareToRadians(radians: number): number {
     if (this.equalsRadians(radians)) { return 0; }
 
     return Numbers.IsLessThan(this.Radians, radians, this.Tolerance) ? -1 : 1;
   }
 
-  public CompareToDegrees(degrees: number): number {
+  CompareToDegrees(degrees: number): number {
     if (this.equalsDegrees(degrees)) { return 0; }
 
     return Numbers.IsLessThan(this.Radians, degrees, this.Tolerance) ? -1 : 1;

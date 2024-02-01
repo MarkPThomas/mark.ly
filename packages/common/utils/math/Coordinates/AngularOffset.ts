@@ -47,6 +47,10 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
     this.Tolerance = tolerance;
   }
 
+  public static fromNone() {
+    return new AngularOffset(new Angle(), new Angle());
+  }
+
   public static fromAngles(
     i: Angle, j: Angle,
     tolerance: number = Numbers.ZeroTolerance): AngularOffset {
@@ -54,7 +58,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
     return new AngularOffset(i, j, tolerance);
   }
 
-  public static fromDelta(
+  public static fromDeltaRadians(
     deltaAngle: number,
     tolerance: number = Numbers.ZeroTolerance): AngularOffset {
     return new AngularOffset(new Angle(0), new Angle(deltaAngle), tolerance);
@@ -138,7 +142,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   }
 
 
-  public isGreaterOrEqual(offset: AngularOffset): boolean {
+  public isGreaterThanOrEqualTo(offset: AngularOffset): boolean {
     return this.compareTo(offset) >= 0;
   }
 
@@ -151,7 +155,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   }
 
 
-  public isLesserOrEqual(offset: AngularOffset): boolean {
+  public isLessThanOrEqualTo(offset: AngularOffset): boolean {
     return this.compareTo(offset) <= 0;
   }
 
@@ -171,7 +175,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
     return new AngularOffset(
       Angle.fromOrigin(),
       this.ToAngle().subtractBy(offset.ToAngle()),
-      Generics.GetTolerance(this, offset));
+      Generics.GetToleranceBetween(this, offset));
   }
 
   public subtractByRadians(angleRadians: number): number {
@@ -186,7 +190,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
     return new AngularOffset(
       this.I.addTo(offset.I),
       this.J.addTo(offset.J),
-      Generics.GetTolerance(this, offset));
+      Generics.GetToleranceBetween(this, offset));
   }
 
   public addToRadians(angleRadians: number): number {
@@ -206,7 +210,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   }
 
 
-  public divideBy(offset: AngularOffset, denominator: number): AngularOffset {
+  public divideBy(denominator: number): AngularOffset {
     if (denominator == 0) { throw new DivideByZeroException(); }
     return new AngularOffset(
       this.I.divideBy(denominator),
@@ -215,7 +219,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   }
 
   public equals(offset: AngularOffset): boolean {
-    const tolerance = Generics.GetTolerance(this, offset);
+    const tolerance = Generics.GetToleranceBetween(this, offset);
     return Numbers.IsEqualTo(this.Delta().Radians, offset.Delta().Radians, tolerance);
   }
 
@@ -244,7 +248,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   public compareTo(other: AngularOffset): number {
     if (this.equals(other)) { return 0; }
 
-    const tolerance = Generics.GetTolerance(this, other);
+    const tolerance = Generics.GetToleranceBetween(this, other);
     return Numbers.IsLessThan(this.Delta().Radians, other.Delta().Radians, tolerance) ? -1 : 1;
   }
 

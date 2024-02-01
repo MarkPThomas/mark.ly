@@ -1,6 +1,6 @@
 import { Conversion } from '../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
 
-import { LabelValue } from "../../LabelValueList";
+import { LabelValue } from "../../LabelValue";
 import { ToggleGroup } from "../../ToggleGroup";
 import { HeightStats, SlopeStats } from './Categories/Route';
 import { IEditedStats } from "./Stats";

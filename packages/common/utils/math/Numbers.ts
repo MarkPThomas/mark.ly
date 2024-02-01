@@ -73,8 +73,8 @@ export class Numbers {
   /// <param name="value">The value.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is positive sign] [the specified value]; otherwise, <c>false</c>.</returns>
-  public static IsPositiveSign(value: number, tolerance: number = this.ZeroTolerance): boolean {
-    if (this.IsZeroSign(value, tolerance)) { return false; }
+  public static IsPositiveSign(value: number, tolerance: number = Numbers.ZeroTolerance): boolean {
+    if (Numbers.IsZeroSign(value, tolerance)) { return false; }
     return (value > Math.abs(tolerance));
   }
 
@@ -84,8 +84,8 @@ export class Numbers {
   /// <param name="value">The value.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is negative sign] [the specified value]; otherwise, <c>false</c>.</returns>
-  public static IsNegativeSign(value: number, tolerance: number = this.ZeroTolerance): boolean {
-    if (this.IsZeroSign(value, tolerance)) { return false; }
+  public static IsNegativeSign(value: number, tolerance: number = Numbers.ZeroTolerance): boolean {
+    if (Numbers.IsZeroSign(value, tolerance)) { return false; }
     return (value < Math.abs(tolerance));
   }
 
@@ -95,7 +95,7 @@ export class Numbers {
   /// <param name="value">The value.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is zero sign] [the specified value]; otherwise, <c>false</c>.</returns>
-  public static IsZeroSign(value: number, tolerance: number = this.ZeroTolerance): boolean {
+  public static IsZeroSign(value: number, tolerance: number = Numbers.ZeroTolerance): boolean {
     return (Math.abs(value) < Math.abs(tolerance));
   }
 
@@ -105,8 +105,8 @@ export class Numbers {
   /// <param name="value">The value.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns>System.Int32.</returns>
-  public static Sign(value: number, tolerance: number = this.ZeroTolerance): 1 | -1 {
-    if (this.IsZeroSign(value, tolerance)) { return 1; }
+  public static Sign(value: number, tolerance: number = Numbers.ZeroTolerance): 1 | -1 {
+    if (Numbers.IsZeroSign(value, tolerance)) { return 1; }
     return (value > -Math.abs(tolerance) ? 1 : -1);
   }
 
@@ -121,8 +121,8 @@ export class Numbers {
   /// <param name="value2">The value2.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is equal to] [the specified value1]; otherwise, <c>false</c>.</returns>
-  public static IsEqualTo(value1: number, value2: number, tolerance: number = this.ZeroTolerance): boolean {
-    return this.AreEqual(value1, value2, tolerance);
+  public static IsEqualTo(value1: number, value2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
+    return Numbers.AreEqual(value1, value2, tolerance);
   }
 
   /// <summary>
@@ -132,7 +132,7 @@ export class Numbers {
   /// <param name="value2">The value2.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is greater than] [the specified value1]; otherwise, <c>false</c>.</returns>
-  public static IsGreaterThan(value1: number, value2: number, tolerance: number = this.ZeroTolerance): boolean {
+  public static IsGreaterThan(value1: number, value2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
     return ((value1 - value2) > Math.abs(tolerance));
   }
 
@@ -143,8 +143,8 @@ export class Numbers {
   /// <param name="value2">The value2.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is less than] [the specified value1]; otherwise, <c>false</c>.</returns>
-  public static IsLessThan(value1: number, value2: number, tolerance: number = this.ZeroTolerance): boolean {
-    if (this.IsEqualTo(value1, value2, tolerance)) { return false; }
+  public static IsLessThan(value1: number, value2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
+    if (Numbers.IsEqualTo(value1, value2, tolerance)) { return false; }
     return ((value1 - value2) < Math.abs(tolerance));
   }
 
@@ -155,7 +155,7 @@ export class Numbers {
   /// <param name="value2">The value2.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-  public static AreEqual(value1: number, value2: number, tolerance: number = this.ZeroTolerance): boolean {
+  public static AreEqual(value1: number, value2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
     if (value1 === Infinity && value2 === Infinity) { return true; }
     if (value1 === -Infinity && value2 === -Infinity) { return true; }
     return (Math.abs(value1 - value2) < Math.abs(tolerance));
@@ -168,8 +168,8 @@ export class Numbers {
   /// <param name="value2">The value2.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is greater than or equal to] [the specified value2]; otherwise, <c>false</c>.</returns>
-  public static IsGreaterThanOrEqualTo(value1: number, value2: number, tolerance: number = this.ZeroTolerance): boolean {
-    return (this.IsGreaterThan(value1, value2, tolerance) || this.IsEqualTo(value1, value2, tolerance));
+  public static IsGreaterThanOrEqualTo(value1: number, value2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
+    return (Numbers.IsGreaterThan(value1, value2, tolerance) || Numbers.IsEqualTo(value1, value2, tolerance));
   }
 
   /// <summary>
@@ -179,8 +179,8 @@ export class Numbers {
   /// <param name="value2">The value2.</param>
   /// <param name="tolerance">The tolerance.</param>
   /// <returns><c>true</c> if [is less than or equal to] [the specified value2]; otherwise, <c>false</c>.</returns>
-  public static IsLessThanOrEqualTo(value1: number, value2: number, tolerance: number = this.ZeroTolerance): boolean {
-    return (this.IsLessThan(value1, value2, tolerance) || this.IsEqualTo(value1, value2, tolerance));
+  public static IsLessThanOrEqualTo(value1: number, value2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
+    return (Numbers.IsLessThan(value1, value2, tolerance) || Numbers.IsEqualTo(value1, value2, tolerance));
   }
 
 
@@ -192,10 +192,10 @@ export class Numbers {
   /// <param name="valueBound2">Second value bound.</param>
   /// <param name="tolerance">The tolerance used in comparing against the bounds.</param>
   /// <returns><c>true</c> if [is within inclusive] [the specified value]; otherwise, <c>false</c>.</returns>
-  public static IsWithinInclusive(value: number, valueBound1: number, valueBound2: number, tolerance: number = this.ZeroTolerance): boolean {
+  public static IsWithinInclusive(value: number, valueBound1: number, valueBound2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
     const maxValue = Math.max(valueBound1, valueBound2);
     const minValue = Math.min(valueBound1, valueBound2);
-    return this.IsLessThanOrEqualTo(minValue, value, tolerance) && this.IsGreaterThanOrEqualTo(maxValue, value, tolerance);
+    return Numbers.IsLessThanOrEqualTo(minValue, value, tolerance) && Numbers.IsGreaterThanOrEqualTo(maxValue, value, tolerance);
   }
 
   /// <summary>
@@ -206,10 +206,10 @@ export class Numbers {
   /// <param name="valueBound2">Second value bound.</param>
   /// <param name="tolerance">The tolerance used in comparing against the bounds.</param>
   /// <returns><c>true</c> if [is within inclusive] [the specified value]; otherwise, <c>false</c>.</returns>
-  public static IsWithinExclusive(value: number, valueBound1: number, valueBound2: number, tolerance: number = this.ZeroTolerance): boolean {
+  public static IsWithinExclusive(value: number, valueBound1: number, valueBound2: number, tolerance: number = Numbers.ZeroTolerance): boolean {
     const maxValue = Math.max(valueBound1, valueBound2);
     const minValue = Math.min(valueBound1, valueBound2);
-    return this.IsLessThan(minValue, value, tolerance) && this.IsGreaterThan(maxValue, value, tolerance);
+    return Numbers.IsLessThan(minValue, value, tolerance) && Numbers.IsGreaterThan(maxValue, value, tolerance);
   }
 
 
@@ -231,7 +231,7 @@ export class Numbers {
   /// <param name="value">The value.</param>
   /// <returns><c>true</c> if the specified value is even; otherwise, <c>false</c>.</returns>
   public static IsEven(value: number): boolean {
-    return !this.IsOdd(value);
+    return !Numbers.IsOdd(value);
   }
 
   /// <summary>
@@ -258,14 +258,14 @@ export class Numbers {
     if (value === 3) {
       return true;
     }
-    if (this.IsEven(value)) {
+    if (Numbers.IsEven(value)) {
       /* For all > 2*/
       return false;
     }
     if (value == 5) {
       return true;
     }
-    if (this.LastDigit(value) === 5) {
+    if (Numbers.LastDigit(value) === 5) {
       /* For all > 5*/
       return false;
     }
@@ -293,7 +293,7 @@ export class Numbers {
     if (value === 1) {
       return false;
     }
-    return !this.IsPrime(value);
+    return !Numbers.IsPrime(value);
   }
 
   /**
@@ -332,7 +332,7 @@ export class Numbers {
 
     let wholeNumber = numberPortions[0];
     // Remove leading zeros
-    wholeNumber = this.trimStart(wholeNumber, '0');
+    wholeNumber = Numbers.trimStart(wholeNumber, '0');
 
     let wholeNumberLength = wholeNumber.length;
     wholeNumberLength = Math.max(0, wholeNumberLength + ePortion);
@@ -377,11 +377,11 @@ export class Numbers {
 
     let wholeNumber = numberPortions[0];
     // Remove leading zeros
-    wholeNumber = this.trimStart(wholeNumber, '0');
+    wholeNumber = Numbers.trimStart(wholeNumber, '0');
 
     if (numberPortions.length === 1 || decimalDigitsTolerance === 0) {   // Number has no decimal places.
       // Remove trailing zeros as they are all to the left of the decimal point
-      return this.trimEnd(wholeNumber, '0').length;
+      return Numbers.trimEnd(wholeNumber, '0').length;
     }
 
     let decimalNumber = numberPortions[1];
@@ -395,7 +395,7 @@ export class Numbers {
       // Number has no whole numbers
       // Remove leading zeros as they are all to the left of the sig figs
       // Keep trailing zeros since they count as sig figs
-      return this.trimStart(decimalNumber, '0').length;
+      return Numbers.trimStart(decimalNumber, '0').length;
     }
 
     // Number contains whole numbers as well as decimals.
@@ -462,7 +462,7 @@ export class Numbers {
   /// <returns>System.Double.</returns>
   /// <exception cref="DivideByZeroException"></exception>
   public static Pow(value: number, power: number): number {
-    if (value == 0 && this.IsNegativeSign(power)) {
+    if (value == 0 && Numbers.IsNegativeSign(power)) {
       throw new DivideByZeroException(`${value}^${power} results in a division by zero, which is undefined.`);
     }
     return Math.pow(value, power);
@@ -483,7 +483,7 @@ export class Numbers {
   /// <param name="value">The value.</param>
   /// <returns>System.Double.</returns>
   public static CubeRoot(value: number): number {
-    return this.Root(value, 3);
+    return Numbers.Root(value, 3);
   }
 
   /// <summary>
@@ -493,11 +493,11 @@ export class Numbers {
   /// <param name="root">The root.</param>
   /// <returns>System.Double.</returns>
   public static Root(value: number, root: number): number {
-    if (this.IsZeroSign(root)) {
+    if (Numbers.IsZeroSign(root)) {
       throw new DivideByZeroException("Root cannot be zero.");
     }
 
-    return this.IsOdd(root) ? Math.sign(value) * this.Pow(Math.abs(value), 1 / root) : this.Pow(value, 1 / root);
+    return Numbers.IsOdd(root) ? Math.sign(value) * Numbers.Pow(Math.abs(value), 1 / root) : Numbers.Pow(value, 1 / root);
   }
 
   // #region Other Modifications
@@ -609,7 +609,7 @@ export class Numbers {
     const exponent = Math.floor(Math.log10(Math.abs(value)));
     const nIntegers = exponent + 1
     const precision = 10 ** (nIntegers - significantFigures);
-    return this.RoundToPrecision(value, precision);
+    return Numbers.RoundToPrecision(value, precision);
   }
 
   /**
@@ -630,7 +630,7 @@ export class Numbers {
     decimalPlaces: number
   ): number {
     // RoundToPrecision does not work for this in this way!
-    return this.RoundToPrecision(value, decimalPlaces * 0.1);
+    return Numbers.RoundToPrecision(value, decimalPlaces * 0.1);
   }
 
   public static RoundToPrecision(

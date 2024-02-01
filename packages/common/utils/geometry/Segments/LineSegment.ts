@@ -154,7 +154,7 @@ export class LineSegment extends PathSegment<LinearCurve> implements IPathDivisi
   /// <param name="point"></param>
   /// <returns></returns>
   public IncludesCoordinate(point: CartesianCoordinate): boolean {
-    const tolerance = Generics.GetTolerance(point, undefined, this.Tolerance);
+    const tolerance = Generics.GetTolerance(point, this.Tolerance);
     if (!this._curve.IsIntersectingCoordinate(point)) {
       return false;
     }

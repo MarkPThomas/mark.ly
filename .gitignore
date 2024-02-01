@@ -28,3 +28,6 @@ packages/**/.env.test
 # Build files
 dist
 build
+
+# HTML API Documentation
+docs

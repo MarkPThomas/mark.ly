@@ -6,7 +6,7 @@ import { SegmentNode } from '../../../../../../../model/Geometry';
 // TODO: Remove later once Median Elevation fixed. ^^^^^^^
 
 import { IHeight } from '../../../../../../../model/GIS/Core/Route/Stats/HeightStats';
-import { LabelValue } from "../../../../LabelValueList";
+import { LabelValue } from "../../../../LabelValue";
 import { RangeStatsProps, RangeStats } from '../../RangeStats';
 
 
