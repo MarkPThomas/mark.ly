@@ -1,6 +1,7 @@
 import { CartesianCoordinate } from "../../Coordinates/CartesianCoordinate";
 import { Curve } from "../Curve";
 import { LinearCurve } from "../LinearCurve";
+import { CartesianParametricEquationXY } from "../Parametrics/Components/CartesianParametricEquationXY";
 import { CurveLimit } from "./CurveLimit";
 
 
@@ -219,7 +220,7 @@ class NonCartesianCurve extends Curve {
     throw new Error('Method not implemented.');
   }
 
-  protected createParametricEquation(): ParametricEquationXY {
+  protected createParametricEquation(): CartesianParametricEquationXY {
     throw new Error('Method not implemented.');
   }
 }
@@ -233,7 +234,7 @@ class NonPolarCurve extends Curve {
     throw new Error('Method not implemented.');
   }
 
-  protected createParametricEquation(): ParametricEquationXY {
+  protected createParametricEquation(): CartesianParametricEquationXY {
     throw new Error('Method not implemented.');
   }
 }
