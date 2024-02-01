@@ -181,7 +181,7 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
     return new CartesianOffset(
       new CartesianCoordinate(),
       this.ToCartesianCoordinate().subtractBy(offset.ToCartesianCoordinate()),
-      Generics.GetTolerance(this, offset));
+      Generics.GetToleranceBetween(this, offset));
   }
   /// <summary>
   /// Implements the - operator.
@@ -193,7 +193,7 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
     return new CartesianCoordinate(
       point.X - this.X,
       point.Y - this.Y,
-      Generics.GetTolerance(point, this));
+      Generics.GetToleranceBetween(point, this));
   }
   /// <summary>
   /// Implements the - operator.
@@ -205,7 +205,7 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
     return new CartesianCoordinate(
       this.X - point.X,
       this.Y - point.Y,
-      Generics.GetTolerance(this, point));
+      Generics.GetToleranceBetween(this, point));
   }
 
   /// <summary>
@@ -220,7 +220,7 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
       new CartesianCoordinate(
         this.X + offset.X,
         this.Y + offset.Y),
-      Generics.GetTolerance(this, offset));
+      Generics.GetToleranceBetween(this, offset));
   }
   /// <summary>
   /// Implements the + operator.
@@ -232,7 +232,7 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
     return new CartesianCoordinate(
       point.X + this.X,
       point.Y + this.Y,
-      Generics.GetTolerance(point, this));
+      Generics.GetToleranceBetween(point, this));
   }
 
 

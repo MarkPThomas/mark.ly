@@ -1,5 +1,4 @@
-import { TrigonometryLibrary } from './your-module'; // Replace with your actual module import
-
+import { TrigonometryLibrary } from './TrigonometryLibrary';
 describe('TrigonometryLibrary', () => {
   const Tolerance = 0.00001;
 

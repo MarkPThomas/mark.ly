@@ -29,6 +29,13 @@ export class Generics {
   /// <returns>System.Double.</returns>
   public static GetTolerance<T extends ITolerance, U extends ITolerance>(
     item1: T,
+    tolerance: number = Numbers.ZeroTolerance
+  ): number {
+    return Generics.GetToleranceBetween(item1, undefined, tolerance);
+  }
+
+  public static GetToleranceBetween<T extends ITolerance, U extends ITolerance>(
+    item1: T,
     item2?: U,
     tolerance: number = Numbers.ZeroTolerance
   ): number {

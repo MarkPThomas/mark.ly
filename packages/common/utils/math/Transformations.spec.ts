@@ -1,29 +1,27 @@
-import {
-  Transformations,
-  CartesianCoordinate,
-  AngularOffset,
-  CartesianOffset,
-} from './your-module'; // Update with your module import
+import { Transformations } from './Transformations';
+import { CartesianCoordinate } from './Coordinates/CartesianCoordinate';
+import { AngularOffset } from './Coordinates/AngularOffset';
 
-describe('Transformations Tests', () => {
-  const Tolerance = 0.00001;
+describe('##Transformations', () => {
+  const tolerance = 0.00001;
+  const decimalPlace = tolerance.toString().split('.')[1].length;
 
   test('Initialization with Coordinates Results in Object with Immutable Coordinates Properties List', () => {
     const localOriginInGlobal = new CartesianCoordinate(3, 2);
     const localAxisXPtInGlobal = new CartesianCoordinate(5, 4);
     const transformations = new Transformations(localOriginInGlobal, localAxisXPtInGlobal);
 
-    const angularOffset = new AngularOffset(Math.PI / 4);
-    const offset = localOriginInGlobal.offsetFrom(CartesianCoordinate.Origin());
+    const angularOffset = AngularOffset.fromDeltaRadians(Math.PI / 4);
+    const offset = localOriginInGlobal.OffsetFrom(CartesianCoordinate.Origin());
 
-    expect(transformations.localOrigin).toEqual(localOriginInGlobal);
-    expect(transformations.localAxisX).toEqual(localAxisXPtInGlobal);
-    expect(transformations.displacement).toEqual(offset);
-    expect(transformations.rotation.toAngle().degrees).toBeCloseTo(angularOffset.toAngle().degrees, 5);
+    expect(transformations.LocalOrigin).toEqual(localOriginInGlobal);
+    expect(transformations.LocalAxisX).toEqual(localAxisXPtInGlobal);
+    expect(transformations.Displacement).toEqual(offset);
+    expect(transformations.Rotation.ToAngle().Degrees).toBeCloseTo(angularOffset.ToAngle().Degrees, decimalPlace);
   });
 
-  describe('TransformToGlobal', () => {
-    const testCases = [
+  describe('##transformToGlobal', () => {
+    it.each([
       [4, 6, 3, 5, 1, 1, 2, 1], // Displaced Coord system in local Quad 1
       [4, 6, 5, 5, -1, 1, 0, 1], // Displaced Coord system in local Quad 2
       [4, 6, 5, 7, -1, -1, 0, -1], // Displaced Coord system in local Quad 3
@@ -51,57 +49,33 @@ describe('Transformations Tests', () => {
       [1, 1, -3.535534, -2.12132, -3, 2, -4, 3], // Translated & Rotated system with x-axis towards global Quad 2, local coord in Quad 3
       [-2, 2, -3.535534, -2.12132, -3, -2, -4, -3], // Translated & Rotated system with x-axis towards global Quad 3, local coord in Quad 3
       [-1, -1, -3.535534, -2.12132, 3, -2, 4, -3], // Translated & Rotated system with x-axis towards global Quad 4, local coord in Quad 3
-    ];
-
-    test.each(testCases)(
-      'TransformToGlobal Transforms Local Coordinate to Global - Test Case',
+    ])(`should transform local coordinates to global
+          Global (x: %f, y: %f) from Local (x: %f, y: %f)
+          Local Origin (x: %f, y: %f) in Global
+          Local X-Axis (x: %f, y: %f) in Global`,
       (
-        globalCoordinateX,
-        globalCoordinateY,
-        localCoordinateX,
-        localCoordinateY,
-        localOriginInGlobalX,
-        localOriginInGlobalY,
-        localAxisXPtInGlobalX,
-        localAxisXPtInGlobalY
+        globalCoordinateX, globalCoordinateY,
+        localCoordinateX, localCoordinateY,
+        localOriginInGlobalX, localOriginInGlobalY,
+        localAxisXPtInGlobalX, localAxisXPtInGlobalY
       ) => {
-        const localOriginInGlobal = new CartesianCoordinate(
-          localOriginInGlobalX,
-          localOriginInGlobalY,
-          Tolerance
-        );
-        const localAxisXPtInGlobal = new CartesianCoordinate(
-          localAxisXPtInGlobalX,
-          localAxisXPtInGlobalY,
-          Tolerance
-        );
-        const transformations = new Transformations(
-          localOriginInGlobal,
-          localAxisXPtInGlobal
-        );
+        const localOriginInGlobal = new CartesianCoordinate(localOriginInGlobalX, localOriginInGlobalY, tolerance);
+        const localAxisXPtInGlobal = new CartesianCoordinate(localAxisXPtInGlobalX, localAxisXPtInGlobalY, tolerance);
+        const transformations = new Transformations(localOriginInGlobal, localAxisXPtInGlobal);
 
-        const coordinateLocal = new CartesianCoordinate(
-          localCoordinateX,
-          localCoordinateY,
-          Tolerance
-        );
-        const coordinateGlobalExpected = new CartesianCoordinate(
-          globalCoordinateX,
-          globalCoordinateY,
-          Tolerance
-        );
+        const coordinateLocal = new CartesianCoordinate(localCoordinateX, localCoordinateY, tolerance);
+        const coordinateGlobalExpected = new CartesianCoordinate(globalCoordinateX, globalCoordinateY, tolerance);
 
-        const coordinateGlobal = transformations.transformToGlobal(
-          coordinateLocal
-        );
+        const coordinateGlobal = transformations.TransformToGlobal(coordinateLocal);
 
-        expect(coordinateGlobal).toEqual(coordinateGlobalExpected);
+        expect(coordinateGlobal.X).toBeCloseTo(coordinateGlobalExpected.X, decimalPlace);
+        expect(coordinateGlobal.Y).toBeCloseTo(coordinateGlobalExpected.Y, decimalPlace);
       }
     );
   });
 
-  describe('TransformToLocal', () => {
-    const testCases = [
+  describe('##transformToLocal', () => {
+    it.each([
       [4, 6, 3, 5, 1, 1, 2, 1], // Displaced Coord system in local Quad 1
       [4, 6, 5, 5, -1, 1, 0, 1], // Displaced Coord system in local Quad 2
       [4, 6, 5, 7, -1, -1, 0, -1], // Displaced Coord system in local Quad 3
@@ -129,51 +103,27 @@ describe('Transformations Tests', () => {
       [1, 1, -3.535534, -2.12132, -3, 2, -4, 3], // Translated & Rotated system with x-axis towards global Quad 2, local coord in Quad 3
       [-2, 2, -3.535534, -2.12132, -3, -2, -4, -3], // Translated & Rotated system with x-axis towards global Quad 3, local coord in Quad 3
       [-1, -1, -3.535534, -2.12132, 3, -2, 4, -3], // Translated & Rotated system with x-axis towards global Quad 4, local coord in Quad 3
-    ];
-
-    test.each(testCases)(
-      'TransformToLocal Transforms Global Coordinate to Local - Test Case',
+    ])(`should transform global coordinates to local
+          Global (x: %f, y: %f) to Local (x: %f, y: %f)
+          Local Origin (x: %f, y: %f) in Global
+          Local X-Axis (x: %f, y: %f) in Global`,
       (
-        globalCoordinateX,
-        globalCoordinateY,
-        localCoordinateX,
-        localCoordinateY,
-        localOriginInGlobalX,
-        localOriginInGlobalY,
-        localAxisXPtInGlobalX,
-        localAxisXPtInGlobalY
+        globalCoordinateX, globalCoordinateY,
+        localCoordinateX, localCoordinateY,
+        localOriginInGlobalX, localOriginInGlobalY,
+        localAxisXPtInGlobalX, localAxisXPtInGlobalY
       ) => {
-        const localOriginInGlobal = new CartesianCoordinate(
-          localOriginInGlobalX,
-          localOriginInGlobalY,
-          Tolerance
-        );
-        const localAxisXPtInGlobal = new CartesianCoordinate(
-          localAxisXPtInGlobalX,
-          localAxisXPtInGlobalY,
-          Tolerance
-        );
-        const transformations = new Transformations(
-          localOriginInGlobal,
-          localAxisXPtInGlobal
-        );
+        const localOriginInGlobal = new CartesianCoordinate(localOriginInGlobalX, localOriginInGlobalY,);
+        const localAxisXPtInGlobal = new CartesianCoordinate(localAxisXPtInGlobalX, localAxisXPtInGlobalY, tolerance);
+        const transformations = new Transformations(localOriginInGlobal, localAxisXPtInGlobal);
 
-        const coordinateGlobal = new CartesianCoordinate(
-          globalCoordinateX,
-          globalCoordinateY,
-          Tolerance
-        );
-        const coordinateLocalExpected = new CartesianCoordinate(
-          localCoordinateX,
-          localCoordinateY,
-          Tolerance
-        );
+        const coordinateGlobal = new CartesianCoordinate(globalCoordinateX, globalCoordinateY, tolerance);
+        const coordinateLocalExpected = new CartesianCoordinate(localCoordinateX, localCoordinateY, tolerance);
 
-        const coordinateLocal = transformations.transformToLocal(
-          coordinateGlobal
-        );
+        const coordinateLocal = transformations.TransformToLocal(coordinateGlobal);
 
-        expect(coordinateLocal).toEqual(coordinateLocalExpected);
+        expect(coordinateLocal.X).toBeCloseTo(coordinateLocalExpected.X, decimalPlace);
+        expect(coordinateLocal.Y).toBeCloseTo(coordinateLocalExpected.Y, decimalPlace);
       }
     );
   });

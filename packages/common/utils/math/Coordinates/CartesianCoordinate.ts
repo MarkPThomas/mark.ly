@@ -69,7 +69,11 @@ export class CartesianCoordinate implements ICartesianCoordinate {
    * @param {number} [tolerance=Numbers.ZeroTolerance] The tolerance to be used in relating coordinates.
    * @memberof CartesianCoordinate
    */
-  constructor(x: number = 0, y: number = 0, tolerance: number = Numbers.ZeroTolerance) {
+  constructor(
+    x: number = 0,
+    y: number = 0,
+    tolerance: number = Numbers.ZeroTolerance
+  ) {
     this._x = x;
     this._y = y;
     this.Tolerance = tolerance;
@@ -261,15 +265,15 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     return CartesianCoordinate.Skew(coordinate, lambdaX, lambdaY);
   }
 
-  // /// <summary>
-  // /// Skews the specified coordinate about the origin.
-  // /// </summary>
-  // /// <param name="coordinate">The coordinate.</param>
-  // /// <param name="lambda">The magnitude to skew along the x-axis and y-axis.</param>
-  // /// <returns>CartesianCoordinate.</returns>
-  // static Skew(coordinate: CartesianCoordinate, lambda: CartesianOffset): CartesianCoordinate {
-  //   return this.Skew(coordinate, lambda.X(), lambda.Y());
-  // }
+  /// <summary>
+  /// Skews the specified coordinate about the origin.
+  /// </summary>
+  /// <param name="coordinate">The coordinate.</param>
+  /// <param name="lambda">The magnitude to skew along the x-axis and y-axis.</param>
+  /// <returns>CartesianCoordinate.</returns>
+  static SkewByOffset(coordinate: CartesianCoordinate, lambda: CartesianOffset): CartesianCoordinate {
+    return CartesianCoordinate.Skew(coordinate, lambda.X, lambda.Y);
+  }
 
   /// <summary>
   /// Skews the specified coordinate about the origin.
@@ -336,7 +340,14 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     return new CartesianCoordinate(
       this.X - coord.X,
       this.Y - coord.Y,
-      Generics.GetTolerance(this, coord));
+      Generics.GetToleranceBetween(this, coord));
+  }
+
+  public subtractOffset(offset: CartesianOffset) {
+    return new CartesianCoordinate(
+      this.X - offset.X,
+      this.Y - offset.Y,
+      Generics.GetToleranceBetween(this, offset));
   }
 
 
@@ -351,14 +362,14 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     return new CartesianCoordinate(
       this.X + coord.X,
       this.Y + coord.Y,
-      Generics.GetTolerance(this, coord));
+      Generics.GetToleranceBetween(this, coord));
   }
 
   public addOffset(offset: CartesianOffset) {
     return new CartesianCoordinate(
       this.X + offset.X,
       this.Y + offset.Y,
-      Generics.GetTolerance(this, offset));
+      Generics.GetToleranceBetween(this, offset));
   }
 
   // public static Add(a: ICartesianCoordinate, b: ICartesianCoordinate): ICartesianCoordinate {
@@ -402,10 +413,17 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   // }
 
 
-  public equals(other: CartesianCoordinate): boolean {
+  public equals(other: CartesianCoordinate | ICoordinate): boolean {
     const tolerance = Math.min(this.Tolerance, other.Tolerance);
-    return Numbers.AreEqual(this._x, other.X, tolerance) &&
-      Numbers.AreEqual(this._y, other.Y, tolerance);
+
+    if (other as CartesianCoordinate) {
+      const otherCast = other as CartesianCoordinate;
+      return (
+        Numbers.AreEqual(this._x, otherCast.X, tolerance) &&
+        Numbers.AreEqual(this._y, otherCast.Y, tolerance));
+    }
+
+    return false;
   }
 
   // /// <summary>

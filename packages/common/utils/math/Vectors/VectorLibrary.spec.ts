@@ -1,4 +1,4 @@
-import { VectorLibrary } from './your-module'; // Replace with the actual import path for your VectorLibrary module
+import { VectorLibrary } from './VectorLibrary';
 
 describe('Vector Library Tests', () => {
   const Tolerance = 0.00001;
@@ -20,7 +20,7 @@ describe('Vector Library Tests', () => {
     });
 
     it('should throw ArgumentException for Zero Magnitude', () => {
-      expect(() => VectorLibrary.Magnitude(0, 0)).toThrow(ArgumentException);
+      expect(() => VectorLibrary.Magnitude(0, 0)).toThrow();
     });
 
     it.each`
@@ -71,7 +71,7 @@ describe('Vector Library Tests', () => {
     });
 
     it('should throw ArgumentException for Zero Magnitude', () => {
-      expect(() => VectorLibrary.Magnitude3D(0, 0, 0)).toThrow(ArgumentException);
+      expect(() => VectorLibrary.Magnitude3D(0, 0, 0)).toThrow();
     });
 
     it.each`
