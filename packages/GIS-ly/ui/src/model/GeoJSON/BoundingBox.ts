@@ -189,7 +189,7 @@ export class BoundingBox implements IBoundingBox {
    * Define a new instance of this class by passing in two coordinates in the same order they would appear
    * in the serialized {@link Position} form.
    *
-   * In order to create a box rom the point, a default (or specified) buffer in degrees is applied to all sides of the point.
+   * In order to create a box from the point, a default (or specified) buffer in degrees is applied to all sides of the point.
    *
    * @static
    * @param {number} longitude

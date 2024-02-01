@@ -27,7 +27,8 @@
     "test:u": "cross-env NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config jest.config.ts --runInBand --forceExit",
     "posttest": "echo posttest script is running... && npm-run-all clear test:results",
     "sync:watch": "browser-sync start -p localhost:3000 -w -f ./dist",
-    "clear": "rimraf dist"
+    "clear": "rimraf dist",
+    "docs": "typedoc ui/src/model/GeoJSON/*.ts --name GeoJSON"
   },
   "keywords": [],
   "author": "Mark P Thomas <markporterthomas@gmail.com> (https://github.com/MarkPThomas)",
@@ -81,6 +82,7 @@
     "ts-loader": "^9.3.1",
     "ts-node": "^10.8.2",
     "ts-node-dev": "^2.0.0",
+    "typedoc": "^0.25.7",
     "typescript": "^4.7.4",
     "typescript-plugin-css-modules": "^5.0.2",
     "webpack": "^5.73.0",
