@@ -112,7 +112,7 @@ export class Transformations {
     this.LocalOrigin = localOriginInGlobal;
     this.LocalAxisX = localAxisXPtInGlobal;
 
-    this.Displacement = localOriginInGlobal.OffsetFrom(CartesianCoordinate.Origin());
+    this.Displacement = localOriginInGlobal.offsetFrom(CartesianCoordinate.atOrigin());
 
     if (localAxisXPtInGlobal.Y === localOriginInGlobal.Y) {
       this.Rotation = AngularOffset.fromNone();
@@ -151,6 +151,6 @@ export class Transformations {
       -1 * this.Rotation.ToAngle().Radians
     );
 
-    return rotatedCoordinate.subtractBy(this.LocalOrigin);
+    return rotatedCoordinate.subtractBy(this.LocalOrigin).toCartesianCoordinate();
   }
 }

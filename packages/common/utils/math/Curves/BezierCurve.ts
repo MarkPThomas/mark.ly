@@ -1,464 +1,446 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 06-07-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-22-2020
-// // ***********************************************************************
-// // <copyright file="BezierCurve.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Coordinates;
-// using MPT.Math.Curves.Parametrics;
-// using MPT.Math.Curves.Parametrics.BezierCurveComponents;
-// using MPT.Math.Curves.Parametrics.Components;
-// using MPT.Math.Curves.Tools;
-// using MPT.Math.Geometry;
-// using MPT.Math.Vectors;
-// using System;
-
-// namespace MPT.Math.Curves
-// {
-//     /// <summary>
-//     /// Class BezierCurve.
-//     /// Implements the <see cref="MPT.Math.Curves.Curve" />
-//     /// </summary>
-//     /// <seealso cref="MPT.Math.Curves.Curve" />
-//     public class BezierCurve : Curve,
-//         ICurveLimits,
-//         ICurvePositionCartesian
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// The maximum number of control points.
-//         /// </summary>
-//         protected const int _maxNumberOfControlPoints = 3;
-
-//         /// <summary>
-//         /// Gets the number of control points.
-//         /// </summary>
-//         /// <value>The number of control points.</value>
-//         public int NumberOfControlPoints { get; } = _maxNumberOfControlPoints;
+import { Angle } from "../Coordinates/Angle";
+import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
+import { Generics } from "../Generics";
+import { GeometryLibrary } from "../Geometry/GeometryLibrary";
+import { Numbers } from "../Numbers";
+import { Vector } from "../Vectors/Vector";
+import { Curve } from "./Curve";
+import { LinearCurve } from "./LinearCurve";
+import { BezierCurveParametric1stOrder } from "./Parametrics/BezierCurveParametric1stOrder";
+import { BezierCurveParametric2ndOrder } from "./Parametrics/BezierCurveParametric2ndOrder";
+import { BezierCurveParametric3rdOrder } from "./Parametrics/BezierCurveParametric3rdOrder";
+import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
+import { CurveHandle } from "./tools/CurveHandle";
 
 
-//         /// <summary>
-//         /// Gets the handle at starting point, i.
-//         /// </summary>
-//         /// <value>The handle i.</value>
-//         public CurveHandle HandleI { get; }
-//         /// <summary>
-//         /// Gets the handle at ending point, j.
-//         /// </summary>
-//         /// <value>The handle j.</value>
-//         public CurveHandle HandleJ { get; }
-//         #endregion
+/**
+ * Class BezierCurve.
+ * Implements the {@link Curve}
+ */
+export class BezierCurve extends Curve {
+  /**
+   * The maximum number of control points.
+   */
+  protected static readonly _maxNumberOfControlPoints: number = 3;
 
-//         #region Initialization
+  /**
+   * Gets the number of control points.
+   */
+  public readonly NumberOfControlPoints: number = BezierCurve._maxNumberOfControlPoints;
 
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierCurve"/> class.
-//         /// </summary>
-//         /// <param name="handleStart">The handle start.</param>
-//         /// <param name="handleEnd">The handle end.</param>
-//         /// <param name="numberOfControlPoints">The number of control points.</param>
-//         /// <param name="tolerance">Tolerance to apply to the curve.</param>
-//         public BezierCurve(CurveHandle handleStart, CurveHandle handleEnd,
-//             int numberOfControlPoints = _maxNumberOfControlPoints,
-//             double tolerance = DEFAULT_TOLERANCE) : base(tolerance)
-//         {
-//             NumberOfControlPoints = getNumberOfControlPoints(numberOfControlPoints);
+  /**
+   * Gets the handle at starting point, i.
+   */
+  public readonly HandleI: CurveHandle;
 
-//             HandleI = handleStart;
-//             HandleJ = handleEnd;
-//         }
+  /**
+   * Gets the handle at ending point, j.
+   */
+  public readonly HandleJ: CurveHandle;
 
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierCurve"/> class.
-//         /// </summary>
-//         /// <param name="pointI">The point i.</param>
-//         /// <param name="pointJ">The point j.</param>
-//         /// <param name="numberOfControlPoints">The number of control points.</param>
-//         /// <param name="tolerance">Tolerance to apply to the curve.</param>
-//         public BezierCurve(
-//             CartesianCoordinate pointI, CartesianCoordinate pointJ,
-//             int numberOfControlPoints = _maxNumberOfControlPoints,
-//             double tolerance = DEFAULT_TOLERANCE) : base(tolerance)
-//         {
-//             NumberOfControlPoints = getNumberOfControlPoints(numberOfControlPoints);
+  /**
+   * Initializes a new instance of the {@link BezierCurve} class.
+   * @param handleStart The handle start.
+   * @param handleEnd The handle end.
+   * @param numberOfControlPoints The number of control points.
+   * @param tolerance Tolerance to apply to the curve.
+   */
+  constructor(
+    length?: number,
+    pointI?: CartesianCoordinate,
+    pointJ?: CartesianCoordinate,
+    handleStart?: CurveHandle,
+    handleEnd?: CurveHandle,
+    numberOfControlPoints: number = BezierCurve._maxNumberOfControlPoints,
+    tolerance: number = BezierCurve.DEFAULT_TOLERANCE
+  ) {
+    super(tolerance);
+    this.NumberOfControlPoints = this.getNumberOfControlPoints(numberOfControlPoints);
 
-//             double handleLength = getHandleLength(pointI, pointJ);
-//             HandleI = new CurveHandle(pointI, handleLength);
-//             HandleJ = getCurveHandleJ(pointJ, handleLength);
-//         }
+    let handleI = handleStart;
+    let handleJ = handleEnd;
 
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierCurve"/> class.
-//         /// </summary>
-//         /// <param name="length">The length.</param>
-//         /// <param name="numberOfControlPoints">The number of control points.</param>
-//         /// <param name="tolerance">Tolerance to apply to the curve.</param>
-//         public BezierCurve(
-//             double length,
-//             int numberOfControlPoints = _maxNumberOfControlPoints,
-//             double tolerance = DEFAULT_TOLERANCE) : base(tolerance)
-//         {
-//             NumberOfControlPoints = getNumberOfControlPoints(numberOfControlPoints);
+    if (length !== undefined) {
+      const pointI = CartesianCoordinate.atOrigin();
+      const pointJ = new CartesianCoordinate(length, 0);
+      const handleLength = this.getHandleLength(pointI, pointJ);
 
-//             CartesianCoordinate pointI = CartesianCoordinate.Origin();
-//             CartesianCoordinate pointJ = new CartesianCoordinate(length, 0);
-//             double handleLength = getHandleLength(pointI, pointJ);
-//             HandleI = new CurveHandle(pointI, handleLength);
-//             HandleJ = getCurveHandleJ(pointJ, handleLength);
-//         }
+      handleI = new CurveHandle(pointI, handleLength);
+      handleJ = this.getCurveHandleJ(pointJ, handleLength);
+    } else if (pointI && pointJ) {
+      const handleLength = this.getHandleLength(pointI, pointJ);
 
-//         /// <summary>
-//         /// Gets the bezier curve handle j, with appropriate slope defaults.
-//         /// </summary>
-//         /// <param name="pointJ">The point j.</param>
-//         /// <param name="handleLength">Length of the handle.</param>
-//         /// <returns>CurveHandle.</returns>
-//         private CurveHandle getCurveHandleJ(CartesianCoordinate pointJ, double handleLength)
-//         {
-//             return new CurveHandle(pointJ, handleLength, new Angle(-1 * Numbers.Pi));
-//         }
+      handleI = new CurveHandle(pointI, handleLength);
+      handleJ = this.getCurveHandleJ(pointJ, handleLength);
+    }
 
-//         /// <summary>
-//         /// Gets the length of the handle for handles at the control points.
-//         /// </summary>
-//         /// <param name="pointI">The point i.</param>
-//         /// <param name="pointJ">The point j.</param>
-//         /// <returns>System.Double.</returns>
-//         private double getHandleLength(CartesianCoordinate pointI, CartesianCoordinate pointJ)
-//         {
-//             return 0.1 * pointJ.OffsetFrom(pointI).Length();
-//         }
+    if (handleI && handleJ) {
+      this.HandleI = handleI;
+      this.HandleJ = handleJ;
+    }
+  }
 
-//         /// <summary>
-//         /// Gets the number of control points.
-//         /// </summary>
-//         /// <param name="numberOfControlPoints">The number of control points.</param>
-//         /// <returns>System.Int32.</returns>
-//         private int getNumberOfControlPoints(int numberOfControlPoints)
-//         {
-//             return Generics.Min(Generics.Max(0, numberOfControlPoints), _maxNumberOfControlPoints);
-//         }
+  /**
+   * Initializes a new instance of the {@link BezierCurve} class.
+   * @param handleStart The handle start.
+   * @param handleEnd The handle end.
+   * @param numberOfControlPoints The number of control points.
+   * @param tolerance Tolerance to apply to the curve.
+   */
+  static fromHandles(
+    handleStart: CurveHandle,
+    handleEnd: CurveHandle,
+    numberOfControlPoints: number = BezierCurve._maxNumberOfControlPoints,
+    tolerance: number = BezierCurve.DEFAULT_TOLERANCE
+  ): BezierCurve {
+    return new BezierCurve(undefined, undefined, undefined, handleStart, handleEnd, numberOfControlPoints, tolerance);
+  }
 
-//         /// <summary>
-//         /// Creates the parametric vector.
-//         /// </summary>
-//         /// <returns>VectorParametric.</returns>
-//         protected override CartesianParametricEquationXY createParametricEquation()
-//         {
-//             switch (NumberOfControlPoints)
-//             {
-//                 case 1:
-//                     return new BezierCurveParametric1stOrder(this);
-//                 case 2:
-//                     return new BezierCurveParametric2ndOrder(this);
-//                 case 3:
-//                     return new BezierCurveParametric3rdOrder(this);
-//                 default:
-//                     return new BezierCurveParametric3rdOrder(this);
-//             }
-//         }
-//         #endregion
+  /**
+   * Initializes a new instance of the {@link BezierCurve} class.
+   * @param pointI The point i.
+   * @param pointJ The point j.
+   * @param numberOfControlPoints The number of control points.
+   * @param tolerance Tolerance to apply to the curve.
+   */
+  static fromPts(
+    pointI: CartesianCoordinate,
+    pointJ: CartesianCoordinate,
+    numberOfControlPoints: number = BezierCurve._maxNumberOfControlPoints,
+    tolerance: number = BezierCurve.DEFAULT_TOLERANCE
+  ): BezierCurve {
+    return new BezierCurve(undefined, pointI, pointJ, undefined, undefined, numberOfControlPoints, tolerance);
+  }
 
-//         #region Methods: Properties
-//         /// <summary>
-//         /// Slope of the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>System.Double.</returns>
-//         public virtual double SlopeByPosition(double relativePosition)
-//         {
-//             double xPrime = xPrimeByParameter(relativePosition);
-//             double yPrime = yPrimeByParameter(relativePosition);
+  /**
+   * Initializes a new instance of the {@link BezierCurve} class.
+   * @param length The length.
+   * @param numberOfControlPoints The number of control points.
+   * @param tolerance Tolerance to apply to the curve.
+   */
+  static fromLength(
+    length: number,
+    numberOfControlPoints: number = BezierCurve._maxNumberOfControlPoints,
+    tolerance: number = Curve.DEFAULT_TOLERANCE
+  ): BezierCurve {
+    return new BezierCurve(length, undefined, undefined, undefined, undefined, numberOfControlPoints, tolerance);
+  }
 
-//             return GeometryLibrary.SlopeParametric(xPrime, yPrime);
-//         }
+  /**
+   * Gets the bezier curve handle j, with appropriate slope defaults.
+   * @param pointJ The point j.
+   * @param handleLength Length of the handle.
+   * @returns {@link CurveHandle}.
+   * @private
+   */
+  private getCurveHandleJ(pointJ: CartesianCoordinate, handleLength: number): CurveHandle {
+    return new CurveHandle(pointJ, handleLength, new Angle(-1 * Numbers.Pi));
+  }
 
-//         /// <summary>
-//         /// Curvature of the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>System.Double.</returns>
-//         public virtual double CurvatureByPosition(double relativePosition)
-//         {
-//             double xPrime = xPrimeByParameter(relativePosition);
-//             double yPrime = yPrimeByParameter(relativePosition);
-//             double xPrimeDouble = xPrimeDoubleByParameter(relativePosition);
-//             double yPrimeDouble = yPrimeDoubleByParameter(relativePosition);
+  /**
+   * Gets the length of the handle for handles at the control points.
+   * @param pointI The point i.
+   * @param pointJ The point j.
+   * @returns Length of the handle.
+   * @private
+   */
+  private getHandleLength(pointI: CartesianCoordinate, pointJ: CartesianCoordinate): number {
+    return 0.1 * pointJ.offsetFrom(pointI).length();
+  }
 
-//             return GeometryLibrary.CurvatureParametric(xPrime, yPrime, xPrimeDouble, yPrimeDouble);
-//         }
+  /**
+   * Gets the number of control points.
+   * @param numberOfControlPoints The number of control points.
+   * @returns The adjusted number of control points.
+   * @private
+   */
+  private getNumberOfControlPoints(numberOfControlPoints: number): number {
+    return Math.min(Math.max(0, numberOfControlPoints), BezierCurve._maxNumberOfControlPoints);
+  }
 
-//         /// <summary>
-//         /// Vector that is tangential to the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>Vector.</returns>
-//         public virtual Vector TangentVectorByPosition(double relativePosition)
-//         {
-//             // TODO: Compare methods of components vs. parametric vector for TangentVectorByAngle? Commented method might be slower?
-//             //return vectorParametric.UnitTangentVectorAt(angleRadians).ToVectorAt(angleRadians);
-//             double xPrime = xPrimeByParameter(relativePosition);
-//             double yPrime = yPrimeByParameter(relativePosition);
-//             return Vector.UnitTangentVector(xPrime, yPrime, Tolerance);
-//         }
+  /**
+   * Creates the parametric vector.
+   * @returns {@link CartesianParametricEquationXY}.
+   * @protected
+   * @override
+   */
+  protected override createParametricEquation(): CartesianParametricEquationXY {
+    switch (this.NumberOfControlPoints) {
+      case 1:
+        return new BezierCurveParametric1stOrder(this);
+      case 2:
+        return new BezierCurveParametric2ndOrder(this);
+      case 3:
+        return new BezierCurveParametric3rdOrder(this);
+      default:
+        return new BezierCurveParametric3rdOrder(this);
+    }
+  }
 
-//         /// <summary>
-//         /// Vector that is tangential to the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>Vector.</returns>
-//         public virtual Vector NormalVectorByPosition(double relativePosition)
-//         {
-//             // TODO: Compare methods of components vs. parametric vector for NormalVectorByAngle? Commented method might be slower?
-//             //return vectorParametric.UnitNormalVectorAt(angleRadians).ToVectorAt(angleRadians);
-//             double xPrime = xPrimeByParameter(relativePosition);
-//             double yPrime = yPrimeByParameter(relativePosition);
-//             return Vector.UnitNormalVector(xPrime, yPrime, Tolerance);
-//         }
-//         #endregion
+  /**
+   * Slope of the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
+   * @param relativePosition The relative position, s. Relative position must be between 0 and 1.
+   * @returns Slope of the curve.
+   */
+  public SlopeByPosition(relativePosition: number): number {
+    const xPrime = this.xPrimeByParameter(relativePosition);
+    const yPrime = this.yPrimeByParameter(relativePosition);
 
-//         #region ICurveLimits
+    return GeometryLibrary.SlopeParametric(xPrime, yPrime);
+  }
 
-//         /// <summary>
-//         /// Length of the curve between the limits.
-//         /// </summary>
-//         /// <returns>System.Double.</returns>
-//         public double Length()
-//         {
-//             return LengthBetween(0, 1);
-//         }
+  /**
+   * Curvature of the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
+   * @param relativePosition The relative position, s. Relative position must be between 0 and 1.
+   * @returns Curvature of the curve.
+   */
+  public CurvatureByPosition(relativePosition: number): number {
+    const xPrime = this.xPrimeByParameter(relativePosition);
+    const yPrime = this.yPrimeByParameter(relativePosition);
+    const xPrimeDouble = this.xPrimeDoubleByParameter(relativePosition);
+    const yPrimeDouble = this.yPrimeDoubleByParameter(relativePosition);
 
-//         /// <summary>
-//         /// Length of the curve between two points.
-//         /// </summary>
-//         /// <param name="relativePositionStart">Relative position along the path at which the length measurement is started. Relative position must be between 0 and 1.</param>
-//         /// <param name="relativePositionEnd">Relative position along the path at which the length measurement is ended. Relative position must be between 0 and 1.</param>
-//         /// <returns>System.Double.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public double LengthBetween(double relativePositionStart, double relativePositionEnd)
-//         {
-//             throw new NotImplementedException();
-//         }
+    return GeometryLibrary.CurvatureParametric(xPrime, yPrime, xPrimeDouble, yPrimeDouble);
+  }
 
-//         /// <summary>
-//         /// The length of the chord connecting the start and end limits.
-//         /// </summary>
-//         /// <returns>System.Double.</returns>
-//         public double ChordLength()
-//         {
-//             return LinearCurve.Length(Range.Start.Limit, Range.End.Limit);
-//         }
-//         /// <summary>
-//         /// The length of the chord connecting the start and end limits.
-//         /// </summary>
-//         /// <param name="relativePositionStart">Relative position along the path at which the length measurement is started. Relative position must be between 0 and 1.</param>
-//         /// <param name="relativePositionEnd">Relative position along the path at which the length measurement is ended. Relative position must be between 0 and 1.</param>
-//         /// <returns>System.Double.</returns>
-//         public double ChordLengthBetween(double relativePositionStart, double relativePositionEnd)
-//         {
-//             return LinearCurve.Length(CoordinateCartesian(relativePositionStart), CoordinateCartesian(relativePositionEnd));
-//         }
+  /**
+   * Vector that is tangential to the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
+   * @param relativePosition The relative position, s. Relative position must be between 0 and 1.
+   * @returns {@link Vector}.
+   */
+  public TangentVectorByPosition(relativePosition: number): Vector {
+    const xPrime = this.xPrimeByParameter(relativePosition);
+    const yPrime = this.yPrimeByParameter(relativePosition);
+    return Vector.UnitTangentVectorByComponents(xPrime, yPrime, this.Tolerance);
+  }
 
-//         /// <summary>
-//         /// The chord connecting the start and end limits.
-//         /// </summary>
-//         /// <returns>LinearCurve.</returns>
-//         public LinearCurve Chord()
-//         {
-//             return new LinearCurve(Range.Start.Limit, Range.End.Limit);
-//         }
+  /**
+   * Vector that is normal to the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
+   * @param relativePosition The relative position, s. Relative position must be between 0 and 1.
+   * @returns {@link Vector}.
+   */
+  public NormalVectorByPosition(relativePosition: number): Vector {
+    const xPrime = this.xPrimeByParameter(relativePosition);
+    const yPrime = this.yPrimeByParameter(relativePosition);
+    return Vector.UnitTangentVectorByComponents(xPrime, yPrime, this.Tolerance);
+  }
 
-//         /// <summary>
-//         /// The chord connecting the start and end limits.
-//         /// </summary>
-//         /// <param name="relativePositionStart">Relative position along the path at which the length measurement is started. Relative position must be between 0 and 1.</param>
-//         /// <param name="relativePositionEnd">Relative position along the path at which the length measurement is ended. Relative position must be between 0 and 1.</param>
-//         /// <returns>LinearCurve.</returns>
-//         public LinearCurve ChordBetween(double relativePositionStart, double relativePositionEnd)
-//         {
-//             return new LinearCurve(CoordinateCartesian(relativePositionStart), CoordinateCartesian(relativePositionEnd));
-//         }
+  /**
+   * Length of the curve between the limits.
+   * @returns {number} Length of the curve.
+   */
+  public Length(): number {
+    return this.LengthBetween(0, 1);
+  }
 
-//         /// <summary>
-//         /// Vector that is tangential to the curve at the specified position.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>Vector.</returns>
-//         public Vector TangentVector(double relativePosition)
-//         {
-//             return TangentVectorByPosition(relativePosition);
-//         }
+  /**
+  * Length of the curve between two points.
+  * @param {number} relativePositionStart - Relative position along the path where the length measurement starts.
+  * @param {number} relativePositionEnd - Relative position along the path where the length measurement ends.
+  * @returns {number} Length of the curve between two points.
+  * @throws {Error} NotImplementedException.
+  */
+  public LengthBetween(relativePositionStart: number, relativePositionEnd: number): number {
+    throw new Error('NotImplementedException');
+  }
 
-//         /// <summary>
-//         /// Vector that is tangential to the curve at the specified position.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>Vector.</returns>
-//         public Vector NormalVector(double relativePosition)
-//         {
-//             return NormalVectorByPosition(relativePosition);
-//         }
+  /**
+  * The length of the chord connecting the start and end limits.
+  * @returns {number} Chord length.
+  */
+  public ChordLength(): number {
+    return LinearCurve.LengthBetweenPts(this.Range.start.Limit, this.Range.end.Limit);
+  }
 
-//         /// <summary>
-//         /// Coordinate of the curve at the specified position.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate CoordinateCartesian(double relativePosition)
-//         {
-//             return CoordinateByPosition(relativePosition);
-//         }
+  /**
+  * The length of the chord connecting the start and end limits.
+  * @param {number} relativePositionStart - Relative position along the path where the length measurement starts.
+  * @param {number} relativePositionEnd - Relative position along the path where the length measurement ends.
+  * @returns {number} Chord length between two points.
+  */
+  public ChordLengthBetween(relativePositionStart: number, relativePositionEnd: number): number {
+    return LinearCurve.LengthBetweenPts(
+      this.CoordinateCartesian(relativePositionStart),
+      this.CoordinateCartesian(relativePositionEnd)
+    );
+  }
 
-//         /// <summary>
-//         /// Coordinate of the curve at the specified position.
-//         /// If the shape is a closed shape, <paramref name="relativePosition" /> = {any integer} where <paramref name="relativePosition" /> = 0.
-//         /// </summary>
-//         /// <param name="relativePosition">Relative position along the path at which the coordinate is desired.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public PolarCoordinate CoordinatePolar(double relativePosition)
-//         {
-//             return CoordinateCartesian(relativePosition);
-//         }
-//         #endregion
+  /**
+  * The chord connecting the start and end limits.
+  * @returns {LinearCurve} Chord curve.
+  */
+  public Chord(): LinearCurve {
+    return new LinearCurve(this.Range.start.Limit, this.Range.end.Limit);
+  }
 
-//         #region ICurvePositionCartesian
-//         /// <summary>
-//         /// X-coordinate on the line segment that corresponds to the y-coordinate given.
-//         /// </summary>
-//         /// <param name="y">Y-coordinate for which an x-coordinate is desired.</param>
-//         /// <returns>System.Double.</returns>
-//         public double XatY(double y)
-//         {
-//             return XsAtY(y)[0];
-//         }
+  /**
+  * The chord connecting the start and end limits.
+  * @param {number} relativePositionStart - Relative position along the path where the chord starts.
+  * @param {number} relativePositionEnd - Relative position along the path where the chord ends.
+  * @returns {LinearCurve} Chord curve between two points.
+  */
+  public ChordBetween(relativePositionStart: number, relativePositionEnd: number): LinearCurve {
+    return new LinearCurve(this.CoordinateCartesian(relativePositionStart), this.CoordinateCartesian(relativePositionEnd));
+  }
 
-//         /// <summary>
-//         /// Y-coordinate on the line segment that corresponds to the x-coordinate given.
-//         /// </summary>
-//         /// <param name="x">X-coordinate for which a y-coordinate is desired.</param>
-//         /// <returns>System.Double.</returns>
-//         public double YatX(double x)
-//         {
-//             return YsAtX(x)[0];
-//         }
+  /**
+  * Vector that is tangential to the curve at the specified position.
+  * @param {number} relativePosition - Relative position along the path.
+  * @returns {Vector} Tangent vector.
+  */
+  public TangentVector(relativePosition: number): Vector {
+    return this.TangentVectorByPosition(relativePosition);
+  }
 
-//         /// <summary>
-//         /// X-coordinate on the line segment that corresponds to the y-coordinate given.
-//         /// </summary>
-//         /// <param name="y">Y-coordinate for which an x-coordinate is desired.</param>
-//         /// <returns>System.Double.</returns>
-//         public double[] XsAtY(double y)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+  * Vector that is normal to the curve at the specified position.
+  * @param {number} relativePosition - Relative position along the path.
+  * @returns {Vector} Normal vector.
+  */
+  public NormalVector(relativePosition: number): Vector {
+    return this.NormalVectorByPosition(relativePosition);
+  }
 
-//         /// <summary>
-//         /// Y-coordinate on the line segment that corresponds to the x-coordinate given.
-//         /// </summary>
-//         /// <param name="x">X-coordinate for which a y-coordinate is desired.</param>
-//         /// <returns>System.Double.</returns>
-//         public double[] YsAtX(double x)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+  * Coordinate of the curve at the specified position.
+  * @param {number} relativePosition - Relative position along the path.
+  * @returns {CartesianCoordinate} Cartesian coordinate.
+  */
+  public CoordinateCartesian(relativePosition: number): CartesianCoordinate {
+    return this.CoordinateByPosition(relativePosition);
+  }
 
-//         /// <summary>
-//         /// Provided point lies on the curve.
-//         /// </summary>
-//         /// <param name="coordinate">The coordinate.</param>
-//         /// <returns><c>true</c> if [is intersecting coordinate] [the specified coordinate]; otherwise, <c>false</c>.</returns>
-//         public bool IsIntersectingCoordinate(CartesianCoordinate coordinate)
-//         {
-//             double tolerance = Generics.GetTolerance(coordinate, Tolerance);
-//             double[] yIntersections = YsAtX(coordinate.X);
-//             return Array.Exists(yIntersections, element => element == coordinate.Y);
-//         }
-//         #endregion
+  /**
+  * Coordinate of the curve at the specified position.
+  * If the shape is a closed shape, `relativePosition` = {any integer} where `relativePosition` = 0.
+  * @param {number} relativePosition - Relative position along the path.
+  * @returns {PolarCoordinate} Polar coordinate.
+  * @throws {Error} NotImplementedException.
+  */
+  public CoordinatePolar(relativePosition: number): PolarCoordinate {
+    throw new Error('NotImplementedException');
+  }
 
-//         #region Methods: Curve Position
-//         /// <summary>
-//         /// The cartesian coordinate on the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
-//         /// </summary>
-//         /// <param name="relativePosition">The relative position, s. Relative position must be between 0 and 1.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate CoordinateByPosition(double relativePosition)
-//         {
-//             return new CartesianCoordinate(xByParameter(relativePosition), yByParameter(relativePosition));
-//         }
-//         #endregion
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// Returns a <see cref="System.String" /> that represents this instance.
-//         /// </summary>
-//         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-//         public override string ToString()
-//         {
-//             return base.ToString() + " - I: " + HandleI + " - J: " + HandleJ + ", N: " + NumberOfControlPoints;
-//         }
+  /**
+   * X-coordinate on the line segment that corresponds to the y-coordinate given.
+   * @param y Y-coordinate for which an x-coordinate is desired.
+   * @returns X-coordinate.
+   */
+  public XatY(y: number): number {
+    const coordinates = this.XsAtY(y);
+    if (coordinates.length === 0) {
+      return Number.POSITIVE_INFINITY;
+    }
+    return coordinates[0];
+  }
 
-//         /// <summary>
-//         /// bs the 0.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate B_0()
-//         {
-//             return HandleI.ControlPoint;
-//         }
-//         /// <summary>
-//         /// bs the 1.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate B_1()
-//         {
-//             return HandleI.GetHandleTip();
-//         }
-//         /// <summary>
-//         /// bs the 2.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate B_2()
-//         {
-//             return HandleJ.GetHandleTip();
-//         }
-//         /// <summary>
-//         /// bs the 3.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate B_3()
-//         {
-//             return HandleJ.ControlPoint;
-//         }
-//         #endregion
+  /**
+   * Y-coordinate on the line segment that corresponds to the x-coordinate given.
+   * @param x X-coordinate for which a y-coordinate is desired.
+   * @returns Y-coordinate.
+   */
+  public YatX(x: number): number {
+    const coordinates = this.YsAtX(x);
+    if (coordinates.length === 0) {
+      return Number.POSITIVE_INFINITY;
+    }
+    return coordinates[0];
+  }
 
-//         #region ICloneable
-//         /// <summary>
-//         /// Creates a new object that is a copy of the current instance.
-//         /// </summary>
-//         /// <returns>A new object that is a copy of this instance.</returns>
-//         public override object Clone()
-//         {
-//             return CloneCurve();
-//         }
+  /**
+   * X-coordinate on the line segment that corresponds to the y-coordinate given.
+   * @param {number} y - Y-coordinate for which an x-coordinate is desired.
+   * @returns {number[]} Array of x-coordinates.
+   * @throws {Error} NotImplementedException.
+   */
+  public XsAtY(y: number): number[] {
+    throw new Error('NotImplementedException');
+  }
 
-//         /// <summary>
-//         /// Clones the curve.
-//         /// </summary>
-//         /// <returns>LinearCurve.</returns>
-//         public BezierCurve CloneCurve()
-//         {
-//             BezierCurve curve = new BezierCurve(HandleI.CloneCurve(), HandleJ.CloneCurve(), NumberOfControlPoints);
-//             curve._range = Range.CloneRange();
-//             return curve;
-//         }
-//         #endregion
-//     }
-// }
+  /**
+  * Y-coordinate on the line segment that corresponds to the x-coordinate given.
+  * @param {number} x - X-coordinate for which a y-coordinate is desired.
+  * @returns {number[]} Array of y-coordinates.
+  * @throws {Error} NotImplementedException.
+  */
+  public YsAtX(x: number): number[] {
+    throw new Error('NotImplementedException');
+  }
+
+  /**
+   * Determines whether the specified coordinate is intersecting.
+   * @param coordinate The coordinate.
+   * @returns True if intersecting, false otherwise.
+   */
+  public IsIntersectingCoordinate(coordinate: CartesianCoordinate): boolean {
+    const tolerance = Generics.GetTolerance(coordinate, this.Tolerance);
+    const yIntersections = this.YsAtX(coordinate.X);
+    return yIntersections.some((element) => element === coordinate.Y);
+  }
+
+  /**
+   * The cartesian coordinate on the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
+   * @param {number} relativePosition - The relative position, s. Relative position must be between 0 and 1.
+   * @returns {CartesianCoordinate} Cartesian coordinate.
+   */
+  public CoordinateByPosition(relativePosition: number): CartesianCoordinate {
+    return new CartesianCoordinate(this.xByParameter(relativePosition), this.yByParameter(relativePosition));
+  }
+
+  /**
+  * Returns a string representation of this instance.
+  * @returns {string} A string representation of this instance.
+  */
+  public toString(): string {
+    return `${BezierCurve.name} - `
+      + `I: ${this.HandleI}, J: ${this.HandleJ}, N: ${this.NumberOfControlPoints}`;
+  }
+
+  /**
+  * Gets the b0 coordinate.
+  * @returns {CartesianCoordinate} B0 coordinate.
+  */
+  public B_0(): CartesianCoordinate {
+    return this.HandleI.ControlPoint;
+  }
+
+  /**
+  * Gets the b1 coordinate.
+  * @returns {CartesianCoordinate} B1 coordinate.
+  */
+  public B_1(): CartesianCoordinate {
+    return this.HandleI.getHandleTip();
+  }
+
+  /**
+  * Gets the b2 coordinate.
+  * @returns {CartesianCoordinate} B2 coordinate.
+  */
+  public B_2(): CartesianCoordinate {
+    return this.HandleJ.getHandleTip();
+  }
+
+  /**
+  * Gets the b3 coordinate.
+  * @returns {CartesianCoordinate} B3 coordinate.
+  */
+  public B_3(): CartesianCoordinate {
+    return this.HandleJ.ControlPoint;
+  }
+
+  /**
+   * Creates a new object that is a copy of the current instance.
+   * @returns {BezierCurve} A new object that is a copy of this instance.
+   */
+  clone(): BezierCurve {
+    const curve = BezierCurve.fromHandles(
+      this.HandleI.clone(),
+      this.HandleJ.clone(),
+      this.NumberOfControlPoints
+    );
+    curve._range = this.Range.clone();
+    return curve;
+  }
+}

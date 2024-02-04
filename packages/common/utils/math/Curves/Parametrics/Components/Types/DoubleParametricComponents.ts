@@ -14,8 +14,8 @@ import { ParametricComponents } from "./ParametricComponents";
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <seealso cref="ParametricComponents{Double, T, Curve}" />
-abstract class LinearNumericParametricComponents<T extends ParametricEquation<number>> extends
-  ParametricComponents<number, T, Curve> {
+abstract class LinearNumericParametricComponents<T extends ParametricEquation<number>>
+  extends ParametricComponents<number, T, Curve> {
 
   constructor(parent: Curve) {
     super(parent);

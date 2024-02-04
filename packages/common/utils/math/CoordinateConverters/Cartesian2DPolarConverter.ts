@@ -1,35 +1,21 @@
-// using MPT.Math.Algebra;
-// using MPT.Math.Coordinates;
-// using Trig = MPT.Math.Trigonometry.TrigonometryLibrary;
+import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
+import { Angle } from "../Coordinates/Angle";
+import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
+import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
 
-// namespace MPT.Math.CoordinateConverters
-// {
-//     /// <summary>
-//     /// Class Cartesian2DPolarConverter.
-//     /// </summary>
-//     public static class Cartesian2DPolarConverter
-//     {
-//         /// <summary>
-//         /// Converts to Polar coordinates.
-//         /// </summary>
-//         /// <returns>PolarCoordinate.</returns>
-//         public static PolarCoordinate ToPolar(CartesianCoordinate coordinate)
-//         {
-//             return new PolarCoordinate(
-//                 radius: AlgebraLibrary.SRSS(coordinate.X, coordinate.Y),
-//                 azimuth: Angle.AsRadians(coordinate.X, coordinate.Y),
-//                 tolerance: coordinate.Tolerance);
-//         }
+export class Cartesian2DPolarConverter {
+  static toPolar(coordinate: CartesianCoordinate): PolarCoordinate {
+    return PolarCoordinate.fromAngle(
+      AlgebraLibrary.SRSS(coordinate.X, coordinate.Y),
+      Angle.CreateFromPoint(coordinate),
+      coordinate.Tolerance
+    );
+  }
 
-//         /// <summary>
-//         /// Converts to Cartesian coordinates.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public static  CartesianCoordinate ToCartesian(PolarCoordinate coordinate)
-//         {
-//             double x = coordinate.Radius * Trig.Cos(coordinate.Azimuth.Radians);
-//             double y = coordinate.Radius * Trig.Sin(coordinate.Azimuth.Radians);
-//             return new CartesianCoordinate(x, y, coordinate.Tolerance);
-//         }
-//     }
-// }
+  static toCartesian(coordinate: PolarCoordinate): CartesianCoordinate {
+    const x: number = coordinate.radius * Trig.Cos(coordinate.azimuth.Radians);
+    const y: number = coordinate.radius * Trig.Sin(coordinate.azimuth.Radians);
+    return CartesianCoordinate.fromXY(x, y, coordinate.Tolerance);
+  }
+}

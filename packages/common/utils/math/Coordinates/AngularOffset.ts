@@ -89,7 +89,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
    * @memberof AngularOffset
    */
   public Delta(): Angle {
-    return Angle.CreateFromRadian(this.J.RadiansRaw - this.I.RadiansRaw);
+    return Angle.fromRadians(this.J.RadiansRaw - this.I.RadiansRaw);
   }
 
   /// <summary>
@@ -173,9 +173,9 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
 
   public subtractBy(offset: AngularOffset) {
     return new AngularOffset(
-      Angle.fromOrigin(),
+      Angle.atOrigin(),
       this.ToAngle().subtractBy(offset.ToAngle()),
-      Generics.GetToleranceBetween(this, offset));
+      Generics.getToleranceBetween(this, offset));
   }
 
   public subtractByRadians(angleRadians: number): number {
@@ -190,7 +190,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
     return new AngularOffset(
       this.I.addTo(offset.I),
       this.J.addTo(offset.J),
-      Generics.GetToleranceBetween(this, offset));
+      Generics.getToleranceBetween(this, offset));
   }
 
   public addToRadians(angleRadians: number): number {
@@ -219,7 +219,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   }
 
   public equals(offset: AngularOffset): boolean {
-    const tolerance = Generics.GetToleranceBetween(this, offset);
+    const tolerance = Generics.getToleranceBetween(this, offset);
     return Numbers.IsEqualTo(this.Delta().Radians, offset.Delta().Radians, tolerance);
   }
 
@@ -248,7 +248,7 @@ export class AngularOffset implements IEquatable<AngularOffset>, IComparable<Ang
   public compareTo(other: AngularOffset): number {
     if (this.equals(other)) { return 0; }
 
-    const tolerance = Generics.GetToleranceBetween(this, other);
+    const tolerance = Generics.getToleranceBetween(this, other);
     return Numbers.IsLessThan(this.Delta().Radians, other.Delta().Radians, tolerance) ? -1 : 1;
   }
 

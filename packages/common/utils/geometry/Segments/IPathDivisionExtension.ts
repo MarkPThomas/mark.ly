@@ -3,7 +3,7 @@
 
 import { CartesianCoordinate } from "../../math/Coordinates/CartesianCoordinate";
 import { LinearCurve } from "../../math/Curves/LinearCurve";
-import { IPathSegment } from "./IPathSegments";
+import { IPathSegment } from "./IPathSegment";
 
 export interface IPathDivisionExtension {
   /// <summary>

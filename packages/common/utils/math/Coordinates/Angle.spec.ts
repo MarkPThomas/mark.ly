@@ -205,7 +205,7 @@ describe("Angle", () => {
         const radians = Math.PI / 4;
         const tolerance = 0.0002;
 
-        const angle = Angle.CreateFromRadian(radians, tolerance);
+        const angle = Angle.fromRadians(radians, tolerance);
 
         expect(angle.Radians).toBeCloseTo(radians, Tolerance);
         expect(angle.Tolerance).toBeCloseTo(tolerance, Tolerance);
@@ -217,7 +217,7 @@ describe("Angle", () => {
         const degrees = 30;
         const tolerance = 0.0002;
 
-        const angle = Angle.CreateFromDegree(degrees, tolerance);
+        const angle = Angle.fromDegrees(degrees, tolerance);
 
         expect(angle.Degrees).toBeCloseTo(degrees, Tolerance);
         expect(angle.Tolerance).toBeCloseTo(tolerance, Tolerance);

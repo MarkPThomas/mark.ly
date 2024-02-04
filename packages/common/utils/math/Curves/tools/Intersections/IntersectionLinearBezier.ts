@@ -1,108 +1,100 @@
-// using MPT.Math.Coordinates;
-// using System;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { BezierCurve } from "../../BezierCurve";
+import { LinearCurve } from "../../LinearCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     public class IntersectionLinearBezier : IntersectionAbstract<LinearCurve, BezierCurve>
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the linear curve.
-//         /// </summary>
-//         /// <value>The linear curve.</value>
-//         public LinearCurve LinearCurve => Curve1;
-//         /// <summary>
-//         /// Gets the bezier curve.
-//         /// </summary>
-//         /// <value>The bezier curve.</value>
-//         public BezierCurve BezierCurve => Curve2;
-//         #endregion
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearBezier"/> class.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="bezierCurve">The bezier curve.</param>
-//         public IntersectionLinearBezier(LinearCurve linearCurve, BezierCurve bezierCurve) : base(linearCurve, bezierCurve)
-//         {
+/**
+ * Represents the intersection of a linear curve and a Bezier curve.
+ * @extends {IntersectionAbstract<LinearCurve, BezierCurve>}
+ */
+export class IntersectionLinearBezier extends IntersectionAbstract<LinearCurve, BezierCurve> {
+  /**
+   * Gets the linear curve.
+   * @type {LinearCurve}
+   */
+  public get LinearCurve(): LinearCurve {
+    return this.Curve1;
+  }
 
-//         }
-//         #endregion
+  /**
+   * Gets the Bezier curve.
+   * @type {BezierCurve}
+   */
+  public get BezierCurve(): BezierCurve {
+    return this.Curve2;
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Initializes a new instance of the IntersectionLinearBezier class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {BezierCurve} bezierCurve The Bezier curve.
+   */
+  constructor(linearCurve: LinearCurve, bezierCurve: BezierCurve) {
+    super(linearCurve, bezierCurve);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public override AreTangent(): boolean {
+    return IntersectionLinearBezier.AreTangent(this.LinearCurve, this.BezierCurve);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Checks if the curves intersect and are not tangent.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public override AreIntersecting(): boolean {
+    return IntersectionLinearBezier.AreIntersecting(this.LinearCurve, this.BezierCurve);
+  }
 
-//         #region Static
-//         /// <summary>
-//         /// The separation of the centers of the curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="bezierCurve">The bezier curve.</param>
-//         /// <returns>System.Double.</returns>
-//         public static double CenterSeparations(LinearCurve linearCurve, BezierCurve bezierCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public override IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearBezier.IntersectionCoordinates(this.LinearCurve, this.BezierCurve);
+  }
 
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="bezierCurve">The bezier curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreTangent(LinearCurve linearCurve, BezierCurve bezierCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the separation of the centers of the curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {BezierCurve} bezierCurve The Bezier curve.
+   * @returns {number} The separation of the centers of the curves.
+   */
+  public static CenterSeparations(linearCurve: LinearCurve, bezierCurve: BezierCurve): number {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="bezierCurve">The bezier curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(LinearCurve linearCurve, BezierCurve bezierCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if two curves are tangent to each other.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {BezierCurve} bezierCurve The Bezier curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public static AreTangent(linearCurve: LinearCurve, bezierCurve: BezierCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The coordinate(s) of the intersection(s) of two curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="bezierCurve">The bezier curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(LinearCurve linearCurve, BezierCurve bezierCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Determines if two curves intersect.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {BezierCurve} bezierCurve The Bezier curve.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  public static AreIntersecting(linearCurve: LinearCurve, bezierCurve: BezierCurve): boolean {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {BezierCurve} bezierCurve The Bezier curve.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public static IntersectionCoordinates(linearCurve: LinearCurve, bezierCurve: BezierCurve): CartesianCoordinate[] {
+    throw new Error('Not implemented');
+  }
+}

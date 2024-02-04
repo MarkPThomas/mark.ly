@@ -1,115 +1,90 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-17-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-19-2020
-// // ***********************************************************************
-// // <copyright file="IntersectionLinearElliptical.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using System;
-// using MPT.Math.Coordinates;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { EllipticalCurve } from "../../EllipticalCurve";
+import { LinearCurve } from "../../LinearCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     /// <summary>
-//     /// Class IntersectionLinearElliptical.
-//     /// Implements the <see cref="ICurveIntersection{LinearCurve, EllipticalCurve}" />
-//     /// </summary>
-//     /// <seealso cref="ICurveIntersection{LinearCurve, EllipticalCurve}" />
-//     public class IntersectionLinearElliptical : IntersectionAbstract<LinearCurve, EllipticalCurve>
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the linear curve.
-//         /// </summary>
-//         /// <value>The linear curve.</value>
-//         public LinearCurve LinearCurve => Curve1;
-//         /// <summary>
-//         /// Gets the elliptical curve.
-//         /// </summary>
-//         /// <value>The elliptical curve.</value>
-//         public EllipticalCurve EllipticalCurve => Curve2;
-//         #endregion
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearElliptical"/> class.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="ellipticalCurve">The elliptical curve.</param>
-//         public IntersectionLinearElliptical(LinearCurve linearCurve, EllipticalCurve ellipticalCurve) : base(linearCurve, ellipticalCurve)
-//         {
+/**
+ * Represents the intersection of a linear curve and an elliptical curve.
+ * @extends {IntersectionAbstract<LinearCurve, EllipticalCurve>}
+ */
+export class IntersectionLinearElliptical extends IntersectionAbstract<LinearCurve, EllipticalCurve> {
+  /**
+   * Gets the linear curve.
+   * @type {LinearCurve}
+   */
+  public get LinearCurve(): LinearCurve {
+    return this.Curve1;
+  }
 
-//         }
-//         #endregion
+  /**
+   * Gets the elliptical curve.
+   * @type {EllipticalCurve}
+   */
+  public get EllipticalCurve(): EllipticalCurve {
+    return this.Curve2;
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(LinearCurve, EllipticalCurve);
-//         }
+  /**
+   * Initializes a new instance of the IntersectionLinearElliptical class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {EllipticalCurve} ellipticalCurve The elliptical curve.
+   */
+  constructor(linearCurve: LinearCurve, ellipticalCurve: EllipticalCurve) {
+    super(linearCurve, ellipticalCurve);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(LinearCurve, EllipticalCurve);
-//         }
+  /**
+   * Checks if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public override AreTangent(): boolean {
+    return IntersectionLinearElliptical.AreTangent(this.LinearCurve, this.EllipticalCurve);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(LinearCurve, EllipticalCurve);
-//         }
-//         #endregion
+  /**
+   * Checks if the curves intersect and are not tangent.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public override AreIntersecting(): boolean {
+    return IntersectionLinearElliptical.AreIntersecting(this.LinearCurve, this.EllipticalCurve);
+  }
 
-//         #region Methods: Static
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="ellipticalCurve">The elliptical curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreTangent(LinearCurve linearCurve, EllipticalCurve ellipticalCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public override IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearElliptical.IntersectionCoordinates(this.LinearCurve, this.EllipticalCurve);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="ellipticalCurve">The elliptical curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(LinearCurve linearCurve, EllipticalCurve ellipticalCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates if two curves are tangent to each other.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {EllipticalCurve} ellipticalCurve The elliptical curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public static AreTangent(linearCurve: LinearCurve, ellipticalCurve: EllipticalCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="ellipticalCurve">The elliptical curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(LinearCurve linearCurve, EllipticalCurve ellipticalCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Calculates if two curves intersect and are not tangent.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {EllipticalCurve} ellipticalCurve The elliptical curve.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public static AreIntersecting(linearCurve: LinearCurve, ellipticalCurve: EllipticalCurve): boolean {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {EllipticalCurve} ellipticalCurve The elliptical curve.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public static IntersectionCoordinates(linearCurve: LinearCurve, ellipticalCurve: EllipticalCurve): CartesianCoordinate[] {
+    throw new Error('Not implemented');
+  }
+}

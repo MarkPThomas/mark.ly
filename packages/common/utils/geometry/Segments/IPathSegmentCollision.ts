@@ -1,8 +1,6 @@
-
-
 import { CartesianCoordinate } from "../../math/Coordinates/CartesianCoordinate";
 import { Curve } from "../../math/Curves/Curve";
-import { IPathSegment } from "./IPathSegments";
+import { IPathSegment } from "./IPathSegment";
 
 export interface IPathSegmentCollision<T extends Curve> {
   /// <summary>

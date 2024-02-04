@@ -11,45 +11,45 @@ describe('ICloneable', () => {
 
   beforeEach(() => {
     const curve = new LinearCurve(
-      new CartesianCoordinate(-1, -2, Tolerance),
-      new CartesianCoordinate(4, 3, Tolerance)
+      CartesianCoordinate.fromXY(-1, -2, Tolerance),
+      CartesianCoordinate.fromXY(4, 3, Tolerance)
     );
     curve.Tolerance = Tolerance;
 
     RangeWithLimits = CurveRange.fromCurve(curve);
-    RangeWithLimits.Start.SetLimitByX(-0.5);
-    RangeWithLimits.End.SetLimitByX(2);
+    RangeWithLimits.start.SetLimitByX(-0.5);
+    RangeWithLimits.end.SetLimitByX(2);
   });
 
   describe('Initialization', () => {
-    it('should initialize a CurveRange with Start and End limits at the origin', () => {
+    it('should initialize a CurveRange with start and end limits at the origin', () => {
       const range = CurveRange.fromCurve(
         new LinearCurve(
-          new CartesianCoordinate(-1, -2, Tolerance),
-          new CartesianCoordinate(4, 3, Tolerance)
+          CartesianCoordinate.fromXY(-1, -2, Tolerance),
+          CartesianCoordinate.fromXY(4, 3, Tolerance)
         ));
-      range.Start.SetLimitByCoordinate(CartesianCoordinate.Origin());
-      range.End.SetLimitByCoordinate(CartesianCoordinate.Origin());
+      range.start.SetLimitByCoordinate(CartesianCoordinate.atOrigin());
+      range.end.SetLimitByCoordinate(CartesianCoordinate.atOrigin());
 
-      expect(RangeWithLimits.Start.Limit).toEqual(CartesianCoordinate.Origin());
-      expect(RangeWithLimits.End.Limit).toEqual(CartesianCoordinate.Origin());
+      expect(RangeWithLimits.start.Limit).toEqual(CartesianCoordinate.atOrigin());
+      expect(RangeWithLimits.end.Limit).toEqual(CartesianCoordinate.atOrigin());
     });
   });
 
   describe('ToString', () => {
     it('should override ToString and return the expected string representation', () => {
       expect(RangeWithLimits.toString()).toEqual(
-        'MPT.Math.Curves.Tools.CurveRange - Start: {X: -0.5, Y: -1.5}, End: {X: 2, Y: 1}'
+        'MPT.Math.Curves.Tools.CurveRange - start: {X: -0.5, Y: -1.5}, end: {X: 2, Y: 1}'
       );
     });
   });
 
   describe('ToOffset', () => {
     it('should return a CartesianOffset with the expected values', () => {
-      const offset = RangeWithLimits.ToOffset();
-      const offsetExpected = new CartesianOffset(
-        new CartesianCoordinate(-0.5, -1.5, Tolerance),
-        new CartesianCoordinate(2, 1, Tolerance),
+      const offset = RangeWithLimits.toOffset();
+      const offsetExpected = CartesianOffset.fromCoordinates(
+        CartesianCoordinate.fromXY(-0.5, -1.5, Tolerance),
+        CartesianCoordinate.fromXY(2, 1, Tolerance),
         Tolerance
       );
 
@@ -61,8 +61,8 @@ describe('ICloneable', () => {
     it('should return a PolarOffset with the expected values', () => {
       // const polarOffset = RangeWithLimits.ToOffsetPolar();
       // const offsetExpected = new PolarOffset(
-      //   new CartesianCoordinate(-0.5, -1.5, Tolerance),
-      //   new CartesianCoordinate(2, 1, Tolerance),
+      //   CartesianCoordinate.fromXY(-0.5, -1.5, Tolerance),
+      //   CartesianCoordinate.fromXY(2, 1, Tolerance),
       //   Tolerance
       // );
 
@@ -90,7 +90,7 @@ describe('ICloneable', () => {
 
   describe('LengthY', () => {
     it('should return the expected Y length', () => {
-      const lengthY = RangeWithLimits.LengthY();
+      const lengthY = RangeWithLimits.lengthY();
       const expectedLength = 2.5;
 
       expect(lengthY).toBeCloseTo(expectedLength, 5);
@@ -133,12 +133,12 @@ describe('ICloneable', () => {
     });
   });
 
-  describe('ValidateRangeLimitRotationalHalfCirclePosition', () => {
+  describe('validateRangeLimitRotationalHalfCirclePosition', () => {
     it('should do nothing if the position is inside the positive and negative half rotation', () => {
       const positions = [Numbers.Pi, -Numbers.Pi, Numbers.PiOver2, -Numbers.PiOver2, 0];
 
       positions.forEach((position) => {
-        CurveRange.ValidateRangeLimitRotationalHalfCirclePosition(position, Tolerance);
+        CurveRange.validateRangeLimitRotationalHalfCirclePosition(position, Tolerance);
         expect(true).toBeTruthy();
       });
     });
@@ -147,7 +147,7 @@ describe('ICloneable', () => {
       const positions = [1.1 * Numbers.Pi, -1.1 * Numbers.Pi];
 
       positions.forEach((position) => {
-        expect(() => CurveRange.ValidateRangeLimitRotationalHalfCirclePosition(position, Tolerance)).toThrowError();
+        expect(() => CurveRange.validateRangeLimitRotationalHalfCirclePosition(position, Tolerance)).toThrowError();
       });
     });
   });
@@ -157,7 +157,7 @@ describe('ICloneable', () => {
       const positions = [0, Numbers.PiOver2, Numbers.Pi, Numbers.TwoPi];
 
       positions.forEach((position) => {
-        CurveRange.ValidateRangeLimitRotationalFullCirclePosition(position, Tolerance);
+        CurveRange.validateRangeLimitRotationalFullCirclePosition(position, Tolerance);
         expect(true).toBeTruthy();
       });
     });
@@ -166,36 +166,36 @@ describe('ICloneable', () => {
       const positions = [-Numbers.Pi, -Numbers.PiOver2, 1.1 * Numbers.TwoPi, -0.1];
 
       positions.forEach((position) => {
-        expect(() => CurveRange.ValidateRangeLimitRotationalFullCirclePosition(position, Tolerance)).toThrowError();
+        expect(() => CurveRange.validateRangeLimitRotationalFullCirclePosition(position, Tolerance)).toThrowError();
       });
     });
   });
 
   describe('ICloneable', () => {
-    it('should clone the CurveRange and have the same Start and End limits', () => {
-      const startCoord = new CartesianCoordinate(-0.5, -1.5, Tolerance);
-      const endCoord = new CartesianCoordinate(2, 1, Tolerance);
+    it('should clone the CurveRange and have the same start and end limits', () => {
+      const startCoord = CartesianCoordinate.fromXY(-0.5, -1.5, Tolerance);
+      const endCoord = CartesianCoordinate.fromXY(2, 1, Tolerance);
 
-      expect(RangeWithLimits.Start.Limit).toEqual(startCoord);
-      expect(RangeWithLimits.End.Limit).toEqual(endCoord);
+      expect(RangeWithLimits.start.Limit).toEqual(startCoord);
+      expect(RangeWithLimits.end.Limit).toEqual(endCoord);
 
       const rangeClone = RangeWithLimits.clone() as CurveRange;
 
-      expect(rangeClone.Start.Limit).toEqual(startCoord);
-      expect(rangeClone.End.Limit).toEqual(endCoord);
+      expect(rangeClone.start.Limit).toEqual(startCoord);
+      expect(rangeClone.end.Limit).toEqual(endCoord);
     });
 
-    it('should clone the CurveRange using a different method and have the same Start and End limits', () => {
-      const startCoord = new CartesianCoordinate(-0.5, -1.5, Tolerance);
-      const endCoord = new CartesianCoordinate(2, 1, Tolerance);
+    it('should clone the CurveRange using a different method and have the same start and end limits', () => {
+      const startCoord = CartesianCoordinate.fromXY(-0.5, -1.5, Tolerance);
+      const endCoord = CartesianCoordinate.fromXY(2, 1, Tolerance);
 
-      expect(RangeWithLimits.Start.Limit).toEqual(startCoord);
-      expect(RangeWithLimits.End.Limit).toEqual(endCoord);
+      expect(RangeWithLimits.start.Limit).toEqual(startCoord);
+      expect(RangeWithLimits.end.Limit).toEqual(endCoord);
 
       const rangeClone = RangeWithLimits.clone();
 
-      expect(rangeClone.Start.Limit).toEqual(startCoord);
-      expect(rangeClone.End.Limit).toEqual(endCoord);
+      expect(rangeClone.start.Limit).toEqual(startCoord);
+      expect(rangeClone.end.Limit).toEqual(endCoord);
     });
   });
 });

@@ -1,40 +1,26 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-21-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-21-2020
-// // ***********************************************************************
-// // <copyright file="BezierParametricBase.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Coordinates;
-// using MPT.Math.Curves.Parametrics.Components.Types;
+import { BezierCurve } from "../../BezierCurve";
+import { CartesianParametricComponents } from "../Components/Types/CartesianParametricComponents";
 
-// namespace MPT.Math.Curves.Parametrics.BezierCurveComponents
-// {
-//     /// <summary>
-//     /// Class containing the assigned components of a parametric equation in <see cref="CartesianCoordinate"/> coordinates and the corresponding bezier curve object.
-//     /// This class has the basic components of differentiating and accessing the different parametric equations.
-//     /// Also contains operators to implement scaling of the parametric equations.
-//     /// Implements the <see cref="MPT.Math.Curves.Parametrics.Components.Types.DoubleParametricComponents" />
-//     /// </summary>
-//     /// <seealso cref="MPT.Math.Curves.Parametrics.Components.Types.DoubleParametricComponents" />
-//     internal abstract class BezierParametricCartesianComponents : CartesianParametricComponents
-//     {
-//         /// <summary>
-//         /// Gets the parent object whose properties are used in the associated parametric equations.
-//         /// </summary>
-//         /// <value>The parent.</value>
-//         protected BezierCurve _parent => _parentCurve as BezierCurve;
+/**
+ * Class containing the assigned components of a parametric equation in CartesianCoordinate coordinates and the corresponding bezier curve object.
+ * This class has the basic components of differentiating and accessing the different parametric equations.
+ * Also contains operators to implement scaling of the parametric equations.
+ * @extends {CartesianParametricComponents}
+ */
+export abstract class BezierParametricCartesianComponents extends CartesianParametricComponents {
+  /**
+   * Gets the parent object whose properties are used in the associated parametric equations.
+   * @type {BezierCurve}
+   */
+  protected get _parent(): BezierCurve {
+    return this._parentCurve as BezierCurve;
+  }
 
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierParametricCartesianComponents" /> class.
-//         /// </summary>
-//         /// <param name="parent">The parent.</param>
-//         public BezierParametricCartesianComponents(BezierCurve parent) : base(parent) { }
-//     }
-// }
+  /**
+   * Initializes a new instance of the {@linkcode BezierParametricCartesianComponents} class.
+   * @param {BezierCurve} parent The parent.
+   */
+  constructor(parent: BezierCurve) {
+    super(parent);
+  }
+}

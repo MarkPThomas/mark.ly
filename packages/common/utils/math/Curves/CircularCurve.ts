@@ -1,556 +1,523 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 06-07-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-17-2020
-// // ***********************************************************************
-// // <copyright file="CircularCurve.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Coordinates;
-// using MPT.Math.Curves.Tools.Intersections;
-// using MPT.Math.NumberTypeExtensions;
-// using MPT.Math.Trigonometry;
-// using MPT.Math.Vectors;
-// using System;
+import { Angle } from "../Coordinates/Angle";
+import { AngularOffset } from "../Coordinates/AngularOffset";
+import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { CartesianOffset } from "../Coordinates/CartesianOffset";
+import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
+import { Numbers } from "../Numbers";
+import { Vector } from "../Vectors/Vector";
+import { FocusProps } from "./ConicSectionCurve";
+import { ConicSectionEllipticCurve } from "./ConicSectionEllipticCurve";
+import { Curve } from "./Curve";
+import { LinearCurve } from "./LinearCurve";
+import { IntersectionCircularCircular } from "./tools/Intersections/IntersectionCircularCircular";
+import { IntersectionLinearCircular } from "./tools/Intersections/IntersectionLinearCircular";
 
-// namespace MPT.Math.Curves
-// {
-//     /// <summary>
-//     /// Class CircularCurve.
-//     /// Implements the <see cref="MPT.Math.Curves.ConicSectionEllipticCurve" />
-//     /// </summary>
-//     /// <seealso cref="MPT.Math.Curves.ConicSectionEllipticCurve" />
-//     public class CircularCurve : ConicSectionEllipticCurve
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Distance from local origin to the focus, c.
-//         /// </summary>
-//         /// <value>The distance from focus to origin.</value>
-//         public override double DistanceFromFocusToLocalOrigin => 0;
+/**
+ * Class CircularCurve.
+ * Implements the ConicSectionEllipticCurve.
+ *
+ * @extends {ConicSectionEllipticCurve}
+ */
+export class CircularCurve extends ConicSectionEllipticCurve {
+  /**
+   * Distance from local origin to the focus, c.
+   *
+   * @readonly
+   * @type {number}
+   */
+  public get DistanceFromFocusToLocalOrigin(): number {
+    return 0;
+  }
 
-//         /// <summary>
-//         /// Gets the center control point.
-//         /// </summary>
-//         /// <value>The center control point</value>
-//         public CartesianCoordinate Center => _focus;
+  /**
+   * Gets the center control point.
+   *
+   * @readonly
+   * @type {CartesianCoordinate}
+   */
+  public get Center(): CartesianCoordinate {
+    return this._focus;
+  }
 
-//         /// <summary>
-//         /// Gets the radius.
-//         /// </summary>
-//         /// <value>The radius.</value>
-//         public double Radius => DistanceFromVertexMajorToLocalOrigin;
+  /**
+   * Gets the radius.
+   *
+   * @readonly
+   * @type {number}
+   */
+  public get Radius(): number {
+    return this.DistanceFromVertexMajorToLocalOrigin;
+  }
 
-//         /// <summary>
-//         /// Gets the curvature.
-//         /// </summary>
-//         /// <value>The curvature.</value>
-//         public double Curvature => 1 / Radius;
+  /**
+   * Gets the curvature.
+   *
+   * @readonly
+   * @type {number}
+   */
+  public get Curvature(): number {
+    return 1 / this.Radius;
+  }
 
-//         /// <summary>
-//         /// The eccentricity, e.
-//         /// A measure of how much the conic section deviates from being circular.
-//         /// Distance from any point on the conic section to its focus, divided by the perpendicular distance from that point to the nearest directrix.
-//         /// </summary>
-//         /// <value>The eccentricity.</value>
-//         public override double Eccentricity => 0;
+  /**
+   * The eccentricity, e.
+   * A measure of how much the conic section deviates from being circular.
+   * Distance from any point on the conic section to its focus, divided by the perpendicular distance from that point to the nearest directrix.
+   *
+   * @readonly
+   * @type {number}
+   */
+  public get Eccentricity(): number {
+    return 0;
+  }
 
-//         /// <summary>
-//         /// Distance from the focus to the curve along a line perpendicular to the major axis and the focus, p.
-//         /// </summary>
-//         /// <value>The p.</value>
-//         public override double SemilatusRectumDistance => DistanceFromVertexMajorToLocalOrigin;
-//         #endregion
+  /**
+   * Distance from the focus to the curve along a line perpendicular to the major axis and the focus, p.
+   *
+   * @readonly
+   * @type {number}
+   */
+  public get SemilatusRectumDistance(): number {
+    return this.DistanceFromVertexMajorToLocalOrigin;
+  }
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="CircularCurve" /> class.
-//         /// </summary>
-//         /// <param name="vertex">Any vertex on the curve.</param>
-//         /// <param name="center">The center.</param>
-//         /// <param name="tolerance">Tolerance to apply to the curve.</param>
-//         public CircularCurve(
-//             CartesianCoordinate vertex,
-//             CartesianCoordinate center,
-//             double tolerance = DEFAULT_TOLERANCE)
-//             : base(
-//                   vertex,
-//                   center,
-//                   CartesianOffset.Separation(vertex, center),
-//                   tolerance)
-//         {
+  constructor(
+    radiusOrVertex: number | CartesianCoordinate,
+    center: CartesianCoordinate,
+    tolerance: number = Curve.DEFAULT_TOLERANCE
+  ) {
+    const props = CircularCurve.formArguments(radiusOrVertex, center);
+    super(props, tolerance);
+  }
 
-//         }
+  protected static formArguments(
+    radiusOrVertex: number | CartesianCoordinate,
+    center: CartesianCoordinate
+  ): FocusProps {
+    if (typeof radiusOrVertex === 'number') {
+      const vertex = radiusOrVertex as number;
 
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="CircularCurve" /> class.
-//         /// </summary>
-//         /// <param name="radius">The radius.</param>
-//         /// <param name="center">The center.</param>
-//         /// <param name="tolerance">Tolerance to apply to the curve.</param>
-//         public CircularCurve(
-//             double radius,
-//             CartesianCoordinate center,
-//             double tolerance = DEFAULT_TOLERANCE)
-//             : base(
-//                   vertexMajor(radius, center),
-//                   center,
-//                   CartesianOffset.Separation(vertexMajor(radius, center), center),
-//                   tolerance)
-//         {
+      const vertexMajor = CircularCurve.VertexMajor(vertex, center);
+      const focus = center;
+      const distanceFromMajorVertexToLocalOrigin = CartesianOffset.lengthBetween(vertexMajor, center);
 
-//         }
-//         #endregion
+      return { vertexMajor, focus, distanceFromMajorVertexToLocalOrigin };
+    } else if (radiusOrVertex instanceof CartesianCoordinate) {
+      const radius = radiusOrVertex as CartesianCoordinate;
 
-//         #region Curve Position
-//         /// <summary>
-//         /// +X-coordinate on the line segment that corresponds to the y-coordinate given.
-//         /// </summary>
-//         /// <param name="y">Y-coordinate for which an x-coordinate is desired.</param>
-//         /// <returns></returns>
-//         public override double XatY(double y)
-//         {
-//             double[] coordinates = XsAtY(y);
-//             if (coordinates.Length == 0)
-//             {
-//                 return double.PositiveInfinity;
-//             }
-//             return coordinates[0];
-//         }
+      const vertexMajor = radius;
+      const focus = center;
+      const distanceFromMajorVertexToLocalOrigin = CartesianOffset.lengthBetween(radius, center);
 
-//         /// <summary>
-//         /// +Y-coordinate on the line segment that corresponds to the x-coordinate given.
-//         /// </summary>
-//         /// <param name="x">X-coordinate for which a y-coordinate is desired.</param>
-//         /// <returns></returns>
-//         public override double YatX(double x)
-//         {
-//             double[] coordinates = YsAtX(x);
-//             if (coordinates.Length == 0)
-//             {
-//                 return double.PositiveInfinity;
-//             }
-//             return coordinates[0];
-//         }
-//         #endregion
+      return { vertexMajor, focus, distanceFromMajorVertexToLocalOrigin };
+    } else {
+      return {
+        vertexMajor: CartesianCoordinate.atOrigin(),
+        focus: CartesianCoordinate.atOrigin(),
+        distanceFromMajorVertexToLocalOrigin: 0
+      }
+    }
+  }
 
-//         #region Methods: Query
-//         /// <summary>
-//         /// Determines whether the specified curve is intersecting.
-//         /// </summary>
-//         /// <param name="curve">The curve.</param>
-//         /// <returns><c>true</c> if the specified curve is intersecting; otherwise, <c>false</c>.</returns>
-//         public bool IsIntersecting(CircularCurve curve)
-//         {
-//             return AreIntersecting(this, curve);
-//         }
+  /**
+   * Initializes a new instance of the CircularCurve class.
+   *
+   * @param {CartesianCoordinate} vertex - Any vertex on the curve.
+   * @param {CartesianCoordinate} center - The center.
+   * @param {number} [tolerance=DEFAULT_TOLERANCE] - Tolerance to apply to the curve.
+   */
+  static fromPtOnCurve(
+    vertex: CartesianCoordinate,
+    center: CartesianCoordinate,
+    tolerance: number = Curve.DEFAULT_TOLERANCE
+  ) {
+    return new CircularCurve(vertex, center, tolerance);
+  }
 
-//         /// <summary>
-//         /// Determines whether the specified curve is tangent.
-//         /// </summary>
-//         /// <param name="curve">The curve.</param>
-//         /// <returns><c>true</c> if the specified curve is tangent; otherwise, <c>false</c>.</returns>
-//         public bool IsTangent(CircularCurve curve)
-//         {
-//             return AreTangent(this, curve);
-//         }
-//         #endregion
+  /**
+   * Initializes a new instance of the CircularCurve class.
+   *
+   * @param {number} radius - The radius.
+   * @param {CartesianCoordinate} center - The center.
+   * @param {number} [tolerance=DEFAULT_TOLERANCE] - Tolerance to apply to the curve.
+   */
+  static fromRadius(
+    radius: number,
+    center: CartesianCoordinate,
+    tolerance: number = Curve.DEFAULT_TOLERANCE
+  ) {
+    return new CircularCurve(radius, center, tolerance);
+  }
 
-//         #region Methods: Properties
-//         #region Radius
-//         #region Focus, Right
-//         /// <summary>
-//         /// The radius measured from the right focus (+X) as a function of the angle in local coordinates.
-//         /// </summary>
-//         /// <param name="angleRadians">The angle in radians in local coordinates.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double RadiusAboutFocusRight(double angleRadians)
-//         {
-//             return Radius;
-//         }
+  /**
+   * +X-coordinate on the line segment that corresponds to the y-coordinate given.
+   *
+   * @param {number} y - Y-coordinate for which an x-coordinate is desired.
+   * @returns {number}
+   */
+  public XatY(y: number): number {
+    const coordinates = this.XsAtY(y);
+    if (coordinates.length === 0) {
+      return Number.POSITIVE_INFINITY;
+    }
+    return coordinates[0];
+  }
 
-//         /// <summary>
-//         /// The radius measured from the right (+X) major vertex as a function of the angle in local coordinates.
-//         /// </summary>
-//         /// <param name="angleRadians">The angle in radians in local coordinates.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double RadiusAboutVertexMajorRight(double angleRadians)
-//         {
-//             double radius = base.RadiusAboutVertexMajorLeft(angleRadians);
-//             return radius.IsPositiveSign(Tolerance) ? radius : 0;
-//         }
-//         #endregion
-//         #region Focus, Left
-//         /// <summary>
-//         /// The radius measured from the left focus (-X) as a function of the angle in local coordinates.
-//         /// </summary>
-//         /// <param name="angleRadians">The angle in radians in local coordinates.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double RadiusAboutFocusLeft(double angleRadians)
-//         {
-//             return Radius;
-//         }
+  /**
+   * +Y-coordinate on the line segment that corresponds to the x-coordinate given.
+   *
+   * @param {number} x - X-coordinate for which a y-coordinate is desired.
+   * @returns {number}
+   */
+  public YatX(x: number): number {
+    const coordinates = this.YsAtX(x);
+    if (coordinates.length === 0) {
+      return Number.POSITIVE_INFINITY;
+    }
+    return coordinates[0];
+  }
 
-//         /// <summary>
-//         /// The radius measured from the left (-X) major vertex as a function of the angle in local coordinates.
-//         /// </summary>
-//         /// <param name="angleRadians">The angle in radians in local coordinates.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double RadiusAboutVertexMajorLeft(double angleRadians)
-//         {
-//             double radius = 2 * Radius * TrigonometryLibrary.Cos(angleRadians);
-//             return radius.IsPositiveSign(Tolerance)? radius: 0;
-//         }
-//         #endregion
-//         /// <summary>
-//         /// The radius measured from the local coordinate origin as a function of the angle in local coordinates.
-//         /// </summary>
-//         /// <param name="angleRadians">The angle in radians in local coordinates.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double RadiusAboutOrigin(double angleRadians)
-//         {
-//             return Radius;
-//         }
-//         #endregion
+  /**
+   * Determines whether the specified curve is intersecting.
+   *
+   * @param {CircularCurve} curve - The curve.
+   * @returns {boolean}
+   */
+  public IsIntersecting(curve: CircularCurve): boolean {
+    return CircularCurve.AreIntersecting(this, curve);
+  }
 
-//         /// <summary>
-//         /// Curvature of the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
-//         /// </summary>
-//         /// <param name="angleRadians">Parametric coordinate in radians.</param>
-//         /// <returns></returns>
-//         public override double CurvatureByAngle(double angleRadians)
-//         {
-//             return 1 / Radius;
-//         }
-//         #endregion
+  /**
+   * Determines whether the specified curve is tangent.
+   *
+   * @param {CircularCurve} curve - The curve.
+   * @returns {boolean}
+   */
+  public IsTangent(curve: CircularCurve): boolean {
+    return CircularCurve.AreTangent(this, curve);
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// Returns a <see cref="System.String" /> that represents this instance.
-//         /// </summary>
-//         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-//         public override string ToString()
-//         {
-//             return typeof(CircularCurve).Name
-//                 + " - Center: {X: " + LocalOrigin.X + ", Y: " + LocalOrigin.Y + "}"
-//                 + ", Radius: " + Radius
-//                 + ", I: {X: " + _limitStartDefault.X + ", Y: " + _limitStartDefault.Y + "}, J: {X: " + _limitEndDefault.X + ", Y: " + _limitEndDefault.Y + "}";
-//         }
+  /**
+       * The radius measured from the right focus (+X) as a function of the angle in local coordinates.
+       * @param {Angle | number} angle - The angle in local coordinates [Angle or radians].
+       * @returns {number} The radius.
+       */
+  RadiusAboutFocusRight(angle: Angle | number): number {
+    return this.Radius;
+  }
 
-//         /// <summary>
-//         /// Returns points where the circular curve intersects the provided linear curve.
-//         /// </summary>
-//         /// <param name="otherLine">Linear curve that intersects the current linear curve.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate[] IntersectionCoordinate(LinearCurve otherLine)
-//         {
-//             return IntersectionLinearCircular.IntersectionCoordinates(otherLine, this);
-//         }
+  /**
+  * The radius measured from the right (+X) major vertex as a function of the angle in local coordinates.
+  * @param {Angle | number} angle - The angle in local coordinates [Angle or radians].
+  * @returns {number} The radius.
+  */
+  RadiusAboutVertexMajorRight(angle: Angle | number): number {
+    const radius = this.RadiusAboutVertexMajorLeft(this.asRadians(angle));
+    return radius > 0 ? radius : 0;
+  }
 
-//         /// <summary>
-//         /// Returns points where the circular curve intersects the provided circular curve.
-//         /// </summary>
-//         /// <param name="otherLine">Circular curve that intersects the current circular curve.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate[] IntersectionCoordinate(CircularCurve otherLine)
-//         {
-//             return IntersectionCircularCircular.IntersectionCoordinates(this, otherLine);
-//         }
+  /**
+   * The radius measured from the left focus (-X) as a function of the angle in local coordinates.
+   * @param {Angle | number} angle - The angle in local coordinates [Angle or radians].
+   * @returns {number} The radius.
+   */
+  RadiusAboutFocusLeft(angle: Angle | number): number {
+    return this.Radius;
+  }
 
-//         /// <summary>
-//         /// Coordinate of the closest point where a perpendicular projection intersects the provided coordinate.
-//         /// Returns infinity if the point is coincident with the circular curve center.
-//         /// </summary>
-//         /// <param name="point">The point.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate CoordinateOfPerpendicularProjection(CartesianCoordinate point)
-//         {
-//             return CoordinatesOfPerpendicularProjection(point, this).Item1;
-//         }
+  /**
+  * The radius measured from the left (-X) major vertex as a function of the angle in local coordinates.
+  * @param {Angle | number} angle - The angle in local coordinates [Angle or radians].
+  * @returns {number} The radius.
+  */
+  RadiusAboutVertexMajorLeft(angle: Angle | number): number {
+    const radius = 2 * this.Radius * Math.cos(this.asRadians(angle));
+    return radius > this.Tolerance ? radius : 0;
+  }
 
-//         /// <summary>
-//         /// Coordinates of where a perpendicular projection intersects the provided coordinate.
-//         /// The first coordinate is of the closer intersection.
-//         /// Returns infinity if the point is coincident with the circular curve center.
-//         /// </summary>
-//         /// <param name="point">The point.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public Tuple<CartesianCoordinate, CartesianCoordinate> CoordinatesOfPerpendicularProjection(CartesianCoordinate point)
-//         {
-//             return CoordinatesOfPerpendicularProjection(point, this);
-//         }
+  /**
+   * The radius measured from the local coordinate origin as a function of the angle in local coordinates.
+   * @param {Angle | number} angle - The angle in local coordinates [Angle or radians].
+   * @returns {number} The radius.
+   */
+  RadiusAboutOrigin(angle: Angle | number): number {
+    return this.Radius;
+  }
 
-//         /// <summary>
-//         /// The length within the provided rotation along a circular curve.
-//         /// </summary>
-//         /// <param name="rotation">Rotation to get arc length between.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double LengthBetween(AngularOffset rotation)
-//         {
-//             return LengthBetween(rotation, Radius);
-//         }
-//         #endregion
+  /**
+  * Curvature of the curve in local coordinates about the local origin that corresponds to the parametric coordinate given.
+  * @param {Angle | number} angle - Parametric coordinate in radians.
+  * @returns {number} The curvature.
+  */
+  CurvatureByAngle(angle: Angle | number): number {
+    return 1 / this.Radius;
+  }
 
-//         #region ICurveLimits
-//         /// <summary>
-//         /// Length of the curve between the limits.
-//         /// </summary>
-//         /// <returns>System.Double.</returns>
-//         public override double Length()
-//         {
-//             throw new NotImplementedException();
-//             //return 2 * Numbers.Pi * Radius;
-//         }
+  /**
+ * Returns a string that represents this instance.
+ * @returns {string} A string that represents this instance.
+ */
+  toString(): string {
+    return `${CircularCurve.name} - `
+      + `Center: {X: ${this.LocalOrigin.X}, Y: ${this.LocalOrigin.Y}}, `
+      + `Radius: ${this.Radius}, `
+      + `I: {X: ${this._limitStartDefault.X}, Y: ${this._limitStartDefault.Y}}, `
+      + `J: {X: ${this._limitEndDefault.X}, Y: ${this._limitEndDefault.Y}}`;
+  }
 
-//         /// <summary>
-//         /// Length of the curve between two points.
-//         /// </summary>
-//         /// <param name="relativePositionStart">Relative position along the path at which the length measurement is started.</param>
-//         /// <param name="relativePositionEnd">Relative position along the path at which the length measurement is ended.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double LengthBetween(double relativePositionStart, double relativePositionEnd)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+  * Returns points where the circular curve intersects the provided linear curve.
+  * @param {LinearCurve} otherLine - Linear curve that intersects the current linear curve.
+  * @returns {CartesianCoordinate[]} An array of CartesianCoordinates representing intersection points.
+  */
+  IntersectionCoordinateLinear(otherLine: LinearCurve): CartesianCoordinate[] {
+    return IntersectionLinearCircular.intersectionCoordinates(otherLine, this);
+  }
 
-//         /// <summary>
-//         /// Vector that is tangential to the curve at the specified position.
-//         /// If the shape is a closed shape, <paramref name="relativePosition" /> = {any integer} where <paramref name="relativePosition" /> = 0.
-//         /// </summary>
-//         /// <param name="relativePosition">Relative length along the path at which the tangent vector is desired.</param>
-//         /// <returns>Vector.</returns>
-//         public override Vector TangentVector(double relativePosition)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+  * Returns points where the circular curve intersects the provided circular curve.
+  * @param {CircularCurve} otherLine - Circular curve that intersects the current circular curve.
+  * @returns {CartesianCoordinate[]} An array of CartesianCoordinates representing intersection points.
+  */
+  IntersectionCoordinateCircular(otherLine: CircularCurve): CartesianCoordinate[] {
+    return IntersectionCircularCircular.IntersectionCoordinates(this, otherLine);
+  }
 
-//         /// <summary>
-//         /// Vector that is tangential to the curve at the specified position.
-//         /// If the shape is a closed shape, <paramref name="relativePosition" /> = {any integer} where <paramref name="relativePosition" /> = 0.
-//         /// </summary>
-//         /// <param name="relativePosition">Relative length along the path at which the tangent vector is desired.</param>
-//         /// <returns>Vector.</returns>
-//         public override Vector NormalVector(double relativePosition)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         /// <summary>
-//         /// Coordinate of the curve at the specified position.
-//         /// If the shape is a closed shape, <paramref name="relativePosition" /> = {any integer} where <paramref name="relativePosition" /> = 0.
-//         /// </summary>
-//         /// <param name="relativePosition">Relative position along the path at which the coordinate is desired.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public override PolarCoordinate CoordinatePolar(double relativePosition)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
+  /**
+  * Coordinate of the closest point where a perpendicular projection intersects the provided coordinate.
+  * Returns infinity if the point is coincident with the circular curve center.
+  * @param {CartesianCoordinate} point - The point.
+  * @returns {CartesianCoordinate} The closest intersection point.
+  */
+  CoordinateOfPerpendicularProjection(point: CartesianCoordinate): CartesianCoordinate {
+    return CircularCurve.CoordinatesOfPerpendicularProjection(point, this)[0];
+  }
 
-//         #region ICurvePositionCartesian
-//         /// <summary>
-//         /// X-coordinates on the curve that corresponds to the y-coordinate given.
-//         /// </summary>
-//         /// <param name="y">Y-coordinate for which x-coordinates are desired.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double[] XsAtY(double y)
-//         {
-//             double innerSqrt = Radius.Squared() - (y - LocalOrigin.Y).Squared();
-//             if (innerSqrt < 0)
-//             {
-//                 return new double[0];
-//             }
-//             double x = innerSqrt.Sqrt();
-//             return new[] { x + LocalOrigin.X, -x + LocalOrigin.X };
-//         }
+  /**
+  * Coordinates of where a perpendicular projection intersects the provided coordinate.
+  * The first coordinate is of the closer intersection.
+  * Returns infinity if the point is coincident with the circular curve center.
+  * @param {CartesianCoordinate} point - The point.
+  * @returns {Tuple<CartesianCoordinate, CartesianCoordinate>} A tuple of CartesianCoordinates representing intersection points.
+  */
+  CoordinatesOfPerpendicularProjection(point: CartesianCoordinate): [CartesianCoordinate, CartesianCoordinate] {
+    return CircularCurve.CoordinatesOfPerpendicularProjection(point, this);
+  }
 
-//         /// <summary>
-//         /// Y-coordinates on the curve that corresponds to the x-coordinate given.
-//         /// </summary>
-//         /// <param name="x">X-coordinate for which y-coordinates are desired.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double[] YsAtX(double x)
-//         {
-//             double innerSqrt = Radius.Squared() - (x - LocalOrigin.X).Squared();
-//             if (innerSqrt < 0)
-//             {
-//                 return new double[0];
-//             }
-//             double y = innerSqrt.Sqrt();
-//             return new[] { y + LocalOrigin.Y, -y + LocalOrigin.Y };
-//         }
-//         #endregion
+  /**
+  * The length within the provided rotation along a circular curve.
+  * @param {AngularOffset} rotation - Rotation to get arc length between.
+  * @returns {number} The length between rotations.
+  */
+  LengthBetweenAngles(rotation: AngularOffset): number {
+    return CircularCurve.LengthBetween(rotation, this.Radius);
+  }
 
-//         #region ICurvePositionPolar
-//         /// <summary>
-//         /// The radii measured from the local coordinate origin as a function of the angle in local coordinates.
-//         /// </summary>
-//         /// <param name="angleRadians">The angle in radians in local coordinates.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double[] RadiiAboutOrigin(double angleRadians)
-//         {
-//             return new[] { Radius };
-//         }
-//         #endregion
+  /**
+   * Length of the curve between the limits.
+   * @returns {number} The length of the curve.
+   * @throws {Error} Throws an error indicating that the method is not implemented.
+   */
+  Length(): number {
+    throw new Error("Not implemented");
+    //return 2 * Math.PI * this.radius;
+  }
 
-//         #region Methods: Static
-//         //TODO Useful? Not used yet
-//         ///// <summary>
-//         ///// The length between the provided points along a circular curve, assumed to be about the origin.
-//         ///// </summary>
-//         ///// <param name="pointI">Point i.</param>
-//         ///// <param name="pointJ">Point j.</param>
-//         ///// <returns>System.Double.</returns>
-//         //public static double LengthBetween(CartesianCoordinate pointI, CartesianCoordinate pointJ)
-//         //{
-//         //    AngularOffset angle = AngularOffset.CreateFromPoints(pointI, CartesianCoordinate.Origin(), pointJ);
-//         //    double radius = pointI.OffsetFrom(CartesianCoordinate.Origin()).Length();
-//         //    return LengthBetween(angle, radius);
-//         //}
+  /**
+  * Length of the curve between two points.
+  * @param {number} relativePositionStart - Relative position along the path at which the length measurement is started.
+  * @param {number} relativePositionEnd - Relative position along the path at which the length measurement is ended.
+  * @returns {number} The length of the curve between the two specified positions.
+  * @throws {Error} Throws an error indicating that the method is not implemented.
+  */
+  LengthBetween(relativePositionStart: number, relativePositionEnd: number): number {
+    throw new Error("Not implemented");
+  }
 
-//         ///// <summary>
-//         ///// The length between the provided points along a circular curve.
-//         ///// </summary>
-//         ///// <param name="pointI">Point i.</param>
-//         ///// <param name="pointJ">Point j.</param>
-//         ///// <param name="radius">Arc radius</param>
-//         ///// <returns>System.Double.</returns>
-//         //public static double LengthBetween(CartesianCoordinate pointI, CartesianCoordinate pointJ, double radius)
-//         //{
-//         //    IntersectionCircularCircular intersection = new IntersectionCircularCircular(
-//         //        new CircularCurve(radius, pointI),
-//         //        new CircularCurve(radius, pointJ));
+  /**
+  * Vector that is tangential to the curve at the specified position.
+  * If the shape is a closed shape, `relativePosition` = {any integer} where `relativePosition` = 0.
+  * @param {number} relativePosition - Relative length along the path at which the tangent vector is desired.
+  * @returns {Vector} The tangential vector at the specified position.
+  * @throws {Error} Throws an error indicating that the method is not implemented.
+  */
+  TangentVector(relativePosition: number): Vector {
+    throw new Error("Not implemented");
+  }
 
-//         //    // Shape is symmetric, so it doesn't matter if the 1st or 2nd intersection coordinate is taken.
-//         //    CartesianCoordinate center = intersection.IntersectionCoordinates()[0];
-//         //    AngularOffset angle = AngularOffset.CreateFromPoints(pointI, center, pointJ);
-//         //    return LengthBetween(angle, radius);
-//         //}
+  /**
+  * Vector that is tangential to the curve at the specified position.
+  * If the shape is a closed shape, `relativePosition` = {any integer} where `relativePosition` = 0.
+  * @param {number} relativePosition - Relative length along the path at which the tangent vector is desired.
+  * @returns {Vector} The tangential vector at the specified position.
+  * @throws {Error} Throws an error indicating that the method is not implemented.
+  */
+  NormalVector(relativePosition: number): Vector {
+    throw new Error("Not implemented");
+  }
 
-//         /// <summary>
-//         /// The length within the provided rotation along a circular curve.
-//         /// </summary>
-//         /// <param name="rotation">Rotation to get arc length between.</param>
-//         /// <param name="radius">Arc radius</param>
-//         /// <returns>System.Double.</returns>
-//         public static double LengthBetween(AngularOffset rotation, double radius)
-//         {
-//             double length = rotation.LengthArc(radius);
+  /**
+  * Coordinate of the curve at the specified position.
+  * If the shape is a closed shape, `relativePosition` = {any integer} where `relativePosition` = 0.
+  * @param {number} relativePosition - Relative position along the path at which the coordinate is desired.
+  * @returns {PolarCoordinate} The polar coordinate at the specified position.
+  * @throws {Error} Throws an error indicating that the method is not implemented.
+  */
+  CoordinatePolar(relativePosition: number): PolarCoordinate {
+    throw new Error("Not implemented");
+  }
 
-//             return (length.IsZeroSign(rotation.Tolerance) && !rotation.Delta().Radians.IsZeroSign(rotation.Tolerance)) ?
-//                 Numbers.TwoPi * radius :
-//                 length;
-//         }
+  /**
+   * X-coordinates on the curve that corresponds to the y-coordinate given.
+   * @param {number} y - Y-coordinate for which x-coordinates are desired.
+   * @returns {number[]} Array of x-coordinates corresponding to the given y-coordinate.
+   */
+  XsAtY(y: number): number[] {
+    const innerSqrt = this.Radius ** 2 - (y - this.LocalOrigin.Y) ** 2;
+    if (innerSqrt < 0) {
+      return [];
+    }
+    const x = Math.sqrt(innerSqrt);
+    return [x + this.LocalOrigin.X, -x + this.LocalOrigin.X];
+  }
 
-//         #region Aligment
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static bool AreTangent(CircularCurve curve1, CircularCurve curve2)
-//         {
-//             return IntersectionCircularCircular.AreTangent(curve1, curve2);
-//         }
-//         #endregion
+  /**
+  * Y-coordinates on the curve that corresponds to the x-coordinate given.
+  * @param {number} x - X-coordinate for which y-coordinates are desired.
+  * @returns {number[]} Array of y-coordinates corresponding to the given x-coordinate.
+  */
+  YsAtX(x: number): number[] {
+    const innerSqrt = this.Radius ** 2 - (x - this.LocalOrigin.X) ** 2;
+    if (innerSqrt < 0) {
+      return [];
+    }
+    const y = Math.sqrt(innerSqrt);
+    return [y + this.LocalOrigin.Y, -y + this.LocalOrigin.Y];
+  }
 
-//         #region Intersect
-//         /// <summary>
-//         /// Determines if the curves intersect each other.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static bool AreIntersecting(CircularCurve curve1, CircularCurve curve2)
-//         {
-//             return IntersectionCircularCircular.AreIntersecting(curve1, curve2);
-//         }
-//         #endregion
+  // The radii measured from the local coordinate origin as a function of the angle in local coordinates.
+  // angleRadians: The angle in local coordinates [Angle or radians].
+  // Returns: Array of numbers representing radii.
+  public RadiiAboutOrigin(angle: Angle | number): number[] {
+    return [this.Radius];
+  }
 
-//         #region Projection
-//         /// <summary>
-//         /// Coordinates of where a perpendicular projection intersects the provided coordinate.
-//         /// The first coordinate is of the closer intersection.
-//         /// Returns infinity if the point is coincident with the circular curve center.
-//         /// </summary>
-//         /// <param name="point">The point.</param>
-//         /// <param name="referenceArc">The line to which a perpendicular projection is drawn.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static Tuple<CartesianCoordinate, CartesianCoordinate> CoordinatesOfPerpendicularProjection(CartesianCoordinate point, CircularCurve referenceArc)
-//         {
-//             if (point == referenceArc.Center)
-//             {
-//                 return new Tuple<CartesianCoordinate, CartesianCoordinate>(
-//                     new CartesianCoordinate(double.PositiveInfinity, double.PositiveInfinity),
-//                     new CartesianCoordinate(double.PositiveInfinity, double.PositiveInfinity)
-//                     );
-//             }
+  // TODO Useful? Not used yet
+  // The length between the provided points along a circular curve, assumed to be about the origin.
+  // pointI: Point i.
+  // pointJ: Point j.
+  // Returns: Length between the points.
+  // public static LengthBetween(pointI: CartesianCoordinate, pointJ: CartesianCoordinate): number {
+  //     const angle: AngularOffset = AngularOffset.CreateFromPoints(pointI, CartesianCoordinate.Origin(), pointJ);
+  //     const radius: number = pointI.OffsetFrom(CartesianCoordinate.Origin()).Length();
+  //     return this.LengthBetween(angle, radius);
+  // }
 
-//             LinearCurve ray = new LinearCurve(referenceArc.Center, point);
-//             CartesianCoordinate[] intersectionCoordinates = referenceArc.IntersectionCoordinate(ray);
+  // The length between the provided points along a circular curve.
+  // pointI: Point i.
+  // pointJ: Point j.
+  // radius: Arc radius.
+  // Returns: Length between the points.
+  // public static LengthBetween(pointI: CartesianCoordinate, pointJ: CartesianCoordinate, radius: number): number {
+  //     const intersection: IntersectionCircularCircular = new IntersectionCircularCircular(
+  //         new CircularCurve(radius, pointI),
+  //         new CircularCurve(radius, pointJ)
+  //     );
 
-//             double distance1 = CartesianOffset.Separation(point, intersectionCoordinates[0]);
-//             double distance2 = CartesianOffset.Separation(point, intersectionCoordinates[1]);
-//             CartesianCoordinate intersectionClose = (distance1 < distance2) ? intersectionCoordinates[0] : intersectionCoordinates[1];
-//             CartesianCoordinate intersectionFar = (distance1 < distance2) ? intersectionCoordinates[1] : intersectionCoordinates[0];
+  //     // Shape is symmetric, so it doesn't matter if the 1st or 2nd intersection coordinate is taken.
+  //     const center: CartesianCoordinate = intersection.IntersectionCoordinates()[0];
+  //     const angle: AngularOffset = AngularOffset.CreateFromPoints(pointI, center, pointJ);
+  //     return this.LengthBetween(angle, radius);
+  // }
 
-//             return new Tuple<CartesianCoordinate, CartesianCoordinate>(intersectionClose, intersectionFar);
-//         }
-//         #endregion
+  // The length within the provided rotation along a circular curve.
+  // rotation: Rotation to get arc length between.
+  // radius: Arc radius.
+  // Returns: Arc length.
+  public static LengthBetween(rotation: AngularOffset, radius: number): number {
+    const length: number = rotation.LengthArc(radius);
 
-//         #region Protected
-//         /// <summary>
-//         /// Gets the major vertex.
-//         /// </summary>
-//         /// <param name="radius">The radius.</param>
-//         /// <param name="center">The center.</param>
-//         /// <returns>CartesianCoordinate.</returns>
-//         protected static CartesianCoordinate vertexMajor(double radius, CartesianCoordinate center)
-//         {
-//             return new CartesianCoordinate(center.X + radius, center.Y);
-//         }
-//         #endregion
-//         #endregion
+    return (length === 0 && rotation.Delta().Radians !== 0) ?
+      Numbers.TwoPi * radius :
+      length;
+  }
 
-//         #region Methods: Protected
-//         /// <summary>
-//         /// The coordinate of the local origin.
-//         /// </summary>
-//         /// <value>The local origin.</value>
-//         protected override CartesianCoordinate getLocalOrigin()
-//         {
-//             return _focus;
-//         }
-//         #endregion
+  /**
+       * Determines if the curves are tangent to each other.
+       * @param curve1 The first circular curve.
+       * @param curve2 The second circular curve.
+       * @returns True if the curves are tangent, false otherwise.
+       */
+  public static AreTangent(curve1: CircularCurve, curve2: CircularCurve): boolean {
+    return IntersectionCircularCircular.AreTangent(curve1, curve2);
+  }
 
-//         #region ICloneable
-//         /// <summary>
-//         /// Creates a new object that is a copy of the current instance.
-//         /// </summary>
-//         /// <returns>A new object that is a copy of this instance.</returns>
-//         public override object Clone()
-//         {
-//             return CloneCurve();
-//         }
+  /**
+  * Determines if the curves intersect each other.
+  * @param curve1 The first circular curve.
+  * @param curve2 The second circular curve.
+  * @returns True if the curves intersect, false otherwise.
+  */
+  public static AreIntersecting(curve1: CircularCurve, curve2: CircularCurve): boolean {
+    return IntersectionCircularCircular.AreIntersecting(curve1, curve2);
+  }
 
-//         /// <summary>
-//         /// Clones the curve.
-//         /// </summary>
-//         /// <returns>LinearCurve.</returns>
-//         public CircularCurve CloneCurve()
-//         {
-//             CircularCurve curve = new CircularCurve(_vertexMajor, _focus, _tolerance);
-//             curve._range = Range.CloneRange();
-//             return curve;
-//         }
-//         #endregion
-//     }
-// }
+  /**
+  * Coordinates of where a perpendicular projection intersects the provided coordinate.
+  * The first coordinate is of the closer intersection.
+  * Returns infinity if the point is coincident with the circular curve center.
+  * @param point The point.
+  * @param referenceArc The line to which a perpendicular projection is drawn.
+  * @returns Tuple containing CartesianCoordinates representing the closer and farther intersections.
+  */
+  public static CoordinatesOfPerpendicularProjection(
+    point: CartesianCoordinate,
+    referenceArc: CircularCurve
+  ): [CartesianCoordinate, CartesianCoordinate] {
+    if (point.equals(referenceArc.Center)) {
+      return [new CartesianCoordinate(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY), new CartesianCoordinate(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)];
+    }
+
+    const ray: LinearCurve = new LinearCurve(referenceArc.Center, point);
+    const intersectionCoordinates: CartesianCoordinate[] = referenceArc.IntersectionCoordinateLinear(ray);
+
+    const distance1: number = CartesianOffset.lengthBetween(point, intersectionCoordinates[0]);
+    const distance2: number = CartesianOffset.lengthBetween(point, intersectionCoordinates[1]);
+    const intersectionClose: CartesianCoordinate = (distance1 < distance2) ? intersectionCoordinates[0] : intersectionCoordinates[1];
+    const intersectionFar: CartesianCoordinate = (distance1 < distance2) ? intersectionCoordinates[1] : intersectionCoordinates[0];
+
+    return [intersectionClose, intersectionFar];
+  }
+
+  /**
+  * Gets the major vertex.
+  * @param radius The radius.
+  * @param center The center.
+  * @returns CartesianCoordinate representing the major vertex.
+  */
+  protected static VertexMajor(radius: number, center: CartesianCoordinate): CartesianCoordinate {
+    return new CartesianCoordinate(center.X + radius, center.Y);
+  }
+
+  /**
+  * The coordinate of the local origin.
+  * @returns The local origin.
+  */
+  protected GetLocalOrigin(): CartesianCoordinate {
+    return this.Focus;
+  }
+
+  /**
+  * Creates a new object that is a copy of the current instance.
+  * @returns A new object that is a copy of this instance.
+  */
+  clone(): CircularCurve {
+    const curve = new CircularCurve(
+      this._vertexMajor,
+      this._focus,
+      this._tolerance
+    );
+    curve._range = this.Range.clone();
+    return curve;
+  }
+}

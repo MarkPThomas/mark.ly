@@ -1,87 +1,61 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-22-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-22-2020
-// // ***********************************************************************
-// // <copyright file="BezierParametricX1.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-
-// namespace MPT.Math.Curves.Parametrics.BezierCurveComponents
-// {
-//     /// <summary>
-//     /// Represents a 1st-order Bezier curve in parametric equations defining the x-component and differentials.
-//     /// Implements the <see cref="MPT.Math.Curves.Parametrics.BezierCurveComponents.BezierParametricDoubleComponents" />
-//     /// </summary>
-//     /// <seealso cref="MPT.Math.Curves.Parametrics.BezierCurveComponents.BezierParametricDoubleComponents" />
-//     internal class BezierParametric1stOrderX : BezierParametricDoubleComponents
-//     {
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierParametric1stOrderX" /> class.
-//         /// </summary>
-//         /// <param name="parent">The parent.</param>
-//         public BezierParametric1stOrderX(BezierCurve parent) : base(parent)
-//         {
-//         }
-
-//         #region Methods: Parametric Equations and Differentials
-//         /// <summary>
-//         /// The component as a function of the supplied parameter.
-//         /// </summary>
-//         /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double BaseByParameter(double parameter)
-//         {
-//             return new BezierParametric1stOrderP(_parent).BaseByParameter(parameter).X;
-//         }
+import { BezierCurve } from "../../BezierCurve";
+import { BezierParametric1stOrderP } from "./BezierParametric1stOrderP";
+import { BezierParametricDoubleComponents } from "./BezierParametricDoubleComponents";
 
 
-//         /// <summary>
-//         /// The component first differentical as a function of the supplied parameter.
-//         /// </summary>
-//         /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double PrimeByParameter(double parameter)
-//         {
-//             return new BezierParametric1stOrderP(_parent).PrimeByParameter(parameter).X;
-//         }
+/**
+ * Represents a 1st-order Bezier curve in parametric equations defining the x-component and differentials.
+ * @extends {BezierParametricDoubleComponents}
+ */
+export class BezierParametric1stOrderX extends BezierParametricDoubleComponents {
+  /**
+   * Initializes a new instance of the {@linkcode BezierParametric1stOrderX} class.
+   * @param {BezierCurve} parent The parent.
+   */
+  constructor(parent: BezierCurve) {
+    super(parent);
+  }
 
+  /**
+   * The component as a function of the supplied parameter.
+   * @param {number} parameter The parameter, such as relative position between 0 & 1, or the angle in radians.
+   * @returns {number} The calculated x-component.
+   */
+  public override BaseByParameter(parameter: number): number {
+    return new BezierParametric1stOrderP(this._parent).BaseByParameter(parameter).X;
+  }
 
-//         /// <summary>
-//         /// The component second differentical as a function of the supplied parameter.
-//         /// </summary>
-//         /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
-//         /// <returns>System.Double.</returns>
-//         public override double PrimeDoubleByParameter(double parameter)
-//         {
-//             return new BezierParametric1stOrderP(_parent).PrimeDoubleByParameter(parameter).X;
-//         }
-//         #endregion
+  /**
+   * The component first differential as a function of the supplied parameter.
+   * @param {number} parameter The parameter, such as relative position between 0 & 1, or the angle in radians.
+   * @returns {number} The calculated x-component first differential.
+   */
+  public override PrimeByParameter(parameter: number): number {
+    return new BezierParametric1stOrderP(this._parent).PrimeByParameter(parameter).X;
+  }
 
-//         #region ICloneable
-//         /// <summary>
-//         /// Creates a new object that is a copy of the current instance.
-//         /// </summary>
-//         /// <returns>A new object that is a copy of this instance.</returns>
-//         public override object Clone()
-//         {
-//             return CloneParametric();
-//         }
+  /**
+   * The component second differential as a function of the supplied parameter.
+   * @param {number} parameter The parameter, such as relative position between 0 & 1, or the angle in radians.
+   * @returns {number} The calculated x-component second differential.
+   */
+  public override PrimeDoubleByParameter(parameter: number): number {
+    return new BezierParametric1stOrderP(this._parent).PrimeDoubleByParameter(parameter).X;
+  }
 
-//         /// <summary>
-//         /// Clones the curve.
-//         /// </summary>
-//         /// <returns>LinearCurve.</returns>
-//         public BezierParametric1stOrderP CloneParametric()
-//         {
-//             BezierParametric1stOrderP parametric = new BezierParametric1stOrderP(_parent as BezierCurve);
-//             return parametric;
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Creates a new object that is a copy of the current instance.
+   * @returns {BezierParametric1stOrderX} A new object that is a copy of this instance.
+   */
+  public override Clone(): BezierParametric1stOrderX {
+    return this.CloneParametric();
+  }
+
+  /**
+   * Clones the curve.
+   * @returns {BezierParametric1stOrderP} A new {@linkcode BezierParametric1stOrderP} object that is a copy of this instance.
+   */
+  public CloneParametric(): BezierParametric1stOrderX {
+    return new BezierParametric1stOrderX(this._parent as BezierCurve);
+  }
+}

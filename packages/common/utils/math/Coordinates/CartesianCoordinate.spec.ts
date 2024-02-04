@@ -66,7 +66,7 @@ describe('#CartesianCoordinate', () => {
           const coordinate1 = new CartesianCoordinate(x1, y1);
           const coordinate2 = new CartesianCoordinate(x2, y2);
 
-          const result = coordinate1.DotProduct(coordinate2);
+          const result = coordinate1.dotProduct(coordinate2);
 
           expect(result).toBe(expectedResult);
         });
@@ -85,7 +85,7 @@ describe('#CartesianCoordinate', () => {
         (x1, y1, x2, y2, expectedResult) => {
           const coordinate1 = new CartesianCoordinate(x1, y1);
           const coordinate2 = new CartesianCoordinate(x2, y2);
-          const result = coordinate1.CrossProduct(coordinate2);
+          const result = coordinate1.crossProduct(coordinate2);
           expect(result).toBe(expectedResult);
         });
     });
@@ -100,7 +100,7 @@ describe('#CartesianCoordinate', () => {
         (xi, yi, xj, yj, expectedI_X, expectedI_Y, expectedJ_X, expectedJ_Y) => {
           const coordinate1 = new CartesianCoordinate(xj, yj);
           const coordinate2 = new CartesianCoordinate(xi, yi);
-          const offset: CartesianOffset = coordinate1.OffsetFrom(coordinate2);
+          const offset: CartesianOffset = coordinate1.offsetFrom(coordinate2);
 
           expect(offset.I.X).toBe(expectedI_X);
           expect(offset.I.Y).toBe(expectedI_Y);
@@ -124,8 +124,8 @@ describe('#CartesianCoordinate', () => {
           (x: %d, y: %d) offset by distance %d & rotation %d degrees should be at (x: %f, y: %f)`,
         (x, y, distance, rotationDegrees, expectedX, expectedY) => {
           const coordinate = new CartesianCoordinate(x, y);
-          const rotation = Angle.CreateFromDegree(rotationDegrees);
-          const offsetCoordinate = coordinate.OffsetCoordinate(distance, rotation);
+          const rotation = Angle.fromDegrees(rotationDegrees);
+          const offsetCoordinate = coordinate.offsetCoordinate(distance, rotation);
           const expectedCoordinate = new CartesianCoordinate(expectedX, expectedY);
 
           expect(offsetCoordinate).toEqual(expectedCoordinate);
@@ -143,7 +143,7 @@ describe('#CartesianCoordinate', () => {
         (x: %d, y: %d) should be %f from the origin`,
         (x, y, expectedDistance) => {
           const coordinate = new CartesianCoordinate(x, y);
-          const distance = coordinate.DistanceFromOrigin();
+          const distance = coordinate.distanceFromOrigin();
           expect(distance).toBeCloseTo(expectedDistance, 6);
         });
     });
@@ -316,7 +316,7 @@ describe('#CartesianCoordinate', () => {
   describe('Methods: Static', () => {
     describe('##Origin', () => {
       it('should return a Cartesian Coordinate at the origin', () => {
-        const coordinate = CartesianCoordinate.Origin();
+        const coordinate = CartesianCoordinate.atOrigin();
         const expectedCoordinate = new CartesianCoordinate(0, 0);
 
         expect(coordinate).toEqual(expectedCoordinate);
@@ -338,8 +338,8 @@ describe('#CartesianCoordinate', () => {
           (x: %d, y: %d) offset by distance %d & rotation %d degrees should be at (x: %d, y: %d)`,
         (x, y, distance, rotationDegrees, expectedX, expectedY) => {
           const coordinate = new CartesianCoordinate(x, y, Tolerance);
-          const rotation = Angle.CreateFromDegree(rotationDegrees);
-          const offsetCoordinate = CartesianCoordinate.OffsetCoordinate(coordinate, distance, rotation);
+          const rotation = Angle.fromDegrees(rotationDegrees);
+          const offsetCoordinate = CartesianCoordinate.fromCoordinateOffset(coordinate, distance, rotation);
           const expectedCoordinate = new CartesianCoordinate(expectedX, expectedY, Tolerance);
 
           expect(offsetCoordinate).toEqual(expectedCoordinate);
@@ -364,7 +364,7 @@ describe('#CartesianCoordinate', () => {
           ])(`Rotate(%d, %d) by %f radians should yield (%f, %f)`,
             (x, y, angleRadians, expectedX, expectedY) => {
               const coordinate = new CartesianCoordinate(x, y);
-              const cartesianCoordinate = CartesianCoordinate.Rotate(coordinate, angleRadians);
+              const cartesianCoordinate = CartesianCoordinate.RotateAboutOrigin(coordinate, angleRadians);
 
               expect(cartesianCoordinate.X).toBeCloseTo(expectedX, Tolerance);
               expect(cartesianCoordinate.Y).toBeCloseTo(expectedY, Tolerance);
@@ -409,7 +409,7 @@ describe('#CartesianCoordinate', () => {
               const coordinate = new CartesianCoordinate(x, y);
               const expectedCoordinate = new CartesianCoordinate(expectedX, expectedY);
 
-              const transformedCoordinate = CartesianCoordinate.Scale(coordinate, scale);
+              const transformedCoordinate = CartesianCoordinate.ScaleFromOrigin(coordinate, scale);
 
               expect(transformedCoordinate.X).toBeCloseTo(expectedCoordinate.X, Tolerance);
               expect(transformedCoordinate.Y).toBeCloseTo(expectedCoordinate.Y, Tolerance);
@@ -456,7 +456,7 @@ describe('#CartesianCoordinate', () => {
               const coordinate = new CartesianCoordinate(x, y);
               const expectedCoordinate = new CartesianCoordinate(expectedX, expectedY);
 
-              const transformedCoordinate = CartesianCoordinate.Skew(coordinate, lambdaX, lambdaY);
+              const transformedCoordinate = CartesianCoordinate.SkewAboutOrigin(coordinate, lambdaX, lambdaY);
               transformedCoordinate.Tolerance = Tolerance;
               expectedCoordinate.Tolerance = Tolerance;
 
@@ -477,7 +477,7 @@ describe('#CartesianCoordinate', () => {
               const coordinate = new CartesianCoordinate(x, y);
               const expectedCoordinate = new CartesianCoordinate(expectedX, expectedY);
 
-              const transformedCoordinate = CartesianCoordinate.Skew(coordinate, lambdaX, lambdaY);
+              const transformedCoordinate = CartesianCoordinate.SkewAboutOrigin(coordinate, lambdaX, lambdaY);
               transformedCoordinate.Tolerance = Tolerance;
               expectedCoordinate.Tolerance = Tolerance;
 
@@ -504,7 +504,7 @@ describe('#CartesianCoordinate', () => {
               const expectedCoordinate = new CartesianCoordinate(expectedX, expectedY);
               const stationaryReferencePoint = new CartesianCoordinate(stationaryPointX, stationaryPointY);
               const skewingReferencePoint = new CartesianCoordinate(skewingPointX, skewingPointY);
-              const magnitude = CartesianOffset.FromOffsets(magnitudeX, magnitudeY);
+              const magnitude = CartesianOffset.fromOffsets(magnitudeX, magnitudeY);
 
               const transformedCoordinate = CartesianCoordinate.SkewWithinBox(coordinate, stationaryReferencePoint, skewingReferencePoint, magnitude);
               transformedCoordinate.Tolerance = Tolerance;

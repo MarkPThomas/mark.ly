@@ -13,7 +13,7 @@ describe('CartesianOffset', () => {
     it('should initialize with default tolerance', () => {
       const coordinate1 = new CartesianCoordinate(1, 2);
       const coordinate2 = new CartesianCoordinate(3, 4);
-      const offset = new CartesianOffset(coordinate1, coordinate2);
+      const offset = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
 
       expect(offset.I.X).toBe(coordinate1.X);
       expect(offset.I.Y).toBe(coordinate1.Y);
@@ -26,7 +26,7 @@ describe('CartesianOffset', () => {
       const coordinate1 = new CartesianCoordinate(1, 2);
       const coordinate2 = new CartesianCoordinate(3, 4);
       const tolerance = 0.5;
-      const offset = new CartesianOffset(coordinate1, coordinate2, tolerance);
+      const offset = CartesianOffset.fromCoordinates(coordinate1, coordinate2, tolerance);
 
       expect(offset.I.X).toBe(coordinate1.X);
       expect(offset.I.Y).toBe(coordinate1.Y);
@@ -37,7 +37,7 @@ describe('CartesianOffset', () => {
 
     it('should initialize with specified offsets and tolerance', () => {
       const tolerance = 0.5;
-      const offset = CartesianOffset.FromOffsets(2, 3, tolerance);
+      const offset = CartesianOffset.fromOffsets(2, 3, tolerance);
 
       expect(offset.I.X).toBe(0);
       expect(offset.I.Y).toBe(0);
@@ -50,7 +50,7 @@ describe('CartesianOffset', () => {
   describe('Methods: Public', () => {
     describe('ToString', () => {
       it('should return overridden value', () => {
-        const offset = new CartesianOffset(new CartesianCoordinate(0.1, 2), new CartesianCoordinate(0.5, 3));
+        const offset = CartesianOffset.fromCoordinates(new CartesianCoordinate(0.1, 2), new CartesianCoordinate(0.5, 3));
 
         expect(offset.toString()).toBe('MPT.Math.Coordinates.CartesianOffset - I: (0.1, 2), J: (0.5, 3)');
       });
@@ -67,12 +67,12 @@ describe('CartesianOffset', () => {
       ])('should return Cartesian coordinate offset from origin', (
         xI, yI, xJ, yJ, xNew, yNew
       ) => {
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(xI, yI),
           new CartesianCoordinate(xJ, yJ)
         );
 
-        const newCoordinate = offset.ToCartesianCoordinate();
+        const newCoordinate = offset.toCartesianCoordinate();
 
         expect(newCoordinate.X).toBeCloseTo(xNew, Tolerance);
         expect(newCoordinate.Y).toBeCloseTo(yNew, Tolerance);
@@ -89,7 +89,7 @@ describe('CartesianOffset', () => {
         [-1.1, -2.2, -1.1],
         [1.1, -2.2, -3.3],
       ])('should return X coordinates difference', (xI, xJ, xDifference) => {
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(xI, 0),
           new CartesianCoordinate(xJ, 0)
         );
@@ -108,7 +108,7 @@ describe('CartesianOffset', () => {
         [-1.1, -2.2, -1.1],
         [1.1, -2.2, -3.3],
       ])('should return Y coordinates difference', (yI, yJ, yDifference) => {
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(0, yI),
           new CartesianCoordinate(0, yJ)
         );
@@ -129,12 +129,12 @@ describe('CartesianOffset', () => {
       ])('should return linear distance between offset points', (
         xI, yI, xJ, yJ, distance
       ) => {
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(xI, yI),
           new CartesianCoordinate(xJ, yJ)
         );
 
-        expect(offset.Length()).toBeCloseTo(distance, Tolerance);
+        expect(offset.length()).toBeCloseTo(distance, Tolerance);
       });
     });
 
@@ -147,8 +147,8 @@ describe('CartesianOffset', () => {
       ])('SlopeAngle: (%d, %d) to (%d, %d) should return %d degrees',
         (xI, yI, xJ, yJ, angleDegreesExpected) => {
           it('should calculate the angle of slope between offset points', () => {
-            const offset = new CartesianOffset(new CartesianCoordinate(xI, yI), new CartesianCoordinate(xJ, yJ));
-            const slope = offset.SlopeAngle();
+            const offset = CartesianOffset.fromCoordinates(new CartesianCoordinate(xI, yI), new CartesianCoordinate(xJ, yJ));
+            const slope = offset.slopeAngle();
             expect(slope.Degrees).toBe(angleDegreesExpected);
           });
         }
@@ -158,7 +158,7 @@ describe('CartesianOffset', () => {
 
   describe('Conversion methods', () => {
     it('should convert Cartesian Offset to Polar Offset', () => {
-      // const cartesian = new CartesianOffset(1, 1.73205081, Tolerance);
+      // const cartesian = CartesianOffset.fromCoordinates(1, 1.73205081, Tolerance);
       // const polar = cartesian.ToPolar();
       // const polarExpected = new PolarOffset(
       //   new PolarCoordinate(0, 0),
@@ -174,8 +174,8 @@ describe('CartesianOffset', () => {
     it('should return true for objects with identical coordinates', () => {
       const coordinate1 = new CartesianCoordinate(1, 2);
       const coordinate2 = new CartesianCoordinate(3, 4);
-      const offset1 = new CartesianOffset(coordinate1, coordinate2);
-      const offset2 = new CartesianOffset(coordinate1, coordinate2);
+      const offset1 = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
+      const offset2 = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
 
       expect(offset1.equals(offset2)).toBe(true);
     });
@@ -184,16 +184,16 @@ describe('CartesianOffset', () => {
       const coordinate1 = new CartesianCoordinate(1, 2);
       const coordinate2 = new CartesianCoordinate(3, 4);
       const coordinate3 = new CartesianCoordinate(3, 4);
-      const offset1 = new CartesianOffset(coordinate1, coordinate2);
-      const offsetDiffI = new CartesianOffset(coordinate3, coordinate2);
+      const offset1 = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
+      const offsetDiffI = CartesianOffset.fromCoordinates(coordinate3, coordinate2);
 
       expect(offset1.equals(offsetDiffI)).toBe(false);
 
       const coordinate4 = new CartesianCoordinate(3, 5);
-      const offsetDiffJ = new CartesianOffset(coordinate1, coordinate4);
+      const offsetDiffJ = CartesianOffset.fromCoordinates(coordinate1, coordinate4);
       expect(offset1.equals(offsetDiffJ)).toBe(false);
 
-      const offsetDiffT = new CartesianOffset(coordinate1, coordinate2, 0.001);
+      const offsetDiffT = CartesianOffset.fromCoordinates(coordinate1, coordinate2, 0.001);
       expect(offset1.equals(offsetDiffT)).toBe(true);
     });
 
@@ -201,8 +201,8 @@ describe('CartesianOffset', () => {
       const coordinate1 = new CartesianCoordinate(1, 2);
       const coordinate2 = new CartesianCoordinate(3, 4);
       const coordinate3 = new CartesianCoordinate(3, 4);
-      const offset1 = new CartesianOffset(coordinate1, coordinate2);
-      const offsetDiffI = new CartesianOffset(coordinate3, coordinate2);
+      const offset1 = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
+      const offsetDiffI = CartesianOffset.fromCoordinates(coordinate3, coordinate2);
 
       expect(!offset1.equals(offsetDiffI)).toBe(true);
     });
@@ -225,17 +225,17 @@ describe('CartesianOffset', () => {
       Xi1, Yi1, Xj1, Yj1, Xi2, Yi2, Xj2, Yj2,
       XiResult, YiResult, XjResult, YjResult
     ) => {
-      const offset1 = new CartesianOffset(
+      const offset1 = CartesianOffset.fromCoordinates(
         new CartesianCoordinate(Xi1, Yi1),
         new CartesianCoordinate(Xj1, Yj1)
       );
 
-      const offset2 = new CartesianOffset(
+      const offset2 = CartesianOffset.fromCoordinates(
         new CartesianCoordinate(Xi2, Yi2),
         new CartesianCoordinate(Xj2, Yj2)
       );
 
-      const offset = offset1.subtractByOffset(offset2);
+      const offset = offset1.subtractBy(offset2);
 
       expect(offset.I.X).toBeCloseTo(XiResult, 6);
       expect(offset.I.Y).toBeCloseTo(YiResult, 6);
@@ -259,7 +259,7 @@ describe('CartesianOffset', () => {
       (x, y, Xi2, Yi2, Xj2, Yj2, XResult, YResult) => {
         const coordinate = new CartesianCoordinate(x, y);
 
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(Xi2, Yi2),
           new CartesianCoordinate(Xj2, Yj2)
         );
@@ -286,7 +286,7 @@ describe('CartesianOffset', () => {
       (x, y, Xi2, Yi2, Xj2, Yj2, XResult, YResult) => {
         const coordinate = new CartesianCoordinate(x, y);
 
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(Xi2, Yi2),
           new CartesianCoordinate(Xj2, Yj2)
         );
@@ -313,12 +313,12 @@ describe('CartesianOffset', () => {
       Xi1, Yi1, Xj1, Yj1, Xi2, Yi2, Xj2, Yj2,
       XiResult, YiResult, XjResult, YjResult
     ) => {
-      const offset1 = new CartesianOffset(
+      const offset1 = CartesianOffset.fromCoordinates(
         new CartesianCoordinate(Xi1, Yi1),
         new CartesianCoordinate(Xj1, Yj1)
       );
 
-      const offset2 = new CartesianOffset(
+      const offset2 = CartesianOffset.fromCoordinates(
         new CartesianCoordinate(Xi2, Yi2),
         new CartesianCoordinate(Xj2, Yj2)
       );
@@ -347,7 +347,7 @@ describe('CartesianOffset', () => {
       (x, y, Xi2, Yi2, Xj2, Yj2, XResult, YResult) => {
         const coordinate = new CartesianCoordinate(x, y);
 
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(Xi2, Yi2),
           new CartesianCoordinate(Xj2, Yj2)
         );
@@ -374,7 +374,7 @@ describe('CartesianOffset', () => {
       (x, y, Xi2, Yi2, Xj2, Yj2, XResult, YResult) => {
         const coordinate = new CartesianCoordinate(x, y);
 
-        const offset = new CartesianOffset(
+        const offset = CartesianOffset.fromCoordinates(
           new CartesianCoordinate(Xi2, Yi2),
           new CartesianCoordinate(Xj2, Yj2)
         );
@@ -401,7 +401,7 @@ describe('CartesianOffset', () => {
       (a1, a2, factor, scaledIX, scaledIY, scaledJX, scaledJY) => {
         const coordinate1 = new CartesianCoordinate(a1, a2);
         const coordinate2 = new CartesianCoordinate(a2, a1);
-        const offset = new CartesianOffset(coordinate1, coordinate2);
+        const offset = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
 
         const offsetNew = offset.multiplyBy(factor);
 
@@ -422,7 +422,7 @@ describe('CartesianOffset', () => {
       (a1, a2, factor, scaledIX, scaledIY, scaledJX, scaledJY) => {
         const coordinate1 = new CartesianCoordinate(a1, a2);
         const coordinate2 = new CartesianCoordinate(a2, a1);
-        const offset = new CartesianOffset(coordinate1, coordinate2);
+        const offset = CartesianOffset.fromCoordinates(coordinate1, coordinate2);
 
         const offsetNew = offset.divideBy(factor);
 
@@ -433,7 +433,7 @@ describe('CartesianOffset', () => {
       });
 
     it('DivideOverride should throw an exception when dividing by zero', () => {
-      const offset = new CartesianOffset(
+      const offset = CartesianOffset.fromCoordinates(
         new CartesianCoordinate(1, 2),
         new CartesianCoordinate(-2, 3)
       );

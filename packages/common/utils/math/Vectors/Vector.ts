@@ -270,7 +270,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <returns>Vector.</returns>
   /// <exception cref="Exception">Ill-formed vector. Vector magnitude cannot be zero.</exception>
   public static UnitVector(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
-    tolerance = Generics.GetToleranceBetween(i, j, tolerance);
+    tolerance = Generics.getToleranceBetween(i, j, tolerance);
     const xComponent = this.getXComponent(i, j);
     const yComponent = this.getYComponent(i, j);
 
@@ -303,7 +303,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="tolerance">The tolerance.</param>
   /// <returns>Vector.</returns>
   public static UnitTangentVectorByPts(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
-    tolerance = Generics.GetToleranceBetween(i, j, tolerance);
+    tolerance = Generics.getToleranceBetween(i, j, tolerance);
     return Vector.UnitVector(i, j, tolerance);
   }
 
@@ -327,7 +327,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="tolerance">The tolerance.</param>
   /// <returns>Vector.</returns>
   public static UnitNormalVectorByPts(i: CartesianCoordinate, j: CartesianCoordinate, tolerance: number = Numbers.ZeroTolerance): Vector {
-    tolerance = Generics.GetToleranceBetween(i, j, tolerance);
+    tolerance = Generics.getToleranceBetween(i, j, tolerance);
     const xComponent = this.getXComponent(i, j);
     const yComponent = this.getYComponent(i, j);
     return Vector.UnitNormalVectorByComponents(xComponent, yComponent, tolerance);
@@ -356,7 +356,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
   /// <param name="tolerance">Tolerance by which a double is considered to be zero or equal.</param>
   /// <returns>System.Double.</returns>
   public static AngleBetween(vector1: Vector, vector2: Vector, tolerance: number = Numbers.ZeroTolerance): number {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     return Math.acos(Vector.ConcavityCollinearity(vector1, vector2));
   }
 
@@ -373,8 +373,8 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
-    return Numbers.IsEqualTo(Vector.ConcavityCollinearity(vector1, vector2), 1, Generics.GetToleranceBetween(vector1, vector2, tolerance));
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
+    return Numbers.IsEqualTo(Vector.ConcavityCollinearity(vector1, vector2), 1, Generics.getToleranceBetween(vector1, vector2, tolerance));
   }
 
   /// <summary>
@@ -389,7 +389,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     const concavityCollinearity = Vector.ConcavityCollinearity(vector1, vector2);
     return Numbers.IsPositiveSign(concavityCollinearity, tolerance) && !Numbers.IsEqualTo(concavityCollinearity, 1, tolerance);
   }
@@ -406,7 +406,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     return Numbers.IsZeroSign(Vector.ConcavityCollinearity(vector1, vector2), tolerance);
   }
 
@@ -422,7 +422,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     const concavityCollinearity = Vector.ConcavityCollinearity(vector1, vector2);
     return Numbers.IsNegativeSign(concavityCollinearity, tolerance) && !Numbers.IsEqualTo(concavityCollinearity, -1, tolerance);
   }
@@ -439,7 +439,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     return Numbers.IsEqualTo(Vector.ConcavityCollinearity(vector1, vector2), -1, tolerance);
   }
 
@@ -457,7 +457,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     return Numbers.IsPositiveSign(vector1.Area(vector2), tolerance);
   }
 
@@ -474,7 +474,7 @@ export class Vector implements IEquatable<Vector>, ITolerance {
     vector2: Vector,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(vector1, vector2, tolerance);
+    tolerance = Generics.getToleranceBetween(vector1, vector2, tolerance);
     return Numbers.IsNegativeSign(vector1.Area(vector2), tolerance);
   }
 

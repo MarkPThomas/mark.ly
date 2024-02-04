@@ -4,9 +4,10 @@ import { CartesianParametricEquationXY } from "./Parametrics/Components/Cartesia
 import { VectorParametric } from "../Vectors/VectorParametric";
 import { ICurve } from "./ICurve";
 import { CurveRange } from "./tools/CurveRange";
+import { Angle } from "../Coordinates/Angle";
 
 export abstract class Curve implements ICurve, ICloneable<Curve> {
-  protected readonly DEFAULT_TOLERANCE = 10E-6;
+  protected static readonly DEFAULT_TOLERANCE = 10E-6;
 
   protected _tolerance: number
   public get Tolerance() {
@@ -37,7 +38,7 @@ export abstract class Curve implements ICurve, ICloneable<Curve> {
 
 
   constructor(tolerance?: number) {
-    this.Tolerance = tolerance ?? this.DEFAULT_TOLERANCE;
+    this.Tolerance = tolerance ?? Curve.DEFAULT_TOLERANCE;
   }
 
 
@@ -49,9 +50,9 @@ export abstract class Curve implements ICurve, ICloneable<Curve> {
   /// </summary>
   /// <param name="angleRadians">Angle of rotation about the local origin, in radians.</param>
   /// <returns>System.Double.</returns>
-  public XbyRotationAboutOrigin(angleRadians: number): number {
+  public XbyRotationAboutOrigin(angle: Angle | number): number {
 
-    return this.vectorParametric.CurveParametric.Xcomponent.ValueAt(angleRadians);
+    return this.vectorParametric.CurveParametric.Xcomponent.ValueAt(this.asRadians(angle));
   }
 
   /// <summary>
@@ -59,9 +60,9 @@ export abstract class Curve implements ICurve, ICloneable<Curve> {
   /// </summary>
   /// <param name="angleRadians">Angle of rotation about the local origin, in radians.</param>
   /// <returns>System.Double.</returns>
-  public YbyRotationAboutOrigin(angleRadians: number): number {
+  public YbyRotationAboutOrigin(angle: Angle | number): number {
 
-    return this.vectorParametric.CurveParametric.Ycomponent.ValueAt(angleRadians);
+    return this.vectorParametric.CurveParametric.Ycomponent.ValueAt(this.asRadians(angle));
   }
 
   /// <summary>
@@ -137,6 +138,10 @@ export abstract class Curve implements ICurve, ICloneable<Curve> {
    * @memberof Curve
    */
   protected abstract createParametricEquation(): CartesianParametricEquationXY;
+
+  protected asRadians(angle: Angle | number) {
+    return angle instanceof Angle ? angle.Radians : angle;
+  }
 
   public abstract clone(): Curve;
 }

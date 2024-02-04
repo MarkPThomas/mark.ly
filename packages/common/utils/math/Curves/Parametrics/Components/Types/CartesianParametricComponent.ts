@@ -16,7 +16,7 @@ export class CartesianParametricComponent extends ParametricComponent<CartesianC
     functionDifferential: CartesianParametricComponent | null = null
   ) {
     super(
-      CartesianCoordinate.Origin(),
+      CartesianCoordinate.atOrigin(),
       parametricCB,
       functionDifferential
     )

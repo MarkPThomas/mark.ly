@@ -6,7 +6,7 @@ import { LinearCurve } from "../../math/Curves/LinearCurve";
 import { GeometryLibrary } from "../GeometryLibrary";
 import { PointExtents } from "../Tools/PointExtents";
 import { IPathSegmentCollision } from "./IPathSegmentCollision";
-import { IPathSegment } from "./IPathSegments";
+import { IPathSegment } from "./IPathSegment";
 import { LineSegment } from "./LineSegment";
 import { Vector } from "../../math/Vectors/Vector";
 import { Numbers } from "../../math/Numbers";
@@ -188,12 +188,12 @@ export abstract class PathSegment<T extends Curve> implements IPathSegment, IPat
   /// <param name="referencePoint">The reference point.</param>
   /// <returns>IPathSegment.</returns>
   public ScaleFromPoint(scale: number, referencePoint: CartesianCoordinate): IPathSegment {
-    const offsetJ = (this.J.OffsetFrom(referencePoint)).multiplyBy(scale);
-    const offsetI = (this.I.OffsetFrom(referencePoint)).multiplyBy(scale);
+    const offsetJ = (this.J.offsetFrom(referencePoint)).multiplyBy(scale);
+    const offsetI = (this.I.offsetFrom(referencePoint)).multiplyBy(scale);
 
     return new LineSegment(
-      offsetI.ToCartesianCoordinate().addTo(referencePoint),
-      offsetJ.ToCartesianCoordinate().addTo(referencePoint)
+      offsetI.toCartesianCoordinate().addTo(referencePoint),
+      offsetJ.toCartesianCoordinate().addTo(referencePoint)
     ) as IPathSegment;
   }
 

@@ -21,8 +21,8 @@ import { ParametricComponent } from "./ParametricComponent";
 export abstract class ParametricComponents<
   T1,
   T2 extends ParametricComponent<T1>,
-  T3 extends Curve>
-{
+  T3 extends Curve
+  > {
   /**
    * The `Curve` whose properties are used in the associated parametric equations.
    *

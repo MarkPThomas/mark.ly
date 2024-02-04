@@ -1,37 +1,28 @@
-/// <summary>
-/// Represents the difference between Cartesian coordinates I (first) and J (second) in two-dimensional space.
-/// </summary>
-
-import { IEquatable } from "../../../interfaces";
 import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
-import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";
 import { CartesianCoordinate } from "./CartesianCoordinate";
 import { Angle } from './Angle';
 import { Generics } from "../Generics";
 import { DivideByZeroException } from "../../../errors/exceptions";
+import { PolarOffset } from "./PolarOffset";
+import { IOffset } from "../IOffset";
 
-/// <seealso cref="System.IEquatable{CartesianOffset}" />
-export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance {
-  public readonly Tolerance: number;
+/**
+ * Represents the difference between Cartesian coordinates I (first) and J (second) in two-dimensional space.
+ * @date 2/3/2024 - 9:04:58 AM
+ *
+ * @see {@link https://en.wikipedia.org/wiki/Cartesian_coordinate_system}
+ * @see {@link https://en.wikipedia.org/wiki/Euclidean_space}
+ * @export
+ * @class CartesianOffset
+ * @typedef {CartesianOffset}
+ * @implements {IOffset<CartesianCoordinate>}
+ */
+export class CartesianOffset implements IOffset<CartesianCoordinate> {
 
-  private _i: CartesianCoordinate;
-  /**
-   * Coordinate I (starting point).
-   *
-   * @readonly
-   * @memberof CartesianOffset
-   */
-  get I() { return this._i }
-
-  private _j: CartesianCoordinate;
-  /**
-   * Coordinate J (ending point).
-   *
-   * @readonly
-   * @memberof CartesianOffset
-   */
-  get J() { return this._j }
+  readonly Tolerance: number;
+  readonly I: CartesianCoordinate;
+  readonly J: CartesianCoordinate;
 
   /**
    * 𝝙X = Xj - Xi.
@@ -55,32 +46,46 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
     return (this.J.Y - this.I.Y);
   }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="CartesianOffset"/> struct.
-  /// </summary>
-  /// <param name="i">The first coordinate.</param>
-  /// <param name="j">The second coordinate.</param>
-  /// <param name="tolerance">The tolerance.</param>
-  constructor(
-    i: CartesianCoordinate, j: CartesianCoordinate,
+  // ==== Initialization
+  /**
+   * Creates an instance of CartesianOffset.
+   * @date 2/3/2024 - 9:04:58 AM
+   *
+   * @constructor
+   * @param {CartesianCoordinate} i The first coordinate.
+   * @param {CartesianCoordinate} j The second coordinate.
+   * @param {number} [tolerance=Numbers.ZeroTolerance]
+   */
+  protected constructor(
+    i: CartesianCoordinate,
+    j: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ) {
-    this._i = i;
-    this._j = j;
+    this.I = i;
+    this.J = j;
     this.Tolerance = tolerance;
   }
 
-  // === Factory Methods
-  static FromCoordinates(
-    i: CartesianCoordinate, j: CartesianCoordinate,
+  /**
+   * Creates an instance of CartesianOffset from the provided coordinates.
+   * @date 2/3/2024 - 9:04:58 AM
+   *
+   * @static
+   * @param {CartesianCoordinate} i
+   * @param {CartesianCoordinate} j
+   * @param {number} [tolerance=Numbers.ZeroTolerance]
+   * @returns {CartesianOffset}
+   */
+  static fromCoordinates(
+    i: CartesianCoordinate,
+    j: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): CartesianOffset {
     return new CartesianOffset(i, j, tolerance)
   }
 
-
   /**
-   * Returns a new CartesianOffset based on the specified offsets from the global origin.
+   * Creates an instance of CartesianOffset from the specified offsets from the global origin.
    *
    * @static
    * @param {number} deltaX The x-axis offset from the origin.
@@ -89,53 +94,55 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
    * @return {*}  {CartesianOffset}
    * @memberof CartesianOffset
    */
-  static FromOffsets(
-    deltaX: number, deltaY: number,
+  static fromOffsets(
+    deltaX: number,
+    deltaY: number,
     tolerance: number = Numbers.ZeroTolerance
   ): CartesianOffset {
-    const i = new CartesianCoordinate(0, 0);
-    const j = new CartesianCoordinate(deltaX, deltaY);
-    return new CartesianOffset(
-      i, j, tolerance
-    );
+    const i = CartesianCoordinate.atOrigin();
+    const j = CartesianCoordinate.fromXY(deltaX, deltaY);
+
+    return new CartesianOffset(i, j, tolerance);
   }
 
-
-  // === Conversions
-  public ToString(): string {
-    return this.toString() + " - I: (" + this.I.X + ", " + this.I.Y + "), J: (" + this.J.X + ", " + this.J.Y + ")";
+  // ==== Conversions
+  toString(): string {
+    return `${CartesianOffset.name} - `
+      + `I: (${this.I.X}, ${this.I.Y}), `
+      + `J: (${this.J.X}, ${this.J.Y})`;
   }
 
   /**
-   * Converts to a single coordinate with the global origin aligned with the first point of the offset.
+   * Converts to a single coordinate with the global origin aligned with the first coord of the offset.
    *
    * @return {*}  {CartesianCoordinate}
    * @memberof CartesianOffset
    */
-  public ToCartesianCoordinate(): CartesianCoordinate {
-    return new CartesianCoordinate(
+  toCartesianCoordinate(): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
       this.X,
       this.Y,
       this.Tolerance);
   }
 
-  // /// <summary>
-  // /// Converts to polar offset.
-  // /// </summary>
-  // /// <returns>PolarOffset.</returns>
-  // public ToPolar(): PolarOffset {
-  //   return new PolarOffset(I, J, Tolerance);
-  // }
+  /**
+   * Converts to a single polar coordinate with the global origin aligned with the first coord of the offset.
+   *
+   * @return {*}  {PolarOffset}
+   * @memberof PolarOffset
+   */
+  toPolarOffset(): PolarOffset {
+    return PolarOffset.fromCoordinates(this.I.toPolar(), this.J.toPolar(), this.Tolerance);
+  }
 
-  // === Public Methods
-
+  // ==== Public Methods
   /**
    * The total straight length of the offset.
    *
    * @return {*}  {number}
    * @memberof CartesianOffset
    */
-  public Length(): number {
+  length(): number {
     return AlgebraLibrary.SRSS(this.X, this.Y);
   }
 
@@ -145,13 +152,12 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
    * @return {*}  {Angle}
    * @memberof CartesianOffset
    */
-  public SlopeAngle(): Angle {
-    return Angle.CreateFromPoint(this.ToCartesianCoordinate());
+  slopeAngle(): Angle {
+    return Angle.CreateFromPoint(this.toCartesianCoordinate());
   }
 
-
   /**
-   * The separation distance between the provided points.
+   * The separation distance between the provided coordinates.
    *
    * @static
    * @param {CartesianCoordinate} coord1
@@ -159,106 +165,67 @@ export class CartesianOffset implements IEquatable<CartesianOffset>, ITolerance 
    * @return {*}  {number}
    * @memberof CartesianOffset
    */
-  public static Separation(coord1: CartesianCoordinate, coord2: CartesianCoordinate): number {
+  static lengthBetween(coord1: CartesianCoordinate, coord2: CartesianCoordinate): number {
     return AlgebraLibrary.SRSS((coord2.X - coord1.X), (coord2.Y - coord1.Y));
   }
 
-  // === Comparisons & Operators
-
-  public equals(other: CartesianOffset): boolean {
+  // ==== Comparisons
+  equals(other: CartesianOffset): boolean {
     const tolerance = Math.min(this.Tolerance, other.Tolerance);
-    return Numbers.AreEqual(this.X, other.X, tolerance) &&
-      Numbers.AreEqual(this.Y, other.Y, tolerance);
+    return (
+      Numbers.AreEqual(this.X, other.X, tolerance) &&
+      Numbers.AreEqual(this.Y, other.Y, tolerance)
+    );
   }
 
-  /// <summary>
-  /// Implements the - operator.
-  /// </summary>
-  /// <param name="offset1">The offset1.</param>
-  /// <param name="offset2">The offset2.</param>
-  /// <returns>The result of the operator.</returns>
-  public subtractByOffset(offset: CartesianOffset): CartesianOffset {
-    return new CartesianOffset(
-      new CartesianCoordinate(),
-      this.ToCartesianCoordinate().subtractBy(offset.ToCartesianCoordinate()),
-      Generics.GetToleranceBetween(this, offset));
-  }
-  /// <summary>
-  /// Implements the - operator.
-  /// </summary>
-  /// <param name="point1">The point1.</param>
-  /// <param name="offset2">The offset2.</param>
-  /// <returns>The result of the operator.</returns>
-  public subtractFromCoordinate(point: CartesianCoordinate): CartesianCoordinate {
-    return new CartesianCoordinate(
-      point.X - this.X,
-      point.Y - this.Y,
-      Generics.GetToleranceBetween(point, this));
-  }
-  /// <summary>
-  /// Implements the - operator.
-  /// </summary>
-  /// <param name="offset1">The offset1.</param>
-  /// <param name="point2">The point2.</param>
-  /// <returns>The result of the operator.</returns>
-  public subtractByCoordinate(point: CartesianCoordinate): CartesianCoordinate {
-    return new CartesianCoordinate(
-      this.X - point.X,
-      this.Y - point.Y,
-      Generics.GetToleranceBetween(this, point));
+  // ==== Combinations
+  addToCoordinate(coord: CartesianCoordinate): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
+      coord.X + this.X,
+      coord.Y + this.Y,
+      Generics.getToleranceBetween(coord, this));
   }
 
-  /// <summary>
-  /// Implements the + operator.
-  /// </summary>
-  /// <param name="offset1">The offset1.</param>
-  /// <param name="offset2">The offset2.</param>
-  /// <returns>The result of the operator.</returns>
-  public addTo(offset: CartesianOffset): CartesianOffset {
-    return new CartesianOffset(
-      new CartesianCoordinate(),
-      new CartesianCoordinate(
+  subtractFromCoordinate(coord: CartesianCoordinate): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
+      coord.X - this.X,
+      coord.Y - this.Y,
+      Generics.getToleranceBetween(coord, this));
+  }
+
+  subtractByCoordinate(coord: CartesianCoordinate): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
+      this.X - coord.X,
+      this.Y - coord.Y,
+      Generics.getToleranceBetween(this, coord));
+  }
+
+  addTo(offset: CartesianOffset): CartesianOffset {
+    return CartesianOffset.fromCoordinates(
+      CartesianCoordinate.atOrigin(),
+      CartesianCoordinate.fromXY(
         this.X + offset.X,
         this.Y + offset.Y),
-      Generics.GetToleranceBetween(this, offset));
-  }
-  /// <summary>
-  /// Implements the + operator.
-  /// </summary>
-  /// <param name="point1">The point1.</param>
-  /// <param name="offset2">The offset2.</param>
-  /// <returns>The result of the operator.</returns>
-  public addToCoordinate(point: CartesianCoordinate): CartesianCoordinate {
-    return new CartesianCoordinate(
-      point.X + this.X,
-      point.Y + this.Y,
-      Generics.GetToleranceBetween(point, this));
+      Generics.getToleranceBetween(this, offset));
   }
 
+  subtractBy(offset: CartesianOffset): CartesianOffset {
+    return CartesianOffset.fromCoordinates(
+      CartesianCoordinate.atOrigin(),
+      this.toCartesianCoordinate().subtractBy(offset.toCartesianCoordinate()).toCartesianCoordinate(),
+      Generics.getToleranceBetween(this, offset));
+  }
 
-  /// <summary>
-  /// Implements the * operator.
-  /// </summary>
-  /// <param name="multiplier">Multiplier value.</param>
-  /// <param name="offset">The offset.</param>
-  /// <returns>The result of the operator.</returns>
-  public multiplyBy(multiplier: number): CartesianOffset {
-    return new CartesianOffset(
+  multiplyBy(multiplier: number): CartesianOffset {
+    return CartesianOffset.fromCoordinates(
       this.I.multiplyBy(multiplier),
       this.J.multiplyBy(multiplier),
       this.Tolerance);
   }
 
-
-  /// <summary>
-  /// Implements the / operator.
-  /// </summary>
-  /// <param name="offset">The offset.</param>
-  /// <param name="denominator">Denominator value.</param>
-  /// <returns>The result of the operator.</returns>
-  public divideBy(denominator: number): CartesianOffset {
+  divideBy(denominator: number): CartesianOffset {
     if (denominator == 0) { throw new DivideByZeroException(); }
-    return new CartesianOffset(
+    return CartesianOffset.fromCoordinates(
       this.I.divideBy(denominator),
       this.J.divideBy(denominator),
       this.Tolerance);
