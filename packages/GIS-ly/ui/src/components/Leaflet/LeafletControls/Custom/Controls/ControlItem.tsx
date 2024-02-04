@@ -1,23 +1,9 @@
-import styled from "styled-components";
+import classnames from "classnames";
+
 import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
-import './ControlItem.css';
-
-// TODO: Before using these, solve:
-// 2. Conditional classes or importing styled component for disabled button
-const S = {
-  ItemControl: styled.div`
-    width: 100%;
-    `,
-
-  IconLabel: styled.span`
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: start;
-      align-items: start;
-      margin: 5px;
-    `
-};
+import stylesHeader from './ControlHeader.module.css';
+import stylesItem from './ControlItem.module.css';
 
 export type ControlItemProps = {
   cb: () => void;
@@ -38,12 +24,24 @@ export function ControlItem({
   title,
   type,
 }: ControlItemProps) {
-  const className = `item-control
-    ${isDisabled ? ` disabled` : ''}`;
-
   const typeUpperFirst = toUpperFirstLetter(type);
   const criteriaUppers = toUpperFirstLetterOfEach(criteria);
   const localTitle = `${typeUpperFirst} by ${criteriaUppers}`;
+
+  const classNameHeader = classnames([
+    'leaflet-bar'
+  ]);
+
+  const classNameLink = classnames([
+    stylesHeader.control,
+    { 'disabled': isDisabled }
+  ]);
+
+  const classNameContent = classnames([
+    stylesHeader.content,
+    { [stylesHeader.icon_content]: (showLabelWithIcon && iconSvg) },
+    { [stylesItem.icon_item_content]: (showLabelWithIcon && iconSvg) }
+  ]);
 
   const handleClick = () => {
     if (!isDisabled && cb) {
@@ -52,8 +50,8 @@ export function ControlItem({
   }
 
   return (
-    <div className="leaflet-bar item">
-      <a className={className}
+    <div className={classNameHeader}>
+      <a className={classNameLink}
         href="#"
         title={title ?? localTitle}
         aria-label={title ?? localTitle}
@@ -61,10 +59,20 @@ export function ControlItem({
         role="button"
         onClick={handleClick}
       >
-        {(showLabelWithIcon && iconSvg) ?
-          <S.IconLabel aria-hidden="true">{iconSvg}{criteriaUppers}</S.IconLabel>
+        {(!showLabelWithIcon && iconSvg) ?
+          iconSvg
           :
-          iconSvg ?? <span aria-hidden="true">{criteriaUppers}</span>
+          <span aria-hidden="true" className={classNameContent}>
+            {(showLabelWithIcon && iconSvg) ?
+              <>
+                {iconSvg} {criteriaUppers}
+              </>
+              :
+              <>
+                {criteriaUppers}
+              </>
+            }
+          </span>
         }
       </a>
     </div>

@@ -1,22 +1,9 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
 import { IEditedStats, Stats } from "../../../Custom/Stats/Paths/Stats";
 
-const S = {
-  StatsLabel: styled.span`
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 0;
-    padding-bottom: 0;
-    justify-content: space-evenly;
-  `,
-
-  StatsTitle: styled.h2`
-    margin: 0;
-  `
-};
+import styles from './StatsDisplay.module.css';
 
 export type StatsDisplayProps = {
   stats: IEditedStats;
@@ -69,10 +56,10 @@ export function StatsDisplay({
           onClick={setToggle}
         >
           {(currentlyToggled && !isDisabled) ?
-            <S.StatsLabel aria-hidden="true" className="icon-label">
-              <S.StatsTitle>{categoryUpperFirst}</S.StatsTitle>
+            <span aria-hidden="true" className={styles.label}>
+              <h2 className={styles.title}>{categoryUpperFirst}</h2>
               {iconSvg}
-            </S.StatsLabel>
+            </span>
             :
             iconSvg
           }

@@ -15,7 +15,7 @@ import { SegmentStats } from './Categories/SegmentStats';
 import { ToggleGroup } from '../../ToggleGroup';
 import { PathOptions } from 'leaflet';
 
-import './CoordinateMarker.css';
+import styles from './CoordinateMarker.module.css';
 
 export type CoordinateMarkerProps = {
   point: TrackPoint,
@@ -53,7 +53,7 @@ export function CoordinateMarker({ point, segmentPrev, segmentNext, pathOptions,
   >
     <Popup>
       <span className={"popup-point"} >
-        <h1>Track Point</h1>
+        <h1 className={styles.title}>Track Point</h1>
         <LabelValue label={'Timestamp'} value={point.timestamp} />
         <PointStats point={point} />
         {point.path ?

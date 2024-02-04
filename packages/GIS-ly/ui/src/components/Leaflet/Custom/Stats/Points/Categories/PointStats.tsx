@@ -6,7 +6,6 @@ import { LabelValue } from '../../../LabelValue';
 export type PointStatsProps = { point: ITrackPoint };
 
 export function PointStats({ point }: PointStatsProps) {
-  // Props
   const latitude = `${point.lat.toFixed(6)}°`;
   const longitude = `${point.lng.toFixed(6)}°`;
 

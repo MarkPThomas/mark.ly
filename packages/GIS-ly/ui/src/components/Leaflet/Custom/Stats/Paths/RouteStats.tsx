@@ -5,14 +5,18 @@ import { ToggleGroup } from "../../ToggleGroup";
 import { HeightStats, SlopeStats } from './Categories/Route';
 import { IEditedStats } from "./Stats";
 
-export type RouteStatsProp = { stats: IEditedStats, level: number }
+export type RouteStatsProp = {
+  stats: IEditedStats,
+  level: number,
+  className?: string
+}
 
-export function RouteStats({ stats, level }: RouteStatsProp) {
+export function RouteStats({ stats, level, className }: RouteStatsProp) {
 
   const lengthMiles = `${Conversion.Length.Meters.toMiles(stats.length).toFixed(2)} mi`;
 
   return (
-    <div>
+    <div className={className}>
       <LabelValue label={'Distance'} value={lengthMiles} />
       {stats.height ?
         <ToggleGroup

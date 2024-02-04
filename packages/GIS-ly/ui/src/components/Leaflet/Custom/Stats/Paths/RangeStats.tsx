@@ -5,40 +5,23 @@ import { INodeOfInterest } from "../../../../../model/Geometry/Stats";
 import { LabelValue } from "../../LabelValue";
 import { ToggleHeader } from "../../ToggleHeader";
 
-import './RangeStats.css';
-import styled from "styled-components";
-
-const S = {
-  RangeExtra: styled.div`
-    color: #545454;
-    font-style: italic;
-  `,
-  // TODO: Update this to style all child h{n} headers
-  HGeneric: styled.div`
-    background-color: #d7e4e8;
-    border: 1px solid gray;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align - items: center;
-  `
-};
+import styles from './RangeStats.module.css';
 
 export type RangeStatsProps<
   TVertex extends Vertex = RoutePoint,
   TSegment extends Segment = RouteSegment
-> = {
-  min: INodeOfInterest<TVertex, TSegment>;
-  stdMin2?: number;
-  stdMin1?: number;
-  avg: number;
-  mdn?: INodeOfInterest<TVertex, TSegment> | number;
-  stdMax1?: number;
-  stdMax2?: number;
-  max: INodeOfInterest<TVertex, TSegment>;
-  formatter?: (value: number) => string;
-  level: number;
-};
+  > = {
+    min: INodeOfInterest<TVertex, TSegment>;
+    stdMin2?: number;
+    stdMin1?: number;
+    avg: number;
+    mdn?: INodeOfInterest<TVertex, TSegment> | number;
+    stdMax1?: number;
+    stdMax2?: number;
+    max: INodeOfInterest<TVertex, TSegment>;
+    formatter?: (value: number) => string;
+    level: number;
+  };
 
 export function RangeStats(stats: RangeStatsProps) {
   const [showAll, setShowAll] = useState<boolean>(false);
@@ -72,24 +55,24 @@ export function RangeStats(stats: RangeStatsProps) {
   return (
     <div>
       <div className="toggle-header-show-all">
-        <ToggleHeader value="Show All" level={stats.level} isToggled={showAll} cb={handleClick} />
+        <ToggleHeader value="Show All" level={stats.level} isToggled={showAll} cb={handleClick} className={styles.title} />
       </div>
       <LabelValue label={'Min'} value={statsFormatted.min} />
       {showAll ?
-        <S.RangeExtra>
+        <div className={styles.items}>
           <LabelValue label={'-Std2'} value={statsFormatted.stdMin2} />
           <LabelValue label={'-Std1'} value={statsFormatted.stdMin1} />
-        </S.RangeExtra> : null
+        </div> : null
       }
       <LabelValue label={'Avg'} value={statsFormatted.avg} />
       {showAll ?
-        <div className="range-extra">
+        <div className={styles.items}>
           <LabelValue label={'Mdn'} value={statsFormatted.mdn} />
         </div>
         : null
       }
       {showAll ?
-        <div className="range-extra">
+        <div className={styles.items}>
           <LabelValue label={'+Std1'} value={statsFormatted.stdMax1} />
           <LabelValue label={'+Std2'} value={statsFormatted.stdMax2} />
         </div> : null

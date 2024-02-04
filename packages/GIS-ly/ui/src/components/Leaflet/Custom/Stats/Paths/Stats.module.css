@@ -1,0 +1,13 @@
+.stats {
+  max-height: 27rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+}
+
+.group:last-child {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}

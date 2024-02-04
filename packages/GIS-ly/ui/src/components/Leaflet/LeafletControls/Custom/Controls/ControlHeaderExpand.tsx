@@ -1,9 +1,10 @@
+import classnames from "classnames";
 import React, { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
 
-import './ControlHeader.css';
-import './ControlHeaderExpand.css';
+import stylesHeader from './ControlHeader.module.css';
+import stylesExpand from './ControlHeaderExpand.module.css';
 
 export type ControlHeaderExpandProps = {
   category: string;
@@ -48,15 +49,31 @@ export function ControlHeaderExpand({
   const categoryUpperFirst = toUpperFirstLetter(category);
   const localTitle = `${categoryUpperFirst} Operations`;
 
-  const classNameBar = `leaflet-bar header ${childrenBeside ? `child-col-beside` : ''}`;
-  const classNameLink = `header-control
-    ${(currentlyToggled && !isDisabled) ? ' toggled' : ''}
-    ${isDisabled ? ` disabled` : ''}`;
-  const classNameChildren = `${childrenAlignedBeside ? `beside` : ''}`;
+  const classNameHeader = classnames([
+    'leaflet-bar',
+    stylesHeader.header,
+    { [stylesExpand.child_col_beside]: childrenBeside }
+  ]);
+
+  const classNameLink = classnames([
+    stylesHeader.control,
+    { [stylesExpand.toggled]: (currentlyToggled && !isDisabled) },
+    { [stylesExpand.toggled_beside]: childrenBeside },
+    { 'disabled': isDisabled },
+  ]);
+
+  const classNameContent = classnames([
+    stylesHeader.content,
+    { [stylesHeader.icon_content]: (showLabelWithIcon && iconSvg) }
+  ]);
+
+  const classNameChildren = classnames([
+    { [stylesExpand.beside]: childrenAlignedBeside }
+  ]);
 
   return (
     <>
-      <div className={classNameBar}>
+      <div className={classNameHeader}>
         <a className={classNameLink}
           href="#"
           title={title ?? localTitle}
@@ -65,9 +82,9 @@ export function ControlHeaderExpand({
           role="button"
           onClick={setToggle}
         >
-          {(showLabelWithIcon && iconSvg) ?
-            <span aria-hidden="true" className="icon-label">
-              {iconRight ?
+          <span aria-hidden="true" className={classNameContent}>
+            {(showLabelWithIcon && iconSvg) ?
+              iconRight ?
                 <>
                   {categoryUpperFirst}
                   {iconSvg}
@@ -77,12 +94,10 @@ export function ControlHeaderExpand({
                   {iconSvg}
                   {categoryUpperFirst}
                 </>
+              : <>{categoryUpperFirst}</>
+            }
+          </span>
 
-              }
-            </span>
-            :
-            iconSvg ?? <span aria-hidden="true">{categoryUpperFirst}</span>
-          }
         </a>
         {(currentlyToggled && !isDisabled) ?
           <div className={classNameChildren}>

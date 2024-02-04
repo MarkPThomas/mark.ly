@@ -1,0 +1,11 @@
+.label {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
+  justify-content: space-evenly;
+}
+
+.title {
+  margin: 0;
+}

@@ -1,4 +1,5 @@
-import './ControlCenter.css';
+import classnames from 'classnames';
+import styles from './ControlCenter.module.css';
 
 export type ControlCenterProps = {
   position: "top" | "bottom";
@@ -9,7 +10,12 @@ export function ControlCenter({
   position = "top",
   children
 }: ControlCenterProps) {
-  const className = `${position}-center control`;
+
+  const className = classnames([
+    styles.control,
+    styles.center,
+    styles[position]
+  ]);
 
   return (
     <div className={className}>

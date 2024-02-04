@@ -2,7 +2,7 @@ import { ITrackCriteria } from "../../../../../model/GIS/settings";
 import { Modal } from "../../../../shared/components/Modal";
 import { TrackCriteria } from "../../../Custom/Settings/TrackCriteria";
 
-import './TrackCriteriaModal.css';
+import style from './TrackCriteriaModal.module.css';
 
 export type TrackCriteriaModalProps = {
   handleShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +21,7 @@ export function TrackCriteriaModal({
       buttons={[]}
       title={'Track Criteria'}
     >
-      <div className="stats-container">
+      <div className={style.container}>
         {trackCriteria ?
           <TrackCriteria
             criteria={trackCriteria}

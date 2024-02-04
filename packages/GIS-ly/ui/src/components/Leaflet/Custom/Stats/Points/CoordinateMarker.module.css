@@ -1,0 +1,15 @@
+.title {
+  font-size: 1.5em;
+  text-decoration: underline;
+  margin-bottom: 0.1em;
+}
+
+.toggleTitle {
+  font-size: 1.2em;
+  margin: 0.2em 0.2em 0.2em 0;
+  text-decoration: underline;
+}
+
+.button {
+  height: 1.2em;
+}

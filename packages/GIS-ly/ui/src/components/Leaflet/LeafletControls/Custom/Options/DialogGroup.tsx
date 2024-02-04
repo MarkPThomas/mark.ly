@@ -1,25 +1,6 @@
-import styled from "styled-components";
 import { toTrainCase, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
-// TODO: Not quite working
-const S = {
-  Option: styled.a`
-    white-space: nowrap;
-    font-weight: bold;
-    color: blue;
-    width: fit-content;
-    padding-left: 5px;
-    padding-right: 5px;
-    &:hover {
-      font-style: underline;
-      color: red;
-    }
-  `,
-
-  OptionsTitle: styled.h3`
-    margin: 0;
-  `
-};
+import styles from './styles.module.css';
 
 export interface IDialogGroup {
   title: string;
@@ -50,10 +31,11 @@ export function DialogGroup({ group }: Props) {
 
   return (group.items.length ?
     <div key={`options-${titleTrainCase}`} className={`options options-${titleTrainCase}`}>
-      <S.OptionsTitle>{titleFirstUpperCase}</S.OptionsTitle>
+      <h3 className={styles.title}>{titleFirstUpperCase}</h3>
       {group.items.map((item, index) =>
-        <S.Option key={`${titleTrainCase}-${index}-option`}
+        <a key={`${titleTrainCase}-${index}-option`}
           href="#"
+          className={styles.link}
           title={optionsFormatted[index].nameTrainCase}
           aria-label={optionsFormatted[index].nameTrainCase}
           aria-disabled="false"
@@ -61,7 +43,7 @@ export function DialogGroup({ group }: Props) {
           onClick={item.cb}
         >
           <span aria-hidden="true">{optionsFormatted[index].nameFormatted}</span>
-        </S.Option>
+        </a>
       )}
     </div>
     : null
