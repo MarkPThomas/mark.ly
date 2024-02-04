@@ -54,7 +54,7 @@ export class LinearCurve extends Curve implements
   /// Sets the tolerances.
   /// </summary>
   /// <param name="tolerance">Tolerance to apply to the curve.</param>
-  protected setTolerances(tolerance: number = this.DEFAULT_TOLERANCE) {
+  protected setTolerances(tolerance: number = Curve.DEFAULT_TOLERANCE) {
     this._controlPointI.Tolerance = tolerance;
     this._controlPointJ.Tolerance = tolerance;
   }
@@ -126,7 +126,7 @@ export class LinearCurve extends Curve implements
       return true;
     }
 
-    const tolerance = Generics.GetToleranceBetween(otherLine, undefined, this.Tolerance);
+    const tolerance = Generics.getToleranceBetween(otherLine, undefined, this.Tolerance);
     return Numbers.IsZeroSign((this.Slope() - otherLine.Slope()), tolerance);
   }
 
@@ -138,7 +138,7 @@ export class LinearCurve extends Curve implements
   public IsPerpendicular(otherLine: LinearCurve): boolean {
     const slope = this.Slope();
     const otherSlope = otherLine.Slope();
-    const tolerance = Generics.GetToleranceBetween(otherLine, undefined, this.Tolerance);
+    const tolerance = Generics.getToleranceBetween(otherLine, undefined, this.Tolerance);
     if ((slope === Infinity && Numbers.IsZeroSign(otherSlope, tolerance)) ||
       (otherSlope === Infinity && Numbers.IsZeroSign(slope, tolerance))) {
       return true;
@@ -282,7 +282,7 @@ export class LinearCurve extends Curve implements
   /// <param name="coordinate">The coordinate.</param>
   /// <returns><c>true</c> if [is intersecting coordinate] [the specified coordinate]; otherwise, <c>false</c>.</returns>
   public IsIntersectingCoordinate(coordinate: CartesianCoordinate): boolean {
-    const tolerance = Generics.GetToleranceBetween(coordinate, undefined, this.Tolerance);
+    const tolerance = Generics.getToleranceBetween(coordinate, undefined, this.Tolerance);
     const y = this.YatX(coordinate.X);
     if (this.IsVertical()) {
       return Numbers.IsEqualTo(this.ControlPointI.X, coordinate.X, tolerance);
@@ -299,7 +299,7 @@ export class LinearCurve extends Curve implements
   /// </summary>
   /// <returns>System.Double.</returns>
   public Length(): number {
-    return LinearCurve.LengthBetweenPts(this.Range.Start.Limit, this.Range.End.Limit);
+    return LinearCurve.LengthBetweenPts(this.Range.start.Limit, this.Range.end.Limit);
   }
 
   /// <summary>
@@ -437,7 +437,7 @@ export class LinearCurve extends Curve implements
     ptJ: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(ptI, ptJ, tolerance);
+    tolerance = Generics.getToleranceBetween(ptI, ptJ, tolerance);
     return Numbers.AreEqual(ptI.Y, ptJ.Y, tolerance);
   }
 
@@ -462,7 +462,7 @@ export class LinearCurve extends Curve implements
     ptJ: CartesianCoordinate,
     tolerance: number = Numbers.ZeroTolerance
   ): boolean {
-    tolerance = Generics.GetToleranceBetween(ptI, ptJ, tolerance);
+    tolerance = Generics.getToleranceBetween(ptI, ptJ, tolerance);
     return Numbers.IsEqualTo(ptI.X, ptJ.X, tolerance);
   }
 
@@ -811,7 +811,7 @@ export class LinearCurve extends Curve implements
     // 2. Create new curve B by applying normal vector to point
     const offsetCurve = new LinearCurve(
       point,
-      point.addOffset(CartesianOffset.FromOffsets(normalVector.Xcomponent, normalVector.Ycomponent))
+      point.addOffset(CartesianOffset.fromOffsets(normalVector.Xcomponent, normalVector.Ycomponent))
     );
 
     // 3. Return intersection of curve B to current segment curve

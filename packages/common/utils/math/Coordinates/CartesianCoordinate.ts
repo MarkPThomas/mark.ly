@@ -1,6 +1,7 @@
 import { DivideByZeroException } from "../../../errors/exceptions";
 import { IEquatable } from "../../../interfaces";
 import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
+import { Cartesian2DPolarConverter } from "../CoordinateConverters/Cartesian2DPolarConverter";
 import { LinearCurve } from "../Curves/LinearCurve";
 import { Generics } from "../Generics";
 import { Numbers } from "../Numbers";
@@ -9,27 +10,33 @@ import { VectorLibrary } from "../Vectors/VectorLibrary";
 import { Angle } from "./Angle";
 import { CartesianOffset } from "./CartesianOffset";
 import { ICoordinate } from "./ICoordinate";
+import { PolarCoordinate } from "./PolarCoordinate";
 
-/**
- * The interface for a coordinate in a two-dimensional coordinate system that specifies each point uniquely in a plane by a set of numerical coordinates,
- * which are the signed distances to the point from two fixed perpendicular oriented lines, measured in the same unit of length.
- *
- * See: https://en.wikipedia.org/wiki/Cartesian_coordinate_system
- *
- * See: https://en.wikipedia.org/wiki/Euclidean_space
- *
- * @export
- * @interface ICartesianCoordinate
- * @implements {IEquatable<CartesianCoordinate>}
- * @implements {ICoordinate}
- */
-export interface ICartesianCoordinate extends IEquatable<ICoordinate>, ICoordinate {
+export interface ICartesianJson {
   /**
    * The x-coordinate.
    *
    * @type {number}
    * @memberof ICartesianCoordinate
    */
+  x: number
+
+  /**
+   * The y-coordinate.
+   *
+   * @type {number}
+   * @memberof ICartesianCoordinate
+   */
+  y: number
+}
+
+export interface ICartesianData {
+  /**
+  * The x-coordinate.
+  *
+  * @type {number}
+  * @memberof ICartesianCoordinate
+  */
   X: number
 
   /**
@@ -42,26 +49,41 @@ export interface ICartesianCoordinate extends IEquatable<ICoordinate>, ICoordina
 }
 
 /**
+ * The interface for a coordinate in a two-dimensional coordinate system that specifies each point uniquely in a plane by a set of numerical coordinates,
+ * which are the signed distances to the point from two fixed perpendicular oriented lines, measured in the same unit of length.
+ *
+ * @see {@link https://en.wikipedia.org/wiki/Cartesian_coordinate_system}
+ *
+ * @see {@link https://en.wikipedia.org/wiki/Euclidean_space}
+ *
+ * @export
+ * @interface ICartesianCoordinate
+ * @implements {IEquatable<CartesianCoordinate>}
+ * @implements {ICoordinate}
+ */
+export interface ICartesianCoordinate extends ICoordinate, ICartesianData {
+}
+
+/**
  * Coordinate in a two-dimensional coordinate system that specifies each point uniquely in a plane by a set of numerical coordinates,
  * which are the signed distances to the point from two fixed perpendicular oriented lines, measured in the same unit of length.
  *
- * See: https://en.wikipedia.org/wiki/Cartesian_coordinate_system
+ * @see {@link https://en.wikipedia.org/wiki/Cartesian_coordinate_system}
  *
- * See: https://en.wikipedia.org/wiki/Euclidean_space
+ * @see {@link https://en.wikipedia.org/wiki/Euclidean_space}
  *
  * @export
  * @class CartesianCoordinate
  * @implements {ICartesianCoordinate}
  */
-export class CartesianCoordinate implements ICartesianCoordinate {
-  public Tolerance: number;
+export class CartesianCoordinate implements ICartesianCoordinate, IEquatable<CartesianCoordinate> {
+  Tolerance: number;
 
-  private _x = 0;
-  get X() { return this._x }
+  readonly X: number;
 
-  private _y = 0;
-  get Y() { return this._y }
+  readonly Y: number;
 
+  // ==== Creation
   /**
    * Creates an instance of CartesianCoordinate.
    * @param {number} x The x-coordinate.
@@ -74,72 +96,58 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     y: number = 0,
     tolerance: number = Numbers.ZeroTolerance
   ) {
-    this._x = x;
-    this._y = y;
+    this.X = x;
+    this.Y = y;
     this.Tolerance = tolerance;
   }
 
-  ToString(): string {
-    return this.toString() + " - X: " + this._x + ", Y: " + this._y;
+  /**
+   * Initializes a new instance of the CartesianCoordinate at the origin.
+   * @returns {CartesianCoordinate} CartesianCoordinate.
+   */
+  static atOrigin(): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(0, 0);
   }
 
-  /// <summary>
-  /// Returns the cross product/determinant of the coordinates.
-  /// x1*y2 - x2*y1
-  /// </summary>
-  /// <param name="coordinate">The coordinate.</param>
-  /// <returns>System.Double.</returns>
-  CrossProduct(coordinate: CartesianCoordinate): number {
-    return VectorLibrary.CrossProduct(this._x, this._y, coordinate.X, coordinate.Y);
+  /**
+   * Initializes a new instance with JSON.
+   * @param {ICartesianJson} json JSON representation of the coordinate.
+   * @param {number} [tolerance=Numbers.ZeroTolerance] The tolerance to be used in relating coordinates.
+   * @returns {CartesianCoordinate} CartesianCoordinate.
+   */
+  static fromJson(
+    json: ICartesianJson,
+    tolerance: number = Numbers.ZeroTolerance
+  ): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(json.x, json.y, tolerance);
   }
 
-  /// <summary>
-  /// Returns the dot product of the coordinates.
-  /// x1*x2 + y1*y2
-  /// </summary>
-  /// <param name="coordinate">The coordinate.</param>
-  /// <returns>System.Double.</returns>
-  DotProduct(coordinate: CartesianCoordinate): number {
-    return VectorLibrary.DotProduct(this._x, this._y, coordinate.X, coordinate.Y);
+  /**
+    * Initializes a new instance with a data object.
+    * @param {ICartesianData} data Minimum data for the coordinate.
+    * @param {number} [tolerance=Numbers.ZeroTolerance] The tolerance to be used in relating coordinates.
+    * @returns {CartesianCoordinate} CartesianCoordinate.
+    */
+  static fromData(
+    data: ICartesianData,
+    tolerance: number = Numbers.ZeroTolerance
+  ): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(data.X, data.Y, tolerance);
   }
 
-  /// <summary>
-  /// Returns the cartesian offset of the current coordinate from the provided coordinate.
-  /// i.e. the current coordinate subtracting the provided coordinate.
-  /// </summary>
-  /// <param name="coordinateI">The coordinate i.</param>
-  /// <returns>AngularOffset.</returns>
-  OffsetFrom(coordinateI: CartesianCoordinate): CartesianOffset {
-    return new CartesianOffset(coordinateI, this);
-  }
-
-  /// <summary>
-  /// Returns a new coordinate offset by the provided parameters.
-  /// </summary>
-  /// <param name="distance">The distance to offset.</param>
-  /// <param name="rotation">The rotation.</param>
-  /// <returns>CartesianCoordinate.</returns>
-  OffsetCoordinate(distance: number, rotation: Angle): CartesianCoordinate {
-    return CartesianCoordinate.OffsetCoordinate(this, distance, rotation);
-  }
-
-  /// <summary>
-  /// The linear distance the coordinate is from the origin.
-  /// </summary>
-  /// <returns>System.Double.</returns>
-  DistanceFromOrigin(): number {
-    return AlgebraLibrary.SRSS(this._x, this._y);
-  }
-
-
-  // #region  == Methods: Static
-
-  /// <summary>
-  /// Returns a default static coordinate at the origin.
-  /// </summary>
-  /// <returns></returns>
-  public static Origin(): CartesianCoordinate {
-    return new CartesianCoordinate(0, 0);
+  /**
+   * Creates an instance of CartesianCoordinate.
+   * @param {number} x The x-coordinate.
+   * @param {number} y The y-coordinate.
+   * @param {number} [tolerance=Numbers.ZeroTolerance] The tolerance to be used in relating coordinates.
+   * @memberof CartesianCoordinate
+   */
+  static fromXY(
+    x: number,
+    y: number,
+    tolerance: number = Numbers.ZeroTolerance
+  ): CartesianCoordinate {
+    return new CartesianCoordinate(x, y, tolerance);
   }
 
   /// <summary>
@@ -149,7 +157,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// <param name="center">The center.</param>
   /// <param name="rotation">The rotation.</param>
   /// <returns>CartesianCoordinate.</returns>
-  public static OffsetCoordinate(
+  static fromCoordinateOffset(
     center: CartesianCoordinate,
     distance: number,
     rotation: Angle
@@ -164,11 +172,107 @@ export class CartesianCoordinate implements ICartesianCoordinate {
       y = 0;
     }
 
-    return new CartesianCoordinate(
-      x,
-      y,
-      center.Tolerance);
+    return CartesianCoordinate.fromXY(x, y, center.Tolerance);
   }
+
+  /// <summary>
+  /// Returns a new coordinate offset by the provided parameters.
+  /// </summary>
+  /// <param name="distance">The distance to offset.</param>
+  /// <param name="rotation">The rotation.</param>
+  /// <returns>CartesianCoordinate.</returns>
+  offsetCoordinate(distance: number, rotation: Angle): CartesianCoordinate {
+    return CartesianCoordinate.fromCoordinateOffset(this, distance, rotation);
+  }
+
+  // ==== I/0
+  toString(): string {
+    return `${CartesianCoordinate.name} - X: ${this.X}, Y: ${this.Y}`;
+  }
+
+  toData(): ICartesianData {
+    return {
+      X: this.X,
+      Y: this.Y
+    }
+  }
+
+  toJson(): ICartesianJson {
+    return {
+      x: this.X,
+      y: this.Y
+    }
+  }
+
+  // ==== Conversion
+  /**
+   * Converts the cartesian coordinate to a polar coordinate.
+   * @returns {PolarCoordinate} PolarCoordinate.
+   */
+  toPolar(): PolarCoordinate {
+    return Cartesian2DPolarConverter.toPolar(this);
+  }
+
+  // === Comparison
+  /**
+   * Indicates whether the current object is equal to another object.
+   * @param {CartesianCoordinate | ICartesianData | ICoordinate} other An object to compare with this object.
+   * @returns {boolean} true if the current object is equal to the other parameter; otherwise, false.
+   */
+  equals(other: CartesianCoordinate | ICartesianData | ICoordinate): boolean {
+    if (other instanceof CartesianCoordinate) {
+      const tolerance = Math.min(this.Tolerance, other.Tolerance);
+      return (
+        Numbers.AreEqual(this.X, other.X, tolerance) &&
+        Numbers.AreEqual(this.Y, other.Y, tolerance));
+    } else if (other instanceof PolarCoordinate) {
+      return this.equals(Cartesian2DPolarConverter.toCartesian(other));
+    }
+
+    return false;
+  }
+
+  // ==== Methods
+
+  /// <summary>
+  /// Returns the cartesian offset of the current coordinate from the provided coordinate.
+  /// i.e. the current coordinate subtracting the provided coordinate.
+  /// </summary>
+  /// <param name="coordinateI">The coordinate i.</param>
+  /// <returns>AngularOffset.</returns>
+  offsetFrom(coordinateI: CartesianCoordinate): CartesianOffset {
+    return CartesianOffset.fromCoordinates(coordinateI, this);
+  }
+
+  /// <summary>
+  /// Returns the cross product/determinant of the coordinates.
+  /// x1*y2 - x2*y1
+  /// </summary>
+  /// <param name="coordinate">The coordinate.</param>
+  /// <returns>System.Double.</returns>
+  crossProduct(coordinate: CartesianCoordinate): number {
+    return VectorLibrary.CrossProduct(this.X, this.Y, coordinate.X, coordinate.Y);
+  }
+
+  /// <summary>
+  /// Returns the dot product of the coordinates.
+  /// x1*x2 + y1*y2
+  /// </summary>
+  /// <param name="coordinate">The coordinate.</param>
+  /// <returns>System.Double.</returns>
+  dotProduct(coordinate: CartesianCoordinate): number {
+    return VectorLibrary.DotProduct(this.X, this.Y, coordinate.X, coordinate.Y);
+  }
+
+  /// <summary>
+  /// The linear distance the coordinate is from the origin.
+  /// </summary>
+  /// <returns>System.Double.</returns>
+  distanceFromOrigin(): number {
+    return AlgebraLibrary.SRSS(this.X, this.Y);
+  }
+
+
 
   // #region === Methods: Static / ITransform ===
 
@@ -185,10 +289,10 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     angleRadians: number
   ): CartesianCoordinate {
     // Move coordinate such that center of rotation is at origin
-    const centeredCoordinate = coordinate.subtractBy(centerOfRotation);
+    const centeredCoordinate = coordinate.subtractOffset(coordinate.subtractBy(centerOfRotation));
 
     // Rotate coordinate
-    const rotatedCoordinate = CartesianCoordinate.Rotate(centeredCoordinate, angleRadians);
+    const rotatedCoordinate = CartesianCoordinate.RotateAboutOrigin(centeredCoordinate, angleRadians);
 
     // Move coordinate such that center of rotation is back at original coordinate
     return rotatedCoordinate.addTo(centerOfRotation);
@@ -200,7 +304,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// <param name="coordinate">The coordinate.</param>
   /// <param name="angleRadians">The angle [radians], where counter-clockwise is positive.</param>
   /// <returns>MPT.Math.Coordinates.CartesianCoordinate.</returns>
-  static Rotate(
+  static RotateAboutOrigin(
     coordinate: CartesianCoordinate,
     angleRadians: number
   ): CartesianCoordinate {
@@ -223,10 +327,10 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     scale: number
   ): CartesianCoordinate {
     // Move coordinate such that reference point is at origin
-    const centeredCoordinate = coordinate.subtractBy(referencePoint);
+    const centeredCoordinate = coordinate.subtractOffset(coordinate.subtractBy(referencePoint));
 
     // Scale coordinate
-    const rotatedCoordinate = CartesianCoordinate.Scale(centeredCoordinate, scale);
+    const rotatedCoordinate = CartesianCoordinate.ScaleFromOrigin(centeredCoordinate, scale);
 
     // Move coordinate such that reference point is back at original coordinate
     return rotatedCoordinate.addTo(referencePoint);
@@ -238,7 +342,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// <param name="coordinate">The coordinate.</param>
   /// <param name="scale">The scale.</param>
   /// <returns>CartesianCoordinate.</returns>
-  static Scale(
+  static ScaleFromOrigin(
     coordinate: CartesianCoordinate,
     scale: number): CartesianCoordinate {
     return coordinate.multiplyBy(scale);
@@ -258,11 +362,11 @@ export class CartesianCoordinate implements ICartesianCoordinate {
     skewingReferencePoint: CartesianCoordinate,
     magnitude: CartesianOffset
   ): CartesianCoordinate {
-    const skewBoxOffset = skewingReferencePoint.OffsetFrom(stationaryReferencePoint);
+    const skewBoxOffset = skewingReferencePoint.offsetFrom(stationaryReferencePoint);
     const lambdaX = magnitude.X / skewBoxOffset.Y;
     const lambdaY = magnitude.Y / skewBoxOffset.X;
 
-    return CartesianCoordinate.Skew(coordinate, lambdaX, lambdaY);
+    return CartesianCoordinate.SkewAboutOrigin(coordinate, lambdaX, lambdaY);
   }
 
   /// <summary>
@@ -271,8 +375,11 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// <param name="coordinate">The coordinate.</param>
   /// <param name="lambda">The magnitude to skew along the x-axis and y-axis.</param>
   /// <returns>CartesianCoordinate.</returns>
-  static SkewByOffset(coordinate: CartesianCoordinate, lambda: CartesianOffset): CartesianCoordinate {
-    return CartesianCoordinate.Skew(coordinate, lambda.X, lambda.Y);
+  static SkewByOffset(
+    coordinate: CartesianCoordinate,
+    lambda: CartesianOffset
+  ): CartesianCoordinate {
+    return CartesianCoordinate.SkewAboutOrigin(coordinate, lambda.X, lambda.Y);
   }
 
   /// <summary>
@@ -282,7 +389,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// <param name="lambdaX">The magnitude to skew along the x-axis.</param>
   /// <param name="lambdaY">The magnitude to skew along the y-axis.</param>
   /// <returns>CartesianCoordinate.</returns>
-  static Skew(
+  static SkewAboutOrigin(
     coordinate: CartesianCoordinate,
     lambdaX: number,
     lambdaY: number
@@ -296,14 +403,14 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// <param name="coordinate">The coordinate.</param>
   /// <param name="referenceLine">The reference line.</param>
   /// <returns>CartesianCoordinate.</returns>
-  public static MirrorAboutLine(
+  static MirrorAboutLine(
     coordinate: CartesianCoordinate,
     referenceLine: LinearCurve
   ): CartesianCoordinate {
     const reflectionLinePoint: CartesianCoordinate = referenceLine.CoordinateOfPerpendicularProjection(coordinate);
-    const deltaReflection: CartesianOffset = reflectionLinePoint.OffsetFrom(coordinate).multiplyBy(2);
+    const deltaReflection: CartesianOffset = reflectionLinePoint.offsetFrom(coordinate).multiplyBy(2);
 
-    return coordinate.addTo(deltaReflection.ToCartesianCoordinate());
+    return coordinate.addTo(deltaReflection.toCartesianCoordinate());
   }
 
   /// <summary>
@@ -311,7 +418,7 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// </summary>
   /// <param name="coordinate">The coordinate.</param>
   /// <returns>CartesianCoordinate.</returns>
-  public static MirrorAboutAxisX(coordinate: CartesianCoordinate): CartesianCoordinate {
+  static MirrorAboutAxisX(coordinate: CartesianCoordinate): CartesianCoordinate {
     return new CartesianCoordinate(coordinate.X, -coordinate.Y);
   }
 
@@ -320,124 +427,87 @@ export class CartesianCoordinate implements ICartesianCoordinate {
   /// </summary>
   /// <param name="coordinate">The coordinate.</param>
   /// <returns>CartesianCoordinate.</returns>
-  public static MirrorAboutAxisY(coordinate: CartesianCoordinate): CartesianCoordinate {
+  static MirrorAboutAxisY(coordinate: CartesianCoordinate): CartesianCoordinate {
     return new CartesianCoordinate(-coordinate.X, coordinate.Y);
   }
 
 
-  // #region Methods: Conversion
-  // /// <summary>
-  // /// Converts the cartesian coordinate to a polar coordinate.
-  // /// </summary>
-  // /// <returns>PolarCoordinate.</returns>
-  // public ToPolar(): PolarCoordinate {
-  //   return Cartesian2DPolarConverter.ToPolar(this);
-  // }
-
-
-  // #region Operators: Combining
-  public subtractBy(coord: CartesianCoordinate): CartesianCoordinate {
-    return new CartesianCoordinate(
-      this.X - coord.X,
-      this.Y - coord.Y,
-      Generics.GetToleranceBetween(this, coord));
+  // ==== Change
+  static subtract(a: ICartesianData, b: ICartesianData): ICartesianData {
+    return {
+      X: a.X - b.X,
+      Y: a.Y - b.Y
+    }
   }
 
-  public subtractOffset(offset: CartesianOffset) {
-    return new CartesianCoordinate(
+  subtractBy(coord: CartesianCoordinate | ICartesianData): CartesianOffset {
+    const tolerance = coord instanceof CartesianCoordinate ? Generics.getToleranceBetween(this, coord) : this.Tolerance;
+
+    return coord instanceof CartesianCoordinate
+      ? CartesianOffset.fromCoordinates(this, coord, tolerance)
+      : CartesianOffset.fromCoordinates(this, CartesianCoordinate.fromData(coord), tolerance);
+  }
+
+  subtractOffset(offset: CartesianOffset): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
       this.X - offset.X,
       this.Y - offset.Y,
-      Generics.GetToleranceBetween(this, offset));
+      Generics.getToleranceBetween(this, offset));
   }
 
+  static add(a: ICartesianData, b: ICartesianData): ICartesianData {
+    return {
+      X: a.X + b.X,
+      Y: a.Y + b.Y
+    }
+  }
 
-  // public static Subtract(a: ICartesianCoordinate, b: ICartesianCoordinate): ICartesianCoordinate {
-  //   return {
-  //     X: a.X - b.X,
-  //     Y: a.Y - b.Y
-  //   }
-  // }
-
-  public addTo(coord: CartesianCoordinate): CartesianCoordinate {
-    return new CartesianCoordinate(
+  addTo(coord: CartesianCoordinate | ICartesianData): CartesianCoordinate {
+    const tolerance = coord instanceof CartesianCoordinate ? Generics.getToleranceBetween(this, coord) : this.Tolerance;
+    return CartesianCoordinate.fromXY(
       this.X + coord.X,
       this.Y + coord.Y,
-      Generics.GetToleranceBetween(this, coord));
+      tolerance
+    );
   }
 
-  public addOffset(offset: CartesianOffset) {
-    return new CartesianCoordinate(
+  addOffset(offset: CartesianOffset): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
       this.X + offset.X,
       this.Y + offset.Y,
-      Generics.GetToleranceBetween(this, offset));
+      Generics.getToleranceBetween(this, offset));
   }
 
-  // public static Add(a: ICartesianCoordinate, b: ICartesianCoordinate): ICartesianCoordinate {
-  //   return {
-  //     X: a.X + b.X,
-  //     Y: a.Y + b.Y
-  //   }
-  // }
+  // ==== Scale
+  static multiply(coordinate: ICartesianData, multiplier: number): ICartesianData {
+    return {
+      X: coordinate.X * multiplier,
+      Y: coordinate.Y * multiplier
+    }
+  }
 
-
-  public multiplyBy(multiplier: number): CartesianCoordinate {
-    return new CartesianCoordinate(
+  multiplyBy(multiplier: number): CartesianCoordinate {
+    return CartesianCoordinate.fromXY(
       this.X * multiplier,
       this.Y * multiplier,
       this.Tolerance);
   }
 
-  // public static MultiplyBy(coordinate: ICartesianCoordinate, multiplier: number): ICartesianCoordinate {
-  //   return {
-  //     X: coordinate.X * multiplier,
-  //     Y: coordinate.Y * multiplier
-  //   }
-  // }
-
-  public divideBy(denominator: number): CartesianCoordinate {
+  static divide(coordinate: ICartesianData, denominator: number): ICartesianData {
     if (denominator === 0) { throw new DivideByZeroException(); }
 
-    return new CartesianCoordinate(
+    return {
+      X: coordinate.X / denominator,
+      Y: coordinate.Y / denominator
+    }
+  }
+
+  divideBy(denominator: number): CartesianCoordinate {
+    if (denominator === 0) { throw new DivideByZeroException(); }
+
+    return CartesianCoordinate.fromXY(
       this.X / denominator,
       this.Y / denominator,
       this.Tolerance);
   }
-
-  // public static DivideBy(coordinate: ICartesianCoordinate, denominator: number): ICartesianCoordinate {
-  //   if (denominator === 0) { throw new DivideByZeroException(); }
-
-  //   return {
-  //     X: coordinate.X / denominator,
-  //     Y: coordinate.Y / denominator
-  //   }
-  // }
-
-
-  public equals(other: CartesianCoordinate | ICoordinate): boolean {
-    const tolerance = Math.min(this.Tolerance, other.Tolerance);
-
-    if (other as CartesianCoordinate) {
-      const otherCast = other as CartesianCoordinate;
-      return (
-        Numbers.AreEqual(this._x, otherCast.X, tolerance) &&
-        Numbers.AreEqual(this._y, otherCast.Y, tolerance));
-    }
-
-    return false;
-  }
-
-  // /// <summary>
-  // /// Indicates whether the current object is equal to another object of the same ICoordinate interface.
-  // /// </summary>
-  // /// <param name="other">The other.</param>
-  // /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-  // public Equals(other: ICoordinate): boolean {
-  //   if (typeof other === CartesianCoordinate) {
-  //     return Equals(other as CartesianCoordinate);
-  //   }
-  //   if (other as PolarCoordinate) {
-  //     return Equals(Cartesian2DPolarConverter.ToCartesian(other as PolarCoordinate));
-  //   }
-  //   return Equals(other as object);
-  // }
 }

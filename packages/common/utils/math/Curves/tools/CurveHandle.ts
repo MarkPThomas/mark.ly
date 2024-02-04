@@ -1,122 +1,92 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-22-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-22-2020
-// // ***********************************************************************
-// // <copyright file="CurveHandle.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Coordinates;
-// using System;
-// using Trig = MPT.Math.Trigonometry.TrigonometryLibrary;
+import { ICloneable } from "../../../../interfaces";
+import { Angle } from "../../Coordinates/Angle";
+import { CartesianCoordinate } from "../../Coordinates/CartesianCoordinate";
+import { CartesianOffset } from "../../Coordinates/CartesianOffset";
 
-// namespace MPT.Math.Curves.Tools
-// {
-//     /// <summary>
-//     /// Class CurveHandle.
-//     /// </summary>
-//     public class CurveHandle : ICloneable
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the control point.
-//         /// </summary>
-//         /// <value>The control point.</value>
-//         public CartesianCoordinate ControlPoint { get; }
-//         /// <summary>
-//         /// Gets or sets the rotation.
-//         /// </summary>
-//         /// <value>The rotation.</value>
-//         public Angle Rotation { get; set; }
-//         /// <summary>
-//         /// Gets or sets the radius.
-//         /// </summary>
-//         /// <value>The radius.</value>
-//         public double Radius { get; set; }
-//         #endregion
+/**
+ * Class CurveHandle.
+ * @implements {ICloneable}
+ */
+export class CurveHandle implements ICloneable<CurveHandle> {
+  /**
+   * Gets the control point.
+   * @type {CartesianCoordinate}
+   */
+  public readonly ControlPoint: CartesianCoordinate;
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="CurveHandle" /> class.
-//         /// </summary>
-//         /// <param name="controlPoint">The control point, at the center of the handle.</param>
-//         /// <param name="radius">The radius of the handle.</param>
-//         public CurveHandle(CartesianCoordinate controlPoint, double radius)
-//         {
-//             ControlPoint = controlPoint;
-//             Radius = radius;
-//             Rotation = Angle.Origin();
-//         }
+  /**
+   * Gets or sets the rotation.
+   * @type {Angle}
+   */
+  public Rotation: Angle;
 
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="CurveHandle" /> class.
-//         /// </summary>
-//         /// <param name="controlPoint">The control point, at the center of the handle.</param>
-//         /// <param name="radius">The radius of the handle.</param>
-//         /// <param name="rotation">The rotation of the handle.</param>
-//         public CurveHandle(CartesianCoordinate controlPoint, double radius, Angle rotation)
-//         {
-//             ControlPoint = controlPoint;
-//             Radius = radius;
-//             Rotation = rotation;
-//         }
-//         #endregion
+  /**
+   * Gets or sets the radius.
+   * @type {number}
+   */
+  public Radius: number;
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// Returns a <see cref="System.String" /> that represents this instance.
-//         /// </summary>
-//         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-//         public override string ToString()
-//         {
-//             return base.ToString() + " - Center: {X: " + ControlPoint.X + ", Y: " + ControlPoint.Y + "} - Radius: " + Radius + ", Rotation: " + Rotation.Degrees + " deg";
-//         }
+  /**
+   * Initializes a new instance of the {@link CurveHandle} class.
+   * @param {CartesianCoordinate} controlPoint The control point, at the center of the handle.
+   * @param {number} radius The radius of the handle.
+   * @param {Angle} [rotation] The rotation of the handle.
+   */
+  constructor(controlPoint: CartesianCoordinate, radius: number, rotation?: Angle) {
+    this.ControlPoint = controlPoint;
+    this.Radius = radius;
+    this.Rotation = rotation || Angle.Origin();
+  }
 
-//         /// <summary>
-//         /// The coordinate of the handle tip.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate.</returns>
-//         public CartesianCoordinate GetHandleTip()
-//         {
-//             return ControlPoint + new CartesianCoordinate(Radius * Trig.Cos(Rotation.Radians), Radius * Trig.Sin(Rotation.Radians), ControlPoint.Tolerance);
-//         }
+  /**
+   * Returns a string that represents this instance.
+   * @returns {string} A string that represents this instance.
+   */
+  public toString(): string {
+    return (
+      CurveHandle.name +
+      " - Center: {X: " +
+      this.ControlPoint.X +
+      ", Y: " +
+      this.ControlPoint.Y +
+      "} - Radius: " +
+      this.Radius +
+      ", Rotation: " +
+      this.Rotation.Degrees +
+      " deg"
+    );
+  }
 
-//         /// <summary>
-//         /// Sets the handle tip to the provided coordinate.
-//         /// </summary>
-//         /// <param name="handleTip">The handle tip.</param>
-//         public void SetHandleTip(CartesianCoordinate handleTip)
-//         {
-//             CartesianOffset offset = handleTip.OffsetFrom(ControlPoint);
-//             Radius = offset.Length();
-//             Rotation = offset.SlopeAngle();
-//         }
-//         #endregion
+  /**
+   * The coordinate of the handle tip.
+   * @returns {CartesianCoordinate} CartesianCoordinate.
+   */
+  public getHandleTip(): CartesianCoordinate {
+    return this.ControlPoint.addTo(
+      new CartesianCoordinate(
+        this.Radius * Math.cos(this.Rotation.Radians),
+        this.Radius * Math.sin(this.Rotation.Radians),
+        this.ControlPoint.Tolerance
+      )
+    );
+  }
 
-//         #region ICloneable
-//         /// <summary>
-//         /// Creates a new object that is a copy of the current instance.
-//         /// </summary>
-//         /// <returns>A new object that is a copy of this instance.</returns>
-//         public object Clone()
-//         {
-//             return CloneCurve();
-//         }
+  /**
+   * Sets the handle tip to the provided coordinate.
+   * @param {CartesianCoordinate} handleTip The handle tip.
+   */
+  public setHandleTip(handleTip: CartesianCoordinate): void {
+    const offset: CartesianOffset = handleTip.offsetFrom(this.ControlPoint);
+    this.Radius = offset.length();
+    this.Rotation = offset.slopeAngle();
+  }
 
-//         /// <summary>
-//         /// Clones the curve.
-//         /// </summary>
-//         /// <returns>LinearCurve.</returns>
-//         public CurveHandle CloneCurve()
-//         {
-//             CurveHandle curve = new CurveHandle(ControlPoint, Radius, Rotation);
-//             return curve;
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Creates a new object that is a copy of the current instance.
+   * @returns {CurveHandle} A new object that is a copy of this instance.
+   */
+  public clone(): CurveHandle {
+    const curve: CurveHandle = new CurveHandle(this.ControlPoint, this.Radius, this.Rotation);
+    return curve;
+  }
+}

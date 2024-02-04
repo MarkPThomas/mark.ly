@@ -1,109 +1,91 @@
-// // ***********************************************************************
-// // Assembly         :
-// // Author           : Mark P Thomas
-// // Created          : 11-16-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-16-2020
-// // ***********************************************************************
-// // <copyright file="IntersectionLinearLinear.cs" company="MarkPThomas Inc.">
-// //     Copyright (c) MarkPThomas Inc.. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Coordinates;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { Generics } from "../../../Generics";
+import { Numbers } from "../../../Numbers";
+import { LinearCurve } from "../../LinearCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     /// <summary>
-//     /// Class IntersectionLinearLinear.
-//     /// Implements the <see cref="ICurveIntersection{LinearCurve, LinearCurve}" />
-//     /// </summary>
-//     /// <seealso cref="ICurveIntersection{LinearCurve, LinearCurve}" />
-//     public class IntersectionLinearLinear : IntersectionAbstract<LinearCurve, LinearCurve>
-//     {
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearLinear"/> class.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The second curve.</param>
-//         public IntersectionLinearLinear(LinearCurve curve1, LinearCurve curve2) : base(curve1, curve2)
-//         {
 
-//         }
-//         #endregion
+/**
+ * Class representing the intersection between two linear curves.
+ * @extends {IntersectionAbstract<LinearCurve, LinearCurve>}
+ */
+export class IntersectionLinearLinear extends IntersectionAbstract<LinearCurve, LinearCurve> {
+  /**
+   * Creates an instance of IntersectionLinearLinear.
+   * @param {LinearCurve} curve1 The first linear curve.
+   * @param {LinearCurve} curve2 The second linear curve.
+   */
+  public constructor(curve1: LinearCurve, curve2: LinearCurve) {
+    super(curve1, curve2);
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Determines if the curves are tangent to each other.
+   * @override
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public AreTangent(): boolean {
+    return IntersectionLinearLinear.areTangent(this.Curve1, this.Curve2);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Determines if the curves intersect and are not tangent.
+   * @override
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  public AreIntersecting(): boolean {
+    return IntersectionLinearLinear.areIntersecting(this.Curve1, this.Curve2);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Gets the coordinates of the intersection of two curves.
+   * @override
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   */
+  public IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearLinear.intersectionCoordinates(this.Curve1, this.Curve2);
+  }
 
-//         #region Methods: Static
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreTangent(LinearCurve curve1, LinearCurve curve2)
-//         {
-//             double tolerance = Generics.GetTolerance(curve1, curve2);
-//             bool yInterceptsMatch = Numbers.AreEqual(curve1.InterceptY(), curve2.InterceptY(), tolerance) && !curve1.IsVertical();
-//             bool xInterceptsMatch = Numbers.AreEqual(curve1.InterceptX(), curve2.InterceptX(), tolerance) && !curve1.IsHorizontal();
-//             return (yInterceptsMatch || xInterceptsMatch) && curve1.IsParallel(curve2);
-//         }
+  /**
+   * Determines if two linear curves are tangent to each other.
+   * @param {LinearCurve} curve1 The first linear curve.
+   * @param {LinearCurve} curve2 The second linear curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   * @static
+   */
+  public static areTangent(curve1: LinearCurve, curve2: LinearCurve): boolean {
+    const tolerance: number = Generics.getToleranceBetween(curve1, curve2);
+    const yInterceptsMatch: boolean = Numbers.AreEqual(curve1.InterceptY(), curve2.InterceptY(), tolerance) && !curve1.IsVertical();
+    const xInterceptsMatch: boolean = Numbers.AreEqual(curve1.InterceptX(), curve2.InterceptX(), tolerance) && !curve1.IsHorizontal();
+    return (yInterceptsMatch || xInterceptsMatch) && curve1.IsParallel(curve2);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(LinearCurve curve1, LinearCurve curve2)
-//         {
-//             return !curve1.IsParallel(curve2);
-//         }
+  /**
+   * Determines if two linear curves intersect and are not tangent.
+   * @param {LinearCurve} curve1 The first linear curve.
+   * @param {LinearCurve} curve2 The second linear curve.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   * @static
+   */
+  public static areIntersecting(curve1: LinearCurve, curve2: LinearCurve): boolean {
+    return !curve1.IsParallel(curve2);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(LinearCurve curve1, LinearCurve curve2)
-//         {
-//             CartesianCoordinate[] intersectionCoordinates = { curve2.IntersectionCoordinate(curve1) };
-//             if (intersectionCoordinates.Length > 0 && double.IsInfinity(intersectionCoordinates[0].X) && double.IsInfinity(intersectionCoordinates[0].Y))
-//             {
-//                 return new CartesianCoordinate[0];
-//             }
-//             return new CartesianCoordinate[] { curve2.IntersectionCoordinate(curve1) };
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Gets the coordinates of the intersection of two linear curves.
+   * @param {LinearCurve} curve1 The first linear curve.
+   * @param {LinearCurve} curve2 The second linear curve.
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   * @static
+   */
+  public static intersectionCoordinates(curve1: LinearCurve, curve2: LinearCurve): CartesianCoordinate[] {
+    const intersectionCoordinates: CartesianCoordinate[] = [curve2.IntersectionCoordinate(curve1)];
+    if (intersectionCoordinates.length > 0
+      && intersectionCoordinates[0].X === Infinity
+      && intersectionCoordinates[0].Y === Infinity
+    ) {
+      return [];
+    }
+    return [curve2.IntersectionCoordinate(curve1)];
+  }
+}

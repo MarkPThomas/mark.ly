@@ -1,37 +1,35 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-21-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-21-2020
-// // ***********************************************************************
-// // <copyright file="BezierParametric2.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
+import { BezierCurve } from "../BezierCurve";
+import { BezierParametric2ndOrderX } from "./BezierCurveComponents/BezierParametric2ndOrderX";
+import { BezierParametric2ndOrderY } from "./BezierCurveComponents/BezierParametric2ndOrderY";
+import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
 
-// using MPT.Math.Curves.Parametrics.BezierCurveComponents;
-// using MPT.Math.Curves.Parametrics.Components;
 
-// namespace MPT.Math.Curves.Parametrics
-// {
-//     /// <summary>
-//     /// Represents a 2nd-order Bezier curve in parametric equations defining x- and y-components and their respective differentials.
-//     /// Implements the <see cref="CartesianParametricEquationXY" />
-//     /// </summary>
-//     /// <seealso cref="CartesianParametricEquationXY" />
-//     public class BezierCurveParametric2ndOrder : CartesianParametricEquationXY
-//     {
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierCurveParametric2ndOrder" /> class, which represents an n = 2 parametric.
-//         /// </summary>
-//         /// <param name="parent">The parent object whose properties are used in the associated parametric equations.</param>
-//         public BezierCurveParametric2ndOrder(BezierCurve parent)
-//         {
-//             _x = new BezierParametric2ndOrderX(parent);
-//             _y = new BezierParametric2ndOrderY(parent);
-//         }
-//     }
-// }
+/**
+ * Represents a 2nd-order Bezier curve in parametric equations defining x- and y-components and their respective differentials.
+ * @extends {CartesianParametricEquationXY}
+ */
+export class BezierCurveParametric2ndOrder extends CartesianParametricEquationXY {
+  /**
+   * The x-component of the parametric equation.
+   * @type {BezierParametric2ndOrderX}
+   * @protected
+   */
+  protected _x: BezierParametric2ndOrderX;
+
+  /**
+   * The y-component of the parametric equation.
+   * @type {BezierParametric2ndOrderY}
+   * @protected
+   */
+  protected _y: BezierParametric2ndOrderY;
+
+  /**
+   * Initializes a new instance of the {@linkcode BezierCurveParametric2ndOrder} class, which represents an n = 2 parametric.
+   * @param {BezierCurve} parent The parent object whose properties are used in the associated parametric equations.
+   */
+  constructor(parent: BezierCurve) {
+    super();
+    this._x = new BezierParametric2ndOrderX(parent);
+    this._y = new BezierParametric2ndOrderY(parent);
+  }
+}

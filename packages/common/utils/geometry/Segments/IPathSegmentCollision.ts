@@ -1,5 +1,3 @@
-
-
 import { CartesianCoordinate } from "../../math/Coordinates/CartesianCoordinate";
 import { Curve } from "../../math/Curves/Curve";
 import { IPathSegment } from "./IPathSegment";

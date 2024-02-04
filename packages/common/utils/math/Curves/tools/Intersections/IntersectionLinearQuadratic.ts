@@ -1,108 +1,100 @@
-// using MPT.Math.Coordinates;
-// using System;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { LinearCurve } from "../../LinearCurve";
+import { QuadraticCurve } from "../../QuadraticCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     public class IntersectionLinearQuadratic : IntersectionAbstract<LinearCurve, QuadraticCurve>
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the linear curve.
-//         /// </summary>
-//         /// <value>The linear curve.</value>
-//         public LinearCurve LinearCurve => Curve1;
-//         /// <summary>
-//         /// Gets the quadratic curve.
-//         /// </summary>
-//         /// <value>The quadratic curve.</value>
-//         public QuadraticCurve QuadraticCurve => Curve2;
-//         #endregion
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearQuadratic"/> class.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="quadraticCurve">The quadratic curve.</param>
-//         public IntersectionLinearQuadratic(LinearCurve linearCurve, QuadraticCurve quadraticCurve) : base(linearCurve, quadraticCurve)
-//         {
+/**
+ * Represents the intersection of a linear curve and a quadratic curve.
+ * @extends {IntersectionAbstract<LinearCurve, QuadraticCurve>}
+ */
+export class IntersectionLinearQuadratic extends IntersectionAbstract<LinearCurve, QuadraticCurve> {
+  /**
+   * Gets the linear curve.
+   * @type {LinearCurve}
+   */
+  public get LinearCurve(): LinearCurve {
+    return this.Curve1;
+  }
 
-//         }
-//         #endregion
+  /**
+   * Gets the quadratic curve.
+   * @type {QuadraticCurve}
+   */
+  public get QuadraticCurve(): QuadraticCurve {
+    return this.Curve2;
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Initializes a new instance of the IntersectionLinearQuadratic class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {QuadraticCurve} quadraticCurve The quadratic curve.
+   */
+  constructor(linearCurve: LinearCurve, quadraticCurve: QuadraticCurve) {
+    super(linearCurve, quadraticCurve);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public override AreTangent(): boolean {
+    return IntersectionLinearQuadratic.AreTangent(this.LinearCurve, this.QuadraticCurve);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Checks if the curves intersect and are not tangent.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public override AreIntersecting(): boolean {
+    return IntersectionLinearQuadratic.AreIntersecting(this.LinearCurve, this.QuadraticCurve);
+  }
 
-//         #region Static
-//         /// <summary>
-//         /// The separation of the centers of the curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="quadraticCurve">The quadratic curve.</param>
-//         /// <returns>System.Double.</returns>
-//         public static double CenterSeparations(LinearCurve linearCurve, QuadraticCurve quadraticCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public override IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearQuadratic.IntersectionCoordinates(this.LinearCurve, this.QuadraticCurve);
+  }
 
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="quadraticCurve">The quadratic curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreTangent(LinearCurve linearCurve, QuadraticCurve quadraticCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the separation of the centers of the curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {QuadraticCurve} quadraticCurve The quadratic curve.
+   * @returns {number} The separation of the centers of the curves.
+   */
+  public static CenterSeparations(linearCurve: LinearCurve, quadraticCurve: QuadraticCurve): number {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="quadraticCurve">The quadratic curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(LinearCurve linearCurve, QuadraticCurve quadraticCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Checks if two curves are tangent to each other.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {QuadraticCurve} quadraticCurve The quadratic curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public static AreTangent(linearCurve: LinearCurve, quadraticCurve: QuadraticCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The coordinate(s) of the intersection(s) of two curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="quadraticCurve">The quadratic curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(LinearCurve linearCurve, QuadraticCurve quadraticCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Checks if two curves intersect and are not tangent.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {QuadraticCurve} quadraticCurve The quadratic curve.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public static AreIntersecting(linearCurve: LinearCurve, quadraticCurve: QuadraticCurve): boolean {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {QuadraticCurve} quadraticCurve The quadratic curve.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public static IntersectionCoordinates(linearCurve: LinearCurve, quadraticCurve: QuadraticCurve): CartesianCoordinate[] {
+    throw new Error('Not implemented');
+  }
+}

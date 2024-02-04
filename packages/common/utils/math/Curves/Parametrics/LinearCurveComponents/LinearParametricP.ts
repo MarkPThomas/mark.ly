@@ -20,7 +20,7 @@ export class LinearParametricP extends LinearParametricCartesianComponents {
 
   constructor(parent: LinearCurve) {
     super(parent);
-    this._offset = parent.Range.End.Limit.OffsetFrom(parent.Range.Start.Limit);
+    this._offset = parent.Range.end.Limit.offsetFrom(parent.Range.start.Limit);
   }
 
   /// <summary>
@@ -29,8 +29,8 @@ export class LinearParametricP extends LinearParametricCartesianComponents {
   /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
   /// <returns>System.Double.</returns>
   public BaseByParameter(parameter: number): CartesianCoordinate {
-    return this._parent().Range.Start.Limit.addTo(
-      this._offset.multiplyBy(parameter).ToCartesianCoordinate()
+    return this._parent().Range.start.Limit.addTo(
+      this._offset.multiplyBy(parameter).toCartesianCoordinate()
     );
   }
 
@@ -41,7 +41,7 @@ export class LinearParametricP extends LinearParametricCartesianComponents {
   /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
   /// <returns>System.Double.</returns>
   public PrimeByParameter(parameter: number): CartesianCoordinate {
-    return this._offset.ToCartesianCoordinate();
+    return this._offset.toCartesianCoordinate();
   }
 
 
@@ -51,7 +51,7 @@ export class LinearParametricP extends LinearParametricCartesianComponents {
   /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
   /// <returns>System.Double.</returns>
   public PrimeDoubleByParameter(parameter: number): CartesianCoordinate {
-    return CartesianCoordinate.Origin();
+    return CartesianCoordinate.atOrigin();
   }
 
 

@@ -1,109 +1,100 @@
-// using MPT.Math.Coordinates;
-// using System;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { LinearCurve } from "../../LinearCurve";
+import { LogarithmicSpiralCurve } from "../../LogarithmicSpiralCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     public class IntersectionLinearLogarithmicSpiral : IntersectionAbstract<LinearCurve, LogarithmicSpiralCurve>
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the linear curve.
-//         /// </summary>
-//         /// <value>The linear curve.</value>
-//         public LinearCurve LinearCurve => Curve1;
-//         /// <summary>
-//         /// Gets the logarithmic spiral curve.
-//         /// </summary>
-//         /// <value>The logarithmic spiral curve.</value>
-//         public LogarithmicSpiralCurve LogarithmicSpiralCurve => Curve2;
-//         #endregion
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearLogarithmicSpiral"/> class.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="logarithmicSpiralCurve">The logarithmic spiral curve.</param>
-//         public IntersectionLinearLogarithmicSpiral(LinearCurve linearCurve, LogarithmicSpiralCurve logarithmicSpiralCurve) : base(linearCurve, logarithmicSpiralCurve)
-//         {
+/**
+ * Represents the intersection of a linear curve and a logarithmic spiral curve.
+ * @extends {IntersectionAbstract<LinearCurve, LogarithmicSpiralCurve>}
+ */
+export class IntersectionLinearLogarithmicSpiral extends IntersectionAbstract<LinearCurve, LogarithmicSpiralCurve> {
+  /**
+   * Gets the linear curve.
+   * @type {LinearCurve}
+   */
+  public get LinearCurve(): LinearCurve {
+    return this.Curve1;
+  }
 
-//         }
-//         #endregion
+  /**
+   * Gets the logarithmic spiral curve.
+   * @type {LogarithmicSpiralCurve}
+   */
+  public get LogarithmicSpiralCurve(): LogarithmicSpiralCurve {
+    return this.Curve2;
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Initializes a new instance of the IntersectionLinearLogarithmicSpiral class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {LogarithmicSpiralCurve} logarithmicSpiralCurve The logarithmic spiral curve.
+   */
+  constructor(linearCurve: LinearCurve, logarithmicSpiralCurve: LogarithmicSpiralCurve) {
+    super(linearCurve, logarithmicSpiralCurve);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public override AreTangent(): boolean {
+    return IntersectionLinearLogarithmicSpiral.AreTangent(this.LinearCurve, this.LogarithmicSpiralCurve);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Checks if the curves intersect and are not tangent.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public override AreIntersecting(): boolean {
+    return IntersectionLinearLogarithmicSpiral.AreIntersecting(this.LinearCurve, this.LogarithmicSpiralCurve);
+  }
 
-//         #region Static
-//         /// <summary>
-//         /// The separation of the centers of the curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="logarithmicSpiralCurve">The logarithmic spiral curve.</param>
-//         /// <returns>System.Double.</returns>
-//         public static double CenterSeparations(LinearCurve linearCurve, LogarithmicSpiralCurve logarithmicSpiralCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public override IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearLogarithmicSpiral.IntersectionCoordinates(this.LinearCurve, this.LogarithmicSpiralCurve);
+  }
 
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="logarithmicSpiralCurve">The logarithmic spiral curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static bool AreTangent(LinearCurve linearCurve, LogarithmicSpiralCurve logarithmicSpiralCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the separation of the centers of the curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {LogarithmicSpiralCurve} logarithmicSpiralCurve The logarithmic spiral curve.
+   * @returns {number} The separation of the centers of the curves.
+   */
+  public static CenterSeparations(linearCurve: LinearCurve, logarithmicSpiralCurve: LogarithmicSpiralCurve): number {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="logarithmicSpiralCurve">The logarithmic spiral curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(LinearCurve linearCurve, LogarithmicSpiralCurve logarithmicSpiralCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Checks if two curves are tangent to each other.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {LogarithmicSpiralCurve} logarithmicSpiralCurve The logarithmic spiral curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public static AreTangent(linearCurve: LinearCurve, logarithmicSpiralCurve: LogarithmicSpiralCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The coordinate(s) of the intersection(s) of two curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="logarithmicSpiralCurve">The logarithmic spiral curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(LinearCurve linearCurve, LogarithmicSpiralCurve logarithmicSpiralCurve)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Checks if two curves intersect and are not tangent.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {LogarithmicSpiralCurve} logarithmicSpiralCurve The logarithmic spiral curve.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public static AreIntersecting(linearCurve: LinearCurve, logarithmicSpiralCurve: LogarithmicSpiralCurve): boolean {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {LogarithmicSpiralCurve} logarithmicSpiralCurve The logarithmic spiral curve.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public static IntersectionCoordinates(linearCurve: LinearCurve, logarithmicSpiralCurve: LogarithmicSpiralCurve): CartesianCoordinate[] {
+    throw new Error('Not implemented');
+  }
+}

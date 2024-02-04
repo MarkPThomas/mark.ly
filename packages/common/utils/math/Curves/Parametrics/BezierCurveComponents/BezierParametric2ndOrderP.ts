@@ -1,97 +1,68 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-21-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-21-2020
-// // ***********************************************************************
-// // <copyright file="BezierParametricX2.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Coordinates;
-// using MPT.Math.NumberTypeExtensions;
-
-// namespace MPT.Math.Curves.Parametrics.BezierCurveComponents
-// {
-//     /// <summary>
-//     /// Represents a 2nd-order Bezier curve in parametric equations defining the <see cref="CartesianCoordinate"/> component and differentials.
-//     /// This class tends to be used as a base from which the x- and y-components are derived.
-//     /// Implements the <see cref="MPT.Math.Curves.Parametrics.BezierCurveComponents.BezierParametricCartesianComponents" />
-//     /// </summary>
-//     /// <seealso cref="MPT.Math.Curves.Parametrics.BezierCurveComponents.BezierParametricCartesianComponents" />
-//     internal class BezierParametric2ndOrderP : BezierParametricCartesianComponents
-//     {
-
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="BezierParametric2ndOrderP" /> class.
-//         /// </summary>
-//         /// <param name="parent">The parent.</param>
-//         public BezierParametric2ndOrderP(BezierCurve parent) : base(parent)
-//         {
-//         }
-
-//         #region Methods: Parametric Equations and Differentials
-//         /// <summary>
-//         /// The component as a function of the supplied parameter.
-//         /// </summary>
-//         /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
-//         /// <returns>System.Double.</returns>
-//         public override CartesianCoordinate BaseByParameter(double parameter)
-//         {
-//             return _parent.B_0() * (1 - parameter).Squared()
-//                     + 2 * _parent.B_1() * parameter * (1 - parameter)
-//                     + _parent.B_3() * parameter.Squared();
-//         }
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { BezierCurve } from "../../BezierCurve";
+import { BezierParametricCartesianComponents } from "./BezierParametricCartesianComponents";
 
 
-//         /// <summary>
-//         /// The component first differentical as a function of the supplied parameter.
-//         /// </summary>
-//         /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
-//         /// <returns>System.Double.</returns>
-//         public override CartesianCoordinate PrimeByParameter(double parameter)
-//         {
-//             return -2 * _parent.B_0() * (1 - parameter)
-//                     + 2 * _parent.B_1() * (1 - 2 * parameter)
-//                     + 2 * _parent.B_3() * parameter;
-//         }
+/**
+ * Represents a 2nd-order Bezier curve in parametric equations defining the {@linkcode CartesianCoordinate} component and differentials.
+ * This class tends to be used as a base from which the x- and y-components are derived.
+ * @extends {BezierParametricCartesianComponents}
+ */
+export class BezierParametric2ndOrderP extends BezierParametricCartesianComponents {
+  /**
+   * Initializes a new instance of the {@linkcode BezierParametric2ndOrderP} class.
+   * @param {BezierCurve} parent The parent.
+   */
+  constructor(parent: BezierCurve) {
+    super(parent);
+  }
 
+  /**
+   * The component as a function of the supplied parameter.
+   * @param {number} parameter The parameter, such as relative position between 0 & 1, or the angle in radians.
+   * @returns {CartesianCoordinate} The calculated CartesianCoordinate component.
+   */
+  public override BaseByParameter(parameter: number): CartesianCoordinate {
+    return this._parent.B_0().multiplyBy((1 - parameter) ** 2)
+      .addTo(this._parent.B_1().multiplyBy(2 * parameter * (1 - parameter)))
+      .addTo(this._parent.B_3().multiplyBy(parameter ** 2));
+  }
 
-//         /// <summary>
-//         /// The component second differentical as a function of the supplied parameter.
-//         /// </summary>
-//         /// <param name="parameter">The parameter, such as relative position between 0 &amp; 1, or the angle in radians.</param>
-//         /// <returns>System.Double.</returns>
-//         public override CartesianCoordinate PrimeDoubleByParameter(double parameter)
-//         {
-//             return 2 * _parent.B_0()
-//                     - 4 * _parent.B_1()
-//                     + 2 * _parent.B_3();
-//         }
-//         #endregion
+  /**
+   * The component first differential as a function of the supplied parameter.
+   * @param {number} parameter The parameter, such as relative position between 0 & 1, or the angle in radians.
+   * @returns {CartesianCoordinate} The calculated CartesianCoordinate component first differential.
+   */
+  public override PrimeByParameter(parameter: number): CartesianCoordinate {
+    return this._parent.B_0().multiplyBy(-2 * (1 - parameter))
+      .addTo(this._parent.B_1().multiplyBy(2 * (1 - 2 * parameter)))
+      .addTo(this._parent.B_3().multiplyBy(2 * parameter));
+  }
 
-//         #region ICloneable
-//         /// <summary>
-//         /// Creates a new object that is a copy of the current instance.
-//         /// </summary>
-//         /// <returns>A new object that is a copy of this instance.</returns>
-//         public override object Clone()
-//         {
-//             return CloneParametric();
-//         }
+  /**
+   * The component second differential as a function of the supplied parameter.
+   * @param {number} parameter The parameter, such as relative position between 0 & 1, or the angle in radians.
+   * @returns {CartesianCoordinate} The calculated CartesianCoordinate component second differential.
+   */
+  public override PrimeDoubleByParameter(parameter: number): CartesianCoordinate {
+    return this._parent.B_0().multiplyBy(2)
+      .addTo(this._parent.B_1().multiplyBy(-4))
+      .addTo(this._parent.B_3().multiplyBy(2));
+  }
 
-//         /// <summary>
-//         /// Clones the curve.
-//         /// </summary>
-//         /// <returns>LinearCurve.</returns>
-//         public BezierParametric2ndOrderP CloneParametric()
-//         {
-//             BezierParametric2ndOrderP parametric = new BezierParametric2ndOrderP(_parent as BezierCurve);
-//             return parametric;
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Creates a new object that is a copy of the current instance.
+   * @returns {BezierParametric2ndOrderP} A new object that is a copy of this instance.
+   */
+  public override Clone(): BezierParametric2ndOrderP {
+    return this.CloneParametric();
+  }
+
+  /**
+   * Clones the curve.
+   * @returns {BezierParametric2ndOrderP} A new {@linkcode BezierParametric2ndOrderP} object that is a copy of this instance.
+   */
+  public CloneParametric(): BezierParametric2ndOrderP {
+    return new BezierParametric2ndOrderP(this._parent as BezierCurve);
+  }
+}

@@ -1,38 +1,21 @@
-// // ***********************************************************************
-// // Assembly         :
-// // Author           : Mark P Thomas
-// // Created          : 11-19-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 11-19-2020
-// // ***********************************************************************
-// // <copyright file="EllipticParametric.cs" company="MarkPThomas Inc.">
-// //     Copyright (c) MarkPThomas Inc.. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
+import { ConicSectionEllipticCurve } from "../ConicSectionEllipticCurve";
+import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
+import { EllipticalParametricX } from "./ConicSectionCurveComponents/EllipticalParametricX";
+import { EllipticalParametricY } from "./ConicSectionCurveComponents/EllipticalParametricY";
 
-// using MPT.Math.Curves.Parametrics.Components;
-// using MPT.Math.Curves.Parametrics.ConicSectionCurveComponents;
 
-// namespace MPT.Math.Curves.Parametrics
-// {
-
-//     /// <summary>
-//     /// Represents an elliptical about a local origin curve in parametric equations defining x- and y-components and their respective differentials.
-//     /// Implements the <see cref="CartesianParametricEquationXY" />
-//     /// </summary>
-//     /// <seealso cref="CartesianParametricEquationXY" />
-//     public class EllipticalCurveParametric : CartesianParametricEquationXY
-//     {
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="EllipticalCurveParametric" /> class.
-//         /// </summary>
-//         /// <param name="parent">The parent object whose properties are used in the associated parametric equations.</param>
-//         public EllipticalCurveParametric(ConicSectionEllipticCurve parent)
-//         {
-//             _x = new EllipticalParametricX(parent);
-//             _y = new EllipticalParametricY(parent);
-//         }
-//     }
-// }
+/**
+ * Represents an elliptical about a local origin curve in parametric equations defining x- and y-components and their respective differentials.
+ * @extends {CartesianParametricEquationXY}
+ */
+export class EllipticalCurveParametric extends CartesianParametricEquationXY {
+  /**
+   * Initializes a new instance of the `EllipticalCurveParametric` class.
+   * @param {ConicSectionEllipticCurve} parent The parent object whose properties are used in the associated parametric equations.
+   */
+  constructor(parent: ConicSectionEllipticCurve) {
+    super();
+    this._x = new EllipticalParametricX(parent);
+    this._y = new EllipticalParametricY(parent);
+  }
+}

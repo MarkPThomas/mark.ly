@@ -1,111 +1,100 @@
-// using MPT.Math.Coordinates;
-// using System;
-// using System.Collections.Generic;
-// using System.Text;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { CircularCurve } from "../../CircularCurve";
+import { CubicCurve } from "../../CubicCurve";
+import { LinearCurve } from "../../LinearCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     public class IntersectionLinearCubic : IntersectionAbstract<LinearCurve, CubicCurve>
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the linear curve.
-//         /// </summary>
-//         /// <value>The linear curve.</value>
-//         public LinearCurve LinearCurve => Curve1;
-//         /// <summary>
-//         /// Gets the cubic curve.
-//         /// </summary>
-//         /// <value>The cubic curve.</value>
-//         public CubicCurve CubicCurve => Curve2;
-//         #endregion
+/**
+ * Represents the intersection of a linear curve and a cubic curve.
+ * @extends {IntersectionAbstract<LinearCurve, CubicCurve>}
+ */
+export class IntersectionLinearCubic extends IntersectionAbstract<LinearCurve, CubicCurve> {
+  /**
+   * Gets the linear curve.
+   * @type {LinearCurve}
+   */
+  public get LinearCurve(): LinearCurve {
+    return this.Curve1;
+  }
 
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearCubic"/> class.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="cubicCurve">The cubic curve.</param>
-//         public IntersectionLinearCubic(LinearCurve linearCurve, CubicCurve cubicCurve) : base(linearCurve, cubicCurve)
-//         {
+  /**
+   * Gets the cubic curve.
+   * @type {CubicCurve}
+   */
+  public get CubicCurve(): CubicCurve {
+    return this.Curve2;
+  }
 
-//         }
-//         #endregion
+  /**
+   * Initializes a new instance of the IntersectionLinearCubic class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CubicCurve} cubicCurve The cubic curve.
+   */
+  constructor(linearCurve: LinearCurve, cubicCurve: CubicCurve) {
+    super(linearCurve, cubicCurve);
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public override AreTangent(): boolean {
+    return IntersectionLinearCubic.AreTangent(this.LinearCurve, this.CubicCurve);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves intersect and are not tangent.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public override AreIntersecting(): boolean {
+    return IntersectionLinearCubic.AreIntersecting(this.LinearCurve, this.CubicCurve);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public override IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearCubic.IntersectionCoordinates(this.LinearCurve, this.CubicCurve);
+  }
 
-//         #region Static
-//         /// <summary>
-//         /// The separation of the centers of the curves.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns>System.Double.</returns>
-//         public static double CenterSeparations(CircularCurve curve1, CircularCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the separation of the centers of the curves.
+   * @param {CircularCurve} curve1 The first curve.
+   * @param {CircularCurve} curve2 The second curve.
+   * @returns {number} The separation of the centers of the curves.
+   */
+  public static CenterSeparations(curve1: CircularCurve, curve2: CircularCurve): number {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static bool AreTangent(CircularCurve curve1, CircularCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if two curves are tangent to each other.
+   * @param {CircularCurve} curve1 The first curve.
+   * @param {CircularCurve} curve2 The second curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public static AreTangent(curve1: LinearCurve, curve2: CubicCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(CircularCurve curve1, CircularCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if two curves intersect.
+   * @param {LinearCurve} curve1 The first curve.
+   * @param {CircularCurve} curve2 The second curve.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  public static AreIntersecting(curve1: LinearCurve, curve2: CubicCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The coordinate(s) of the intersection(s) of two curves.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(CircularCurve curve1, CircularCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @param {LinearCurve} curve1 The first curve.
+   * @param {CircularCurve} curve2 The second curve.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public static IntersectionCoordinates(curve1: LinearCurve, curve2: CubicCurve): CartesianCoordinate[] {
+    throw new Error('Not implemented');
+  }
+}

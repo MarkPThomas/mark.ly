@@ -12,7 +12,7 @@ describe('##Transformations', () => {
     const transformations = new Transformations(localOriginInGlobal, localAxisXPtInGlobal);
 
     const angularOffset = AngularOffset.fromDeltaRadians(Math.PI / 4);
-    const offset = localOriginInGlobal.OffsetFrom(CartesianCoordinate.Origin());
+    const offset = localOriginInGlobal.offsetFrom(CartesianCoordinate.atOrigin());
 
     expect(transformations.LocalOrigin).toEqual(localOriginInGlobal);
     expect(transformations.LocalAxisX).toEqual(localAxisXPtInGlobal);

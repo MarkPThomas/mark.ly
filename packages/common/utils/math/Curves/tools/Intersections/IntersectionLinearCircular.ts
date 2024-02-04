@@ -1,258 +1,241 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-16-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 01-16-2021
-// // ***********************************************************************
-// // <copyright file="IntersectionLinearCircular.cs" company="MarkPThomas Inc.">
-// //     Copyright (c) MarkPThomas Inc.. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
-// using MPT.Math.Algebra;
-// using MPT.Math.Coordinates;
-// using MPT.Math.NumberTypeExtensions;
-// using System.Transactions;
-
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     /// <summary>
-//     /// Class IntersectionLinearLinear.
-//     /// Implements the <see cref="ICurveIntersection{LinearCurve, CircularCurve}" />
-//     /// </summary>
-//     /// <seealso cref="ICurveIntersection{LinearCurve, CircularCurve}" />
-//     public class IntersectionLinearCircular : IntersectionAbstract<LinearCurve, CircularCurve>
-//     {
-//         #region Properties
-//         /// <summary>
-//         /// Gets the linear curve.
-//         /// </summary>
-//         /// <value>The linear curve.</value>
-//         public LinearCurve LinearCurve => Curve1;
-//         /// <summary>
-//         /// Gets the circular curve.
-//         /// </summary>
-//         /// <value>The circular curve.</value>
-//         public CircularCurve CircularCurve => Curve2;
-
-//         /// <summary>
-//         /// The properties
-//         /// </summary>
-//         private IntersectionProperties _properties = null;
-//         #endregion
-
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearCircular" /> class.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         public IntersectionLinearCircular(LinearCurve linearCurve, CircularCurve circularCurve) : base(linearCurve, circularCurve)
-//         {
-//             _properties = new IntersectionProperties(linearCurve, circularCurve);
-//         }
-//         #endregion
-
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return _areTangent(LinearCurve, CircularCurve, _properties);
-//         }
-
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return _areIntersecting(LinearCurve, CircularCurve, _properties);
-//         }
-
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return _intersectionCoordinates(LinearCurve, CircularCurve, _properties);
-//         }
-//         #endregion
-
-//         #region Static
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreTangent(LinearCurve linearCurve, CircularCurve circularCurve)
-//         {
-//             return _areTangent(linearCurve, circularCurve, new IntersectionProperties(linearCurve, circularCurve));
-//         }
-
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(LinearCurve linearCurve, CircularCurve circularCurve)
-//         {
-//             return _areIntersecting(linearCurve, circularCurve, new IntersectionProperties(linearCurve, circularCurve));
-//         }
-
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(LinearCurve linearCurve, CircularCurve circularCurve)
-//         {
-//             return _intersectionCoordinates(linearCurve, circularCurve, new IntersectionProperties(linearCurve, circularCurve));
-//         }
-
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         /// <param name="_properties">Pre-calculated properties to be used for convenience.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         private static bool _areTangent(LinearCurve linearCurve, CircularCurve circularCurve, IntersectionProperties _properties)
-//         {
-//             return _properties.IncidenceDelta.IsEqualTo(0, Generics.GetTolerance(linearCurve, circularCurve));
-//         }
-
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         /// <param name="_properties">Pre-calculated properties to be used for convenience.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         private static bool _areIntersecting(LinearCurve linearCurve, CircularCurve circularCurve, IntersectionProperties _properties)
-//         {
-//             return _properties.IncidenceDelta.IsGreaterThanOrEqualTo(0, Generics.GetTolerance(linearCurve, circularCurve));
-//         }
-
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <param name="linearCurve">The linear curve.</param>
-//         /// <param name="circularCurve">The circular curve.</param>
-//         /// <param name="_properties">Pre-calculated properties to be used for convenience.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         private static CartesianCoordinate[] _intersectionCoordinates(LinearCurve linearCurve, CircularCurve circularCurve, IntersectionProperties _properties)
-//         {
-//             if (!_areIntersecting(linearCurve, circularCurve, _properties))
-//             {
-//                 return new CartesianCoordinate[0];
-//             }
-
-//             double D = _properties.D;
-//             double dx = _properties.dx;
-//             double dy = _properties.dy;
-//             double dr = _properties.dr;
-//             double incidenceDeltaSqrt = _properties.IncidenceDelta.Sqrt();
-
-//             double[] xIntersection = Numbers.PlusMinus(D * dy / dr.Squared(), (dy.Sign() * dx / dr.Squared()) * incidenceDeltaSqrt);
-//             double[] yIntersection = Numbers.PlusMinus(-1 * D * dx / dr.Squared(), (dy.Abs() / dr.Squared()) * incidenceDeltaSqrt);
-
-//             Transformations converter = _properties.Transformations;
-
-//             if (_areTangent(linearCurve, circularCurve, _properties))
-//             {
-//                 return new CartesianCoordinate[] { converter.TransformToGlobal(new CartesianCoordinate(xIntersection[0], yIntersection[0])) };
-//             }
-
-//             return new CartesianCoordinate[]
-//             {
-//                 converter.TransformToGlobal(new CartesianCoordinate(xIntersection[0], yIntersection[0])),
-//                 converter.TransformToGlobal(new CartesianCoordinate(xIntersection[1], yIntersection[1]))
-//             };
-//         }
-//         #endregion
+import { AlgebraLibrary } from "../../../Algebra/AlgebraLibrary";
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { Generics } from "../../../Generics";
+import { Numbers } from "../../../Numbers";
+import { Transformations } from "../../../Transformations";
+import { CircularCurve } from "../../CircularCurve";
+import { LinearCurve } from "../../LinearCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
 
-//         /// <summary>
-//         /// Class IntersectionProperties.
-//         /// </summary>
-//         protected class IntersectionProperties
-//         {
-//             /// <summary>
-//             /// Gets the tolerance.
-//             /// </summary>
-//             /// <value>The tolerance.</value>
-//             public double Tolerance { get; }
-//             /// <summary>
-//             /// Cross-product of two points defining the linear curve.
-//             /// </summary>
-//             /// <value>The d.</value>
-//             public double D { get; }
-//             /// <summary>
-//             /// X-axis distance between two points defining the linear curve.
-//             /// </summary>
-//             /// <value>The dx.</value>
-//             public double dx { get; }
-//             /// <summary>
-//             /// Y-axis distance between two points defining the linear curve.
-//             /// </summary>
-//             /// <value>The dy.</value>
-//             public double dy { get; }
-//             /// <summary>
-//             /// Distance between two points defining the linear curve.
-//             /// </summary>
-//             /// <value>The dr.</value>
-//             public double dr { get; }
-//             /// <summary>
-//             /// Gets the incidence delta.
-//             /// </summary>
-//             /// <value>The incidence delta.</value>
-//             public double IncidenceDelta { get; }
-//             /// <summary>
-//             /// Gets the transformations object.
-//             /// </summary>
-//             /// <value>The transformations.</value>
-//             public Transformations Transformations { get; }
+/**
+ * Class representing the intersection between a linear curve and a circular curve.
+ * @extends {IntersectionAbstract<LinearCurve, CircularCurve>}
+ */
+export class IntersectionLinearCircular extends IntersectionAbstract<LinearCurve, CircularCurve> {
+  /**
+   * Gets the linear curve.
+   * @type {LinearCurve}
+   */
+  public get linearCurve(): LinearCurve {
+    return this.Curve1;
+  }
 
-//             /// <summary>
-//             /// Initializes a new instance of the <see cref="IntersectionProperties"/> class.
-//             /// </summary>
-//             /// <param name="linearCurve">The linear curve.</param>
-//             /// <param name="circularCurve">The circular curve.</param>
-//             public IntersectionProperties(LinearCurve linearCurve, CircularCurve circularCurve)
-//             {
-//                 Tolerance = Generics.GetTolerance(linearCurve, circularCurve);
-//                 Transformations = new Transformations(circularCurve.LocalOrigin, new CartesianCoordinate(circularCurve.LocalOrigin.X + 1, circularCurve.LocalOrigin.Y));
-//                 LinearCurve linearCurveLocal = transformToLocal(linearCurve);
+  /**
+   * Gets the circular curve.
+   * @type {CircularCurve}
+   */
+  public get circularCurve(): CircularCurve {
+    return this.Curve2;
+  }
 
-//                 D = Numbers.ValueAsZeroIfWithinAbsoluteTolerance(linearCurveLocal.ControlPointI.CrossProduct(linearCurveLocal.ControlPointJ), Tolerance);
-//                 CartesianOffset offset = linearCurveLocal.Range.End.Limit.OffsetFrom(linearCurveLocal.Range.Start.Limit);
-//                 dx = offset.X();
-//                 dy = offset.Y();
-//                 dr = AlgebraLibrary.SRSS(dx, dy);
+  /**
+   * Intersection properties.
+   * @private
+   * @type {IntersectionProperties}
+   */
+  private properties: IntersectionProperties;
 
-//                 IncidenceDelta = Numbers.ValueAsZeroIfWithinAbsoluteTolerance((circularCurve.Radius * dr).Squared() - D.Squared(), Tolerance);
-//             }
+  /**
+   * Initializes a new instance of the `IntersectionLinearCircular` class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   */
+  public constructor(linearCurve: LinearCurve, circularCurve: CircularCurve) {
+    super(linearCurve, circularCurve);
+    this.properties = new IntersectionProperties(linearCurve, circularCurve);
+  }
 
-//             /// <summary>
-//             /// Returns new linear curve transformed to the local coordinates of the provided circular curve.
-//             /// </summary>
-//             /// <param name="linearCurve">The linear curve.</param>
-//             /// <returns>LinearCurve.</returns>
-//             protected LinearCurve transformToLocal(LinearCurve linearCurve)
-//             {
-//                 return new LinearCurve(
-//                     Transformations.TransformToLocal(linearCurve.ControlPointI),
-//                     Transformations.TransformToLocal(linearCurve.ControlPointJ));
-//             }
-//         }
-//     }
-// }
+  /**
+   * Determines if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  AreTangent(): boolean {
+    return IntersectionLinearCircular._areTangent(this.linearCurve, this.circularCurve, this.properties);
+  }
+
+  /**
+   * Determines if the curves intersect.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  AreIntersecting(): boolean {
+    return IntersectionLinearCircular._areIntersecting(this.linearCurve, this.circularCurve, this.properties);
+  }
+
+  /**
+   * Gets the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   */
+  IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionLinearCircular._intersectionCoordinates(this.linearCurve, this.circularCurve, this.properties);
+  }
+
+  /**
+   * Static method: Determines if the curves are tangent to each other.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  static areTangent(linearCurve: LinearCurve, circularCurve: CircularCurve): boolean {
+    return this._areTangent(linearCurve, circularCurve, new IntersectionProperties(linearCurve, circularCurve));
+  }
+
+  /**
+   * Static method: Determines if the curves intersect.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  static areIntersecting(linearCurve: LinearCurve, circularCurve: CircularCurve): boolean {
+    return this._areIntersecting(linearCurve, circularCurve, new IntersectionProperties(linearCurve, circularCurve));
+  }
+
+  /**
+   * Static method: Gets the coordinates of the intersection of two curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   */
+  static intersectionCoordinates(linearCurve: LinearCurve, circularCurve: CircularCurve): CartesianCoordinate[] {
+    return this._intersectionCoordinates(linearCurve, circularCurve, new IntersectionProperties(linearCurve, circularCurve));
+  }
+
+  /**
+   * Static method: Determines if the curves are tangent to each other.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   * @param {IntersectionProperties} properties Pre-calculated properties for convenience.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   * @private
+   */
+  private static _areTangent(linearCurve: LinearCurve, circularCurve: CircularCurve, properties: IntersectionProperties): boolean {
+    return Numbers.IsEqualTo(properties.incidenceDelta, 0, Generics.getToleranceBetween(linearCurve, circularCurve));
+  }
+
+  /**
+   * Static method: Determines if the curves intersect.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   * @param {IntersectionProperties} properties Pre-calculated properties for convenience.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   * @private
+   */
+  private static _areIntersecting(linearCurve: LinearCurve, circularCurve: CircularCurve, properties: IntersectionProperties): boolean {
+    return Numbers.IsGreaterThanOrEqualTo(properties.incidenceDelta, 0, Generics.getToleranceBetween(linearCurve, circularCurve));
+  }
+
+  /**
+   * Static method: Gets the coordinates of the intersection of two curves.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   * @param {IntersectionProperties} properties Pre-calculated properties for convenience.
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   * @private
+   */
+  private static _intersectionCoordinates(linearCurve: LinearCurve, circularCurve: CircularCurve, properties: IntersectionProperties): CartesianCoordinate[] {
+    if (!this._areIntersecting(linearCurve, circularCurve, properties)) {
+      return [];
+    }
+
+    const D: number = properties.D;
+    const dx: number = properties.dx;
+    const dy: number = properties.dy;
+    const dr: number = properties.dr;
+    const incidenceDeltaSqrt: number = Math.sqrt(properties.incidenceDelta);
+
+    const xIntersection: number[] = Numbers.PlusMinus(D * dy / (dr ** 2), (Math.sign(dy) * dx / (dr ** 2)) * incidenceDeltaSqrt);
+    const yIntersection: number[] = Numbers.PlusMinus(-1 * D * dx / (dr ** 2), (Math.abs(dy) / (dr ** 2)) * incidenceDeltaSqrt);
+
+    const converter: Transformations = properties.transformations;
+
+    if (this._areTangent(linearCurve, circularCurve, properties)) {
+      return [converter.TransformToGlobal(new CartesianCoordinate(xIntersection[0], yIntersection[0]))];
+    }
+
+    return [
+      converter.TransformToGlobal(new CartesianCoordinate(xIntersection[0], yIntersection[0])),
+      converter.TransformToGlobal(new CartesianCoordinate(xIntersection[1], yIntersection[1]))
+    ];
+  }
+}
+
+/**
+ * Class representing intersection properties.
+ * @private
+ */
+class IntersectionProperties {
+  /**
+   * Tolerance for calculations.
+   * @type {number}
+   */
+  public tolerance: number;
+
+  /**
+   * Cross-product of two points defining the linear curve.
+   * @type {number}
+   */
+  public D: number;
+
+  /**
+   * X-axis distance between two points defining the linear curve.
+   * @type {number}
+   */
+  public dx: number;
+
+  /**
+   * Y-axis distance between two points defining the linear curve.
+   * @type {number}
+   */
+  public dy: number;
+
+  /**
+   * Distance between two points defining the linear curve.
+   * @type {number}
+   */
+  public dr: number;
+
+  /**
+   * Incidence delta value.
+   * @type {number}
+   */
+  public incidenceDelta: number;
+
+  /**
+   * Transformations object.
+   * @type {Transformations}
+   */
+  public transformations: Transformations;
+
+  /**
+   * Initializes a new instance of the `IntersectionProperties` class.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @param {CircularCurve} circularCurve The circular curve.
+   */
+  public constructor(linearCurve: LinearCurve, circularCurve: CircularCurve) {
+    this.tolerance = Generics.getToleranceBetween(linearCurve, circularCurve);
+    this.transformations = new Transformations(circularCurve.LocalOrigin, new CartesianCoordinate(circularCurve.LocalOrigin.X + 1, circularCurve.LocalOrigin.Y));
+    const linearCurveLocal: LinearCurve = this.transformToLocal(linearCurve);
+
+    this.D = Numbers.ValueAsZeroIfWithinAbsoluteTolerance(linearCurveLocal.ControlPointI.crossProduct(linearCurveLocal.ControlPointJ), this.tolerance);
+
+    const offset: CartesianCoordinate = linearCurveLocal.Range.end.Limit.offsetFrom(linearCurveLocal.Range.start.Limit).toCartesianCoordinate();
+    this.dx = offset.X;
+    this.dy = offset.Y;
+    this.dr = AlgebraLibrary.SRSS(this.dx, this.dy);
+
+    this.incidenceDelta = Numbers.ValueAsZeroIfWithinAbsoluteTolerance((circularCurve.Radius * this.dr) ** 2 - this.D ** 2, this.tolerance);
+  }
+
+  /**
+   * Returns a new linear curve transformed to the local coordinates of the provided circular curve.
+   * @param {LinearCurve} linearCurve The linear curve.
+   * @returns {LinearCurve}
+   * @private
+   */
+  private transformToLocal(linearCurve: LinearCurve): LinearCurve {
+    return new LinearCurve(
+      this.transformations.TransformToLocal(linearCurve.ControlPointI),
+      this.transformations.TransformToLocal(linearCurve.ControlPointJ)
+    );
+  }
+}

@@ -1,95 +1,83 @@
-// using MPT.Math.Coordinates;
-// using System;
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { EllipticalCurve } from "../../EllipticalCurve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     public class IntersectionEllipticalElliptical : IntersectionAbstract<EllipticalCurve, EllipticalCurve>
-//     {
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionLinearLinear"/> class.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The second curve.</param>
-//         public IntersectionEllipticalElliptical(EllipticalCurve curve1, EllipticalCurve curve2) : base(curve1, curve2)
-//         {
 
-//         }
-//         #endregion
+/**
+ * Represents the intersection of two elliptical curves.
+ * @extends {IntersectionAbstract<EllipticalCurve, EllipticalCurve>}
+ */
+export class IntersectionEllipticalElliptical extends IntersectionAbstract<EllipticalCurve, EllipticalCurve> {
+  /**
+   * Initializes a new instance of the IntersectionEllipticalElliptical class.
+   * @param {EllipticalCurve} curve1 The first curve.
+   * @param {EllipticalCurve} curve2 The second curve.
+   */
+  constructor(curve1: EllipticalCurve, curve2: EllipticalCurve) {
+    super(curve1, curve2);
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves are tangent to each other.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public override AreTangent(): boolean {
+    return IntersectionEllipticalElliptical.AreTangent(this.Curve1, this.Curve2);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Checks if the curves intersect and are not tangent.
+   * @returns {boolean} True if the curves intersect and are not tangent, false otherwise.
+   */
+  public override AreIntersecting(): boolean {
+    return IntersectionEllipticalElliptical.AreIntersecting(this.Curve1, this.Curve2);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Calculates the coordinates of the intersection of two curves.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public override IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionEllipticalElliptical.IntersectionCoordinates(this.Curve1, this.Curve2);
+  }
 
-//         #region Static
-//         /// <summary>
-//         /// The separation of the centers of the curves.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns>System.Double.</returns>
-//         public static double CenterSeparations(EllipticalCurve curve1, EllipticalCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Calculates the separation of the centers of two curves.
+   * @param {EllipticalCurve} curve1 The first curve.
+   * @param {EllipticalCurve} curve2 The second curve.
+   * @returns {number} The separation of the centers of the curves.
+   */
+  public static CenterSeparations(curve1: EllipticalCurve, curve2: EllipticalCurve): number {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreTangent(EllipticalCurve curve1, EllipticalCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if two elliptical curves are tangent to each other.
+   * @param {EllipticalCurve} curve1 The first curve.
+   * @param {EllipticalCurve} curve2 The second curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public static AreTangent(curve1: EllipticalCurve, curve2: EllipticalCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public static bool AreIntersecting(EllipticalCurve curve1, EllipticalCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if two elliptical curves intersect.
+   * @param {EllipticalCurve} curve1 The first curve.
+   * @param {EllipticalCurve} curve2 The second curve.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  public static AreIntersecting(curve1: EllipticalCurve, curve2: EllipticalCurve): boolean {
+    throw new Error('Not implemented');
+  }
 
-//         /// <summary>
-//         /// The coordinate(s) of the intersection(s) of two curves.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public static CartesianCoordinate[] IntersectionCoordinates(EllipticalCurve curve1, EllipticalCurve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Calculates the coordinates of the intersection of two elliptical curves.
+   * @param {EllipticalCurve} curve1 The first curve.
+   * @param {EllipticalCurve} curve2 The second curve.
+   * @returns {CartesianCoordinate[]} An array of Cartesian coordinates representing the intersection points.
+   */
+  public static IntersectionCoordinates(curve1: EllipticalCurve, curve2: EllipticalCurve): CartesianCoordinate[] {
+    throw new Error('Not implemented');
+  }
+}

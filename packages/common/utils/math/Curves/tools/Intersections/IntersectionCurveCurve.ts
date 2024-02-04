@@ -1,118 +1,94 @@
-// // ***********************************************************************
-// // Assembly         : MPT.Math
-// // Author           : Mark P Thomas
-// // Created          : 11-23-2020
-// //
-// // Last Modified By : Mark P Thomas
-// // Last Modified On : 01-01-2021
-// // ***********************************************************************
-// // <copyright file="IntersectionCurveCurve.cs" company="Mark P Thomas, Inc.">
-// //     Copyright (c) 2020. All rights reserved.
-// // </copyright>
-// // <summary></summary>
-// // ***********************************************************************
+import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { Curve } from "../../Curve";
+import { IntersectionAbstract } from "./IntersectionAbstract";
 
-// using MPT.Math.Coordinates;
-// using System;
 
-// namespace MPT.Math.Curves.Tools.Intersections
-// {
-//     /// <summary>
-//     /// Class IntersectionCurveCurve.
-//     /// Implements the <see cref="IntersectionAbstract{Curve, Curve}" />
-//     /// </summary>
-//     /// <seealso cref="IntersectionAbstract{Curve, Curve}" />
-//     public class IntersectionCurveCurve : IntersectionAbstract<Curve, Curve>
-//     {
-//         #region Initialization
-//         /// <summary>
-//         /// Initializes a new instance of the <see cref="IntersectionCurveCurve" /> class.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The second curve.</param>
-//         public IntersectionCurveCurve(Curve curve1, Curve curve2) : base(curve1, curve2)
-//         {
+/**
+ * Class representing the intersection between two curves.
+ * @extends {IntersectionAbstract<Curve, Curve>}
+ */
+export class IntersectionCurveCurve extends IntersectionAbstract<Curve, Curve> {
+  /**
+   * Creates an instance of IntersectionCurveCurve.
+   * @param {Curve} curve1 The first curve.
+   * @param {Curve} curve2 The second curve.
+   */
+  public constructor(curve1: Curve, curve2: Curve) {
+    super(curve1, curve2);
+  }
 
-//         }
-//         #endregion
+  /**
+   * Determines if the curves are tangent to each other.
+   * @override
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   */
+  public AreTangent(): boolean {
+    return IntersectionCurveCurve.AreTangent(this.Curve1, this.Curve2);
+  }
 
-//         #region Methods: Public
-//         /// <summary>
-//         /// The curves are tangent to each other.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreTangent()
-//         {
-//             return AreTangent(Curve1, Curve2);
-//         }
+  /**
+   * Determines if the curves intersect and are not tangent.
+   * @override
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   */
+  public AreIntersecting(): boolean {
+    return IntersectionCurveCurve.AreIntersecting(this.Curve1, this.Curve2);
+  }
 
-//         /// <summary>
-//         /// The curves intersect and are not tangent.
-//         /// </summary>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         public override bool AreIntersecting()
-//         {
-//             return AreIntersecting(Curve1, Curve2);
-//         }
+  /**
+   * Gets the coordinates of the intersection of two curves.
+   * @override
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   */
+  public IntersectionCoordinates(): CartesianCoordinate[] {
+    return IntersectionCurveCurve.IntersectionCoordinates(this.Curve1, this.Curve2);
+  }
 
-//         /// <summary>
-//         /// The coordinate of the intersection of two curves.
-//         /// </summary>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         public override CartesianCoordinate[] IntersectionCoordinates()
-//         {
-//             return IntersectionCoordinates(Curve1, Curve2);
-//         }
-//         #endregion
+  /**
+   * Gets the separation of the centers of the curves.
+   * @param {Curve} curve1 The first curve.
+   * @param {Curve} curve2 The second curve.
+   * @returns {number} The separation of the centers.
+   * @static
+   * @throws {Error} If the method is not implemented.
+   */
+  public static CenterSeparations(curve1: Curve, curve2: Curve): number {
+    throw new Error('Method not implemented');
+  }
 
-//         #region Static
-//         /// <summary>
-//         /// The separation of the centers of the curves.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns>System.Double.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static double CenterSeparations(Curve curve1, Curve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if the curves are tangent to each other.
+   * @param {Curve} curve1 The first curve.
+   * @param {Curve} curve2 The second curve.
+   * @returns {boolean} True if the curves are tangent, false otherwise.
+   * @static
+   * @throws {Error} If the method is not implemented.
+   */
+  public static AreTangent(curve1: Curve, curve2: Curve): boolean {
+    throw new Error('Method not implemented');
+  }
 
-//         /// <summary>
-//         /// Determines if the curves are tangent to each other.
-//         /// </summary>
-//         /// <param name="curve1">The curve1.</param>
-//         /// <param name="curve2">The curve2.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static bool AreTangent(Curve curve1, Curve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
+  /**
+   * Determines if the curves intersect.
+   * @param {Curve} curve1 The first curve.
+   * @param {Curve} curve2 The second curve.
+   * @returns {boolean} True if the curves intersect, false otherwise.
+   * @static
+   * @throws {Error} If the method is not implemented.
+   */
+  public static AreIntersecting(curve1: Curve, curve2: Curve): boolean {
+    throw new Error('Method not implemented');
+  }
 
-//         /// <summary>
-//         /// The curves intersect.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static bool AreIntersecting(Curve curve1, Curve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
-
-//         /// <summary>
-//         /// The coordinate(s) of the intersection(s) of two curves.
-//         /// </summary>
-//         /// <param name="curve1">The first curve.</param>
-//         /// <param name="curve2">The first curve.</param>
-//         /// <returns>CartesianCoordinate[].</returns>
-//         /// <exception cref="NotImplementedException"></exception>
-//         public static CartesianCoordinate[] IntersectionCoordinates(Curve curve1, Curve curve2)
-//         {
-//             throw new NotImplementedException();
-//         }
-//         #endregion
-//     }
-// }
+  /**
+   * Gets the coordinates of the intersection of two curves.
+   * @param {Curve} curve1 The first curve.
+   * @param {Curve} curve2 The second curve.
+   * @returns {CartesianCoordinate[]} Array of CartesianCoordinates representing the intersection points.
+   * @static
+   * @throws {Error} If the method is not implemented.
+   */
+  public static IntersectionCoordinates(curve1: Curve, curve2: Curve): CartesianCoordinate[] {
+    throw new Error('Method not implemented');
+  }
+}

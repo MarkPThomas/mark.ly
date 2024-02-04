@@ -56,7 +56,7 @@ describe('GenericsTests', () => {
     const item2 = new ObjectWithTolerance();
     item2.Tolerance = tolerance2;
 
-    expect(Generics.GetToleranceBetween(item1, item2)).toBe(tolerance2);
+    expect(Generics.getToleranceBetween(item1, item2)).toBe(tolerance2);
   });
 
   it('should get tolerance between two objects of different types', () => {
@@ -67,7 +67,7 @@ describe('GenericsTests', () => {
     const item2 = new AnotherObjectWithTolerance();
     item2.Tolerance = tolerance2;
 
-    expect(Generics.GetToleranceBetween(item1, item2)).toBe(tolerance2);
+    expect(Generics.getToleranceBetween(item1, item2)).toBe(tolerance2);
   });
 
   it('should get tolerance between two objects of different types and specified governing tolerance', () => {
@@ -79,7 +79,7 @@ describe('GenericsTests', () => {
     item2.Tolerance = tolerance2;
     const governingTolerance = 0.1;
 
-    expect(Generics.GetToleranceBetween(item1, item2, governingTolerance)).toBe(governingTolerance);
+    expect(Generics.getToleranceBetween(item1, item2, governingTolerance)).toBe(governingTolerance);
   });
 
   it.each([

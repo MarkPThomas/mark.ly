@@ -6,6 +6,6 @@ namespace MPT.Math.Coordinates3D
 {
     class EllipsoidCoordinate
     {
-        // See 'Modified Spherical Coordiates' under: https://en.wikipedia.org/wiki/Spherical_coordinate_system
+        // See 'Modified Spherical Coordinates' under: https://en.wikipedia.org/wiki/Spherical_coordinate_system
     }
 }

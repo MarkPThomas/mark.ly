@@ -2,7 +2,7 @@ import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
 
 export interface IPerpendicularProjections {
   /**
-   * oordinate of where a perpendicular projection from a curve tangent intersects the provided coordinate.
+   * Coordinate of where a perpendicular projection from a curve tangent intersects the provided coordinate.
    *
    * @param {CartesianCoordinate} point
    * @return {*}  {CartesianCoordinate}

@@ -1,11 +1,14 @@
-// /// <summary>
-//     /// Represents a parametric equation in 3D cartesian coordinates.
-//     /// </summary>
-//     public interface IParametricCartesianXYZ<T> : IParametricCartesianXY<T> where T : ParametricEquation<double>
-//     {
-//         /// <summary>
-//         /// The z-component, at position s.
-//         /// </summary>
-//         /// <value>The zcomponent.</value>
-//         T Zcomponent { get; }
-//     }
+import { IParametricCartesianXY } from "./IParametricCartesianXY";
+import { ParametricEquation } from "./ParametricEquation";
+
+/**
+ * Represents a parametric equation in 3D cartesian coordinates.
+ * @template T The type of the parametric equation.
+ */
+export interface IParametricCartesianXYZ<T extends ParametricEquation<number>> extends IParametricCartesianXY<T> {
+  /**
+   * The z-component, at position s.
+   * @type {T}
+   */
+  Zcomponent: T;
+}

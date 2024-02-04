@@ -31,10 +31,10 @@ export class Generics {
     item1: T,
     tolerance: number = Numbers.ZeroTolerance
   ): number {
-    return Generics.GetToleranceBetween(item1, undefined, tolerance);
+    return Generics.getToleranceBetween(item1, undefined, tolerance);
   }
 
-  public static GetToleranceBetween<T extends ITolerance, U extends ITolerance>(
+  public static getToleranceBetween<T extends ITolerance, U extends ITolerance>(
     item1: T,
     item2?: U,
     tolerance: number = Numbers.ZeroTolerance

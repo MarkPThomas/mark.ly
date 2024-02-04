@@ -1,23 +1,25 @@
-// /// <summary>
-//     /// Represents a parametric equation in cylindrical coordinates.
-//     /// </summary>
-//     public interface IParametricCylindrical
-//     {
-//         /// <summary>
-//         /// The radial length, ρ, at position s, which is the Euclidean distance from the z-axis to the point P.
-//         /// </summary>
-//         /// <value>The radius.</value>
-//         ParametricEquation<double> Radius { get; }
+import { Angle } from "../../../Coordinates/Angle";
+import { ParametricEquation } from "./ParametricEquation";
 
-//         /// <summary>
-//         /// Heights the specified s.
-//         /// </summary>
-//         /// <value>The height.</value>
-//         ParametricEquation<double> Height { get; }
+/**
+ * Represents a parametric equation in cylindrical coordinates.
+ */
+export interface IParametricCylindrical {
+  /**
+   * The radial length, ρ, at position s, which is the Euclidean distance from the z-axis to the point P.
+   * @type {ParametricEquation<number>}
+   */
+  Radius: ParametricEquation<number>;
 
-//         /// <summary>
-//         /// The azimuth angle, φ, at position s, which lies in the x-y plane sweeping out from the X-axis.
-//         /// </summary>
-//         /// <value>The azimuth.</value>
-//         ParametricEquation<Angle> Azimuth { get; }
-//     }
+  /**
+   * The height at position s.
+   * @type {ParametricEquation<number>}
+   */
+  Height: ParametricEquation<number>;
+
+  /**
+   * The azimuth angle, φ, at position s, which lies in the x-y plane sweeping out from the X-axis.
+   * @type {ParametricEquation<Angle>}
+   */
+  Azimuth: ParametricEquation<Angle>;
+}

@@ -360,7 +360,7 @@ export class LineSegment extends PathSegment<LinearCurve> implements IPathDivisi
     // 2. Create new curve B by applying normal vector to point
     const offsetCurve = new LinearCurve(
       point,
-      point.addOffset(CartesianOffset.FromOffsets(normalVector.Xcomponent, normalVector.Ycomponent))
+      point.addOffset(CartesianOffset.fromOffsets(normalVector.Xcomponent, normalVector.Ycomponent))
     );
 
     // 3. Return intersection of curve B to current segment curve

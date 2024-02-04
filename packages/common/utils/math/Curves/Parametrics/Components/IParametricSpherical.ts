@@ -1,23 +1,25 @@
-// /// <summary>
-//     /// Represents a parametric equation in spherical coordinates.
-//     /// </summary>
-//     public interface IParametricSpherical
-//     {
-//         /// <summary>
-//         /// The radial length, r, at position s.
-//         /// </summary>
-//         /// <value>The radius.</value>
-//         ParametricEquation<double> Radius { get; }
+import { Angle } from "../../../Coordinates/Angle";
+import { ParametricEquation } from "./ParametricEquation";
 
-//         /// <summary>
-//         /// The inclination angle, θ, at position s, which lies in the vertical plane sweeping out from the Z-axis.
-//         /// </summary>
-//         /// <value>The inclination.</value>
-//         ParametricEquation<Angle> Inclination { get; }
+/**
+ * Represents a parametric equation in spherical coordinates.
+ */
+export interface IParametricSpherical {
+  /**
+   * The radial length, r, at position s.
+   * @type {ParametricEquation<number>}
+   */
+  Radius: ParametricEquation<number>;
 
-//         /// <summary>
-//         /// The azimuth angle, φ, at position s, which lies in the x-y plane sweeping out from the X-axis.
-//         /// </summary>
-//         /// <value>The azimuth.</value>
-//         ParametricEquation<Angle> Azimuth { get; }
-//     }
+  /**
+   * The inclination angle, θ, at position s, which lies in the vertical plane sweeping out from the Z-axis.
+   * @type {ParametricEquation<Angle>}
+   */
+  Inclination: ParametricEquation<Angle>;
+
+  /**
+   * The azimuth angle, φ, at position s, which lies in the x-y plane sweeping out from the X-axis.
+   * @type {ParametricEquation<Angle>}
+   */
+  Azimuth: ParametricEquation<Angle>;
+}
