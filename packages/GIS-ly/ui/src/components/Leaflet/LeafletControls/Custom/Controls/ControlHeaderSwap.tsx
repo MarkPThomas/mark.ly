@@ -1,9 +1,10 @@
 import { useState } from "react";
+import classnames from 'classnames';
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
 
-import './ControlHeader.css';
-import './ControlHeaderSwap.css';
+import stylesHeader from './ControlHeader.module.css';
+import stylesSwap from './ControlHeaderSwap.module.css';
 
 export type ControlHeaderSwapProps = {
   category: string;
@@ -36,13 +37,20 @@ export function ControlHeaderSwap({
   const categoryUpperFirst = toUpperFirstLetter(category);
   const title = `${categoryUpperFirst} Operations`;
 
-  const classNameLink = `header-control
-    ${isDisabled ? ` disabled` : ''}`;
+  const classNameHeader = classnames([
+    'leaflet-bar',
+    stylesHeader.header
+  ]);
+
+  const classNameLink = classnames([
+    stylesHeader.control,
+    { 'disabled': isDisabled }
+  ]);
 
   return (
     <>
       <div
-        className="leaflet-bar header"
+        className={classNameHeader}
         onMouseEnter={setToggle}
         onMouseLeave={setToggle}
       >
@@ -55,11 +63,11 @@ export function ControlHeaderSwap({
             role="button"
           >
             {
-              iconSvg ?? <span aria-hidden="true">{categoryUpperFirst}</span>
+              iconSvg ?? <span aria-hidden="true" className={stylesHeader.content}>{categoryUpperFirst}</span>
             }
           </a>
           :
-          <div className="header-control swap" >
+          <div className={stylesSwap.swap} >
             {children.map((child) => child)}
           </div>}
       </div>

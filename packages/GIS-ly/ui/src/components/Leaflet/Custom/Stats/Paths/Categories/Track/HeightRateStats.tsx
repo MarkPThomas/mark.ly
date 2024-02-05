@@ -3,8 +3,6 @@ import { Conversion } from '../../../../../../../../../../common/utils/units/con
 import { IHeightRate } from "../../../../../../../model/GIS/Core/Track/Stats/HeightRateStats";
 import { RangeStats } from '../../RangeStats';
 
-import './HeightRateStats.css';
-
 export type HeightRateStatsProps = { heightRate: IHeightRate, level: number };
 
 export function HeightRateStats({ heightRate, level }: HeightRateStatsProps) {

@@ -4,8 +4,6 @@ import { ISlope } from "../../../../../../../model/GIS/Core/Route/Stats/SlopeSta
 import { RangeStats } from '../../RangeStats';
 import { LabelValue } from "../../../../LabelValue";
 
-import './SlopeStats.css';
-
 export type SlopeStatsProps = { slope: ISlope, level: number };
 
 export function SlopeStats({ slope, level }: SlopeStatsProps) {

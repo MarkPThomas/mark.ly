@@ -4,12 +4,13 @@ import { IEditedStats } from "./Stats";
 
 export type TrackStatsProp = {
   stats: IEditedStats,
-  level: number
+  level: number,
+  className?: string
 };
 
-export function TrackStats({ stats, level }: TrackStatsProp) {
+export function TrackStats({ stats, level, className }: TrackStatsProp) {
   return (
-    <div>
+    <div className={className}>
       {stats.height ?
         <ToggleGroup
           value={'Time'}

@@ -1,21 +1,10 @@
-import styled from "styled-components";
-
 import { IPolylineSize } from "../../../../../model/Geometry";
 import { ITrackStats } from "../../../../../model/GIS/Core/Track/Stats";
 import { ToggleGroup } from "../../ToggleGroup";
 import { RouteStats } from "./RouteStats";
 import { TrackStats } from "./TrackStats";
 
-const S = {
-  Stats: styled.div`
-    max-height: 27rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-bottom: 5px;
-  `
-};
+import styles from './Stats.module.css';
 
 export interface IEditedStats extends ITrackStats {
   size: IPolylineSize
@@ -30,19 +19,19 @@ export function Stats({ stats }: StatsProps) {
 
   return (
     <div>
-      <S.Stats key={Date() + '2'} >
+      <div className={styles.stats} key={Date() + '2'} >
         <ToggleGroup
           value={'Route'}
           level={level}
-          children={[<RouteStats key={Date()} stats={stats} level={level + 1} />]}
+          children={[<RouteStats key={Date()} stats={stats} level={level + 1} className={styles.group} />]}
         />
         <hr />
         <ToggleGroup
           value={'Track'}
           level={level}
-          children={[<TrackStats key={Date()} stats={stats} level={level + 1} />]}
+          children={[<TrackStats key={Date()} stats={stats} level={level + 1} className={styles.group} />]}
         />
-      </S.Stats>
+      </div>
     </div>
   )
 }

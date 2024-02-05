@@ -1,6 +1,6 @@
 import { Track } from "../../../../../model/GIS";
 
-import './PathSelectedControl.css';
+import styles from './PathSelectedControl.module.css';
 
 export type PathSelectedControProps = {
   currentTrack: Track,
@@ -14,9 +14,9 @@ export function PathSelectedControl({
   handleTrackSelection
 }: PathSelectedControProps) {
   return (
-    <div className="selected-track">
+    <div className={styles.container}>
       {tracksValues.length > 1 ?
-        <div className="selected-track-select">
+        <div className={styles.control}>
           <label htmlFor="tracks-selection"><h2>Selected Track:</h2></label>
           <select name="tracks" id="tracks-selection" value={currentTrack.id} onChange={handleTrackSelection}>
             {
