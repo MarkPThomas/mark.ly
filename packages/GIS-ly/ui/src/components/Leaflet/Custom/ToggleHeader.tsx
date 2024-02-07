@@ -2,7 +2,7 @@ import classnames from "classnames";
 
 import styles from "./ToggleHeader.module.css";
 
-import { ArrowVerticalToggleIcon } from '../../shared/components/Icons/ArrowVerticalToggleIcon';
+import { ToggleIcon } from '../../shared/components/Icons/ToggleIcon';
 
 export type ToggleHeaderProps = {
   value: string;
@@ -26,8 +26,8 @@ export function ToggleHeader(props: ToggleHeaderProps) {
 
   return (
     <div className={styles.header}>
-      <CustomTag as={CustomTag} className={className}>{props.value}</CustomTag>
-      <ArrowVerticalToggleIcon {...childProps} />
+      <CustomTag className={className}>{props.value}</CustomTag>
+      <ToggleIcon {...childProps} />
     </div>
   );
 }

@@ -2,6 +2,8 @@
   display: flex;
   padding-top: 0.5em;
   padding-bottom: 0.2em;
+  flex-direction: row;
+  align-items: center;
 }
 
 .title {

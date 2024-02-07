@@ -4,10 +4,12 @@ import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "../../../../../../
 
 import stylesHeader from './ControlHeader.module.css';
 import stylesItem from './ControlItem.module.css';
+import stylesDisabled from './disabled.module.css';
 
 export type ControlItemProps = {
   cb: () => void;
   criteria: string;
+  iconRight?: boolean;
   iconSvg?: React.ReactNode;
   isDisabled?: boolean;
   showLabelWithIcon?: boolean;
@@ -18,6 +20,7 @@ export type ControlItemProps = {
 export function ControlItem({
   cb,
   criteria,
+  iconRight,
   iconSvg,
   isDisabled,
   showLabelWithIcon,
@@ -34,13 +37,18 @@ export function ControlItem({
 
   const classNameLink = classnames([
     stylesHeader.control,
-    { 'disabled': isDisabled }
+    { [stylesDisabled.disabled]: isDisabled },
   ]);
 
   const classNameContent = classnames([
     stylesHeader.content,
-    { [stylesHeader.icon_content]: (showLabelWithIcon && iconSvg) },
-    { [stylesItem.icon_item_content]: (showLabelWithIcon && iconSvg) }
+    { [stylesHeader.iconContent]: (showLabelWithIcon && iconSvg) },
+    { [stylesItem.iconItemContent]: (showLabelWithIcon && iconSvg) }
+  ]);
+
+  const classNameText = classnames([
+    { [stylesHeader.textContentLeft]: (iconSvg && iconRight) || !iconSvg },
+    { [stylesHeader.textContentRight]: (iconSvg && !iconRight) || !iconSvg },
   ]);
 
   const handleClick = () => {
@@ -59,21 +67,19 @@ export function ControlItem({
         role="button"
         onClick={handleClick}
       >
-        {(!showLabelWithIcon && iconSvg) ?
-          iconSvg
-          :
-          <span aria-hidden="true" className={classNameContent}>
-            {(showLabelWithIcon && iconSvg) ?
+        <span aria-hidden="true" className={classNameContent}>
+          {(showLabelWithIcon && iconSvg) ?
+            iconRight ?
               <>
-                {iconSvg} {criteriaUppers}
+                <div className={classNameText}>{criteriaUppers}</div>{iconSvg}
               </>
               :
               <>
-                {criteriaUppers}
+                {iconSvg}<div className={classNameText}>{criteriaUppers}</div>
               </>
-            }
-          </span>
-        }
+            : iconSvg ?? <div className={classNameText}>{criteriaUppers}</div>
+          }
+        </span>
       </a>
     </div>
   );

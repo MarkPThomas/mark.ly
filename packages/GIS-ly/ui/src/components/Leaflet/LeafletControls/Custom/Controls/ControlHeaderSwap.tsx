@@ -5,6 +5,7 @@ import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringF
 
 import stylesHeader from './ControlHeader.module.css';
 import stylesSwap from './ControlHeaderSwap.module.css';
+import stylesDisabled from './disabled.module.css';
 
 export type ControlHeaderSwapProps = {
   category: string;
@@ -44,7 +45,13 @@ export function ControlHeaderSwap({
 
   const classNameLink = classnames([
     stylesHeader.control,
-    { 'disabled': isDisabled }
+    { [stylesDisabled.disabled]: isDisabled },
+  ]);
+
+  const classNameChildren = classnames([
+    stylesSwap.swap,
+    { [stylesSwap.accordionContent]: currentlyToggled },
+    { [stylesSwap.accordionContentHide]: !currentlyToggled },
   ]);
 
   return (
@@ -67,7 +74,7 @@ export function ControlHeaderSwap({
             }
           </a>
           :
-          <div className={stylesSwap.swap} >
+          <div className={classNameChildren} >
             {children.map((child) => child)}
           </div>}
       </div>

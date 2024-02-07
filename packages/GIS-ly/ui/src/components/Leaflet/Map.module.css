@@ -1,0 +1,13 @@
+.mapContainer {
+  position: relative;
+  display: flex;
+  width: 100%;
+
+  /* .leaflet-top.leaflet-left>.leaflet-control:first-child {
+    margin: 0;
+  }
+
+  .leaflet-container {
+    width: 100%;
+  } */
+}

@@ -6,6 +6,8 @@ import { LabelValue } from "../../LabelValue";
 import { ToggleHeader } from "../../ToggleHeader";
 
 import styles from './RangeStats.module.css';
+import stylesAccordion from '../../ToggleGroup.module.css';
+import classnames from "classnames";
 
 export type RangeStatsProps<
   TVertex extends Vertex = RoutePoint,
@@ -52,6 +54,12 @@ export function RangeStats(stats: RangeStatsProps) {
     max: stats.formatter(stats.max.value)
   }
 
+  const className = classnames([
+    styles.items,
+    { [stylesAccordion.accordionContent]: showAll },
+    { [stylesAccordion.accordionContentHide]: !showAll },
+  ])
+
   return (
     <div>
       <div className="toggle-header-show-all">
@@ -59,20 +67,20 @@ export function RangeStats(stats: RangeStatsProps) {
       </div>
       <LabelValue label={'Min'} value={statsFormatted.min} />
       {showAll ?
-        <div className={styles.items}>
+        <div className={className}>
           <LabelValue label={'-Std2'} value={statsFormatted.stdMin2} />
           <LabelValue label={'-Std1'} value={statsFormatted.stdMin1} />
         </div> : null
       }
       <LabelValue label={'Avg'} value={statsFormatted.avg} />
       {showAll ?
-        <div className={styles.items}>
+        <div className={className}>
           <LabelValue label={'Mdn'} value={statsFormatted.mdn} />
         </div>
         : null
       }
       {showAll ?
-        <div className={styles.items}>
+        <div className={className}>
           <LabelValue label={'+Std1'} value={statsFormatted.stdMax1} />
           <LabelValue label={'+Std2'} value={statsFormatted.stdMax2} />
         </div> : null

@@ -1,6 +1,6 @@
-.icon-item-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: start;
-  align-items: start;
+.iconItemContent {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: start !important;
+  align-items: start !important;
 }

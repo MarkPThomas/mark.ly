@@ -1,5 +1,8 @@
+import classnames from "classnames";
 import { ReactNode, useState } from "react";
 import { ToggleHeader, ToggleHeaderProps } from "./ToggleHeader";
+
+import styles from './ToggleGroup.module.css';
 
 export type ToggleGroupProps = {
   children: ReactNode[];
@@ -24,12 +27,16 @@ export function ToggleGroup(props: ToggleGroupProps) {
   }
 
   const itemProps = props.id ? { id: props.id } : {};
+  const className = classnames([
+    { [styles.accordionContent]: showChildren },
+    { [styles.accordionContentHide]: !showChildren },
+  ]);
 
   return (
     <div className="toggle-group">
       <ToggleHeader {...childProps} />
       {showChildren ? children.map((child, index) =>
-        <div key={index + Date()} className="toggle-item" {...itemProps}>
+        <div key={index + Date()} className={className} {...itemProps}>
           {child}
         </div>
       ) : null}

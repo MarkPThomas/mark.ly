@@ -1,19 +1,12 @@
-.swap {
-  background-color: rgba(255, 255, 255, 1);
-  padding: 5px;
-}
-
 /* Define the animation */
 @keyframes accordion {
   0% {
-    min-height: 16px;
-    min-width: 16px;
-    opacity: 0.2;
+    max-height: 0;
+    opacity: 0;
   }
 
   100% {
     max-height: 1000px;
-    max-width: 1000px;
     opacity: 1;
   }
 }
@@ -22,14 +15,12 @@
 @keyframes accordion-reverse {
   0% {
     max-height: 1000px;
-    max-width: 1000px;
     opacity: 1;
   }
 
   100% {
-    min-height: 16px;
-    min-width: 16px;
-    opacity: 0.2;
+    max-height: 0;
+    opacity: 0;
   }
 }
 
@@ -37,7 +28,7 @@
 .accordionContent {
   animation: accordion 1s ease forwards;
   max-height: 1000px;
-  max-width: 1000px;
+  overflow: hidden;
 }
 
 .accordionContentHide {

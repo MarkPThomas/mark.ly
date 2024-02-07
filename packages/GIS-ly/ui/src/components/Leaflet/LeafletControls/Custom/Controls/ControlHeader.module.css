@@ -2,14 +2,29 @@
   background-color: rgba(255, 255, 255, 0.5);
 }
 
+.headerBottomRight {
+  position: absolute;
+  bottom: 75px;
+  right: 0;
+}
+
 .control {
-  width: 100%;
+  width: 100% !important;
 }
 
 .content {
-  margin: 5px;
+  white-space: nowrap;
 }
 
-.icon-content {
+.iconContent {
+  display: flex !important;
   margin: 0;
+}
+
+.textContentLeft {
+  padding-left: 5px;
+}
+
+.textContentRight {
+  padding-right: 5px;
 }
