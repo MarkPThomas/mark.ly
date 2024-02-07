@@ -4,6 +4,8 @@ import { ISlope } from "../../../../../../../model/GIS/Core/Route/Stats/SlopeSta
 import { RangeStats } from '../../RangeStats';
 import { LabelValue } from "../../../../LabelValue";
 
+import styles from '../../Stats.module.css';
+
 export type SlopeStatsProps = { slope: ISlope, level: number };
 
 export function SlopeStats({ slope, level }: SlopeStatsProps) {
@@ -19,11 +21,11 @@ export function SlopeStats({ slope, level }: SlopeStatsProps) {
     <div>
       <LabelValue label={'Avg'} value={averageSlope} />
       <div>
-        <CustomTag className="slope-header">Uphill</CustomTag>
+        <CustomTag className={styles.subStatsHeader}>Uphill</CustomTag>
         <RangeStats {...slope.uphill} formatter={slopeFormat} level={level + 1} />
       </div>
       <div>
-        <CustomTag className="slope-header">Downhill</CustomTag>
+        <CustomTag className={styles.subStatsHeader}>Downhill</CustomTag>
         <RangeStats {...slope.downhill} formatter={slopeFormat} level={level + 1} />
       </div>
     </div>

@@ -4,7 +4,7 @@ import {
   LatLngTuple,
   Layer
 } from 'leaflet';
-import { MapContainer } from 'react-leaflet';
+import { MapContainer, ScaleControl } from 'react-leaflet';
 import { Feature, FeatureCollection as FeatureCollectionSerial, Geometry } from 'geojson';
 import Control from "react-leaflet-custom-control";
 
@@ -56,6 +56,8 @@ import { EditingDisplay } from './LeafletControls/Custom/Editing/EditingDisplay'
 import { IEditedStats } from './Custom/Stats/Paths/Stats';
 
 import './Map.css';
+import styles from './Map.module.css';
+import classnames from 'classnames';
 
 export interface IInitialPosition {
   point: LatLngTuple,
@@ -691,10 +693,15 @@ export const Map = ({ config, restHandlers }: MapProps) => {
   const showControlTopCenter = currentTrack || (showComparisonStats && originalTrackStats);
   const showControlBottomCenter = isEditing || isShowingPreview;
 
+  const className = classnames([
+    'map-container-override',
+    styles.mapContainer
+  ]);
+
   return (
     layers ?
       <>
-        <div id="map-container" style={{ width: '100%', height: windowHeight }}>
+        <div id="map-container" className={className} style={{ width: '100%', height: windowHeight }}>
           {showControlTopCenter ?
             <ControlCenter position={'top'}>
               {currentTrack ?
@@ -730,84 +737,7 @@ export const Map = ({ config, restHandlers }: MapProps) => {
             />
             {currentTrack ?
               <>
-                <CleanControls isDisabled={isGlobalDisabled || isEditing}
-                  groups={cleanGroups}
-                />
-                {/* <Control position="topleft">
-                  <ControlHeaderExpand
-                    category="clean"
-                    isDisabled={isEditing || isGlobalDisabled}
-                    iconSvg={
-                      <CleanIcon isDisabled={isEditing || isGlobalDisabled} />
-                    }
-                    children={[
-                      <ControlHeaderExpand
-                        key={'trim'}
-                        category="trim"
-                        childrenBeside={true}
-                        children={[
-                          <ControlItem
-                            key={'trim cruft'}
-                            type="trim"
-                            criteria="cruft"
-                            cb={handleTrimCruft}
-                          />
-                        ]}
-                      />,
-                      <ControlHeaderExpand
-                        key={'smooth'}
-                        category="smooth"
-                        childrenBeside={true}
-                        children={[
-                          <ControlItem
-                            key={'smooth stopped'}
-                            type="smooth"
-                            criteria="stopped"
-                            cb={handleSmoothStationary}
-                          />,
-                          <ControlItem
-                            key={'smooth noise cloud'}
-                            type="smooth"
-                            criteria="noise cloud"
-                            cb={handleSmoothNoiseCloud}
-                          />,
-                          <ControlItem
-                            key={'smooth speed'}
-                            type="smooth"
-                            criteria="speed"
-                            cb={handleSmoothBySpeed}
-                          />,
-                          <ControlItem
-                            key={'smooth angular speed'}
-                            type="smooth"
-                            criteria="angular speed"
-                            cb={handleSmoothByAngularSpeed}
-                          />,
-                          <ControlItem
-                            key={'smooth elevation rate'}
-                            type="smooth"
-                            criteria="elevation rate"
-                            // isDisabled={!hasElevations}
-                            cb={handleSmoothByElevation}
-                          />
-                        ]}
-                      />,
-                      <ControlHeaderExpand
-                        key={'split'}
-                        category="split"
-                        childrenBeside={true}
-                        children={[
-                          <ControlItem
-                            key={'split different movements'}
-                            type="split"
-                            criteria="different movements"
-                            cb={handleSplitOnStop}
-                          />
-                        ]}
-                      />
-                    ]}
-                  />
-                </Control> */}
+                <CleanControls isDisabled={isGlobalDisabled || isEditing} groups={cleanGroups} />
                 <EditingControl isDisabled={isGlobalDisabled} onClick={handleOnEditClick} />
                 <HistoryControls isDisabled={isGlobalDisabled} hasUndo={hasUndo} hasRedo={hasRedo} onUndo={handleUndo} onRedo={handleRedo} />
                 <PathGraphControl isDisabled={isGlobalDisabled} onClick={handleGraphClick} position="bottomright" prepend />
@@ -819,6 +749,8 @@ export const Map = ({ config, restHandlers }: MapProps) => {
 
             {(layers.baseLayers?.length > 1 || layers.overlays?.length) ?
               <LayersControl {...layers} /> : null}
+
+            <ScaleControl imperial={true} />
 
             {isShowingPreview ?
               <GeoJsonPreview tracks={previewTracks} /> : null}

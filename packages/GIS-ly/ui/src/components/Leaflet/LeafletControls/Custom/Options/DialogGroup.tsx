@@ -1,6 +1,8 @@
+import classnames from "classnames";
 import { toTrainCase, toUpperFirstLetterOfEach } from "../../../../../../../../common/utils/stringFormatting";
 
 import styles from './styles.module.css';
+import stylesDisabled from '../Controls/disabled.module.css';
 
 export interface IDialogGroup {
   title: string;
@@ -10,6 +12,7 @@ export interface IDialogGroup {
 export interface IDialogItem {
   name: string;
   cb: () => void;
+  isDisabled?: boolean;
 }
 
 
@@ -35,7 +38,10 @@ export function DialogGroup({ group }: Props) {
       {group.items.map((item, index) =>
         <a key={`${titleTrainCase}-${index}-option`}
           href="#"
-          className={styles.link}
+          className={classnames([
+            styles.link,
+            { [stylesDisabled.disabled]: group.items[index].isDisabled },
+          ])}
           title={optionsFormatted[index].nameTrainCase}
           aria-label={optionsFormatted[index].nameTrainCase}
           aria-disabled="false"

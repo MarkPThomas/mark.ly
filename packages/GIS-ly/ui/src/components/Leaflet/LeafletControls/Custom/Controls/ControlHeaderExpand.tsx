@@ -1,10 +1,12 @@
 import classnames from "classnames";
+import { ControlPosition } from "leaflet";
 import React, { useState } from "react";
 
 import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
 
 import stylesHeader from './ControlHeader.module.css';
 import stylesExpand from './ControlHeaderExpand.module.css';
+import stylesDisabled from './disabled.module.css';
 
 export type ControlHeaderExpandProps = {
   category: string;
@@ -18,6 +20,7 @@ export type ControlHeaderExpandProps = {
   iconSvg?: React.ReactNode;
   isDisabled?: boolean;
   isToggled?: boolean;
+  position?: ControlPosition;
   showLabelWithIcon?: boolean;
   title?: string;
 }
@@ -32,6 +35,7 @@ export function ControlHeaderExpand({
   iconSvg,
   isDisabled,
   isToggled,
+  position,
   showLabelWithIcon,
   title
 }: ControlHeaderExpandProps) {
@@ -52,23 +56,33 @@ export function ControlHeaderExpand({
   const classNameHeader = classnames([
     'leaflet-bar',
     stylesHeader.header,
-    { [stylesExpand.child_col_beside]: childrenBeside }
+    { [stylesExpand.childColBeside]: childrenBeside },
+    { [stylesHeader.headerBottomRight]: position === 'bottomright' }
   ]);
 
   const classNameLink = classnames([
     stylesHeader.control,
     { [stylesExpand.toggled]: (currentlyToggled && !isDisabled) },
-    { [stylesExpand.toggled_beside]: childrenBeside },
-    { 'disabled': isDisabled },
+    { [stylesExpand.toggledBeside]: childrenBeside },
+    { [stylesDisabled.disabled]: isDisabled },
   ]);
 
   const classNameContent = classnames([
     stylesHeader.content,
-    { [stylesHeader.icon_content]: (showLabelWithIcon && iconSvg) }
+    { [stylesHeader.iconContent]: (showLabelWithIcon && iconSvg) }
   ]);
 
   const classNameChildren = classnames([
-    { [stylesExpand.beside]: childrenAlignedBeside }
+    { [stylesExpand.beside]: childrenAlignedBeside },
+    { [stylesExpand.accordionContent]: currentlyToggled && !childrenBeside },
+    { [stylesExpand.accordionContentHide]: !currentlyToggled && !childrenBeside },
+    { [stylesExpand.accordionContentHorizontal]: currentlyToggled && childrenBeside },
+    { [stylesExpand.accordionContentHorizontalHide]: !currentlyToggled && childrenBeside },
+  ]);
+
+  const classNameText = classnames([
+    { [stylesHeader.textContentLeft]: (iconSvg && iconRight) || !iconSvg },
+    { [stylesHeader.textContentRight]: (iconSvg && !iconRight) || !iconSvg },
   ]);
 
   return (
@@ -86,15 +100,13 @@ export function ControlHeaderExpand({
             {(showLabelWithIcon && iconSvg) ?
               iconRight ?
                 <>
-                  {categoryUpperFirst}
-                  {iconSvg}
+                  <div className={classNameText}>{categoryUpperFirst}</div>{iconSvg}
                 </>
                 :
                 <>
-                  {iconSvg}
-                  {categoryUpperFirst}
+                  {iconSvg}<div className={classNameText}>{categoryUpperFirst}</div>
                 </>
-              : <>{categoryUpperFirst}</>
+              : iconSvg ?? <div className={classNameText}>{categoryUpperFirst}</div>
             }
           </span>
 

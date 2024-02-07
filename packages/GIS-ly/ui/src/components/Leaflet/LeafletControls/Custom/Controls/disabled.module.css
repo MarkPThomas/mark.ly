@@ -1,0 +1,7 @@
+.disabled,
+.disabled:hover,
+.disabled:visited {
+  background-color: rgb(266, 266, 266);
+  color: rgba(16, 16, 16, 0.5);
+  cursor: not-allowed;
+}

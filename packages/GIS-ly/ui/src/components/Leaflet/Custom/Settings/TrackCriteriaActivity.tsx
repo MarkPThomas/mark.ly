@@ -9,8 +9,6 @@ export type TrackCriteriaActivityProps = {
 }
 
 export function TrackCriteriaActivity({ activity, level }: TrackCriteriaActivityProps) {
-  const CustomTag = level ? `h${level}` as keyof JSX.IntrinsicElements : `h2` as keyof JSX.IntrinsicElements;
-
   return (
     activity ?
       <div>

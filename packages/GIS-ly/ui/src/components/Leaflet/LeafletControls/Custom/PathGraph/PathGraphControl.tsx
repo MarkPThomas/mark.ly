@@ -25,7 +25,7 @@ export function PathGraphControl({
         title="Show Graph"
         children={[]}
         isDisabled={isDisabled}
-        // isDisabled={true}
+        position={position}
         cb={onClick}
         iconSvg={
           <GraphIcon isDisabled={isDisabled} />

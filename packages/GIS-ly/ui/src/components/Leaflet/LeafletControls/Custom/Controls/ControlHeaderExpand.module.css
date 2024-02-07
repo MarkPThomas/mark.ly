@@ -1,34 +1,94 @@
-.child-col-beside {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: left;
-  align-items: center;
+.childColBeside {
+  display: flex !important;
+  justify-content: left !important;
+  align-items: center !important;
 }
 
-.toggled-beside {
-  width: fit-content;
+.toggledBeside {
+  width: 100% !important;
 }
 
 .beside {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 .toggled {
-  background-color: #f8ffac;
-  border-bottom: 1px solid #ccc;
-  border-top: 1px solid #ccc;
+  background-color: #f8ffac !important;
+  border-bottom: 1px solid #ccc !important;
+  border-top: 1px solid #ccc !important;
+}
+
+/* Define the animation */
+@keyframes accordion {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  100% {
+    max-height: 1000px;
+    /* Adjust as needed */
+    opacity: 1;
+  }
 }
 
 
-/* Make a programmatic style where this is applied to a control
-if it is of the position bottom-right
-Could be done at single source if applied to 'ControlHeaderExpand'
-with data passed down as to this location */
-.leaflet-bottom.leaflet-right .header {
-  position: absolute;
-  bottom: 75px;
-  right: 0;
+@keyframes accordion-horizontal {
+  0% {
+    max-width: 0;
+    opacity: 0;
+  }
+
+  100% {
+    max-width: 1000px;
+    opacity: 1;
+  }
+}
+
+/* Define the reverse animation for hiding */
+@keyframes accordion-reverse {
+  0% {
+    max-height: 1000px;
+    opacity: 1;
+  }
+
+  100% {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes accordion-horizontal-reverse {
+  0% {
+    max-width: 1000px;
+    opacity: 1;
+  }
+
+  100% {
+    max-width: 0;
+    opacity: 0;
+  }
+}
+
+/* Apply the animation to the element */
+.accordionContent {
+  animation: accordion 1s ease forwards;
+  max-height: 1000px;
+  overflow: hidden;
+}
+
+.accordionContentHide {
+  animation: accordion-reverse 1s ease forwards;
+}
+
+.accordionContentHorizontal {
+  animation: accordion-horizontal 1s ease forwards;
+  max-width: 1000px;
+}
+
+.accordionContentHorizontalHide {
+  animation: accordion-horizontal-reverse 1s ease forwards;
 }

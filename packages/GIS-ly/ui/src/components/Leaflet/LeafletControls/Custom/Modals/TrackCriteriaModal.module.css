@@ -1,12 +1,4 @@
 .container {
   display: flex;
   align-items: top;
-
-  div {
-    padding: 10px
-  }
 }
-
-/* .stats-container>div {
-  padding: 10px
-} */

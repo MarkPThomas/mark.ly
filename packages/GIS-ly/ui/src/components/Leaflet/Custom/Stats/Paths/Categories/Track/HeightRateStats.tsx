@@ -3,6 +3,8 @@ import { Conversion } from '../../../../../../../../../../common/utils/units/con
 import { IHeightRate } from "../../../../../../../model/GIS/Core/Track/Stats/HeightRateStats";
 import { RangeStats } from '../../RangeStats';
 
+import styles from '../../Stats.module.css';
+
 export type HeightRateStatsProps = { heightRate: IHeightRate, level: number };
 
 export function HeightRateStats({ heightRate, level }: HeightRateStatsProps) {
@@ -16,11 +18,11 @@ export function HeightRateStats({ heightRate, level }: HeightRateStatsProps) {
   return (
     <div>
       <div>
-        <CustomTag className="height-rate-header">Ascent</CustomTag>
+        <CustomTag className={styles.subStatsHeader}>Ascent</CustomTag>
         <RangeStats {...heightRate.ascent} formatter={heightRateFormat} level={level + 1} />
       </div>
       <div>
-        <CustomTag className="height-rate-header">Descent</CustomTag>
+        <CustomTag className={styles.subStatsHeader}>Descent</CustomTag>
         <RangeStats {...heightRate.descent} formatter={heightRateFormat} level={level + 1} />
       </div>
     </div>
