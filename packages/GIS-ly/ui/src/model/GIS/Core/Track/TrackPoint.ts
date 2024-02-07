@@ -18,8 +18,6 @@ interface PointProperties {
   timestamp?: string;
 }
 
-export type ITrackPoints = ITrackPoint | ITrackPoint[] | ITrackPoint[][] | ITrackPoint[][][];
-
 export interface LatLngGPS {
   lat: number;
   lng: number;
@@ -48,8 +46,6 @@ export interface ITrackPoint
   ICloneable<TrackPoint>,
   IEquatable<ITrackPointProperties> {
 };
-
-export type TrackPoints = TrackPoint | TrackPoint[] | TrackPoint[][] | TrackPoint[][][];
 
 export class TrackPoint
   extends RoutePoint
