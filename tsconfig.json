@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/common/utils/dataStructures"
+    },
+    {
+      "path": "./packages/gis-ly/ui/model/GeoJSON"
+    },
+  ]
+}
