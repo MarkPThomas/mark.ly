@@ -1,4 +1,4 @@
-import { NodeDouble } from "common/utils/dataStructures/LinkedListDouble";
+import { NodeDouble } from "../../../../../../common/utils/dataStructures/LinkedListDouble";
 import { Segment, Vertex } from "../Polyline";
 import { INodeOfInterest } from "./INodeOfInterest";
 import { ConstrainedStats } from "./ConstrainedStats";

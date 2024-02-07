@@ -4,17 +4,62 @@ import { BoundingBox as GeoBoundingBox, IBoundingBox as IGeoBoundingBox } from "
 import { LatLngBounds } from "../types";
 import { TrackPoint } from "./Track/TrackPoint";
 
+/**
+ * Description placeholder
+ * @date 2/5/2024 - 4:28:09 PM
+ *
+ * @export
+ * @interface ITrackBoundingBox
+ * @typedef {ITrackBoundingBox}
+ * @extends {IGeoBoundingBox}
+ */
 export interface ITrackBoundingBox extends IGeoBoundingBox {
+  /**
+   * Description placeholder
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @returns {LatLngBounds}
+   */
   toCornerLatLng(): LatLngBounds;
 }
 
+/**
+ * Description placeholder
+ * @date 2/5/2024 - 4:28:09 PM
+ *
+ * @export
+ * @class BoundingBox
+ * @typedef {BoundingBox}
+ * @extends {GeoBoundingBox}
+ */
 export class BoundingBox extends GeoBoundingBox {
+  /**
+   * Creates an instance of BoundingBox.
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @constructor
+   * @protected
+   */
   protected constructor() { super() }
 
+  /**
+   * Description placeholder
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @returns {LatLngBounds}
+   */
   toCornerLatLng(): LatLngBounds {
     return [[this.south, this.west], [this.north, this.east]];
   }
 
+  /**
+   * Description placeholder
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @static
+   * @param {(GeoBoundingBox | BoundingBox)} boundingBox
+   * @returns {BoundingBox}
+   */
   static fromBoundingBox(boundingBox: GeoBoundingBox | BoundingBox): BoundingBox {
     const trackBoundingBox = new BoundingBox();
 
@@ -31,12 +76,29 @@ export class BoundingBox extends GeoBoundingBox {
     return trackBoundingBox;
   }
 
+  /**
+   * Description placeholder
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @static
+   * @param {TrackPoint} trackPoint
+   * @param {?number} [bufferDegree]
+   * @returns {BoundingBox}
+   */
   static fromTrackPoint(trackPoint: TrackPoint, bufferDegree?: number): BoundingBox {
     const point = trackPoint.toPoint();
     const bbox = BoundingBox.fromPoint(point, bufferDegree);
     return BoundingBox.fromBoundingBox(bbox);
   }
 
+  /**
+   * Description placeholder
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @static
+   * @param {TrackPoint[]} trackPoints
+   * @returns {BoundingBox}
+   */
   static fromTrackPoints(trackPoints: TrackPoint[]): BoundingBox {
     if (trackPoints.length === 1) {
       return BoundingBox.fromTrackPoint(trackPoints[0]);
@@ -49,6 +111,14 @@ export class BoundingBox extends GeoBoundingBox {
     return BoundingBox.fromBoundingBox(bbox);
   }
 
+  /**
+   * Description placeholder
+   * @date 2/5/2024 - 4:28:09 PM
+   *
+   * @static
+   * @param {SerialBBox} json
+   * @returns {BoundingBox}
+   */
   static fromJson(json: SerialBBox): BoundingBox {
     const bbox = GeoBoundingBox.fromJson(json);
     return BoundingBox.fromBoundingBox(bbox);

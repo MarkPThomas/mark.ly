@@ -1,0 +1,10 @@
+{
+  "entryPoints": [
+    "packages/*"
+  ],
+  "name": "Mark-ly",
+  "entryPointStrategy": "packages",
+  "includeVersion": false
+  // Potentially useful for debugging
+  // "logLevel": "Verbose"
+}

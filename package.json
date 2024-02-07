@@ -1,21 +1,28 @@
 {
   "name": "mark.ly",
-  "version": "1.0.0",
+  "version": "0.0.0",
+  "private": true,
   "description": "Personal website and related apps",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "homepage": "https://github.com/MarkPThomas/mark.ly#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MarkPThomas/mark.ly.git"
   },
-  "author": "Mark P Thomas <markporterthomas@gmail.com> (https://github.com/MarkPThomas)",
+  "author": "Mark P Thomas <MarkPorterThomas@gmail.com> (https://github.com/MarkPThomas)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/MarkPThomas/mark.ly/issues"
   },
-  "homepage": "https://github.com/MarkPThomas/mark.ly#readme",
+  "workspaces": [
+    "packages/*"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build",
+    "docs": "typedoc",
+    "docs-all": "npm run docs --workspaces --if-present"
+  },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
@@ -30,6 +37,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-sonarjs": "^0.13.0",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "ts-node": "^10.8.1"
+    "ts-node": "^10.8.1",
+    "typedoc": "^0.25.7"
   }
 }
