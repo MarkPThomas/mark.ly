@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "downlevelIteration": true,
+    "lib": [
+      "dom",
+      "es2021",
+      "scripthost"
+    ],
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "paths": {
+      "common/*": [
+        "../../common/*"
+      ],
+      "@MPT/math/*": [
+        "../../libraries/math/src/*"
+      ],
+      "@MPT/geometry-csharp/*": [
+        "../../libraries/geometry-csharp/src/*"
+      ]
+    },
+    "preserveSymlinks": true,
+    "resolveJsonModule": true,
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
+  },
+  "include": [
+    "ui",
+    "server"
+  ]
+}

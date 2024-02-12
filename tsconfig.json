@@ -2,10 +2,34 @@
   "files": [],
   "references": [
     {
-      "path": "./packages/common/utils/dataStructures"
+      "path": "./packages/apps/gis-ly"
     },
     {
-      "path": "./packages/gis-ly/ui/model/GeoJSON"
+      "path": "./packages/common"
+    },
+    {
+      "path": "./packages/libraries/data-structures"
+    },
+    {
+      "path": "./packages/libraries/geojson"
+    },
+    {
+      "path": "./packages/libraries/geometry"
+    },
+    {
+      "path": "./packages/libraries/geometry-csharp"
+    },
+    {
+      "path": "./packages/libraries/gis"
+    },
+    {
+      "path": "./packages/libraries/history"
+    },
+    {
+      "path": "./packages/libraries/math"
+    },
+    {
+      "path": "./packages/libraries/units"
     },
   ]
 }
