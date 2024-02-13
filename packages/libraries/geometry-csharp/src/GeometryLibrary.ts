@@ -1,5 +1,5 @@
-import { Generics } from "../../math/src/Generics";
-import { Vector } from "../../math/src/Vectors/Vector";
+import { Generics } from "@markpthomas/math/Generics";
+import { Vector } from "@markpthomas/math/Vectors/Vector";
 
 import { LineSegment } from "./Segments/LineSegment";
 
