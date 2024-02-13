@@ -39,10 +39,7 @@
     "paths": {
       "common/*": [
         "../../common/*"
-      ],
-      // "data-structures": [
-      //   "../data-structures/src"
-      // ]
+      ]
     }
   },
   "include": [
@@ -55,6 +52,7 @@
     "bin",
     "webpack",
     "jest",
-    "coverage"
+    "coverage",
+    "**/*.*spec.ts"
   ]
 }

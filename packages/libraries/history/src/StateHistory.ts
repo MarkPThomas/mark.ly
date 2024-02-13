@@ -1,4 +1,4 @@
-import { LinkedListDouble, NodeDouble } from "@markporterthomas/data-structures"
+import { LinkedListDouble, NodeDouble } from "@markpthomas/data-structures"
 
 /**
  * ${1:Description placeholder}
