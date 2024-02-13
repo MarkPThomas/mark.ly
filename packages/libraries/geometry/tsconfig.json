@@ -14,6 +14,13 @@
     // "strictPropertyInitialization": false,
     // "noImplicitThis": true,
     // "alwaysStrict": true,
+    "strict": false,
+    "noImplicitAny": false,
+    // "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    // "strictPropertyInitialization": true,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
@@ -38,7 +45,7 @@
     ],
     "paths": {
       "common/*": [
-        "../../common/*"
+        "../../../common/*"
       ]
     }
   },

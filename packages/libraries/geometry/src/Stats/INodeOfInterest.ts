@@ -1,4 +1,4 @@
-import { NodeDouble } from "../../../data-structures/src/LinkedListDouble";
+import { NodeDouble } from "@markpthomas/data-structures";
 
 import { Segment, Vertex } from "../Polyline";
 

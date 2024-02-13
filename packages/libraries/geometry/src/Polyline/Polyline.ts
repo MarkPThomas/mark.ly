@@ -1,6 +1,6 @@
 import { ICloneable, IEquatable } from 'common/interfaces';
 
-import { LinkedListDoubleGeneric } from 'data-structures';
+import { LinkedListDoubleGeneric } from '@markpthomas/data-structures';
 
 import { Vertex } from './Vertex';
 import { IVertexNode, VertexNode } from './VertexNode';
