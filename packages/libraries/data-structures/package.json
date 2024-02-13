@@ -18,9 +18,17 @@
     "src": "src"
   },
   "files": [
-    "src"
+    "dist/**/**",
+    "docs/**/**",
+    "!**/*.*spec.*",
+    "!**/*.json",
+    "!**/*.tsbuildinfo",
+    "LICENSE",
+    "README.md"
   ],
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
