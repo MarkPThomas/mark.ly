@@ -3,7 +3,7 @@ import { ICloneable } from 'common/interfaces';
 import {
   NodeDouble,
   INodeDouble
-} from '@markporterthomas/data-structures';
+} from '@markpthomas/data-structures';
 
 import { SegmentNode } from './SegmentNode';
 import { Segment } from './Segment';
