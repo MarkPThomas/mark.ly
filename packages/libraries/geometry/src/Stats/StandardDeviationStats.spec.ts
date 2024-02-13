@@ -1,4 +1,11 @@
-import { IVertexProperties, Polyline, Segment, SegmentNode, Vertex, VertexNode } from '../Polyline';
+import {
+  IVertexProperties,
+  Polyline,
+  Segment,
+  SegmentNode,
+  Vertex,
+  VertexNode
+} from '../Polyline';
 import { StandardDeviationStats } from './StandardDeviationStats';
 
 /**
@@ -53,7 +60,7 @@ class TestVertex extends Vertex {
 /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:18 PM
- *
+ */
 const createPolyline = (values: number[]) => {
   const vertices: TestVertex[] = [];
   values.forEach((value) => {
@@ -66,7 +73,7 @@ const createPolyline = (values: number[]) => {
 /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:18 PM
- *
+ */
 const populateStats = (
   polyline: Polyline<TestVertex, Segment>,
   standardDeviation: StandardDeviationStats<TestVertex, Segment>,

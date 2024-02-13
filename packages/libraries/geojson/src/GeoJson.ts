@@ -3,7 +3,7 @@ import {
   GeoJsonTypes as SerialGeoJsonTypes
 } from "geojson";
 
-import { ICloneable, IEquatable } from "../../../common/interfaces";
+import { ICloneable, IEquatable } from "common/interfaces";
 
 import { BBoxState } from "./enums";
 import { BoundingBox } from "./BoundingBox";
@@ -151,7 +151,7 @@ export abstract class GeoJson implements IGeoJson<GeoJsonProperties, SerialGeoJs
  * @protected
  * @type {boolean}
  */
-  protected _bboxDirty: boolean;
+  protected _bboxDirty: boolean = false;
 
   /**
  * ${1:Description placeholder}

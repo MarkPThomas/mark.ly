@@ -1,6 +1,6 @@
 import { BBox as SerialBBox } from "geojson";
 
-import { ICloneable, IEquatable } from "../../../common/interfaces";
+import { ICloneable, IEquatable } from "common/interfaces";
 
 import { Position } from "./types";
 
@@ -153,28 +153,28 @@ export class BoundingBox implements IBoundingBox {
  *
  * @type {number}
  */
-  north: number;
+  north: number = 0;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:30 PM
  *
  * @type {number}
  */
-  south: number;
+  south: number = 0;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:30 PM
  *
  * @type {number}
  */
-  west: number;
+  west: number = 0;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:30 PM
  *
  * @type {number}
  */
-  east: number;
+  east: number = 0;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:30 PM

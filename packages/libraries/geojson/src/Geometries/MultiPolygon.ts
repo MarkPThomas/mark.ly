@@ -1,7 +1,5 @@
 import { MultiPolygon as SerialMultiPolygon } from 'geojson';
 
-import { ArgumentOutOfRangeException } from "../../../../common/errors/exceptions";
-
 import { BBoxState, GeoJsonTypes } from "../enums";
 import { InvalidGeometryException } from '../exceptions';
 import { Position } from "../types";
@@ -10,7 +8,6 @@ import { BoundingBox } from "../BoundingBox";
 
 import { CoordinateContainer, ICoordinateContainer } from "./CoordinateContainer";
 import { Point } from "./Point";
-import { LineString } from "./LineString";
 import { Polygon } from "./Polygon";
 
 /**

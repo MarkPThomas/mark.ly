@@ -166,7 +166,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
  * @protected
  * @type {SerialGeoJsonObject[]}
  */
-  protected _geoJson: SerialGeoJsonObject[];
+  protected _geoJson: SerialGeoJsonObject[] = [];
 
   /**
  * ${1:Description placeholder}
@@ -194,7 +194,7 @@ export abstract class GeoCollection<TItem extends GeoJson, TSerial extends Seria
  * @protected
  * @type {boolean}
  */
-  protected _bboxDirty: boolean;
+  protected _bboxDirty: boolean = false;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:30 PM

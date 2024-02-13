@@ -132,7 +132,7 @@ export class Point
  * @protected
  * @type {Position}
  */
-  protected _positions: Position;
+  protected _positions: Position = [0, 0];
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:28 PM

@@ -174,7 +174,7 @@ export class Feature
    * @private
    * @type {boolean}
    */
-  private _geometryDirty: boolean;
+  private _geometryDirty: boolean = false;
   /**
    * Description placeholder
    * @date 2/1/2024 - 3:28:53 PM
@@ -202,7 +202,7 @@ export class Feature
    * @private
    * @type {boolean}
    */
-  private _propertiesDirty: boolean;
+  private _propertiesDirty: boolean = false;
   /**
    * Description placeholder
    * @date 2/1/2024 - 3:28:53 PM

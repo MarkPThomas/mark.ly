@@ -1,4 +1,11 @@
-import { IVertexProperties, Polyline, Segment, SegmentNode, Vertex, VertexNode } from '../Polyline';
+import {
+  IVertexProperties,
+  Polyline,
+  Segment,
+  SegmentNode,
+  Vertex,
+  VertexNode
+} from '../Polyline';
 import { MaxMinStats } from './MaxMinStats';
 
 /**

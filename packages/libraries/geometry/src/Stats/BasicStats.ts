@@ -21,7 +21,7 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
  * @protected
  * @type {(VertexNode<TVertex, TSegment> | null)}
  */
-  protected _firstVertex: VertexNode<TVertex, TSegment> | null;
+  protected _firstVertex: VertexNode<TVertex, TSegment> | null = null;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:19 PM
@@ -29,7 +29,7 @@ export abstract class BasicStats<TVertex extends Vertex, TSegment extends Segmen
  * @protected
  * @type {(VertexNode<TVertex, TSegment> | null)}
  */
-  protected _lastVertex: VertexNode<TVertex, TSegment> | null;
+  protected _lastVertex: VertexNode<TVertex, TSegment> | null = null;
 
   /**
  * Creates an instance of BasicStats.

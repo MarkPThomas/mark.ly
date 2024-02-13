@@ -130,20 +130,22 @@ export class Numbers {
   /// </summary>
   /// <returns>System.Double.</returns>
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:24 PM
- *
-public static Log10E = (): number => Math.log10(Math.E);
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:24 PM
+   *
+  */
+  public static Log10E = (): number => Math.log10(Math.E);
 
   /// <summary>
   /// Represents the log base two of e.
   /// </summary>
   /// <returns>System.Double.</returns>
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:24 PM
- *
-public static Log2E = (): number => Math.log2(Math.E);
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:24 PM
+   *
+  */
+  public static Log2E = (): number => Math.log2(Math.E);
 
   /// <summary>
   /// The golden ratio, also known as the divine proportion, golden mean, or golden section, is a number often encountered when taking the ratios of distances in simple geometric figures such as the pentagon, pentagram, decagon and dodecahedron.
@@ -151,10 +153,11 @@ public static Log2E = (): number => Math.log2(Math.E);
   /// </summary>
   /// <returns>System.Double.</returns>
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:24 PM
- *
-public static GoldenRatio = (): number => 0.5 * (1 + Math.sqrt(5));
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:24 PM
+   *
+  */
+  public static GoldenRatio = (): number => 0.5 * (1 + Math.sqrt(5));
 
 
   // ===Signs

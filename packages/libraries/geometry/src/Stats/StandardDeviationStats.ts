@@ -1,4 +1,4 @@
-import { Polyline, Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
+import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
 import { BasicStats } from "./BasicStats";
 import { SumMean } from "./SumMean";
 
@@ -102,7 +102,7 @@ export class StandardDeviationStats<TVertex extends Vertex, TSegment extends Seg
  * @type {number}
  */
   get variance(): number {
-    return this._isDirty ? this.calculate() : this._variance;
+    return this._isDirty ? this.calculate()! : this._variance;
   }
 
   /**
@@ -113,7 +113,7 @@ export class StandardDeviationStats<TVertex extends Vertex, TSegment extends Seg
  * @type {number}
  */
   get sigma(): number {
-    return this._isDirty ? Math.sqrt(this.calculate()) : Math.sqrt(this._variance);
+    return this._isDirty ? Math.sqrt(this.calculate()!) : Math.sqrt(this._variance);
   }
 
 
@@ -135,6 +135,7 @@ export class StandardDeviationStats<TVertex extends Vertex, TSegment extends Seg
 
     this._getProperty = getProperty;
     this._isSegmentProperty = isSegmentProperty;
+    this._set = new SumMean();
   }
 
 

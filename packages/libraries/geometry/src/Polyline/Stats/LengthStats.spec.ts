@@ -1,4 +1,11 @@
-import { IVertexProperties, Polyline, Segment, SegmentNode, Vertex, VertexNode } from '../';
+import {
+  IVertexProperties,
+  Polyline,
+  Segment,
+  SegmentNode,
+  Vertex,
+  VertexNode
+} from '../';
 import { LengthStats } from './LengthStats';
 
 /**

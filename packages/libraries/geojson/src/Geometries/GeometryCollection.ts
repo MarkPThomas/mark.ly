@@ -1,5 +1,4 @@
 import {
-  BBox as SerialBBox,
   Geometry as SerialGeometry,
   GeometryCollection as SerialGeometryCollection
 } from 'geojson';
@@ -161,7 +160,7 @@ export class GeometryCollection
  * @protected
  * @type {boolean}
  */
-  protected _collectionDirty: boolean;
+  protected _collectionDirty: boolean = false;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:29 PM
