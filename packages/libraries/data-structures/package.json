@@ -41,7 +41,7 @@
     "lint": "eslint --ext=ts,tsx .",
     "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f3- | xargs -t -r eslint --ext=ts,tsx",
     "clear": "rimraf dist",
-    "docs": "typedoc ./index.ts --name Data-Structures",
+    "docs": "typedoc --out docs --name Data-Structures",
     "docs:copy": "./bin/update-docs.sh",
     "docs:update": "npm run docs && npm run docs:copy"
   },

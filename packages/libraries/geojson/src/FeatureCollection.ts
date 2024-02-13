@@ -169,7 +169,7 @@ export class FeatureCollection
  * @protected
  * @type {boolean}
  */
-  protected _collectionDirty: boolean;
+  protected _collectionDirty: boolean = false;
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:35:27 PM

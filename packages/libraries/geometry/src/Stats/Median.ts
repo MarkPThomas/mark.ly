@@ -1,4 +1,4 @@
-import { NodeDouble } from "data-structures";
+import { NodeDouble } from "@markporterthomas/data-structures";
 
 import { Segment, Vertex } from "../Polyline";
 import { INodeOfInterest } from "./INodeOfInterest";

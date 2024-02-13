@@ -131,6 +131,7 @@ export const VectorLibrary = {
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:34:29 PM
  *
+*/
 const validatedMagnitude = (magnitude: number, tolerance: number = Numbers.ZeroTolerance): number => {
   if (Numbers.IsZeroSign(magnitude, tolerance)) { throw new ArgumentException("Ill-formed vector. Vector magnitude cannot be zero."); }
   return magnitude;

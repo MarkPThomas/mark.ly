@@ -40,9 +40,9 @@
       "common/*": [
         "../../common/*"
       ],
-      "data-structures": [
-        "../data-structures/src"
-      ]
+      // "data-structures": [
+      //   "../data-structures/src"
+      // ]
     }
   },
   "include": [
