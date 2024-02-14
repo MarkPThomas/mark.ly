@@ -1,4 +1,4 @@
-import { SegmentNode } from "../../../../geometry/src/Polyline";
+import { SegmentNode } from "@markpthomas/geometry/polyline";
 
 import {
   Track,

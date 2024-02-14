@@ -1,4 +1,4 @@
-import { SegmentNode, VertexNode } from "../../../../geometry/src";
+import { SegmentNode, VertexNode } from "@markpthomas/geometry";
 
 import {
   Track,
