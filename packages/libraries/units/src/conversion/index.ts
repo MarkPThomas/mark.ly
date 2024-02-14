@@ -1,7 +1,8 @@
 import { IUnitOverrides, IUnits } from './baseUnits/Units';
 
 export * from './Conversion';
-export * from './baseUnits/Units';
+export * from './baseUnits';
+export * from './compositeUnits';
 
 /**
  * ${1:Description placeholder}

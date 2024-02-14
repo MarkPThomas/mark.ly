@@ -3,7 +3,7 @@ import {
   IPolylineStats,
   IPolylineStatsCriteria,
   PolylineStats
-} from "@markpthomas/geometry/polyline/Stats/PolylineStats";
+} from "@markpthomas/geometry/polyline/stats";
 import { BasicStats } from "@markpthomas/geometry/stats";
 
 import { PolylineRoute } from "../PolylineRoute";

@@ -3,6 +3,7 @@ import {
 } from "@markpthomas/geometry/polyline";
 import {
   BasicStats,
+  INodeOfInterest,
   IRangeStatsResults,
   MaxMinStats,
   Median,
@@ -10,7 +11,6 @@ import {
   StandardDeviationStats,
   Sum
 } from "@markpthomas/geometry/stats";
-import { INodeOfInterest } from "@markpthomas/geometry/stats/INodeOfInterest";
 
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
