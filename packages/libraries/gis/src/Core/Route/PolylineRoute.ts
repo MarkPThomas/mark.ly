@@ -7,7 +7,7 @@ import {
 } from '@markpthomas/geometry';
 
 // import { ElevationRequestApi } from '../../elevationDataApi';
-import { ElevationRequestApi } from '../../../../../apps/gis-ly/server/api/elevationDataApi';
+// import { ElevationRequestApi } from '../../../../../apps/gis-ly/server/api/elevationDataApi';
 
 import { IPointProperties } from '../point/Point';
 
@@ -580,19 +580,22 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
     const boundingBox = BoundingBox.fromPoints(coords);
     console.log(`Getting elevations for ${coords.length} coords`);
 
-    const elevationsApi = new ElevationRequestApi();
-    elevationsApi.getElevations(coords, boundingBox)
-      // TODO: How does this work with requests 100 at a time?
-      .then((result) => {
-        if (result.elevations) {
-          console.log(`Received elevations for ${result.elevations.size} coords`);
-          console.log('Result: ', result);
+    // TODO: Make interface for ElevationRequestApi, with a CB argument of this type passed in, in order to break the dependency
 
-          this.addElevations(result.elevations);
-        } else {
-          console.log('No elevations received');
-        }
-      });
+    // const elevationsApi = new ElevationRequestApi();
+    // elevationsApi.getElevations(coords, boundingBox)
+    //   // TODO: How does this work with requests 100 at a time?
+    //   .then((result) => {
+    //     if (result.elevations) {
+    //       console.log(`Received elevations for ${result.elevations.size} coords`);
+    //       console.log('Result: ', result);
+
+    //       this.addElevations(result.elevations);
+    //     } else {
+    //       console.log('No elevations received');
+    //     }
+    //   });
+
     // TODO: Only once the entire API payload is processed should this be called:
     // this.addElevationProperties();
   }
