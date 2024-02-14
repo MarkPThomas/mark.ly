@@ -15,7 +15,9 @@
   },
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./conversion": "./dist/conversion/index.ts",
+    "./formatting": "./dist/formatting/index.ts"
   },
   "types": "./dist/index.d.ts",
   "directories": {
