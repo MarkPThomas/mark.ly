@@ -5,11 +5,11 @@ import {
 } from 'geojson';
 
 import { BoundingBox } from "./BoundingBox";
-import { IGeometry } from "./Geometries/Geometry";
+import { IGeometry } from "./geometries/Geometry";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
 import { FeatureProperty, IFeatureProperty } from './FeatureProperty';
 import { BBoxState, GeoJsonTypes } from "./enums";
-import { GeometryBuilder, Point } from './Geometries';
+import { GeometryBuilder, Point } from './geometries';
 
 /**
  * Description placeholder

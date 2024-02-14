@@ -15,7 +15,8 @@
   },
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./geometries": "./dist/geometries/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {

@@ -8,7 +8,7 @@ import {
   IJson
 } from "./GeoJson";
 import { BBoxState } from "./enums";
-import { GeometryBuilder } from "./Geometries";
+import { GeometryBuilder } from "./geometries";
 
 /**
  * ${1:Description placeholder}
