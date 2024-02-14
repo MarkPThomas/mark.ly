@@ -56,7 +56,7 @@
     "clear": "rimraf dist",
     "clear:build": "rimraf ./tsconfig.tsbuildinfo",
     "clear:dev": "npm-run-all clear clear:build",
-    "docs": "typedoc --out docs --name Data-Structures",
+    "docs": "typedoc --out docs --name GIS",
     "docs:copy": "./bin/update-docs.sh",
     "docs:update": "npm run docs && npm run docs:copy"
   },
