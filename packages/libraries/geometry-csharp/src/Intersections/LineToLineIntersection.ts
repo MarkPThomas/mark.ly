@@ -1,7 +1,7 @@
 import { ArgumentException } from "common/errors/exceptions";
 
 import { CartesianCoordinate } from "@markpthomas/math/coordinates";
-import { LinearCurve } from "@markpthomas/math/Curves";
+import { LinearCurve } from "@markpthomas/math/curves";
 import { Numbers } from "@markpthomas/math";
 
 import { GeometryLibrary } from "../GeometryLibrary";

@@ -3,7 +3,7 @@ import {
   CartesianCoordinate,
   CartesianOffset
 } from "@markpthomas/math/coordinates";
-import { LinearCurve } from "@markpthomas/math/Curves";
+import { LinearCurve } from "@markpthomas/math/curves";
 
 /**
  * ${1:Description placeholder}

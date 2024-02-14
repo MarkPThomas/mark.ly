@@ -2,7 +2,7 @@ import { IEquatable } from 'common/interfaces';
 
 import { CartesianCoordinate } from '@markpthomas/math/coordinates';
 import { ITolerance } from '@markpthomas/math';
-import { Vector } from '@markpthomas/math/Vectors';
+import { Vector } from '@markpthomas/math/vectors';
 
 import { ITransform } from '../ITransform';
 import { PointExtents } from '../Tools/PointExtents';

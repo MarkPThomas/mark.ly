@@ -5,8 +5,8 @@ import {
   CartesianCoordinate,
   CartesianOffset
 } from "@markpthomas/math/coordinates";
-import { Curve, LinearCurve } from "@markpthomas/math/Curves";
-import { Vector } from "@markpthomas/math/Vectors";
+import { Curve, LinearCurve } from "@markpthomas/math/curves";
+import { Vector } from "@markpthomas/math/vectors";
 import { Numbers } from "@markpthomas/math";
 
 import { GeometryLibrary } from "../GeometryLibrary";

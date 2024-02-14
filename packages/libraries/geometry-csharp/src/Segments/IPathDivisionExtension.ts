@@ -2,7 +2,7 @@
 /// Interface for paths that are divisible.
 
 import { CartesianCoordinate } from "@markpthomas/math/coordinates";
-import { LinearCurve } from "@markpthomas/math/Curves";
+import { LinearCurve } from "@markpthomas/math/curves";
 
 import { IPathSegment } from "./IPathSegment";
 
