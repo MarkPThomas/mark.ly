@@ -46,25 +46,7 @@
     "paths": {
       "common/*": [
         "../../common/*"
-      ],
-      // "@MPT/units/*": [
-      //   "../units/src/*"
-      // ],
-      // "@MPT/math": [
-      //   "../math/src"
-      // ],
-      // "@MPT/geojson": [
-      //   "../geojson/src"
-      // ],
-      // "@MPT/geojson/*": [
-      //   "../geojson/src/*"
-      // ],
-      // "@MPT/geometry": [
-      //   "../geometry/src"
-      // ],
-      // "@MPT/geometry/*": [
-      //   "../geometry/src/*"
-      // ]
+      ]
     }
   },
   "include": [
