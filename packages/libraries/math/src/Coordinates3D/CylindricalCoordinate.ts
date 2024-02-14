@@ -1,6 +1,6 @@
 import { IEquatable } from "common/interfaces";
 
-import { Angle } from "../Coordinates/Angle";
+import { Angle } from "../coordinates/Angle";
 import { Numbers } from "../Numbers";
 import { CartesianCoordinate3D } from "./CartesianCoordinate3D";
 import { CylindricalOffset } from "./CylindricalOffset";

@@ -1,20 +1,20 @@
 import { NotImplementedException } from 'common/errors/exceptions';
 
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
-import { CartesianOffset } from '../Coordinates/CartesianOffset';
-import { PolarCoordinate } from '../Coordinates/PolarCoordinate';
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
+import { CartesianOffset } from '../coordinates/CartesianOffset';
+import { PolarCoordinate } from '../coordinates/PolarCoordinate';
 import { Generics } from '../Generics';
-import { Vector } from '../Vectors/Vector';
+import { Vector } from '../vectors/Vector';
 import { ICurveLimits } from './ICurveLimits';
 import { ICurvePositionCartesian } from './ICurvePositionCartesian';
 import { ICurvePositionPolar } from './ICurvePositionPolar';
-import { CartesianCoordinate } from '../Coordinates/CartesianCoordinate';
-import { Angle } from '../Coordinates/Angle';
+import { CartesianCoordinate } from '../coordinates/CartesianCoordinate';
+import { Angle } from '../coordinates/Angle';
 import { Numbers } from '../Numbers';
 import { Curve } from './Curve';
 import { LinearCurve } from './LinearCurve';
-import { ConicFocusParametric } from './Parametrics/ConicSectionCurveComponents/ConicFocusParametric';
-import { GeometryLibrary } from '../Geometry/GeometryLibrary';
+import { ConicFocusParametric } from './parametrics/conic-section-curve-components/ConicFocusParametric';
+import { GeometryLibrary } from '../geometry/GeometryLibrary';
 
 /**
  * Initializes a new instance of the `ConicSectionCurve` class.

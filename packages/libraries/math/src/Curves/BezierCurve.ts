@@ -1,16 +1,16 @@
-import { Angle } from "../Coordinates/Angle";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
+import { Angle } from "../coordinates/Angle";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { PolarCoordinate } from "../coordinates/PolarCoordinate";
 import { Generics } from "../Generics";
-import { GeometryLibrary } from "../Geometry/GeometryLibrary";
+import { GeometryLibrary } from "../geometry/GeometryLibrary";
 import { Numbers } from "../Numbers";
-import { Vector } from "../Vectors/Vector";
+import { Vector } from "../vectors/Vector";
 import { Curve } from "./Curve";
 import { LinearCurve } from "./LinearCurve";
-import { BezierCurveParametric1stOrder } from "./Parametrics/BezierCurveParametric1stOrder";
-import { BezierCurveParametric2ndOrder } from "./Parametrics/BezierCurveParametric2ndOrder";
-import { BezierCurveParametric3rdOrder } from "./Parametrics/BezierCurveParametric3rdOrder";
-import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
+import { BezierCurveParametric1stOrder } from "./parametrics/BezierCurveParametric1stOrder";
+import { BezierCurveParametric2ndOrder } from "./parametrics/BezierCurveParametric2ndOrder";
+import { BezierCurveParametric3rdOrder } from "./parametrics/BezierCurveParametric3rdOrder";
+import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";
 import { CurveHandle } from "./tools/CurveHandle";
 
 

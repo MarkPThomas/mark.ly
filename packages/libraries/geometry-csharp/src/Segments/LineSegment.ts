@@ -1,11 +1,10 @@
 import { ArgumentOutOfRangeException } from "common/errors/exceptions";
 
-import { CartesianCoordinate } from "@markpthomas/math/Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "@markpthomas/math/Coordinates/CartesianOffset";
-import { LinearCurve } from "@markpthomas/math/Curves/LinearCurve";
-import { Generics } from "@markpthomas/math/Generics";
-import { Numbers } from "@markpthomas/math/Numbers";
-import { Vector } from "@markpthomas/math/Vectors/Vector";
+import { CartesianCoordinate, CartesianOffset } from "@markpthomas/math/Coordinates";
+import { LinearCurve } from "@markpthomas/math/Curves";
+import { Generics } from "@markpthomas/math";
+import { Numbers } from "@markpthomas/math";
+import { Vector } from "@markpthomas/math/Vectors";
 
 import { ILine } from "./ILine";
 import { IPathDivisionExtension } from "./IPathDivisionExtension";

@@ -1,6 +1,6 @@
 import { IEquatable } from 'common/interfaces';
 
-import { Cartesian2DPolarConverter } from '../CoordinateConverters/Cartesian2DPolarConverter';
+import { Cartesian2DPolarConverter } from '../coordinate-converters/Cartesian2DPolarConverter';
 import { Numbers } from '../Numbers';
 import { Angle } from './Angle';
 import { CartesianCoordinate } from './CartesianCoordinate';

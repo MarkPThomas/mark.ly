@@ -1,5 +1,5 @@
-import { CartesianCoordinate } from "@MPT/math/Coordinates";
-import { Numbers } from "@MPT/math";
+import { CartesianCoordinate } from "@markpthomas/math/Cordinates";
+import { Numbers } from "@markpthomas/math";
 
 import { LineSegment } from "../Segments/LineSegment";
 import { LineToLineIntersection } from "./LineToLineIntersection";

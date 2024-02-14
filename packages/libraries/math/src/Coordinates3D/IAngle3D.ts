@@ -1,4 +1,4 @@
-import { Angle } from "../Coordinates/Angle";
+import { Angle } from "../coordinates/Angle";
 
 /**
  * ${1:Description placeholder}

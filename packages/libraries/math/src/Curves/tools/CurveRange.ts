@@ -1,9 +1,9 @@
 import { ICloneable } from "common/interfaces";
 
-import { Angle } from "../../Coordinates/Angle";
-import { CartesianCoordinate } from "../../Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "../../Coordinates/CartesianOffset";
-import { PolarOffset } from "../../Coordinates/PolarOffset";
+import { Angle } from "../../coordinates/Angle";
+import { CartesianCoordinate } from "../../coordinates/CartesianCoordinate";
+import { CartesianOffset } from "../../coordinates/CartesianOffset";
+import { PolarOffset } from "../../coordinates/PolarOffset";
 import { Numbers } from "../../Numbers";
 import { Curve } from "../Curve";
 import { CurveLimit } from "./CurveLimit";

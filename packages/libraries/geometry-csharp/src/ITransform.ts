@@ -1,7 +1,9 @@
-import { Angle } from "@markpthomas/math/Coordinates/Angle";
-import { CartesianCoordinate } from "@markpthomas/math/Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "@markpthomas/math/Coordinates/CartesianOffset";
-import { LinearCurve } from "@markpthomas/math/Curves/LinearCurve";
+import {
+  Angle,
+  CartesianCoordinate,
+  CartesianOffset
+} from "@markpthomas/math/Coordinates";
+import { LinearCurve } from "@markpthomas/math/Curves";
 
 /**
  * ${1:Description placeholder}

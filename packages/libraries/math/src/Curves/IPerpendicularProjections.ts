@@ -1,4 +1,4 @@
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 
 /**
  * ${1:Description placeholder}

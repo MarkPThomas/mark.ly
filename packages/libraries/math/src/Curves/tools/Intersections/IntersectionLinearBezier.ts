@@ -1,4 +1,4 @@
-import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { BezierCurve } from "../../BezierCurve";
 import { LinearCurve } from "../../LinearCurve";
 import { IntersectionAbstract } from "./IntersectionAbstract";

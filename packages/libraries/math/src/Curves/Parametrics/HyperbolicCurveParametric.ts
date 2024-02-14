@@ -1,7 +1,7 @@
 import { HyperbolicCurve } from "../HyperbolicCurve";
-import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
-import { HyperbolicParametricX } from "./ConicSectionCurveComponents/HyperbolicParametricX";
-import { HyperbolicParametricY } from "./ConicSectionCurveComponents/HyperbolicParametricY";
+import { CartesianParametricEquationXY } from "./components/CartesianParametricEquationXY";
+import { HyperbolicParametricX } from "./conic-section-curve-components/HyperbolicParametricX";
+import { HyperbolicParametricY } from "./conic-section-curve-components/HyperbolicParametricY";
 
 
 /**

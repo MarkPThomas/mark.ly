@@ -1,14 +1,14 @@
-import { Angle } from "../Coordinates/Angle";
-import { AngularOffset } from "../Coordinates/AngularOffset";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { Angle } from "../coordinates/Angle";
+import { AngularOffset } from "../coordinates/AngularOffset";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { Numbers } from "../Numbers";
-import { TrigonometryLibrary } from "../Trigonometry/TrigonometryLibrary";
+import { TrigonometryLibrary } from "../trigonometry/TrigonometryLibrary";
 import { ConicSectionCurve, FocusProps, RotationProps } from "./ConicSectionCurve";
 import { Curve } from "./Curve";
 import { ICurveLimits } from "./ICurveLimits";
 import { LinearCurve } from "./LinearCurve";
-import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
-import { EllipticalCurveParametric } from "./Parametrics/EllipticalCurveParametric";
+import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";
+import { EllipticalCurveParametric } from "./parametrics/EllipticalCurveParametric";
 
 
 /**

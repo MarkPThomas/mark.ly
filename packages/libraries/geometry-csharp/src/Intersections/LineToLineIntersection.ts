@@ -1,8 +1,8 @@
 import { ArgumentException } from "common/errors/exceptions";
 
-import { CartesianCoordinate } from "@markpthomas/math/Coordinates/CartesianCoordinate";
-import { LinearCurve } from "@markpthomas/math/Curves/LinearCurve";
-import { Numbers } from "@markpthomas/math/Numbers";
+import { CartesianCoordinate } from "@markpthomas/math/Coordinates";
+import { LinearCurve } from "@markpthomas/math/Curves";
+import { Numbers } from "@markpthomas/math";
 
 import { GeometryLibrary } from "../GeometryLibrary";
 import { LineSegment } from "../Segments/LineSegment";

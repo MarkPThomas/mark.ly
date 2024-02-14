@@ -1,8 +1,8 @@
 import { ICloneable } from "common/interfaces";
 
-import { Angle } from "../../Coordinates/Angle";
-import { CartesianCoordinate } from "../../Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "../../Coordinates/CartesianOffset";
+import { Angle } from "../../coordinates/Angle";
+import { CartesianCoordinate } from "../../coordinates/CartesianCoordinate";
+import { CartesianOffset } from "../../coordinates/CartesianOffset";
 
 /**
  * Class CurveHandle.

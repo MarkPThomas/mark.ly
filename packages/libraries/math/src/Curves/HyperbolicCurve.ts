@@ -1,11 +1,11 @@
-import { Angle } from "../Coordinates/Angle";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
-import { TrigonometryLibrary } from "../Trigonometry/TrigonometryLibrary";
-import { Vector } from "../Vectors/Vector";
+import { Angle } from "../coordinates/Angle";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { PolarCoordinate } from "../coordinates/PolarCoordinate";
+import { TrigonometryLibrary } from "../trigonometry/TrigonometryLibrary";
+import { Vector } from "../vectors/Vector";
 import { ConicSectionCurve, FocusProps, RotationProps } from "./ConicSectionCurve";
 import { LinearCurve } from "./LinearCurve";
-import { HyperbolicCurveParametric } from "./Parametrics/HyperbolicCurveParametric";
+import { HyperbolicCurveParametric } from "./parametrics/HyperbolicCurveParametric";
 
 
 /**

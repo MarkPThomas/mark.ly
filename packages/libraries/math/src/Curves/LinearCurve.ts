@@ -4,15 +4,15 @@ import {
   ArgumentException
 } from 'common/errors/exceptions';
 
-import { AlgebraLibrary } from '../Algebra/AlgebraLibrary';
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { CartesianOffset } from '../Coordinates/CartesianOffset';
+import { AlgebraLibrary } from '../algebra/AlgebraLibrary';
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { CartesianOffset } from '../coordinates/CartesianOffset';
 import { Generics } from '../Generics';
 import { Numbers } from '../Numbers';
-import { CartesianParametricEquationXY } from './Parametrics/Components/CartesianParametricEquationXY';
-import { LinearCurveParametric } from './Parametrics/LinearCurveParametric';
-import { Vector } from '../Vectors/Vector';
+import { CartesianParametricEquationXY } from './parametrics/components/CartesianParametricEquationXY';
+import { LinearCurveParametric } from './parametrics/LinearCurveParametric';
+import { Vector } from '../vectors/Vector';
 import { Curve } from "./Curve";
 import { ICurveLimits } from "./ICurveLimits";
 import { ICurvePositionCartesian } from "./ICurvePositionCartesian";

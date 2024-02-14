@@ -1,5 +1,5 @@
-import { AlgebraLibrary } from "../../../Algebra/AlgebraLibrary";
-import { CartesianCoordinate } from "../../../Coordinates/CartesianCoordinate";
+import { AlgebraLibrary } from "../../../algebra/AlgebraLibrary";
+import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { Generics } from "../../../Generics";
 import { Numbers } from "../../../Numbers";
 import { Transformations } from "../../../Transformations";

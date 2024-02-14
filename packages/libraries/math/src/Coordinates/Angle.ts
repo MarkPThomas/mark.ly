@@ -4,8 +4,8 @@ import { DivideByZeroException } from "common/errors/exceptions";
 import { Generics } from "../Generics";
 import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
-import { Vector } from "../Vectors/Vector";
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
+import { Vector } from "../vectors/Vector";
 
 import { CartesianCoordinate } from "./CartesianCoordinate";
 import { AngularOffset } from "./AngularOffset";

@@ -1,6 +1,6 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 
-import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
+import { AlgebraLibrary } from "../algebra/AlgebraLibrary";
 import { Numbers } from "../Numbers";
 import { CartesianCoordinate } from "./CartesianCoordinate";
 import { Angle } from './Angle';

@@ -15,7 +15,13 @@
   },
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./algebra": "./dist/algebra/index.js",
+    "./coordinates": "./dist/coordinates/index.js",
+    "./curves": "./dist/curves/index.js",
+    "./geometry": "./dist/geometry/index.js",
+    "./trigonometry": "./dist/trigonometry/index.js",
+    "./vectors": "./dist/vectors/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {

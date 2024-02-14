@@ -2,7 +2,7 @@
 // TODO: Summation from object & strategy pattern
 
 import { ArgumentException, ArgumentOutOfRangeException } from "common/errors/exceptions";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { Numbers } from "../Numbers";
 
 /// <summary>

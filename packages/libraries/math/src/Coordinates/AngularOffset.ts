@@ -4,7 +4,7 @@ import { IComparable, IEquatable } from "common/interfaces";
 import { Generics } from "../Generics";
 import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";
-import { Vector } from "../Vectors/Vector";
+import { Vector } from "../vectors/Vector";
 import { Angle } from "./Angle";
 import { CartesianCoordinate } from "./CartesianCoordinate";
 

@@ -1,7 +1,7 @@
 import { IEquatable } from "common/interfaces";
 
-import { ICoordinate } from "./Coordinates/ICoordinate";
-import { ICoordinate3D } from "./Coordinates3D/ICoordinate3D";
+import { ICoordinate } from "./coordinates/ICoordinate";
+import { ICoordinate3D } from "./coordinates3D/ICoordinate3D";
 import { ITolerance } from "./ITolerance";
 
 /**

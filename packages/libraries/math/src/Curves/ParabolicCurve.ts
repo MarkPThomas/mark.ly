@@ -1,14 +1,14 @@
 import { NotImplementedException } from "common/errors/exceptions";
 
-import { Angle } from "../Coordinates/Angle";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
-import { Vector } from "../Vectors/Vector";
+import { Angle } from "../coordinates/Angle";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { PolarCoordinate } from "../coordinates/PolarCoordinate";
+import { Vector } from "../vectors/Vector";
 import { ConicSectionCurve, FocusProps, RotationProps } from "./ConicSectionCurve";
 import { Curve } from "./Curve";
 import { LinearCurve } from "./LinearCurve";
-import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
-import { ParabolicCurveParametric } from "./Parametrics/ParabolicCurveParametric";
+import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";
+import { ParabolicCurveParametric } from "./parametrics/ParabolicCurveParametric";
 
 /**
  * A parabola is the set of all points whose distance from a fixed point, called the focus,

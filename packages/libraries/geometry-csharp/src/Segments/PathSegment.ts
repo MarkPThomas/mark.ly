@@ -1,12 +1,13 @@
 import { ArgumentOutOfRangeException, NotImplementedException } from "common/errors/exceptions";
 
-import { Angle } from "@markpthomas/math/Coordinates/Angle";
-import { CartesianCoordinate } from "@markpthomas/math/Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "@markpthomas/math/Coordinates/CartesianOffset";
-import { Curve } from "@markpthomas/math/Curves/Curve";
-import { LinearCurve } from "@markpthomas/math/Curves/LinearCurve";
-import { Vector } from "@markpthomas/math/Vectors/Vector";
-import { Numbers } from "@markpthomas/math/Numbers";
+import {
+  Angle,
+  CartesianCoordinate,
+  CartesianOffset
+} from "@markpthomas/math/Coordinates";
+import { Curve, LinearCurve } from "@markpthomas/math/Curves";
+import { Vector } from "@markpthomas/math/Vectors";
+import { Numbers } from "@markpthomas/math";
 
 import { GeometryLibrary } from "../GeometryLibrary";
 import { PointExtents } from "../Tools/PointExtents";

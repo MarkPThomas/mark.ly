@@ -1,6 +1,6 @@
 import { ArgumentOutOfRangeException } from "common/errors/exceptions";
 
-import { Curve } from "../../../../Curves/Curve";
+import { Curve } from "../../../Curve";
 import { ParametricEquation } from "../ParametricEquation";
 import { ParametricComponent } from "./ParametricComponent";
 

@@ -1,13 +1,13 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 import { IEquatable } from "common/interfaces";
 
-import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
-import { Cartesian2DPolarConverter } from "../CoordinateConverters/Cartesian2DPolarConverter";
-import { LinearCurve } from "../Curves/LinearCurve";
+import { AlgebraLibrary } from "../algebra/AlgebraLibrary";
+import { Cartesian2DPolarConverter } from "../coordinate-converters/Cartesian2DPolarConverter";
+import { LinearCurve } from "../curves/LinearCurve";
 import { Generics } from "../Generics";
 import { Numbers } from "../Numbers";
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
-import { VectorLibrary } from "../Vectors/VectorLibrary";
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
+import { VectorLibrary } from "../vectors/VectorLibrary";
 import { Angle } from "./Angle";
 import { CartesianOffset } from "./CartesianOffset";
 import { ICoordinate } from "./ICoordinate";

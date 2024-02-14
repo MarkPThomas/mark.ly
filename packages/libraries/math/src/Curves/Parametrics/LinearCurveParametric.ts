@@ -4,9 +4,9 @@
 /// </summary>
 
 import { LinearCurve } from "../LinearCurve";
-import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
-import { LinearParametricX } from "./LinearCurveComponents/LinearParametricX";
-import { LinearParametricY } from "./LinearCurveComponents/LinearParametricY";
+import { CartesianParametricEquationXY } from "./components/CartesianParametricEquationXY";
+import { LinearParametricX } from "./linear-curve-components/LinearParametricX";
+import { LinearParametricY } from "./linear-curve-components/LinearParametricY";
 
 /**
  * ${1:Description placeholder}

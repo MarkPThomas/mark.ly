@@ -1,6 +1,6 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 
-import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
+import { AlgebraLibrary } from "../algebra/AlgebraLibrary";
 import { Generics } from "../Generics";
 import { IOffset } from "../IOffset";
 import { Numbers } from "../Numbers";

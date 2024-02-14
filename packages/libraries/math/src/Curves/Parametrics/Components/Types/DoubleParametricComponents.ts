@@ -1,6 +1,6 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 
-import { Curve } from "../../../../Curves/Curve";
+import { Curve } from "../../../Curve";
 import { ParametricEquation } from "../ParametricEquation";
 import { DoubleParametricComponent } from "./DoubleParametricComponent";
 import { ParametricComponents } from "./ParametricComponents";
