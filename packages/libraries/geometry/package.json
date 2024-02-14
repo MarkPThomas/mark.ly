@@ -15,7 +15,10 @@
   },
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./stats": "./dist/stats/index.js",
+    "./polyline": "./dist/polyline/index.js",
+    "./polyline/stats": "./dist/polyline/stats/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {
