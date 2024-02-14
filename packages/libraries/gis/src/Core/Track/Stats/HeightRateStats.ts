@@ -1,4 +1,4 @@
-import { SegmentNode } from "@MPT/geometry";
+import { SegmentNode } from "@markpthomas/geometry";
 import {
   BasicStats,
   INodeOfInterest,
@@ -8,7 +8,7 @@ import {
   RangeStatsResults,
   StandardDeviationStats,
   Sum
-} from "@MPT/geometry/Stats";
+} from "@markpthomas/geometry/stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";

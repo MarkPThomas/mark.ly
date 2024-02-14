@@ -1,7 +1,7 @@
 import { ICloneable, IEquatable } from 'common/interfaces';
 
-import { Position } from "@MPT/geojson";
-import { Point } from "@MPT/geojson/Geometries";
+import { Position } from "@markpthomas/geojson";
+import { Point } from "@markpthomas/geojson/Geometries";
 
 import { PPoint, IPointProperties } from '../Point/Point';
 

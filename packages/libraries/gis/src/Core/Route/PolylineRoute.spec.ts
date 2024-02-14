@@ -1,4 +1,4 @@
-import { VertexNode, SegmentNode } from "@MPT/geometry/Polyline";
+import { VertexNode, SegmentNode } from "@markpthomas/geometry/polyline";
 
 import { GeoJsonManager } from "../GeoJsonManager";
 import { PolylineRoute } from "./PolylineRoute";

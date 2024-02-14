@@ -1,6 +1,6 @@
 import { NodeDouble } from "@markpthomas/data-structures";
 
-import { Segment, Vertex } from "../Polyline";
+import { Segment, Vertex } from "../polyline/index";
 
 
 /**
