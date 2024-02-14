@@ -61,7 +61,6 @@
     "docs:update": "npm run docs && npm run docs:copy"
   },
   "dependencies": {
-    "@markpthomas/data-structures": "^0.0.1",
     "@markpthomas/geojson": "^0.0.1",
     "@markpthomas/geometry": "^0.0.1",
     "@markpthomas/math": "^0.0.1",
