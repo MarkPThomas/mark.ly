@@ -6,7 +6,7 @@ import {
   eLength,
   eTime,
   getLocalUnits
-} from '@MPT/units/conversion';
+} from '@markpthomas/units/conversion';
 
 /**
  * ${1:Description placeholder}

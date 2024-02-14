@@ -1,10 +1,10 @@
-import { BoundingBox } from '@MPT/geojson';
+import { BoundingBox } from '@markpthomas/geojson';
 
 import {
   VertexNode,
   IPolyline,
   Polyline
-} from '@MPT/geometry';
+} from '@markpthomas/geometry';
 
 // import { ElevationRequestApi } from '../../elevationDataApi';
 import { ElevationRequestApi } from '../../../../../apps/gis-ly/server/api/elevationDataApi';

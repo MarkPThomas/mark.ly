@@ -1,8 +1,8 @@
-import { Point } from '@MPT/geojson/Geometries';
+import { Point } from '@markpthomas/geojson/geometries';
 import {
   ISegmentProperties as ISegmentGeometryProperties,
   Segment as SegmentGeometry
-} from '@MPT/geometry';
+} from '@markpthomas/geometry';
 
 import { ICloneable, IEquatable } from 'common/interfaces';
 

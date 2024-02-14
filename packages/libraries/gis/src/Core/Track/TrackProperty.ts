@@ -2,11 +2,11 @@ import {
   IFeatureProperty,
   FeatureProperty,
   Feature,
-} from '@MPT/geojson';
+} from '@markpthomas/geojson';
 
 import {
   Point, MultiLineString, MultiPoint, LineString
-} from '@MPT/geojson/Geometries';
+} from '@markpthomas/geojson/geometries';
 
 /**
  * GeoJSON string formats for timestamps recorded by GPS.
@@ -30,6 +30,10 @@ export function getFeatureTimes(feature: Feature): TrackTimestamps {
   return feature.properties?.coordinateProperties?.times;
 }
 
+type CoordinateProperties = {
+  times: TrackTimestamps
+}
+
 /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:34:55 PM
@@ -46,6 +50,7 @@ export interface ITrackPropertyProperties {
    * @memberof ITrackPropertyProperties
    */
   _gpxType: string,
+
   /**
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:34:55 PM
@@ -53,6 +58,7 @@ export interface ITrackPropertyProperties {
  * @type {string}
  */
   name: string,
+
   /**
    * Typically the timestamp at the start of the GPS recording.
    *
@@ -60,28 +66,14 @@ export interface ITrackPropertyProperties {
    * @memberof ITrackPropertyProperties
    */
   time: string,
-  /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:55 PM
- *
- * @type {{
- *     /**
- *      * Timestamps mapped by indices to the corresponding Point in the associated gemoetry.
- *      *
- *      * @type {TrackTimestamps}
- *      */
- * times: TrackTimestamps
-  *   \}\}
- * /
-coordinateProperties: {
-  /**
-   * Timestamps mapped by indices to the corresponding Point in the associated gemoetry.
-   *
-   * @type {TrackTimestamps}
-   */
-  times: TrackTimestamps
-}
 
+  /**
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:55 PM
+   *
+   * @type {CoordinateProperties}
+   */
+  coordinateProperties: CoordinateProperties
 }
 
 /**

@@ -1,4 +1,4 @@
-import { SegmentNode, VertexNode } from '@MPT/geometry';
+import { SegmentNode, VertexNode } from '@markpthomas/geometry';
 
 import { PolylineTrack } from '../PolylineTrack';
 import { TrackPoint } from '../TrackPoint';

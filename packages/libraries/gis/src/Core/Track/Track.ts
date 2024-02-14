@@ -1,5 +1,5 @@
-import { FeatureCollection } from '@MPT/geojson';
-import { VertexNode, SegmentNode, IPolylineSize } from '@MPT/geometry/Polyline';
+import { FeatureCollection } from '@markpthomas/geojson';
+import { VertexNode, SegmentNode, IPolylineSize } from '@markpthomas/geometry/polyline';
 
 import { ICloneable, IEquatable } from 'common/interfaces';
 
