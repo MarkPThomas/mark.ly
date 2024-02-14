@@ -1,4 +1,4 @@
-import { CartesianCoordinate } from "@markpthomas/math/Cordinates";
+import { CartesianCoordinate } from "@markpthomas/math/coordinates";
 import { Numbers } from "@markpthomas/math";
 
 import { LineSegment } from "../Segments/LineSegment";
