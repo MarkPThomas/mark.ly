@@ -2,7 +2,7 @@ import {
   Angle,
   CartesianCoordinate,
   CartesianOffset
-} from "@markpthomas/math/Coordinates";
+} from "@markpthomas/math/coordinates";
 import { LinearCurve } from "@markpthomas/math/Curves";
 
 /**

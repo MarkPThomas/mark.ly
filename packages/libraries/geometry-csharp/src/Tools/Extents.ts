@@ -1,4 +1,4 @@
-import { ICoordinate } from "@markpthomas/math/Coordinates";
+import { ICoordinate } from "@markpthomas/math/coordinates";
 
 /**
  * Represents the coordinate bounds of a shape or line, or cluster of points.

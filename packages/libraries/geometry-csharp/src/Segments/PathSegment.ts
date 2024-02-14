@@ -4,7 +4,7 @@ import {
   Angle,
   CartesianCoordinate,
   CartesianOffset
-} from "@markpthomas/math/Coordinates";
+} from "@markpthomas/math/coordinates";
 import { Curve, LinearCurve } from "@markpthomas/math/Curves";
 import { Vector } from "@markpthomas/math/Vectors";
 import { Numbers } from "@markpthomas/math";

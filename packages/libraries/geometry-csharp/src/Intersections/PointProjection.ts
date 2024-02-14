@@ -3,7 +3,7 @@
 import { IPathSegment } from "../Segments/IPathSegment";
 import { PointExtents } from "../Tools/PointExtents";
 
-// using MPT.Math.Coordinates;
+// using MPT.Math.coordinates;
 // using MPT.Geometry.Segments;
 // using MPT.Math.Curves;
 // using MPT.Geometry.Tools;

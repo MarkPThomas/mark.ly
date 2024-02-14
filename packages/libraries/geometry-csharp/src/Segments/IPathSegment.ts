@@ -1,6 +1,6 @@
 import { IEquatable } from 'common/interfaces';
 
-import { CartesianCoordinate } from '@markpthomas/math/Coordinates';
+import { CartesianCoordinate } from '@markpthomas/math/coordinates';
 import { ITolerance } from '@markpthomas/math';
 import { Vector } from '@markpthomas/math/Vectors';
 
