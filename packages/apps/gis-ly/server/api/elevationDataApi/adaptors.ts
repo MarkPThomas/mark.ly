@@ -1,9 +1,10 @@
-import { CartesianCoordinate } from '@MPT/math/Coordinates';
-import { PointIntersection } from '@MPT/geometry-csharp/Intersections';
+import { Position } from 'geojson';
+
+import { CartesianCoordinate } from '@markpthomas/math/coordinates';
+import { PointIntersection } from '@markpthomas/geometry-csharp/intersections';
 
 import { ICoordinate } from "./model";
 import { IBoundingBox } from "./model/IBoundingBox";
-import { Position } from 'geojson';
 
 export interface IGeometry {
   isIn(boundingBox: IBoundingBox, region: Position[]): boolean;

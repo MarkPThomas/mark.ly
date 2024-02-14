@@ -17,12 +17,6 @@
     "paths": {
       "common/*": [
         "../../common/*"
-      ],
-      "@MPT/math/*": [
-        "../../libraries/math/src/*"
-      ],
-      "@MPT/geometry-csharp/*": [
-        "../../libraries/geometry-csharp/src/*"
       ]
     },
     "preserveSymlinks": true,
