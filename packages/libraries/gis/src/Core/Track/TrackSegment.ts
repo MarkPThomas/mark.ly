@@ -1,7 +1,7 @@
 import { ICloneable, IEquatable } from 'common/interfaces';
 
 import { IDirection } from '../Direction';
-import { IPointProperties } from '../Point/Point';
+import { IPointProperties } from '../point/Point';
 
 import { RouteSegment, IRouteSegmentProperties, RouteSegmentData } from '../Route/RouteSegment';
 import { TimeStamp } from '../Time';

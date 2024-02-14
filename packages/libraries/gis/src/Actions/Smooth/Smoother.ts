@@ -1,4 +1,4 @@
-import { Track } from "../../Core/Track";
+import { Track } from "../../Core/Track/index";
 import { SmoothManager } from "./SmoothManager";
 
 /**

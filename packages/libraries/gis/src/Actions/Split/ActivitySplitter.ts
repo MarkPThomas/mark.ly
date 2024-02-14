@@ -1,7 +1,7 @@
 import {
   Track
-} from "../../Core/Track";
-import { SpeedSmoother } from "../Smooth";
+} from "../../Core/Track/index";
+import { SpeedSmoother } from "../smooth/index";
 import { IActivities, IActivity } from "../../settings";
 
 import { DistanceSplitter } from "./DistanceSplitter";

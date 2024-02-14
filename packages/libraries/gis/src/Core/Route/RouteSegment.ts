@@ -7,7 +7,7 @@ import {
 import { ICloneable, IEquatable } from 'common/interfaces';
 
 import { IDirection } from '../Direction';
-import { IPointProperties, PPoint } from '../Point/Point';
+import { IPointProperties, PPoint } from '../point/Point';
 import { RoutePoint } from './RoutePoint';
 
 /**

@@ -4,7 +4,7 @@ import {
   Track,
   TrackPoint,
   TrackSegment
-} from "../../Core/Track";
+} from "../../Core/Track/index";
 import { ITimeRange } from "../../Core/Time/TimeRange";
 import { ISplitResult, SplitManager } from "../Split/SplitManager";
 

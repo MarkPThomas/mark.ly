@@ -10,7 +10,7 @@ import {
   Sum
 } from "@markpthomas/geometry/stats";
 
-import { TimeStamp } from "../../Time";
+import { TimeStamp } from "../../Time/index";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";

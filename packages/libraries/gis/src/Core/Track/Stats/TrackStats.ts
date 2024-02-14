@@ -5,7 +5,7 @@ import {
   IRouteStats,
   IRouteStatsCriteria,
   RouteStats
-} from "../../Route/Stats/RouteStats";
+} from "../../route/stats/RouteStats";
 import { PolylineTrack } from "../PolylineTrack";
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";

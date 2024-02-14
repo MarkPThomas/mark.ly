@@ -11,8 +11,8 @@ import { ITimeRange } from '../Time/TimeRange';
 import { GeoJsonTrack } from './GeoJsonTrack';
 import { PolylineTrack } from './PolylineTrack';
 import { BoundingBox } from '../BoundingBox';
-import { IPointProperties } from '../Point/Point';
-import { ITrackStats, TimeStats, TrackStats } from './Stats';
+import { IPointProperties } from '../point/Point';
+import { ITrackStats, TimeStats, TrackStats } from './stats/index';
 
 
 /**

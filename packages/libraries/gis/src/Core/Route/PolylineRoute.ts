@@ -9,7 +9,7 @@ import {
 // import { ElevationRequestApi } from '../../elevationDataApi';
 import { ElevationRequestApi } from '../../../../../apps/gis-ly/server/api/elevationDataApi';
 
-import { IPointProperties } from '../Point/Point';
+import { IPointProperties } from '../point/Point';
 
 import { IRoutePointProperties, RoutePoint } from './RoutePoint';
 import { RouteSegment } from './RouteSegment';

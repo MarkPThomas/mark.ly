@@ -3,7 +3,7 @@ import { ICloneable, IEquatable } from 'common/interfaces';
 import { Position } from "@markpthomas/geojson";
 import { Point } from "@markpthomas/geojson/Geometries";
 
-import { PPoint, IPointProperties } from '../Point/Point';
+import { PPoint, IPointProperties } from '../point/Point';
 
 import { IRoutePathProps, RoutePathProps } from "./RoutePathProps";
 

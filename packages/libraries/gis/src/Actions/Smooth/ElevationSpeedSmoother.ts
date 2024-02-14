@@ -5,7 +5,7 @@ import {
   Track,
   TrackPoint,
   TrackSegment
-} from "../../Core/Track";
+} from "../../Core/Track/index";
 
 import { Smoother } from "./Smoother";
 
