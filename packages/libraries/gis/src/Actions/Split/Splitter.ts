@@ -1,4 +1,4 @@
-import { Track } from "../../Core/Track";
+import { Track } from "../../Core/Track/index";
 import { SplitManager } from "./SplitManager";
 
 /**

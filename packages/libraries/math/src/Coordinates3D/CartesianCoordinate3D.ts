@@ -1,17 +1,17 @@
 import { IEquatable } from "common/interfaces";
 import { DivideByZeroException } from "common/errors/exceptions";
 
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { Generics } from "../Generics";
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
 import { Numbers } from "../Numbers";
-import { VectorLibrary } from "../Vectors/VectorLibrary";
+import { VectorLibrary } from "../vectors/VectorLibrary";
 import { CartesianOffset3D } from "./CartesianOffset3D";
 import { ICoordinate3D } from "./ICoordinate3D";
 import { SphericalCoordinate } from "./SphericalCoordinate";
-import { Angle } from "../Coordinates/Angle";
+import { Angle } from "../coordinates/Angle";
 import { CylindricalCoordinate } from "./CylindricalCoordinate";
-import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
+import { AlgebraLibrary } from "../algebra/AlgebraLibrary";
 import { IAngle3D } from "./IAngle3D";
 
 /**

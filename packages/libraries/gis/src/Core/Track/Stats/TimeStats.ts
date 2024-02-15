@@ -1,4 +1,4 @@
-import { SegmentNode } from "@MPT/geometry/Polyline";
+import { SegmentNode } from "@markpthomas/geometry/polyline";
 import {
   BasicStats,
   INodeOfInterest,
@@ -8,9 +8,9 @@ import {
   RangeStatsResults,
   StandardDeviationStats,
   Sum
-} from "@MPT/geometry/Stats";
+} from "@markpthomas/geometry/stats";
 
-import { TimeStamp } from "../../Time";
+import { TimeStamp } from "../../Time/index";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";

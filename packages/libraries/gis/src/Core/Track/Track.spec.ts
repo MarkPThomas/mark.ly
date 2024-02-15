@@ -1,6 +1,6 @@
-import { VertexNode } from '@MPT/geometry';
-import { FeatureCollection } from '@MPT/geojson';
-import { LineString, Point } from '@MPT/geojson/Geometries';
+import { VertexNode } from '@markpthomas/geometry';
+import { FeatureCollection } from '@markpthomas/geojson';
+import { LineString, Point } from '@markpthomas/geojson/geometries';
 
 import { TrackPoint } from './TrackPoint';
 import { TrackSegment, TrackSegmentData } from './TrackSegment';

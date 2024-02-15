@@ -1,8 +1,8 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 import { IEquatable } from "common/interfaces";
 
-import { Angle } from "../Coordinates/Angle";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { Angle } from "../coordinates/Angle";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { Generics } from "../Generics";
 import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";

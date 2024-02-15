@@ -1,6 +1,6 @@
 import { ArgumentException } from "common/errors/exceptions";
 
-import { AlgebraLibrary } from "../Algebra/AlgebraLibrary";
+import { AlgebraLibrary } from "../algebra/AlgebraLibrary";
 import { Numbers } from "../Numbers";
 
 /**

@@ -1,6 +1,6 @@
-import { NodeDouble } from "@markporterthomas/data-structures";
+import { NodeDouble } from "@markpthomas/data-structures";
 
-import { Segment, Vertex } from "../Polyline";
+import { Segment, Vertex } from "../Polyline/index";
 import { INodeOfInterest } from "./INodeOfInterest";
 import { ConstrainedStats } from "./ConstrainedStats";
 

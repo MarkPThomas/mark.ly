@@ -1,11 +1,11 @@
-import { SegmentNode, VertexNode } from "../../../../geometry/src/Polyline";
+import { SegmentNode, VertexNode } from "@markpthomas/geometry/polyline";
 
 import {
   EvaluatorArgs,
   Track,
   TrackPoint,
   TrackSegment
-} from "../../Core/Track";
+} from "../../Core/Track/index";
 
 /**
  * ${1:Description placeholder}

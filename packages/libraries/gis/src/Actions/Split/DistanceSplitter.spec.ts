@@ -3,7 +3,7 @@ import {
   Position
 } from 'geojson';
 
-import { FeatureCollection } from '../../../../geojson/src';
+import { FeatureCollection } from '@markpthomas/geojson';
 
 import { FeatureCollectionSerial } from '../../types';
 

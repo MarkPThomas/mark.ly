@@ -1,5 +1,5 @@
-import { CartesianCoordinate } from "../../../math/src//Coordinates/CartesianCoordinate";
-import { Curve } from "../../../math/src//Curves/Curve";
+import { CartesianCoordinate } from "@markpthomas/math/coordinates";
+import { Curve } from "@markpthomas/math/curves";
 
 import { IPathSegment } from "./IPathSegment";
 

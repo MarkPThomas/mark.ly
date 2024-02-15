@@ -1,7 +1,7 @@
 import { ParabolicCurve } from "../ParabolicCurve";
-import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
-import { ParabolicParametricX } from "./ConicSectionCurveComponents/ParabolicParametricX";
-import { ParabolicParametricY } from "./ConicSectionCurveComponents/ParabolicParametricY";
+import { CartesianParametricEquationXY } from "./components/CartesianParametricEquationXY";
+import { ParabolicParametricX } from "./conic-section-curve-components/ParabolicParametricX";
+import { ParabolicParametricY } from "./conic-section-curve-components/ParabolicParametricY";
 
 
 /**

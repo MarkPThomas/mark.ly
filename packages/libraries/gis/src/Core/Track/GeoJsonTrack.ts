@@ -7,12 +7,12 @@ import {
   FeatureCollection,
   Feature,
   BBoxState
-} from '@MPT/geojson';
+} from '@markpthomas/geojson';
 
 import {
   Point,
   LineString
-} from '@MPT/geojson/Geometries';
+} from '@markpthomas/geojson/geometries';
 
 import { ICloneable, IEquatable } from 'common/interfaces';
 

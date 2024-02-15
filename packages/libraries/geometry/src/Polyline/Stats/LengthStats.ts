@@ -1,7 +1,7 @@
 import {
   BasicStats,
   Sum
-} from "../../Stats";
+} from "../../stats/index";
 
 import { Segment } from "../Segment";
 import { SegmentNode } from "../SegmentNode";

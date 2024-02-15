@@ -17,9 +17,9 @@
 //         /// <value>The local axis x.</value>
 //         public CartesianCoordinate LocalAxisX { get; }
 
-import { AngularOffset } from "./Coordinates/AngularOffset";
-import { CartesianCoordinate } from "./Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "./Coordinates/CartesianOffset";
+import { AngularOffset } from "./coordinates/AngularOffset";
+import { CartesianCoordinate } from "./coordinates/CartesianCoordinate";
+import { CartesianOffset } from "./coordinates/CartesianOffset";
 
 //         /// <summary>
 //         /// Gets the rotation.

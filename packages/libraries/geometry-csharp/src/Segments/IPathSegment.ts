@@ -1,8 +1,8 @@
 import { IEquatable } from 'common/interfaces';
 
-import { CartesianCoordinate } from '../../../math/src//Coordinates/CartesianCoordinate';
-import { ITolerance } from '../../../math/src//ITolerance';
-import { Vector } from '../../../math/src//Vectors/Vector';
+import { CartesianCoordinate } from '@markpthomas/math/coordinates';
+import { ITolerance } from '@markpthomas/math';
+import { Vector } from '@markpthomas/math/vectors';
 
 import { ITransform } from '../ITransform';
 import { PointExtents } from '../Tools/PointExtents';

@@ -1,5 +1,5 @@
-import { INodeOfInterest } from ".";
-import { Vertex, Segment } from "../Polyline";
+import { INodeOfInterest } from "./index";
+import { Vertex, Segment } from "../Polyline/index";
 import { NodeOfInterest } from "./INodeOfInterest";
 
 /**

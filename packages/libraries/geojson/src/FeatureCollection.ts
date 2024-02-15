@@ -8,7 +8,7 @@ import { GeoCollection, GeoCollectionMethods } from "./GeoCollection";
 import { Feature } from "./Feature";
 import { GeoJson, GeoJsonProperties } from "./GeoJson";
 import { BBoxState, GeoJsonGeometryTypes, GeoJsonTypes } from "./enums";
-import { Geometry } from './Geometries';
+import { Geometry } from './geometries';
 
 /**
  * ${1:Description placeholder}

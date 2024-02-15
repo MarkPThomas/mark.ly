@@ -1,7 +1,7 @@
 import { ConicSectionEllipticCurve } from "../ConicSectionEllipticCurve";
-import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
-import { EllipticalParametricX } from "./ConicSectionCurveComponents/EllipticalParametricX";
-import { EllipticalParametricY } from "./ConicSectionCurveComponents/EllipticalParametricY";
+import { CartesianParametricEquationXY } from "./components/CartesianParametricEquationXY";
+import { EllipticalParametricX } from "./conic-section-curve-components/EllipticalParametricX";
+import { EllipticalParametricY } from "./conic-section-curve-components/EllipticalParametricY";
 
 
 /**

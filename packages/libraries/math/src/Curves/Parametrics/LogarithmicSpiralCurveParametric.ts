@@ -1,7 +1,7 @@
 import { LogarithmicSpiralCurve } from "../LogarithmicSpiralCurve";
-import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
-import { LogarithmicSpiralParametricX } from "./LogarithmicSpiralCurveComponents/LogarithmicSpiralParametricX";
-import { LogarithmicSpiralParametricY } from "./LogarithmicSpiralCurveComponents/LogarithmicSpiralParametricY";
+import { CartesianParametricEquationXY } from "./components/CartesianParametricEquationXY";
+import { LogarithmicSpiralParametricX } from "./logarithmic-spiral-curve-components/LogarithmicSpiralParametricX";
+import { LogarithmicSpiralParametricY } from "./logarithmic-spiral-curve-components/LogarithmicSpiralParametricY";
 
 
 /**

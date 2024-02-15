@@ -1,4 +1,4 @@
-import { Numbers } from '@MPT/math';
+import { Numbers } from '@markpthomas/math';
 
 import { ICloneable, IEquatable } from 'common/interfaces';
 

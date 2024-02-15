@@ -1,7 +1,7 @@
 /// <summary>
 /// Interface for a curve that is comprised of a path with some form of bounding limits.
 
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { LinearCurve } from "./LinearCurve";
 import { CurveRange } from "./tools/CurveRange";
 

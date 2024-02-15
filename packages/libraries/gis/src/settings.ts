@@ -6,7 +6,7 @@ import {
   eLength,
   eTime,
   getLocalUnits
-} from '@MPT/units/conversion';
+} from '@markpthomas/units/conversion';
 
 /**
  * ${1:Description placeholder}
@@ -594,6 +594,7 @@ function convertActivitySlopeToGlobalUnits(criteria: ISlopeCriteria, sessionCrit
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:34:52 PM
  *
+ * */
 const getGlobalDefaults = (): ITrackCriteria => {
   return {
     units: {

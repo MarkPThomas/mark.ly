@@ -8,12 +8,12 @@ import {
   FeatureCollection,
   Feature,
   Position
-} from '@MPT/geojson';
+} from '@markpthomas/geojson';
 
 import {
   Point,
   LineString
-} from '@MPT/geojson/Geometries';
+} from '@markpthomas/geojson/geometries';
 
 import { ITrackPropertyProperties, TrackProperty } from './TrackProperty';
 

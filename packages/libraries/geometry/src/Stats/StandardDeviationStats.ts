@@ -1,4 +1,4 @@
-import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
+import { Segment, SegmentNode, Vertex, VertexNode } from "../Polyline/index";
 import { BasicStats } from "./BasicStats";
 import { SumMean } from "./SumMean";
 

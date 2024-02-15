@@ -1,5 +1,5 @@
 import { Curve } from "./Curve";
-import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
+import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";
 
 /**
  * Represents a quadratic curve.

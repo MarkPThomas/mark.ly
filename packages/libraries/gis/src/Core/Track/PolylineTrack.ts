@@ -1,7 +1,7 @@
 import {
   VertexNode,
   Polyline
-} from '@MPT/geometry/Polyline';
+} from '@markpthomas/geometry/polyline';
 
 import { ICloneable, IEquatable } from 'common/interfaces';
 

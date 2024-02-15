@@ -1,4 +1,4 @@
-import { Segment, SegmentNode, Vertex } from "../Polyline";
+import { Segment, SegmentNode, Vertex } from "../Polyline/index";
 import { BasicStats } from "./BasicStats";
 import { MaxMin } from "./MaxMin";
 

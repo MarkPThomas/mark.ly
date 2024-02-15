@@ -1,6 +1,6 @@
-import { Position } from "@MPT/geojson";
-import { Point } from "@MPT/geojson/Geometries";
-import { Vertex } from "@MPT/geometry";
+import { Position } from "@markpthomas/geojson";
+import { Point } from "@markpthomas/geojson/geometries";
+import { Vertex } from "@markpthomas/geometry";
 
 import { ICloneable, IEquatable } from 'common/interfaces';
 

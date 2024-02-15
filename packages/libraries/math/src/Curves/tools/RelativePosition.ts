@@ -1,4 +1,4 @@
-import { CartesianCoordinate } from "../../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../../coordinates/CartesianCoordinate";
 import { Numbers } from "../../Numbers";
 import { Curve } from "../Curve";
 import { CurveRange } from "./CurveRange";

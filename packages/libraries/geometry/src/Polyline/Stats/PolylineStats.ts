@@ -1,4 +1,4 @@
-import { BasicStats } from "../../Stats";
+import { BasicStats } from "../../stats/index";
 import { Polyline } from "../Polyline";
 import { Segment } from "../Segment";
 import { Vertex } from "../Vertex";

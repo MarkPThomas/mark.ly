@@ -1,11 +1,11 @@
 import { ICloneable } from "common/interfaces";
 
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
-import { VectorParametric } from "../Vectors/VectorParametric";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";
+import { VectorParametric } from "../vectors/VectorParametric";
 import { ICurve } from "./ICurve";
 import { CurveRange } from "./tools/CurveRange";
-import { Angle } from "../Coordinates/Angle";
+import { Angle } from "../coordinates/Angle";
 
 /**
  * ${1:Description placeholder}

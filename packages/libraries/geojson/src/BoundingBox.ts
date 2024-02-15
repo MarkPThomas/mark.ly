@@ -4,7 +4,7 @@ import { ICloneable, IEquatable } from "common/interfaces";
 
 import { Position } from "./types";
 
-import { IPoint, Point, PointProperties } from "./Geometries";
+import { IPoint, Point, PointProperties } from "./geometries";
 import { GeoJsonConstants } from "./GeoJsonConstants";
 
 /**

@@ -1,7 +1,7 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 
 import { Numbers } from "../Numbers";
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
 
 
 /**

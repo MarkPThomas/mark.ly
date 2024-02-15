@@ -1,4 +1,4 @@
-import { Polyline, Segment, SegmentNode, Vertex, VertexNode } from "../Polyline";
+import { Polyline, Segment, SegmentNode, Vertex, VertexNode } from "../Polyline/index";
 import { ConstrainedStats } from "./ConstrainedStats";
 
 /**

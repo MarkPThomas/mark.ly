@@ -1,4 +1,4 @@
-import { CartesianCoordinate } from "../../../math/src/Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "@markpthomas/math/coordinates";
 
 import { Extents } from "./Extents";
 

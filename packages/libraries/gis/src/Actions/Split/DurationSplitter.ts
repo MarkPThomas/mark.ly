@@ -1,10 +1,10 @@
-import { SegmentNode } from "../../../../geometry/src/Polyline";
+import { SegmentNode } from "@markpthomas/geometry/polyline";
 
 import {
   Track,
   TrackPoint,
   TrackSegment
-} from "../../Core/Track";
+} from "../../Core/Track/index";
 import { ISplitResult } from "./SplitManager";
 import { Splitter } from "./Splitter";
 

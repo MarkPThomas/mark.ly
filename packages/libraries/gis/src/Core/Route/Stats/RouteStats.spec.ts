@@ -1,4 +1,4 @@
-import { VertexNode } from '@MPT/geometry/Polyline';
+import { VertexNode } from '@markpthomas/geometry/polyline';
 
 import { PolylineRoute } from '../PolylineRoute';
 import { RouteSegment } from '../RouteSegment';

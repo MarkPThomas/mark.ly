@@ -1,9 +1,9 @@
-import { Angle } from "../Coordinates/Angle";
-import { AngularOffset } from "../Coordinates/AngularOffset";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { CartesianOffset } from "../Coordinates/CartesianOffset";
-import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
-import { Vector } from "../Vectors/Vector";
+import { Angle } from "../coordinates/Angle";
+import { AngularOffset } from "../coordinates/AngularOffset";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { CartesianOffset } from "../coordinates/CartesianOffset";
+import { PolarCoordinate } from "../coordinates/PolarCoordinate";
+import { Vector } from "../vectors/Vector";
 import { RotationProps } from "./ConicSectionCurve";
 import { ConicSectionEllipticCurve } from "./ConicSectionEllipticCurve";
 import { Curve } from "./Curve";

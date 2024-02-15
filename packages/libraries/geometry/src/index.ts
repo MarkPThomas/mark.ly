@@ -1,2 +1,2 @@
-export * from './Polyline';
-export * from './Stats';
+export * from './polyline';
+export * from './stats';

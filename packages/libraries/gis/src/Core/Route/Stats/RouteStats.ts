@@ -1,10 +1,10 @@
-import { Polyline, VertexNode } from "@MPT/geometry";
+import { Polyline, VertexNode } from "@markpthomas/geometry";
 import {
   IPolylineStats,
   IPolylineStatsCriteria,
   PolylineStats
-} from "@MPT/geometry/Polyline/Stats/PolylineStats";
-import { BasicStats } from "@MPT/geometry/Stats";
+} from "@markpthomas/geometry/polyline/stats";
+import { BasicStats } from "@markpthomas/geometry/stats";
 
 import { PolylineRoute } from "../PolylineRoute";
 import { RoutePoint } from "../RoutePoint";

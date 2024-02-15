@@ -1,7 +1,7 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 
-import { Angle } from "../../../../Coordinates/Angle";
-import { Curve } from "../../../../Curves/Curve";
+import { Angle } from "../../../../coordinates/Angle";
+import { Curve } from "../../../Curve";
 import { ParametricEquation } from "../ParametricEquation";
 import { AngularParametricComponent } from "./AngularParametricComponent";
 import { ParametricComponents } from "./ParametricComponents";

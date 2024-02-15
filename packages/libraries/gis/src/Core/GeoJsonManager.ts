@@ -7,16 +7,16 @@ import {
   GeoJsonGeometryTypes,
   GeoJsonTypes,
   Position
-} from '@MPT/geojson';
+} from '@markpthomas/geojson';
 
 import {
   Point,
   LineString,
   MultiLineString,
   MultiPoint,
-} from '@MPT/geojson/Geometries';
+} from '@markpthomas/geojson/geometries';
 
-import { RoutePoint } from './Route';
+import { RoutePoint } from './Route/index';
 
 import {
   Track,
@@ -24,7 +24,7 @@ import {
   getFeatureTimes,
   TrackProperty,
   ITrackPropertyProperties
-} from './Track';
+} from './Track/index';
 
 /**
  * ${1:Description placeholder}

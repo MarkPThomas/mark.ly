@@ -1,4 +1,4 @@
-import { CartesianCoordinate } from "../../../../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../../../../coordinates/CartesianCoordinate";
 import { ValueAtPosition } from "../ParametricEquation";
 import { ParametricComponent } from "./ParametricComponent";
 

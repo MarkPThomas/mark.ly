@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "esModuleInterop": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
@@ -14,6 +14,13 @@
     // "strictPropertyInitialization": false,
     // "noImplicitThis": true,
     // "alwaysStrict": true,
+    "strict": false,
+    "noImplicitAny": false,
+    // "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    // "strictPropertyInitialization": true,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
@@ -38,11 +45,8 @@
     ],
     "paths": {
       "common/*": [
-        "../../common/*"
-      ],
-      // "data-structures": [
-      //   "../data-structures/src"
-      // ]
+        "../../../common/*"
+      ]
     }
   },
   "include": [
@@ -55,6 +59,7 @@
     "bin",
     "webpack",
     "jest",
-    "coverage"
+    "coverage",
+    "**/*.*spec.ts"
   ]
 }

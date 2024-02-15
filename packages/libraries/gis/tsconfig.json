@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "esModuleInterop": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
@@ -14,6 +14,13 @@
     // "strictPropertyInitialization": false,
     // "noImplicitThis": true,
     // "alwaysStrict": true,
+    "strict": false,
+    "noImplicitAny": false,
+    // "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    // "strictPropertyInitialization": true,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
@@ -38,25 +45,7 @@
     ],
     "paths": {
       "common/*": [
-        "../../common/*"
-      ],
-      "@MPT/units/*": [
-        "../units/src/*"
-      ],
-      "@MPT/math": [
-        "../math/src"
-      ],
-      "@MPT/geojson": [
-        "../geojson/src"
-      ],
-      "@MPT/geojson/*": [
-        "../geojson/src/*"
-      ],
-      "@MPT/geometry": [
-        "../geometry/src"
-      ],
-      "@MPT/geometry/*": [
-        "../geometry/src/*"
+        "../../../common/*"
       ]
     }
   },
@@ -70,6 +59,7 @@
     "bin",
     "webpack",
     "jest",
-    "coverage"
+    "coverage",
+    "**/*.*spec.ts"
   ]
 }

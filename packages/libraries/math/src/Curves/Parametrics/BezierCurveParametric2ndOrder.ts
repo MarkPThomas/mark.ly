@@ -1,7 +1,7 @@
 import { BezierCurve } from "../BezierCurve";
-import { BezierParametric2ndOrderX } from "./BezierCurveComponents/BezierParametric2ndOrderX";
-import { BezierParametric2ndOrderY } from "./BezierCurveComponents/BezierParametric2ndOrderY";
-import { CartesianParametricEquationXY } from "./Components/CartesianParametricEquationXY";
+import { BezierParametric2ndOrderX } from "./bezier-curve-components/BezierParametric2ndOrderX";
+import { BezierParametric2ndOrderY } from "./bezier-curve-components/BezierParametric2ndOrderY";
+import { CartesianParametricEquationXY } from "./components/CartesianParametricEquationXY";
 
 
 /**

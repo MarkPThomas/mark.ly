@@ -5,7 +5,7 @@ import {
   SegmentNode,
   Vertex,
   VertexNode
-} from '../Polyline';
+} from '../polyline';
 import { StandardDeviationStats } from './StandardDeviationStats';
 
 /**

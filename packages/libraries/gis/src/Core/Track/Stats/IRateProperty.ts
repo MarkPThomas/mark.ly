@@ -1,4 +1,4 @@
-import { INodeOfInterest } from "@MPT/geometry/Stats";
+import { INodeOfInterest } from "@markpthomas/geometry/stats";
 
 import { TrackPoint } from "../TrackPoint";
 import { TrackSegment } from "../TrackSegment";

@@ -1,7 +1,7 @@
 import { DivideByZeroException } from "common/errors/exceptions";
 
-import { CartesianCoordinate } from "../../../../Coordinates/CartesianCoordinate";
-import { Curve } from "../../../../Curves/Curve";
+import { CartesianCoordinate } from "../../../../coordinates/CartesianCoordinate";
+import { Curve } from "../../../Curve";
 import { ParametricEquation } from "../ParametricEquation";
 import { CartesianParametricComponent } from "./CartesianParametricComponent";
 import { ParametricComponents } from "./ParametricComponents";

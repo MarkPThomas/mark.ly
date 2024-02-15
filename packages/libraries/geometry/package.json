@@ -13,14 +13,31 @@
   "bugs": {
     "url": "https://github.com/MarkPThomas/mark.ly/issues"
   },
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./stats": "./dist/stats/index.js",
+    "./polyline": "./dist/polyline/index.js",
+    "./polyline/stats": "./dist/polyline/stats/index.js"
+  },
+  "types": "./dist/index.d.ts",
   "directories": {
-    "src": "src"
+    "src": "src",
+    "dist": "dist",
+    "bin": "bin",
+    "doc": "doc",
+    "coverage": "coverage",
+    "testResults": "testResults"
   },
   "files": [
-    "src"
+    "dist/**/**",
+    "docs/**/**",
+    "!**/*.*spec.*",
+    "!**/*.json",
+    "!**/*.tsbuildinfo",
+    "LICENSE",
+    "README.md"
   ],
-  "exports": "./dist/index.js",
   "publishConfig": {
     "access": "public"
   },
@@ -28,8 +45,6 @@
     "build": "tsc --skipLibCheck --allowJs",
     "build:dev": "webpack --config webpack.config.js --node-env development",
     "build:prod": "webpack --config webpack.config.js --node-env production",
-    "typeorm": "cross-env POSTGRES_SCHEMA=public node --require ts-node/register --require dotenv/config ./node_modules/typeorm/cli -f db/ormconfig.ts",
-    "aurora:typeorm": "node --require ts-node/register ./node_modules/typeorm/cli -f aurora-db/ormconfig.ts",
     "pretest": "echo pretest script is running... && npm run build",
     "test": "cross-env NODE_ENV=test && jest --coverage --testResultsProcessor=jest-sonar-reporter",
     "test:u": "cross-env NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config jest.config.ts --runInBand --forceExit",
@@ -38,16 +53,18 @@
     "test:all": "yarn test:u && yarn test:i:dev",
     "test:results": "open-cli ./testResults/coverage/lcov-report/index.html",
     "posttest": "echo posttest script is running... && npm-run-all clear test:results",
-    "lint": "eslint --ext=ts,tsx .",
-    "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f3- | xargs -t -r eslint --ext=ts,tsx",
+    "lint": "eslint ./src",
+    "publish": "npm publish --access public",
+    "publish:dry": "npm publish --dry-run",
     "clear": "rimraf dist",
+    "clear:build": "rimraf ./tsconfig.tsbuildinfo",
+    "clear:dev": "npm-run-all clear clear:build",
     "docs": "typedoc --out docs --name Geometry",
     "docs:copy": "./bin/update-docs.sh",
     "docs:update": "npm run docs && npm run docs:copy"
   },
   "dependencies": {
-    "npm-run-all": "^4.1.5",
-    "@markporterthomas/data-structures": "^0.0.1"
+    "@markpthomas/data-structures": "^0.0.1"
   },
   "devDependencies": {
     "@types/jest": "^28.1.4",
@@ -59,6 +76,7 @@
     "jest-environment-jsdom": "^29.6.2",
     "jest-sonar-reporter": "^2.0.0",
     "node-polyfill-webpack-plugin": "^2.0.0",
+    "npm-run-all": "^4.1.5",
     "open-cli": "^7.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^28.0.5",

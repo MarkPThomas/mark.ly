@@ -1,4 +1,4 @@
-import { Geometry } from "./Geometries";
+import { Geometry } from "./geometries";
 
 /**
  * A Position is an array of coordinates.

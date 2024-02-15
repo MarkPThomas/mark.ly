@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "esModuleInterop": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
@@ -38,13 +38,7 @@
     ],
     "paths": {
       "common/*": [
-        "../../common/*"
-      ],
-      "@MPT/math": [
-        "../math/src"
-      ],
-      "@MPT/math/*": [
-        "../math/src/*"
+        "../../../common/*"
       ]
     }
   },
@@ -58,6 +52,7 @@
     "bin",
     "webpack",
     "jest",
-    "coverage"
+    "coverage",
+    "**/*.*spec.ts"
   ]
 }

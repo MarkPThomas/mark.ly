@@ -1,17 +1,17 @@
 import { NotImplementedException } from "common/errors/exceptions";
 
-import { TrigonometryLibrary as Trig } from '../Trigonometry/TrigonometryLibrary';
-import { Angle } from "../Coordinates/Angle";
-import { AngularOffset } from "../Coordinates/AngularOffset";
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
-import { PolarCoordinate } from "../Coordinates/PolarCoordinate";
-import { GeometryLibrary } from "../Geometry/GeometryLibrary";
-import { Vector } from "../Vectors/Vector";
+import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
+import { Angle } from "../coordinates/Angle";
+import { AngularOffset } from "../coordinates/AngularOffset";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
+import { PolarCoordinate } from "../coordinates/PolarCoordinate";
+import { GeometryLibrary } from "../geometry/GeometryLibrary";
+import { Vector } from "../vectors/Vector";
 import { Curve } from "./Curve";
 import { ICurveLimits } from "./ICurveLimits";
 import { LinearCurve } from "./LinearCurve";
-import { CartesianParametricEquationXY } from "./Parametrics/Components/CartesianParametricEquationXY";
-import { LogarithmicSpiralCurveParametric } from "./Parametrics/LogarithmicSpiralCurveParametric";
+import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";
+import { LogarithmicSpiralCurveParametric } from "./parametrics/LogarithmicSpiralCurveParametric";
 
 
 /**

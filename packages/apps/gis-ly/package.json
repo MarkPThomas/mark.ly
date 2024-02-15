@@ -34,6 +34,8 @@
   "author": "Mark P Thomas <markporterthomas@gmail.com> (https://github.com/MarkPThomas)",
   "license": "ISC",
   "dependencies": {
+    "@markpthomas/math": "^0.0.1",
+    "@markpthomas/geometry-csharp": "^0.0.1",
     "@mapbox/geojson-rewind": "^0.5.2",
     "@react-leaflet/core": "^2.1.0",
     "@tmcw/togeojson": "^5.7.0",

@@ -1,7 +1,7 @@
 /// <summary>
 /// Curve position can be represented in cartesian coordinates.
 
-import { CartesianCoordinate } from "../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 
 /// </summary>
 /**

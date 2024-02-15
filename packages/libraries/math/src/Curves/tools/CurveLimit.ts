@@ -1,7 +1,7 @@
 import { ArgumentOutOfRangeException, NotSupportedException } from "common/errors/exceptions";
 import { ICloneable } from "common/interfaces";
 
-import { CartesianCoordinate } from "../../Coordinates/CartesianCoordinate";
+import { CartesianCoordinate } from "../../coordinates/CartesianCoordinate";
 import { Curve } from "../Curve";
 import { ICurvePositionCartesian } from "../ICurvePositionCartesian";
 

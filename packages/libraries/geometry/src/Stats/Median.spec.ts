@@ -1,4 +1,4 @@
-import { NodeDouble } from '@markporterthomas/data-structures';
+import { NodeDouble } from '@markpthomas/data-structures';
 
 import { IVertexProperties, Vertex } from '../Polyline';
 import { Median } from './Median';

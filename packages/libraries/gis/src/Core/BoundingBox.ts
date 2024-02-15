@@ -3,7 +3,7 @@ import { BBox as SerialBBox } from "geojson";
 import {
   BoundingBox as GeoBoundingBox,
   IBoundingBox as IGeoBoundingBox
-} from "@MPT/geojson";
+} from "@markpthomas/geojson";
 
 import { LatLngBounds } from "../types";
 import { TrackPoint } from "./Track/TrackPoint";

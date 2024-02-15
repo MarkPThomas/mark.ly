@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "esModuleInterop": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
@@ -59,6 +59,7 @@
     "bin",
     "webpack",
     "jest",
-    "coverage"
+    "coverage",
+    "**/*.*spec.ts"
   ]
 }

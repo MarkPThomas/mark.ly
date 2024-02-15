@@ -1,4 +1,4 @@
-import { Angle } from "../Coordinates/Angle";
+import { Angle } from "../coordinates/Angle";
 import { Generics } from "../Generics";
 import { IOffset } from "../IOffset";
 import { Numbers } from "../Numbers";

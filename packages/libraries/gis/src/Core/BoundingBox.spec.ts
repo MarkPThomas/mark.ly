@@ -1,6 +1,6 @@
 import { BBox as SerialBBox } from 'geojson';
 
-import { GeoJsonConstants } from '@MPT/geojson';
+import { GeoJsonConstants } from '@markpthomas/geojson';
 
 import { BoundingBox } from "./BoundingBox";
 import { TrackPoint } from "./Track/TrackPoint";

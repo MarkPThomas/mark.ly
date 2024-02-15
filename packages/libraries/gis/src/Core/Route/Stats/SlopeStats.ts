@@ -1,16 +1,16 @@
 import {
   SegmentNode
-} from "@MPT/geometry/Polyline";
+} from "@markpthomas/geometry/polyline";
 import {
   BasicStats,
+  INodeOfInterest,
   IRangeStatsResults,
   MaxMinStats,
   Median,
   RangeStatsResults,
   StandardDeviationStats,
   Sum
-} from "@MPT/geometry/Stats";
-import { INodeOfInterest } from "@MPT/geometry/Stats/INodeOfInterest";
+} from "@markpthomas/geometry/stats";
 
 import { RoutePoint } from "../RoutePoint";
 import { RouteSegment } from "../RouteSegment";
