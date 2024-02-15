@@ -27,7 +27,7 @@
     "jsx": "react-jsx",
     "paths": {
       "common/*": [
-        "../../../common/*"
+        "../../libraries/common/*"
       ],
       "server/*": [
         "../../server/*"
