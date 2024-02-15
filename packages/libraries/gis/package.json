@@ -15,7 +15,18 @@
   },
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./actions": "./dist/actions/index.js",
+    "./actions/cruft": "./dist/actions/cruft/index.js",
+    "./actions/smooth": "./dist/actions/smooth/index.js",
+    "./actions/split": "./dist/actions/split/index.js",
+    "./core": "./dist/core/index.js",
+    "./core/point": "./dist/core/point/index.js",
+    "./core/route": "./dist/core/route/index.js",
+    "./core/route/stats": "./dist/core/route/stats/index.js",
+    "./core/time": "./dist/core/time/index.js",
+    "./core/track": "./dist/core/track/index.js",
+    "./core/track/stats": "./dist/core/track/stats/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {
