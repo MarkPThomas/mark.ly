@@ -12,7 +12,8 @@ import { GeoJsonTrack } from './GeoJsonTrack';
 import { PolylineTrack } from './PolylineTrack';
 import { BoundingBox } from '../BoundingBox';
 import { IPointProperties } from '../point/Point';
-import { ITrackStats, TimeStats, TrackStats } from './stats/index';
+import { ITrackStats, TimeStats, TrackStats } from './stats';
+import { ApiElevations } from '../route';
 
 
 /**
@@ -447,8 +448,8 @@ export class Track implements ITrack {
  * ${1:Description placeholder}
  * @date 2/11/2024 - 6:34:55 PM
  */
-  addElevationsFromApi() {
-    this._polylineTrack.addElevationsFromApi();
+  addElevationsFromApi(getElevationsApi: ApiElevations) {
+    this._polylineTrack.addElevationsFromApi(getElevationsApi);
   }
 
   /**

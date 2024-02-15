@@ -1,3 +1,5 @@
+import { IElevationsResponse } from '@markpthomas/gis/route';
+
 import config from './config';
 import { ICoordinate, IBoundingBox } from './model';
 import { ElevationRequest } from './model/ElevationRequest';
@@ -7,7 +9,7 @@ export class ElevationRequestApi {
   private _pointElevationRequest = new ElevationRequest(config.api);
   private _cache: Map<string, number> = new Map();
 
-  async getElevations(coords: ICoordinate[], boundingBox: IBoundingBox) {
+  async getElevations(coords: ICoordinate[], boundingBox: IBoundingBox): Promise<IElevationsResponse> {
     const coordsCache: ICoordinate[] = [];
     const coordsRequest: ICoordinate[] = [];
 
