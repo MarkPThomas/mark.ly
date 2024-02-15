@@ -1,4 +1,4 @@
 export * from './core/GeoJsonManager';
-export * from './core/Track/index';
+export * from './core/track';
 export * from './types';
 export * from './settings';
