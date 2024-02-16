@@ -1,16 +1,12 @@
 import { BoundingBox } from '@markpthomas/geojson';
-
 import {
+  Vertex,
   VertexNode,
   IPolyline,
   Polyline
 } from '@markpthomas/geometry';
 
-// import { ElevationRequestApi } from '../../elevationDataApi';
-// import { ElevationRequestApi } from '../../../../../apps/gis-ly/server/api/elevationDataApi';
-
 import { IPointProperties } from '../point/Point';
-
 import { IRoutePointProperties, RoutePoint } from './RoutePoint';
 import { RouteSegment } from './RouteSegment';
 
@@ -21,6 +17,14 @@ import { RouteSegment } from './RouteSegment';
  * @typedef {CoordNode}
  */
 type CoordNode = VertexNode<RoutePoint, RouteSegment>;
+
+export interface IElevationsResponse {
+  size: number;
+  elevations: Map<string, number> | { [key: string]: number; };
+  messages: string[];
+}
+
+export type ApiElevations = (coords: Vertex[], boundingBox: BoundingBox) => Promise<IElevationsResponse>;
 
 /**
  * ${1:Description placeholder}
@@ -58,96 +62,96 @@ export interface IPolylineRouteMethods<
    *
    * @memberof Track
    */
-  addElevationsFromApi(): void;
+  addElevationsFromApi(getElevationsApi: ApiElevations): void;
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(IPointProperties | null)} startPoint
- * @param {(IPointProperties | null)} endPoint
- * @returns {(PolylineRoute<TVertex, TSegment> | null)}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(IPointProperties | null)} startPoint
+   * @param {(IPointProperties | null)} endPoint
+   * @returns {(PolylineRoute<TVertex, TSegment> | null)}
+   */
   cloneFromToPoints(
     startPoint: IPointProperties | null,
     endPoint: IPointProperties | null
   ): PolylineRoute<TVertex, TSegment> | null;
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {VertexNode<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {VertexNode<TVertex, TSegment>[]}
+   */
   vertexNodesByPoint(point: IPointProperties): VertexNode<TVertex, TSegment>[];
 
   // Delete Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {(VertexNode<TVertex, TSegment> | null)}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {(VertexNode<TVertex, TSegment> | null)}
+   */
   trimBeforePoint(point: IPointProperties): VertexNode<TVertex, TSegment> | null;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {(VertexNode<TVertex, TSegment> | null)}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {(VertexNode<TVertex, TSegment> | null)}
+   */
   trimAfterPoint(point: IPointProperties): VertexNode<TVertex, TSegment> | null;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @returns {VertexNode<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @returns {VertexNode<TVertex, TSegment>[]}
+   */
   trimToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties
   ): VertexNode<TVertex, TSegment>[];
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {VertexNode<TVertex, TSegment>}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {VertexNode<TVertex, TSegment>}
+   */
   removeAtPoint(point: IPointProperties): VertexNode<TVertex, TSegment>;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties[]} points
- * @returns {VertexNode<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties[]} points
+   * @returns {VertexNode<TVertex, TSegment>[]}
+   */
   removeAtAnyPoint(points: IPointProperties[]): VertexNode<TVertex, TSegment>[];
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @returns {VertexNode<TVertex, TSegment>}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @returns {VertexNode<TVertex, TSegment>}
+   */
   removeBetweenPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties
   ): VertexNode<TVertex, TSegment>;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @returns {VertexNode<TVertex, TSegment>}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @returns {VertexNode<TVertex, TSegment>}
+   */
   removeFromToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties
@@ -155,77 +159,77 @@ export interface IPolylineRouteMethods<
 
   // Update Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(IRoutePointProperties | IRoutePointProperties[])} points
- * @param {boolean} returnListCount
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(IRoutePointProperties | IRoutePointProperties[])} points
+   * @param {boolean} returnListCount
+   * @returns {number}
+   */
   prependPoints(
     points: IRoutePointProperties | IRoutePointProperties[],
     returnListCount: boolean
   ): number;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {PolylineRoute<TVertex, TSegment>} route
- * @param {boolean} returnListCount
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {PolylineRoute<TVertex, TSegment>} route
+   * @param {boolean} returnListCount
+   * @returns {number}
+   */
   prependRoute(
     route: PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean
   ): number;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(IRoutePointProperties | IRoutePointProperties[])} points
- * @param {boolean} returnListCount
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(IRoutePointProperties | IRoutePointProperties[])} points
+   * @param {boolean} returnListCount
+   * @returns {number}
+   */
   appendPoints(
     points: IRoutePointProperties | IRoutePointProperties[],
     returnListCount: boolean
   ): number;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {PolylineRoute<TVertex, TSegment>} route
- * @param {boolean} returnListCount
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {PolylineRoute<TVertex, TSegment>} route
+   * @param {boolean} returnListCount
+   * @returns {number}
+   */
   appendRoute(
     route: PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean
   ): number;
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} targetPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} returnListCount
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} targetPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} returnListCount
+   * @returns {number}
+   */
   insertBeforePoint(
     targetPoint: IPointProperties,
     items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean
   ): number;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} targetPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} returnListCount
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} targetPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} returnListCount
+   * @returns {number}
+   */
   insertAfterPoint(
     targetPoint: IPointProperties,
     items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
@@ -233,17 +237,17 @@ export interface IPolylineRouteMethods<
   ): number;
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} targetPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} returnListCount
- * @returns {({
- *     removed: VertexNode<TVertex, TSegment>,
- *     inserted: number
- *   } | null)\}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} targetPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} returnListCount
+   * @returns {({
+   *     removed: VertexNode<TVertex, TSegment>,
+   *     inserted: number
+   *   } | null)\}
+   */
   replaceAtPoint(
     targetPoint: IPointProperties,
     items: IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>,
@@ -253,18 +257,18 @@ export interface IPolylineRouteMethods<
     inserted: number
   } | null;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} returnListCount
- * @returns {({
- *     removed: VertexNode<TVertex, TSegment>,
- *     inserted: number
- *   } | null)\}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} returnListCount
+   * @returns {({
+   *     removed: VertexNode<TVertex, TSegment>,
+   *     inserted: number
+   *   } | null)\}
+   */
   replaceBetweenPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties,
@@ -275,18 +279,18 @@ export interface IPolylineRouteMethods<
     inserted: number
   } | null;
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} returnListCount
- * @returns {({
- *     removed: VertexNode<TVertex, TSegment>,
- *     inserted: number
- *   } | null)\}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} returnListCount
+   * @returns {({
+   *     removed: VertexNode<TVertex, TSegment>,
+   *     inserted: number
+   *   } | null)\}
+   */
   replaceFromToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties,
@@ -299,22 +303,22 @@ export interface IPolylineRouteMethods<
 
   // Split Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {PolylineRoute<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {PolylineRoute<TVertex, TSegment>[]}
+   */
   splitByPoint(
     point: IPointProperties
   ): PolylineRoute<TVertex, TSegment>[];
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties[]} points
- * @returns {PolylineRoute<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties[]} points
+   * @returns {PolylineRoute<TVertex, TSegment>[]}
+   */
   splitByPoints(
     points: IPointProperties[]
   ): PolylineRoute<TVertex, TSegment>[];
@@ -359,24 +363,24 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 {
 
   /**
- * Creates an instance of PolylineRoute.
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @constructor
- * @param {(VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[])} coords
- */
+   * Creates an instance of PolylineRoute.
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @constructor
+   * @param {(VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[])} coords
+   */
   constructor(coords: VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | TVertex[]) {
     super(coords);
   }
 
   /**
- * @inheritdoc
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- * @param {VertexNode<TVertex, TSegment>[]} [coords=[]]
- * @returns {PolylineRoute<TVertex, TSegment>}
- */
+   * @inheritdoc
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   * @param {VertexNode<TVertex, TSegment>[]} [coords=[]]
+   * @returns {PolylineRoute<TVertex, TSegment>}
+   */
   protected override createPolyline(coords: VertexNode<TVertex, TSegment>[] = []): PolylineRoute<TVertex, TSegment> {
     return new PolylineRoute(coords);
   }
@@ -385,13 +389,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   //   This will not clone correctly as it will always use the first occurrence.
   //   Determine how/whether this can/should be supported, e.g. by having arguments that specify which # occurrence is to be chosen?
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(IPointProperties | null)} [startPoint=null]
- * @param {(IPointProperties | null)} [endPoint=null]
- * @returns {(PolylineRoute<TVertex, TSegment> | null)}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(IPointProperties | null)} [startPoint=null]
+   * @param {(IPointProperties | null)} [endPoint=null]
+   * @returns {(PolylineRoute<TVertex, TSegment> | null)}
+   */
   cloneFromToPoints(
     startPoint: IPointProperties | null = null,
     endPoint: IPointProperties | null = null
@@ -461,22 +465,22 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   // === Property Methods
   /**
- * @inheritdoc
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- */
+   * @inheritdoc
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   */
   protected override addPropertiesToNodes() {
     super.addPropertiesToNodes();
     this.addPathPropertiesToCoords();
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   */
   protected addPathPropertiesToCoords() {
     let coord = this._vertices.head as CoordNode;
     while (coord) {
@@ -487,12 +491,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * @inheritdoc
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- * @param {VertexNode<TVertex, TSegment>[]} vertices
- */
+   * @inheritdoc
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   * @param {VertexNode<TVertex, TSegment>[]} vertices
+   */
   protected override updatePathProperties(vertices: VertexNode<TVertex, TSegment>[]) {
     this.incrementVersion();
     vertices.forEach((vertex) => {
@@ -501,14 +505,14 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * @inheritdoc
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- * @param {RoutePoint} prevCoord
- * @param {RoutePoint} nextCoord
- * @returns {TSegment}
- */
+   * @inheritdoc
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   * @param {RoutePoint} prevCoord
+   * @param {RoutePoint} nextCoord
+   * @returns {TSegment}
+   */
   protected override createSegmentValue(prevCoord: RoutePoint, nextCoord: RoutePoint): TSegment {
     return RouteSegment.fromRoutePoints(prevCoord, nextCoord) as TSegment;
   }
@@ -527,11 +531,11 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(Map<string, number> | { [key: string]: number })\} elevations
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(Map<string, number> | { [key: string]: number })\} elevations
+   */
   addElevations(elevations: Map<string, number> | { [key: string]: number }) {
     this.addNodeElevations(elevations);
     // TODO: What if route properties haven't been run?
@@ -542,12 +546,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- * @param {(Map<string, number> | { [key: string]: number })\} elevations
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   * @param {(Map<string, number> | { [key: string]: number })\} elevations
+   */
   protected addNodeElevations(elevations: Map<string, number> | { [key: string]: number }) {
     console.log('Adding elevations to points...')
     console.log('Elevations: ', elevations)
@@ -572,10 +576,10 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- */
-  addElevationsFromApi() {
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   */
+  addElevationsFromApi(getElevationsApi: ApiElevations) {
     const coords = this._vertices.toArray();
     const boundingBox = BoundingBox.fromPoints(coords);
     console.log(`Getting elevations for ${coords.length} coords`);
@@ -584,28 +588,29 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
     // const elevationsApi = new ElevationRequestApi();
     // elevationsApi.getElevations(coords, boundingBox)
-    //   // TODO: How does this work with requests 100 at a time?
-    //   .then((result) => {
-    //     if (result.elevations) {
-    //       console.log(`Received elevations for ${result.elevations.size} coords`);
-    //       console.log('Result: ', result);
+    getElevationsApi(coords, boundingBox)
+      // TODO: How does this work with requests 100 at a time?
+      .then((result) => {
+        if (result.elevations) {
+          console.log(`Received elevations for ${result.elevations.size} coords`);
+          console.log('Result: ', result);
 
-    //       this.addElevations(result.elevations);
-    //     } else {
-    //       console.log('No elevations received');
-    //     }
-    //   });
+          this.addElevations(result.elevations);
+        } else {
+          console.log('No elevations received');
+        }
+      });
 
     // TODO: Only once the entire API payload is processed should this be called:
     // this.addElevationProperties();
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @protected
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @protected
+   */
   protected addElevationDataToSegments() {
     console.log('Deriving elevation data for segments...')
     let coord = this._vertices.head?.next as VertexNode<TVertex, TSegment>;
@@ -634,12 +639,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   // === Query Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {VertexNode<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {VertexNode<TVertex, TSegment>[]}
+   */
   vertexNodesByPoint(point: IPointProperties): VertexNode<TVertex, TSegment>[] {
     return this.vertexNodesBy(
       point,
@@ -654,25 +659,25 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   // TODO: What is a unique property. By node value?
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @static
- * @param {*} polyline
- * @returns {boolean}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @static
+   * @param {*} polyline
+   * @returns {boolean}
+   */
   static isPolylineRoute(polyline: any) {
     return polyline instanceof PolylineRoute || 'firstVertex' in polyline;
   }
 
   // === Delete Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {(VertexNode<TVertex, TSegment> | null)}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {(VertexNode<TVertex, TSegment> | null)}
+   */
   trimBeforePoint(point: IPointProperties): VertexNode<TVertex, TSegment> | null {
     const vertex = this.vertexNodesByPoint(point)[0] as VertexNode<TVertex, TSegment> ?? null;
 
@@ -680,12 +685,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {(VertexNode<TVertex, TSegment> | null)}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {(VertexNode<TVertex, TSegment> | null)}
+   */
   trimAfterPoint(point: IPointProperties): VertexNode<TVertex, TSegment> | null {
     const vertex = this.vertexNodesByPoint(point)[0] as VertexNode<TVertex, TSegment> ?? null;
 
@@ -693,13 +698,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @returns {VertexNode<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @returns {VertexNode<TVertex, TSegment>[]}
+   */
   trimToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties
@@ -711,12 +716,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {VertexNode<TVertex, TSegment>}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {VertexNode<TVertex, TSegment>}
+   */
   removeAtPoint(point: IPointProperties): VertexNode<TVertex, TSegment> {
     const vertex = this.vertexNodesByPoint(point)[0] as VertexNode<TVertex, TSegment> ?? null;
 
@@ -724,12 +729,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties[]} points
- * @returns {VertexNode<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties[]} points
+   * @returns {VertexNode<TVertex, TSegment>[]}
+   */
   removeAtAnyPoint(points: IPointProperties[]): VertexNode<TVertex, TSegment>[] {
     const vertices = [];
 
@@ -746,13 +751,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @returns {VertexNode<TVertex, TSegment>}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @returns {VertexNode<TVertex, TSegment>}
+   */
   removeBetweenPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties
@@ -764,13 +769,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @returns {VertexNode<TVertex, TSegment>}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @returns {VertexNode<TVertex, TSegment>}
+   */
   removeFromToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties
@@ -783,13 +788,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   // === Update Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(IRoutePointProperties | IRoutePointProperties[])} points
- * @param {boolean} [returnListCount=false]
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(IRoutePointProperties | IRoutePointProperties[])} points
+   * @param {boolean} [returnListCount=false]
+   * @returns {number}
+   */
   prependPoints(
     points: IRoutePointProperties | IRoutePointProperties[],
     returnListCount: boolean = false
@@ -804,13 +809,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {PolylineRoute<TVertex, TSegment>} route
- * @param {boolean} [returnListCount=false]
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {PolylineRoute<TVertex, TSegment>} route
+   * @param {boolean} [returnListCount=false]
+   * @returns {number}
+   */
   prependRoute(
     route: PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
@@ -819,13 +824,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {(IRoutePointProperties | IRoutePointProperties[])} points
- * @param {boolean} [returnListCount=false]
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {(IRoutePointProperties | IRoutePointProperties[])} points
+   * @param {boolean} [returnListCount=false]
+   * @returns {number}
+   */
   appendPoints(
     points: IRoutePointProperties | IRoutePointProperties[],
     returnListCount: boolean = false
@@ -840,13 +845,13 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {PolylineRoute<TVertex, TSegment>} route
- * @param {boolean} [returnListCount=false]
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {PolylineRoute<TVertex, TSegment>} route
+   * @param {boolean} [returnListCount=false]
+   * @returns {number}
+   */
   appendRoute(
     route: PolylineRoute<TVertex, TSegment>,
     returnListCount: boolean = false
@@ -855,14 +860,14 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} targetPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} [returnListCount=false]
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} targetPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} [returnListCount=false]
+   * @returns {number}
+   */
   insertBeforePoint(
     targetPoint: IPointProperties,
     items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
@@ -885,14 +890,14 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} targetPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} [returnListCount=false]
- * @returns {number}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} targetPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} [returnListCount=false]
+   * @returns {number}
+   */
   insertAfterPoint(
     targetPoint: IPointProperties,
     items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
@@ -915,17 +920,17 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} targetPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} [returnListCount=false]
- * @returns {({
- *     removed: VertexNode<TVertex, TSegment>,
- *     inserted: number
- *   } | null)\}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} targetPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} [returnListCount=false]
+   * @returns {({
+   *     removed: VertexNode<TVertex, TSegment>,
+   *     inserted: number
+   *   } | null)\}
+   */
   replaceAtPoint(
     targetPoint: IPointProperties,
     items: IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>,
@@ -951,18 +956,18 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} [returnListCount=false]
- * @returns {({
- *     removed: VertexNode<TVertex, TSegment>,
- *     inserted: number
- *   } | null)\}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} [returnListCount=false]
+   * @returns {({
+   *     removed: VertexNode<TVertex, TSegment>,
+   *     inserted: number
+   *   } | null)\}
+   */
   replaceBetweenPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties,
@@ -987,18 +992,18 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} startPoint
- * @param {IPointProperties} endPoint
- * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
- * @param {boolean} [returnListCount=false]
- * @returns {({
- *     removed: VertexNode<TVertex, TSegment>,
- *     inserted: number
- *   } | null)\}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} startPoint
+   * @param {IPointProperties} endPoint
+   * @param {(IRoutePointProperties | IRoutePointProperties[] | VertexNode<TVertex, TSegment> | VertexNode<TVertex, TSegment>[] | PolylineRoute<TVertex, TSegment>)} items
+   * @param {boolean} [returnListCount=false]
+   * @returns {({
+   *     removed: VertexNode<TVertex, TSegment>,
+   *     inserted: number
+   *   } | null)\}
+   */
   replaceFromToPoints(
     startPoint: IPointProperties,
     endPoint: IPointProperties,
@@ -1037,12 +1042,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
 
   // === Split Methods
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties} point
- * @returns {PolylineRoute<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties} point
+   * @returns {PolylineRoute<TVertex, TSegment>[]}
+   */
   splitByPoint(
     point: IPointProperties
   ): PolylineRoute<TVertex, TSegment>[] {
@@ -1052,12 +1057,12 @@ export class PolylineRoute<TVertex extends RoutePoint, TSegment extends RouteSeg
   }
 
   /**
- * ${1:Description placeholder}
- * @date 2/11/2024 - 6:34:54 PM
- *
- * @param {IPointProperties[]} points
- * @returns {PolylineRoute<TVertex, TSegment>[]}
- */
+   * ${1:Description placeholder}
+   * @date 2/11/2024 - 6:34:54 PM
+   *
+   * @param {IPointProperties[]} points
+   * @returns {PolylineRoute<TVertex, TSegment>[]}
+   */
   splitByPoints(
     points: IPointProperties[]
   ): PolylineRoute<TVertex, TSegment>[] {
