@@ -30,6 +30,7 @@
   "files": [
     "dist/**/**",
     "docs/**/**",
+    "!bin/**/**",
     "!**/*.*spec.*",
     "!**/*.json",
     "!**/*.tsbuildinfo",
