@@ -3,7 +3,7 @@ import {
 } from 'react-leaflet';
 import { ControlPosition } from 'leaflet';
 
-import { hashString } from '../../../../../../common/utils';
+import { hashString } from 'common/utils';
 
 import { ITileApiKeysResponse } from '../../../../../server/api/model';
 

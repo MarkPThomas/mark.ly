@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 
-import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
+import { toUpperFirstLetter } from "common/utils/stringFormatting";
+
 import { IEditedStats, Stats } from "../../../Custom/Stats/Paths/Stats";
 
 import styles from './StatsDisplay.module.css';

@@ -5,7 +5,7 @@ import {
 } from '../../../server/services/gisFormatAdaptor';
 
 import { GeoJSON } from 'geojson';
-import { getFileExtension } from '../../../../common/utils';//'common/utils';
+import { getFileExtension } from 'common/utils';
 
 export const toGeoJson = async (file: File, hookCBs = undefined) => {
   const ext = getFileExtension(file);

@@ -1,4 +1,4 @@
-import { createAxiosInstance } from '../../../common/utils/api/AxiosInstance'
+import { createAxiosInstance } from 'common/utils/api/AxiosInstance'
 import {
   ITileApiKeysResponse as ITileApiKeyResponse
 } from '../../server/api/model';

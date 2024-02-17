@@ -2,7 +2,7 @@ import classnames from "classnames";
 import { ControlPosition } from "leaflet";
 import React, { useState } from "react";
 
-import { toUpperFirstLetter } from "../../../../../../../../common/utils/stringFormatting";
+import { toUpperFirstLetter } from "common/utils/stringFormatting";
 
 import stylesHeader from './ControlHeader.module.css';
 import stylesExpand from './ControlHeaderExpand.module.css';
