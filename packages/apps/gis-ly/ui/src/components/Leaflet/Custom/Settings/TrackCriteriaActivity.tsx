@@ -1,4 +1,5 @@
-import { IActivity } from "../../../../../../../libraries/gis/src/settings"
+import { IActivity } from "@markpthomas/gis"
+
 import { LabelValue } from "../LabelValue"
 import { ToggleGroup } from "../ToggleGroup"
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits"

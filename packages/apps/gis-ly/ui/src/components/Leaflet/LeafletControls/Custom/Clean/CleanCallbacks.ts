@@ -1,5 +1,4 @@
-import { Track } from "../../../../../../../../libraries/gis/src";
-import { IActivity, ICruft, ISplit, ITrackCriteria } from "../../../../../../../../libraries/gis/src/settings";
+import { Track, IActivity, ICruft, ISplit, ITrackCriteria } from "@markpthomas/gis";
 
 import {
   StationarySmoother,
@@ -7,13 +6,9 @@ import {
   NoiseCloudSmoother,
   AngularSpeedSmoother,
   ElevationSpeedSmoother
-} from '../../../../../../../../libraries/gis/src/Actions/Smooth';
-
-import { DurationSplitter } from '../../../../../../../../libraries/gis/src/Actions/Split';
-import { ISplitResult } from "../../../../../../../../libraries/gis/src/Actions/Split/SplitManager";
-
-import { CruftManager } from '../../../../../../../../libraries/gis/src/Actions/Cruft/CruftManager';
-import { ActivitySplitter } from "../../../../../../../../libraries/gis/src/Actions/Split/ActivitySplitter";
+} from '@markpthomas/gis/actions/smooth';
+import { DurationSplitter, ISplitResult, ActivitySplitter } from "@markpthomas/gis/actions/split";
+import { CruftManager } from '@markpthomas/gis/actions/cruft';
 
 export interface ICleanCallback {
   criteria: string;

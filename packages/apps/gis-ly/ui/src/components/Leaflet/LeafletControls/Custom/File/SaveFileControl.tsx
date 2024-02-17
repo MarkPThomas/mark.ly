@@ -1,4 +1,4 @@
-import { Track } from "../../../../../../../../libraries/gis/src";
+import { Track } from "@markpthomas/gis";
 
 import { SaveIcon } from "../../../../shared/components/Icons/SaveIcon";
 

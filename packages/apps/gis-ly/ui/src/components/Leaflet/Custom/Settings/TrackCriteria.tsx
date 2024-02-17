@@ -1,6 +1,7 @@
-import { hashString } from '../../../../../../../common/utils'; //'common/utils';
+import { ITrackCriteria } from "@markpthomas/gis"
 
-import { ITrackCriteria } from "../../../../../../../libraries/gis/src/settings"
+import { hashString } from 'common/utils';
+
 import { ToggleGroup } from '../ToggleGroup';
 import { TrackCriteriaActivity } from "./TrackCriteriaActivity"
 import { TrackCriteriaGeneric } from "./TrackCriteriaGeneric"

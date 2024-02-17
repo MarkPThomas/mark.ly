@@ -2,12 +2,11 @@ import {
   LayerGroup
 } from 'react-leaflet';
 
-import { hashString } from '../../../../../../../../common/utils';
+import { TrackPoint, TrackSegment } from '@markpthomas/gis/core/track';
 
-import { TrackPoint } from '../../../../../../../../libraries/gis/src/Core/Track/TrackPoint';
+import { hashString } from 'common/utils';
 
 import { CoordinateMarker } from './CoordinateMarker';
-import { TrackSegment } from '../../../../../../../../libraries/gis/src/Core/Track';
 
 export type CoordinateMarkersLayerProps = {
   points: TrackPoint[];

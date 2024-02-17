@@ -1,4 +1,5 @@
-import { ICruft, ISplit, INoiseCloud, IMisc } from "../../../../../../../libraries/gis/src/settings";
+import { ICruft, ISplit, INoiseCloud, IMisc } from "@markpthomas/gis";
+
 import { LabelValue } from "../LabelValue";
 import { ToggleGroup } from "../ToggleGroup";
 import { TrackCriteriaUnits } from "./TrackCriteriaUnits";

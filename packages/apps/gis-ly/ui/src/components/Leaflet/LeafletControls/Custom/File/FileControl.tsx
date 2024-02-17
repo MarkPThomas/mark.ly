@@ -1,7 +1,7 @@
 import { ControlPosition } from "leaflet";
 import Control from "react-leaflet-custom-control";
 
-import { Track } from "../../../../../../../../libraries/gis/src";
+import { Track } from "@markpthomas/gis";
 
 import { FileIcon } from "../../../../shared/components/Icons/FileIcon";
 import { ControlHeaderExpand } from "../Controls/ControlHeaderExpand";

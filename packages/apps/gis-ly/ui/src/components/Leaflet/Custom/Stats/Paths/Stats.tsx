@@ -1,5 +1,6 @@
-import { IPolylineSize } from "../../../../../model/Geometry";
-import { ITrackStats } from "../../../../../../../../libraries/gis/src/Core/Track/Stats";
+import { IPolylineSize } from "@markpthomas/geometry/polyline";
+import { ITrackStats } from "@markpthomas/gis/core/track/stats";
+
 import { ToggleGroup } from "../../ToggleGroup";
 import { RouteStats } from "./RouteStats";
 import { TrackStats } from "./TrackStats";

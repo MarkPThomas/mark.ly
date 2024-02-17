@@ -1,6 +1,6 @@
-import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Conversion } from '@markpthomas/units/conversion';
+import { IHeightRate } from "@markpthomas/gis/core/track/stats";
 
-import { IHeightRate } from "../../../../../../../../../../libraries/gis/src/Core/Track/Stats/HeightRateStats";
 import { RangeStats } from '../../RangeStats';
 
 import styles from '../../Stats.module.css';

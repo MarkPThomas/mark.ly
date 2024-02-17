@@ -1,6 +1,7 @@
+import { Track } from '@markpthomas/gis';
+
 import { toGpxFile } from '../../../../../model/Files';
 
-import { Track } from '../../../../../../../../libraries/gis/src';
 import { ControlItem } from "../Controls/ControlItem";
 
 export type Props = {

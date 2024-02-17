@@ -1,9 +1,8 @@
 import { PathOptions } from "leaflet";
-
-import { hashString } from '../../../../../../common/utils';//'common/utils';
-
-import { Track } from "../../../../../../libraries/gis/src"
 import { GeoJSON } from "react-leaflet";
+import { Track } from "@markpthomas/gis"
+
+import { hashString } from 'common/utils';
 
 export type GeoJsonPreviewProps = {
   tracks: Track[]

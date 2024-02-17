@@ -1,4 +1,5 @@
-import { ITrackCriteria } from "../../../../../../../../libraries/gis/src/settings";
+import { ITrackCriteria } from "@markpthomas/gis";
+
 import { Modal } from "../../../../shared/components/Modal";
 import { TrackCriteria } from "../../../Custom/Settings/TrackCriteria";
 

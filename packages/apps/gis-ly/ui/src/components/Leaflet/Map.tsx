@@ -8,15 +8,19 @@ import { MapContainer, ScaleControl } from 'react-leaflet';
 import { Feature, FeatureCollection as FeatureCollectionSerial, Geometry } from 'geojson';
 import Control from "react-leaflet-custom-control";
 
+import { StateHistory } from '@markpthomas/history';
+import {
+  GeoJsonManager,
+  IActivity,
+  ISplit,
+  ITrackCriteria
+} from '@markpthomas/gis';
+import { Track } from '@markpthomas/gis/core/track';
+import { ISplitResult } from '@markpthomas/gis/actions/split';
+
 import cachedData from '../../../../server/data/gpsRaw/2023-07-05 - Elevation Data API Response.json';
 
-import { StateHistory } from '../../../../../libraries/history/src/StateHistory';
-
 import { toGeoJson } from '../../model/Files';
-import { GeoJsonManager } from '../../../../../libraries/gis/src';
-import { IActivity, ISplit, ITrackCriteria } from '../../../../../libraries/gis/src/settings';
-import { Track } from '../../../../../libraries/gis/src/Core/Track';
-import { ISplitResult } from '../../../../../libraries/gis/src/Actions/Split/SplitManager';
 
 import { Settings } from '../../Settings';
 

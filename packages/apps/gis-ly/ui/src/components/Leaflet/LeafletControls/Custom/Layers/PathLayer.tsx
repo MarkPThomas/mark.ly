@@ -1,9 +1,10 @@
 import { PathOptions } from 'leaflet';
 import { LayerGroup } from 'react-leaflet';
 
-import { hashString } from '../../../../../../../../common/utils';//'common/utils';
+import { TrackPoint, TrackSegment } from '@markpthomas/gis/core/track';
 
-import { TrackPoint, TrackSegment } from '../../../../../../../../libraries/gis/src/Core/Track';
+import { hashString } from 'common/utils';
+
 import GeoJsonWithUpdates from '../../../Layers/GeoJsonWithUpdates';
 import { CoordinateMarkersLayer } from '../../../Custom/Stats/Points/CoordinateMarkersLayer';
 import { IOverlay } from '../../Layers/LayersControl';

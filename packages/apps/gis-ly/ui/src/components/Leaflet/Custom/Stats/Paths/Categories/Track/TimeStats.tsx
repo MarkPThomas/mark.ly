@@ -1,6 +1,6 @@
-import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Conversion } from '@markpthomas/units/conversion';
+import { ITime } from "@markpthomas/gis/track/stats";
 
-import { ITime } from "../../../../../../../../../../libraries/gis/src/Core/Track/Stats/TimeStats";
 import { LabelValue } from "../../../../LabelValue";
 import { RangeStats } from '../../RangeStats';
 

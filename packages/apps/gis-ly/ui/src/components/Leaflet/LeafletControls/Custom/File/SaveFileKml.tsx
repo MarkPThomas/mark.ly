@@ -1,6 +1,7 @@
+import { Track } from '@markpthomas/gis';
+
 import { toKmlFile } from '../../../../../model/Files';
 
-import { Track } from '../../../../../../../../libraries/gis/src';
 import { ControlItem } from "../Controls/ControlItem";
 
 export type Props = {

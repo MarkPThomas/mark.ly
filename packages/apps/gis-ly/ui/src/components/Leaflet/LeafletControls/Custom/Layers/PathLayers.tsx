@@ -1,7 +1,8 @@
 import { PathOptions } from 'leaflet';
 import { LayersControl } from 'react-leaflet';
 
-import { Track } from '../../../../../../../../libraries/gis/src/Core/Track';
+import { Track } from '@markpthomas/gis/core/track';
+
 import { IOverlay } from '../../Layers/LayersControl';
 import { PathLayer } from './PathLayer';
 

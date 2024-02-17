@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { RoutePoint, RouteSegment } from "../../../../../../../../libraries/gis/src/Core/Route";
-import { Vertex, Segment } from "../../../../../model/Geometry";
-import { INodeOfInterest } from "../../../../../model/Geometry/Stats";
+
+import { RoutePoint, RouteSegment } from "@markpthomas/gis/core/route";
+import { Vertex, Segment } from "@markpthomas/geometry";
+import { INodeOfInterest } from "@markpthomas/geometry/stats";
+
 import { LabelValue } from "../../LabelValue";
 import { ToggleHeader } from "../../ToggleHeader";
 

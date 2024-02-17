@@ -1,4 +1,4 @@
-import { Track } from "../../../../../../../../libraries/gis/src";
+import { Track } from "@markpthomas/gis";
 
 import styles from './PathSelectedControl.module.css';
 

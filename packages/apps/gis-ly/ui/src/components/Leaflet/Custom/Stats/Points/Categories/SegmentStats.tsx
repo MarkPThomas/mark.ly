@@ -1,9 +1,7 @@
-import styled from 'styled-components';
+import { Conversion } from '@markpthomas/units/conversion';
+import { Angle } from '@markpthomas/math/coordinates';
+import { ITrackSegment } from '@markpthomas/gis/core/track';
 
-import { Conversion } from '../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
-import { Angle } from '../../../../../../../../../common/utils/math/Coordinates/Angle';
-
-import { ITrackSegment } from '../../../../../../../../../libraries/gis/src/Core/Track';
 import { LabelValue } from '../../../LabelValue';
 
 import { GroupedStats } from './GroupedStats';

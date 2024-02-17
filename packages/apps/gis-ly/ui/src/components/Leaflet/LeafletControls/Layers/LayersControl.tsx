@@ -5,7 +5,7 @@ import {
   LayersControl as LC
 } from 'react-leaflet';
 
-import { Track, TrackPoint, TrackSegment } from '../../../../../../../libraries/gis/src/Core/Track';
+import { Track, TrackPoint, TrackSegment } from '@markpthomas/gis/core/track';
 
 import { PathLayers } from '../Custom/Layers/PathLayers';
 import { BaseLayers, IBaseLayer } from './BaseLayers';

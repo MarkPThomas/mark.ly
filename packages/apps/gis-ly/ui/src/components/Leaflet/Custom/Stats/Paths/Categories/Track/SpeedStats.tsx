@@ -1,8 +1,8 @@
-import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Conversion } from '@markpthomas/units/conversion';
+import { IRangeStatsResults } from "@markpthomas/geometry/stats";
+import { TrackPoint, TrackSegment } from "@markpthomas/gis/core/track";
 
 import { RangeStats } from '../../RangeStats';
-import { IRangeStatsResults } from "../../../../../../../model/Geometry/Stats";
-import { TrackPoint, TrackSegment } from "../../../../../../../../../../libraries/gis/src/Core/Track";
 
 
 export type SpeedStatsProps = { speed: IRangeStatsResults<TrackPoint, TrackSegment>, level: number };

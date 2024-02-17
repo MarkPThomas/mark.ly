@@ -3,7 +3,7 @@ import { IInitialPosition } from "./components/Leaflet/Map";
 import {
   ITrackCriteria,
   convertTrackToGlobalUnits
-} from "../../../libraries/gis/src/settings";
+} from "@markpthomas/gis";
 
 export interface ISettings {
   initialPosition: IInitialPosition;

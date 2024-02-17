@@ -1,6 +1,6 @@
-import { Conversion } from '../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Conversion } from '@markpthomas/units/conversion';
+import { ITrackPoint } from "@markpthomas/gis/core/track";
 
-import { ITrackPoint } from "../../../../../../../../../libraries/gis/src/Core/Track";
 import { LabelValue } from '../../../LabelValue';
 
 export type PointStatsProps = { point: ITrackPoint };

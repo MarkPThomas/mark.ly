@@ -1,5 +1,5 @@
-import { ITrackStats } from "../../../../../../../../libraries/gis/src/Core/Track/Stats";
-import { IPolylineSize } from "../../../../../model/Geometry";
+import { ITrackStats } from "@markpthomas/gis/core/track/stats";
+import { IPolylineSize } from "@markpthomas/model/polyline";
 
 import './PolylineStatsComparison.css';
 

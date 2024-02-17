@@ -1,11 +1,12 @@
-import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Conversion } from '@markpthomas/units/conversion';
+import { IHeight } from '@markpthomas/gis/core/route/stats';
 
 // TODO: Remove later once Median Elevation fixed. VVVVVVV
-import { RoutePoint, RouteSegment } from '../../../../../../../../../../libraries/gis/src/Core/Route';
-import { SegmentNode } from '../../../../../../../model/Geometry';
+import { RoutePoint, RouteSegment } from '@markpthomas/gis/core/route';
+import { SegmentNode } from '@markpthomas/geometry';
 // TODO: Remove later once Median Elevation fixed. ^^^^^^^
 
-import { IHeight } from '../../../../../../../../../../libraries/gis/src/Core/Route/Stats/HeightStats';
+
 import { LabelValue } from "../../../../LabelValue";
 import { RangeStatsProps, RangeStats } from '../../RangeStats';
 

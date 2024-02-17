@@ -1,6 +1,6 @@
-import { Conversion } from '../../../../../../../../../../common/utils/units/conversion/Conversion'; //'common/utils';
+import { Conversion } from '@markpthomas/units/conversion';
+import { ISlope } from "@markpthomas/gis/core/route/stats";
 
-import { ISlope } from "../../../../../../../../../../libraries/gis/src/Core/Route/Stats/SlopeStats";
 import { RangeStats } from '../../RangeStats';
 import { LabelValue } from "../../../../LabelValue";
 

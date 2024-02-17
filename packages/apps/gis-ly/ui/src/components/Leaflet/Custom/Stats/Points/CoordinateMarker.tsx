@@ -1,19 +1,18 @@
+import { PathOptions } from 'leaflet';
 import {
   Popup,
   Circle
 } from 'react-leaflet';
 
-import { hashString } from '../../../../../../../../common/utils'; //'common/utils';
+import { TrackPoint, TrackSegment } from '@markpthomas/gis/core/track';
 
-import { TrackPoint } from '../../../../../../../../libraries/gis/src/Core/Track/TrackPoint';
+import { hashString } from 'common/utils';
 
 import { LabelValue } from '../../LabelValue';
+import { ToggleGroup } from '../../ToggleGroup';
 import { PointStats } from './Categories/PointStats';
 import { PointPathStats } from './Categories/PointPathStats';
-import { TrackSegment } from '../../../../../../../../libraries/gis/src/Core/Track';
 import { SegmentStats } from './Categories/SegmentStats';
-import { ToggleGroup } from '../../ToggleGroup';
-import { PathOptions } from 'leaflet';
 
 import styles from './CoordinateMarker.module.css';
 
