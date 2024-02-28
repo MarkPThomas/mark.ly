@@ -1,33 +1,33 @@
-import { StatusCode } from '../../enums/status-code.enum';
+import { StatusCode } from '../enums/status-codes';
 
 export class HttpNotFound extends Error {
-  constructor (
+  constructor(
     message = 'Not Found',
     public status: number = StatusCode.NotFound) {
-      super(message);
-    }
+    super(message);
+  }
 }
 
 export class HttpForbidden extends Error {
-  constructor (
+  constructor(
     message = 'Forbidden',
     public status: number = StatusCode.Forbidden) {
-      super(message);
-    }
+    super(message);
+  }
 }
 
 export class HttpAcceptable extends Error {
-  constructor (
+  constructor(
     message = 'Not Acceptable',
     public status: number = StatusCode.NotAcceptable) {
-      super(message);
-    }
+    super(message);
+  }
 }
 
 export class HttpUnauthorized extends Error {
-  constructor (
+  constructor(
     message = 'Unauthorized',
     public status: number = StatusCode.Unauthorized) {
-      super(message);
-    }
+    super(message);
+  }
 }
