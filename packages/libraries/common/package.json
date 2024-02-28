@@ -20,7 +20,12 @@
     "posttest": "echo posttest script is running... && npm-run-all clear test:results",
     "lint": "eslint --ext=ts,tsx .",
     "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f3- | xargs -t -r eslint --ext=ts,tsx",
-    "clear": "rimraf build"
+    "clear": "rimraf build",
+    "clear:build": "rimraf ./tsconfig.tsbuildinfo",
+    "clear:dev": "npm-run-all clear clear:build",
+    "docs": "typedoc --out docs --name Units",
+    "docs:copy": "./bin/update-docs.sh",
+    "docs:update": "npm run docs && npm run docs:copy"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.8.10",
