@@ -1,9 +1,44 @@
 {
-  "name": "common",
-  "version": "1.0.0",
+  "name": "@markpthomas/common-libraries",
+  "version": "0.0.1",
   "description": "Files and data shared among multiple packages in the shared project",
-  "author": "Mark P Thomas",
+  "keywords": [],
+  "homepage": "https://github.com/MarkPThomas/mark.ly#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarkPThomas/mark.ly.git"
+  },
+  "author": "Mark P Thomas <MarkPorterThomas@gmail.com> (https://github.com/MarkPThomas)",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarkPThomas/mark.ly/issues"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "directories": {
+    "src": "src",
+    "dist": "dist",
+    "bin": "bin",
+    "doc": "doc",
+    "coverage": "coverage",
+    "testResults": "testResults"
+  },
+  "files": [
+    "dist/**/**",
+    "docs/**/**",
+    "!bin/**/**",
+    "!**/*.*spec.*",
+    "!**/*.json",
+    "!**/*.tsbuildinfo",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc --skipLibCheck --allowJs",
     "build:dev": "webpack --config webpack.config.js --node-env development",
@@ -20,6 +55,8 @@
     "posttest": "echo posttest script is running... && npm-run-all clear test:results",
     "lint": "eslint --ext=ts,tsx .",
     "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f3- | xargs -t -r eslint --ext=ts,tsx",
+    "publish": "npm publish --access public",
+    "publish:dry": "npm publish --dry-run",
     "clear": "rimraf build",
     "clear:build": "rimraf ./tsconfig.tsbuildinfo",
     "clear:dev": "npm-run-all clear clear:build",
@@ -30,24 +67,14 @@
   "dependencies": {
     "@xmldom/xmldom": "^0.8.10",
     "access-log": "^0.4.1",
-    "axios": "^1.6.5",
     "bunyan": "^1.8.15",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "koa": "^2.14.2",
-    "mongodb": "^4.17.2",
-    "reflect-metadata": "^0.2.1",
-    "sql-template-strings": "^2.2.2",
-    "typeorm": "^0.3.18"
+    "dotenv": "^16.0.1"
   },
   "devDependencies": {
-    "@shopify/jest-koa-mocks": "^5.1.1",
     "@types/bunyan": "^1.8.8",
     "@types/chai": "^4.3.1",
-    "@types/express": "^4.17.13",
     "@types/jest": "^28.1.2",
     "@types/jest-json-schema": "^6.1.1",
-    "@types/koa": "^2.13.6",
     "@types/node": "^18.0.0",
     "@types/sinon": "^10.0.15",
     "@typescript-eslint/parser": "^5.30.5",
@@ -60,6 +87,7 @@
     "jest-json-schema": "^6.1.0",
     "jest-sonar-reporter": "^2.0.0",
     "node-polyfill-webpack-plugin": "^2.0.0",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.5",
     "sinon": "^15.1.0",
     "ts-jest": "^29.1.1",
