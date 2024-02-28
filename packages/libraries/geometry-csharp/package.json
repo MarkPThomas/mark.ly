@@ -15,7 +15,12 @@
   },
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./aggregate": "./dist/aggregate/index.js",
+    "./intersections": "./dist/intersections/index.js",
+    "./segments": "./dist/segments/index.js",
+    "./shapes": "./dist/shapes/index.js",
+    "./tools": "./dist/tools/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {
