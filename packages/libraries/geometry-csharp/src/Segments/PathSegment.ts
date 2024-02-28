@@ -10,7 +10,7 @@ import { Vector } from "@markpthomas/math/vectors";
 import { Numbers } from "@markpthomas/math";
 
 import { GeometryLibrary } from "../GeometryLibrary";
-import { PointExtents } from "../Tools/PointExtents";
+import { PointExtents } from "../tools/PointExtents";
 import { IPathSegmentCollision } from "./IPathSegmentCollision";
 import { IPathSegment } from "./IPathSegment";
 import { LineSegment } from "./LineSegment";

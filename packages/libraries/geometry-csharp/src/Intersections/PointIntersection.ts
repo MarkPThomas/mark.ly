@@ -1,7 +1,7 @@
 import { CartesianCoordinate } from "@markpthomas/math/coordinates";
 import { Numbers } from "@markpthomas/math";
 
-import { LineSegment } from "../Segments/LineSegment";
+import { LineSegment } from "../segments/LineSegment";
 import { LineToLineIntersection } from "./LineToLineIntersection";
 
 

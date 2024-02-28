@@ -5,7 +5,7 @@ import { ITolerance } from '@markpthomas/math';
 import { Vector } from '@markpthomas/math/vectors';
 
 import { ITransform } from '../ITransform';
-import { PointExtents } from '../Tools/PointExtents';
+import { PointExtents } from '../tools/PointExtents';
 
 /// <summary>
 /// Interface for any segment along a path lying in a plane.

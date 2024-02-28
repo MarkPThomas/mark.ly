@@ -5,7 +5,7 @@ import { LinearCurve } from "@markpthomas/math/curves";
 import { Numbers } from "@markpthomas/math";
 
 import { GeometryLibrary } from "../GeometryLibrary";
-import { LineSegment } from "../Segments/LineSegment";
+import { LineSegment } from "../segments/LineSegment";
 import { PointIntersection } from "./PointIntersection";
 
 /**
