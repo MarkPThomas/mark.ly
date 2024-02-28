@@ -1,4 +1,4 @@
-import { IElevationsResponse } from '@markpthomas/gis/route';
+import { IElevationsResponse } from '@markpthomas/gis/core/route';
 
 import config from './config';
 import { ICoordinate, IBoundingBox } from './model';

@@ -1,5 +1,5 @@
 import { Conversion } from '@markpthomas/units/conversion';
-import { ITime } from "@markpthomas/gis/track/stats";
+import { ITime } from "@markpthomas/gis/core/track/stats";
 
 import { LabelValue } from "../../../../LabelValue";
 import { RangeStats } from '../../RangeStats';
