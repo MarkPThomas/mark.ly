@@ -5,7 +5,7 @@
       "path": "./packages/apps/gis-ly"
     },
     {
-      "path": "./packages/common"
+      "path": "./packages/libraries/common"
     },
     {
       "path": "./packages/libraries/data-structures"
