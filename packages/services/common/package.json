@@ -1,0 +1,95 @@
+{
+  "name": "@markpthomas/common-services",
+  "version": "0.0.1",
+  "description": "Files and data shared among multiple packages in the shared project",
+  "keywords": [],
+  "homepage": "https://github.com/MarkPThomas/mark.ly#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarkPThomas/mark.ly.git"
+  },
+  "author": "Mark P Thomas <MarkPorterThomas@gmail.com> (https://github.com/MarkPThomas)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarkPThomas/mark.ly/issues"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./interfaces": "./dist/interfaces/index.js",
+    "./utils": "./dist/utils/index.js",
+    "./exceptions": "./dist/exceptions/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "directories": {
+    "src": "src",
+    "dist": "dist",
+    "bin": "bin",
+    "doc": "doc",
+    "coverage": "coverage",
+    "testResults": "testResults"
+  },
+  "files": [
+    "dist/**/**",
+    "docs/**/**",
+    "!bin/**/**",
+    "!**/*.*spec.*",
+    "!**/*.json",
+    "!**/*.tsbuildinfo",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc --skipLibCheck --allowJs",
+    "build:dev": "webpack --config webpack.config.js --node-env development",
+    "build:prod": "webpack --config webpack.config.js --node-env production",
+    "pretest": "echo pretest script is running... && npm run build",
+    "test": "cross-env NODE_ENV=test && jest --coverage --testResultsProcessor=jest-sonar-reporter",
+    "test:u": "cross-env NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config jest.config.ts --runInBand --forceExit",
+    "test:results": "open-cli ./testResults/coverage/lcov-report/index.html",
+    "posttest": "echo posttest script is running... && npm-run-all clear test:results",
+    "lint": "eslint --ext=ts,tsx .",
+    "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f3- | xargs -t -r eslint --ext=ts,tsx",
+    "publish": "npm publish --access public",
+    "publish:dry": "npm publish --dry-run",
+    "clear": "rimraf build",
+    "clear:build": "rimraf ./tsconfig.tsbuildinfo",
+    "clear:dev": "npm-run-all clear clear:build",
+    "docs": "typedoc --out docs --name Units",
+    "docs:copy": "./bin/update-docs.sh",
+    "docs:update": "npm run docs && npm run docs:copy"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "dotenv": "^16.0.1"
+  },
+  "devDependencies": {
+    "@types/bunyan": "^1.8.8",
+    "@types/chai": "^4.3.1",
+    "@types/jest": "^28.1.2",
+    "@types/jest-json-schema": "^6.1.1",
+    "@types/node": "^18.0.0",
+    "@types/sinon": "^10.0.15",
+    "@typescript-eslint/parser": "^5.30.5",
+    "chai": "^4.3.6",
+    "community-faker": "^5.5.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.41.0",
+    "jest": "^29.5.0",
+    "jest-cli": "^29.5.0",
+    "jest-json-schema": "^6.1.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "node-polyfill-webpack-plugin": "^2.0.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.5",
+    "sinon": "^15.1.0",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.3.1",
+    "ts-node": "^10.8.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  }
+}
