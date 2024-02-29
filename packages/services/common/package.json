@@ -63,14 +63,23 @@
     "docs:update": "npm run docs && npm run docs:copy"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.8.10",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "bunyan": "^1.8.15",
+    "express": "^4.18.1",
+    "koa": "^2.14.2",
+    "mongodb": "^4.17.2",
+    "reflect-metadata": "^0.2.1",
+    "sql-template-strings": "^2.2.2",
+    "typeorm": "^0.3.18"
   },
   "devDependencies": {
+    "@shopify/jest-koa-mocks": "^5.1.1",
     "@types/bunyan": "^1.8.8",
     "@types/chai": "^4.3.1",
+    "@types/express": "^4.17.13",
     "@types/jest": "^28.1.2",
     "@types/jest-json-schema": "^6.1.1",
+    "@types/koa": "^2.13.6",
     "@types/node": "^18.0.0",
     "@types/sinon": "^10.0.15",
     "@typescript-eslint/parser": "^5.30.5",
