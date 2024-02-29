@@ -16,9 +16,9 @@
   "main": "./dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./api": "./dist/interfaces/index.js",
-    "./api-external": "./dist/utils/index.js",
-    "./http": "./dist/exceptions/index.js"
+    "./api": "./dist/api/index.js",
+    "./api-external": "./dist/apiExternal/index.js",
+    "./http": "./dist/http/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {

@@ -16,9 +16,9 @@
   "main": "./dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./interfaces": "./dist/interfaces/index.js",
-    "./utils": "./dist/utils/index.js",
-    "./exceptions": "./dist/exceptions/index.js"
+    "./database": "./dist/database/index.js",
+    "./logger": "./dist/logger/index.js",
+    "./middleware": "./dist/middleware/index.js"
   },
   "types": "./dist/index.d.ts",
   "directories": {
@@ -63,6 +63,7 @@
     "docs:update": "npm run docs && npm run docs:copy"
   },
   "dependencies": {
+    "access-log": "^0.4.1",
     "dotenv": "^16.0.1",
     "bunyan": "^1.8.15",
     "express": "^4.18.1",

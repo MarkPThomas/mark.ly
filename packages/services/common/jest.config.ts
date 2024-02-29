@@ -50,9 +50,6 @@ export default {
   testMatch: [
     '**/**/?(*.)+(specs|spec).ts'
   ],
-  testPathIgnorePatterns: [
-    '/utils/math/', // Turn this back on once transfer is complete
-  ],
   transform: {
     '^.+\\ts?$': 'ts-jest'
   }
