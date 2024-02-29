@@ -55,7 +55,7 @@
     "test:i:dev": "make run_integration_tests",
     "test:all": "yarn test:u && yarn test:i:dev",
     "test:results": "open-cli ./testResults/coverage/lcov-report/index.html",
-    "posttest": "echo posttest script is running... && npm-run-all clear test:results",
+    "posttest": "echo posttest script is running... && npm-run-all clear:dev test:results",
     "lint": "eslint ./src",
     "publish": "npm publish --access public",
     "publish:dry": "npm publish --dry-run",
