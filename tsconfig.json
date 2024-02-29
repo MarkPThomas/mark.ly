@@ -2,6 +2,12 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/common"
+    },
+    {
+      "path": "./packages/apps/common"
+    },
+    {
       "path": "./packages/apps/gis-ly"
     },
     {
@@ -30,6 +36,9 @@
     },
     {
       "path": "./packages/libraries/units"
+    },
+    {
+      "path": "./packages/services/common"
     },
   ]
 }
