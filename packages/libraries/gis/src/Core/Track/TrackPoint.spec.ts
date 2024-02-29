@@ -1,5 +1,5 @@
 import { Position } from "@markpthomas/geojson";
-import { Point } from "@markpthomas/geojson/Geometries";
+import { Point } from "@markpthomas/geojson/geometries";
 
 import { TrackPathProps } from "./TrackPathProps";
 import { TrackPoint } from "./TrackPoint";

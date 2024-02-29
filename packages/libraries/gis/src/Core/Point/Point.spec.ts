@@ -1,7 +1,7 @@
 // import { LatLng } from "leaflet";
 
 import { Position } from "@markpthomas/geojson";
-import { Point } from "@markpthomas/geojson/Geometries";
+import { Point } from "@markpthomas/geojson/geometries";
 
 import { PPoint } from "./Point";
 

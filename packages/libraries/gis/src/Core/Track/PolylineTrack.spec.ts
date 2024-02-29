@@ -563,8 +563,8 @@ describe('##PolylineTrack', () => {
         expect(trackSegs[2].heightRate).toEqual(0);
 
         expect(trackCoords[3].elevation).toBeUndefined();
-        expect(trackCoords[3].path.ascentRate).toBeUndefined();
-        expect(trackCoords[3].path.descentRate).toBeUndefined();
+        expect(trackCoords[3].path.ascentRate).toEqual(0);
+        expect(trackCoords[3].path.descentRate).toEqual(0);
 
         expect(trackSegs[3].height).toEqual(0);
         expect(trackSegs[3].heightRate).toEqual(0);
