@@ -1,4 +1,4 @@
-import { Request } from 'common/utils/api/Request';
+import { Request } from '@markpthomas/common/api';
 
 import {
   IElevationRequest, IElevationResponse, IElevationItem, IElevationOptions, GetElevationArgs

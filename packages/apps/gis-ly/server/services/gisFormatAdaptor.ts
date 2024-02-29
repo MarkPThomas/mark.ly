@@ -5,7 +5,7 @@ import rewind from '@mapbox/geojson-rewind';
 import togpx from 'togpx';
 import tokml from 'geojson-to-kml';
 
-import { parseXML } from 'common/utils';//'common/utils';
+import { parseXML } from '@markpthomas/common-libraries/utils';
 
 // TODO: GPS-Specific data like workout metadata is lost of doing to/from here.
 // TODO: KML-specific data like syling is lost if doing to/from here.

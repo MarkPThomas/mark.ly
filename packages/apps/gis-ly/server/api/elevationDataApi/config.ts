@@ -1,4 +1,4 @@
-import { IApiConfig, IApiLimits } from "common/utils/api/IApiConfig";
+import { IApiConfig, IApiLimits } from "@markpthomas/common/api";
 
 export default {
   api: {

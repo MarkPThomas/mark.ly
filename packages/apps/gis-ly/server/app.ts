@@ -2,7 +2,7 @@ import path from 'path';
 import express, { Express } from 'express';
 import cors from 'cors';
 
-import { applyAxiosErrorHandler } from 'common/utils/api/axios';
+import { applyAxiosErrorHandler } from '@markpthomas/common/api';
 
 import router from './router';
 

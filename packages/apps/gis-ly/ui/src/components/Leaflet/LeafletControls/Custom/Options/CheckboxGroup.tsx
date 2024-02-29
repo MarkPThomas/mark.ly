@@ -1,4 +1,4 @@
-import { toCamelCase, toUpperFirstLetterOfEach } from "common/utils/stringFormatting";
+import { toCamelCase, toUpperFirstLetterOfEach } from "@markpthomas/common-libraries/utils";
 
 import styles from './styles.module.css';
 

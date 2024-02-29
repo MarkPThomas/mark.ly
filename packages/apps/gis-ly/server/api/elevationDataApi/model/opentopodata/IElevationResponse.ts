@@ -1,4 +1,4 @@
-import { IResponse } from "common/utils/api/Request";
+import { IResponse } from "@markpthomas/common/api";
 import { ICoordinate } from "./ICoordinate";
 
 export interface IElevationResponse extends IResponse {

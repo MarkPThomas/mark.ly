@@ -1,6 +1,6 @@
 import { ITrackCriteria } from "@markpthomas/gis"
 
-import { hashString } from 'common/utils';
+import { hashString } from '@markpthomas/common-libraries/utils';
 
 import { ToggleGroup } from '../ToggleGroup';
 import { TrackCriteriaActivity } from "./TrackCriteriaActivity"

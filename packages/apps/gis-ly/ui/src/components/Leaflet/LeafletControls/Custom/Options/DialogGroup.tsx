@@ -1,5 +1,5 @@
 import classnames from "classnames";
-import { toTrainCase, toUpperFirstLetterOfEach } from "common/utils/stringFormatting";
+import { toTrainCase, toUpperFirstLetterOfEach } from "@markpthomas/common-libraries/utils";
 
 import styles from './styles.module.css';
 import stylesDisabled from '../Controls/disabled.module.css';

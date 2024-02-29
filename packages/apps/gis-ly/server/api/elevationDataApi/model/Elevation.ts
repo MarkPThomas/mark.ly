@@ -1,4 +1,4 @@
-import { IRequest, IRequestItem, IRequestOptions, GetRequestArgs } from "common/utils/api/Request";
+import { IRequest, IRequestItem, IRequestOptions, GetRequestArgs } from "@markpthomas/common/api";
 
 import { DataSet } from "./DataSet"
 import { IBoundingBox } from "./IBoundingBox";

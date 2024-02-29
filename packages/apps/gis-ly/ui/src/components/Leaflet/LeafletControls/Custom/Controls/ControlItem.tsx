@@ -1,6 +1,6 @@
 import classnames from "classnames";
 
-import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "common/utils/stringFormatting";
+import { toUpperFirstLetter, toUpperFirstLetterOfEach } from "@markpthomas/common-libraries/utils";
 
 import stylesHeader from './ControlHeader.module.css';
 import stylesItem from './ControlItem.module.css';

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 
 
-import { toLowerSnakeCase } from 'common/utils/stringFormatting';
+import { toLowerSnakeCase } from '@markpthomas/common-libraries/utils';
 
 export const getApiKey = async (req: Request, res: Response) => {
   console.log('getApiKey');

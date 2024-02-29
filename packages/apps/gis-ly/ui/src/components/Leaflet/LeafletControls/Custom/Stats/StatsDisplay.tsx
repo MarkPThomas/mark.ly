@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 
-import { toUpperFirstLetter } from "common/utils/stringFormatting";
+import { toUpperFirstLetter } from "@markpthomas/common-libraries/utils";
 
 import { IEditedStats, Stats } from "../../../Custom/Stats/Paths/Stats";
 

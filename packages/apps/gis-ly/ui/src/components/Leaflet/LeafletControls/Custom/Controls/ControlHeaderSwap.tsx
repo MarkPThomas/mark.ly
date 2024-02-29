@@ -1,7 +1,7 @@
 import { useState } from "react";
 import classnames from 'classnames';
 
-import { toUpperFirstLetter } from "common/utils/stringFormatting";
+import { toUpperFirstLetter } from "@markpthomas/common-libraries/utils";
 
 import stylesHeader from './ControlHeader.module.css';
 import stylesSwap from './ControlHeaderSwap.module.css';

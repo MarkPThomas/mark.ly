@@ -6,7 +6,7 @@ import {
 
 import { TrackPoint, TrackSegment } from '@markpthomas/gis/core/track';
 
-import { hashString } from 'common/utils';
+import { hashString } from '@markpthomas/common-libraries/utils';
 
 import { LabelValue } from '../../LabelValue';
 import { ToggleGroup } from '../../ToggleGroup';

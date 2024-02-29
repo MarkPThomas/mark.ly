@@ -3,7 +3,7 @@ import { LayerGroup } from 'react-leaflet';
 
 import { TrackPoint, TrackSegment } from '@markpthomas/gis/core/track';
 
-import { hashString } from 'common/utils';
+import { hashString } from '@markpthomas/common-libraries/utils';
 
 import GeoJsonWithUpdates from '../../../Layers/GeoJsonWithUpdates';
 import { CoordinateMarkersLayer } from '../../../Custom/Stats/Points/CoordinateMarkersLayer';
