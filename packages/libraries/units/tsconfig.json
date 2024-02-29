@@ -35,15 +35,10 @@
     "typeRoots": [
       "./typings/",
       "./node_modules/@types"
-    ],
-    "paths": {
-      "common/*": [
-        "../../common/*"
-      ]
-    }
+    ]
   },
   "include": [
-    "./src/**/*.ts",
+    "./src/**/*.ts"
   ],
   "exclude": [
     "node_modules",

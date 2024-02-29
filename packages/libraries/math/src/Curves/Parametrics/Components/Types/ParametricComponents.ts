@@ -1,4 +1,4 @@
-import { ArgumentOutOfRangeException } from "common/errors/exceptions";
+import { ArgumentOutOfRangeException } from "@markpthomas/common-libraries/exceptions";
 
 import { Curve } from "../../../Curve";
 import { ParametricEquation } from "../ParametricEquation";

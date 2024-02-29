@@ -1,4 +1,4 @@
-import { DivideByZeroException } from "common/errors/exceptions";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
 
 import { CartesianCoordinate } from "../../../../coordinates/CartesianCoordinate";
 import { Curve } from "../../../Curve";

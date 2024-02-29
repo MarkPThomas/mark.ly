@@ -1,7 +1,7 @@
 import { Position } from "@markpthomas/geojson";
 import { Point } from "@markpthomas/geojson/geometries";
 
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { TimeStamp } from "../Time";
 import { ITrackPathProps, TrackPathProps } from "./TrackPathProps";

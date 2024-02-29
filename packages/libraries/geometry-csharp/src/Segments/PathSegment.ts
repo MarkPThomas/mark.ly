@@ -1,4 +1,4 @@
-import { ArgumentOutOfRangeException, NotImplementedException } from "common/errors/exceptions";
+import { ArgumentOutOfRangeException, NotImplementedException } from "@markpthomas/common-libraries/exceptions";
 
 import {
   Angle,

@@ -42,12 +42,7 @@
     "typeRoots": [
       "./typings/",
       "./node_modules/@types"
-    ],
-    "paths": {
-      "common/*": [
-        "../../common/*"
-      ]
-    }
+    ]
   },
   "include": [
     "./src/**/*.ts",

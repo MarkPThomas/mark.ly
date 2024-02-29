@@ -2,7 +2,7 @@ import { Position } from "@markpthomas/geojson";
 import { Point } from "@markpthomas/geojson/geometries";
 import { Vertex } from "@markpthomas/geometry";
 
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { IDirection } from "../Direction";
 

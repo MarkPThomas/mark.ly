@@ -1,6 +1,6 @@
 import { Numbers } from '@markpthomas/math';
 
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { IRoutePathPropsProperties, RoutePathProps } from "../Route/RoutePathProps";
 import { ITrackSegmentProperties, TrackSegment } from './TrackSegment';

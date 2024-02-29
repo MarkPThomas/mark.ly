@@ -1,4 +1,4 @@
-import { toUpperFirstLetter } from 'common/utils/stringFormatting';
+import { toUpperFirstLetter } from '@markpthomas/common-libraries/utils';
 
 import {
   IUnits,

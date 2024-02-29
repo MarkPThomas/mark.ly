@@ -3,7 +3,7 @@ import {
   Polyline
 } from '@markpthomas/geometry/polyline';
 
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { ITimeRange } from '../Time/TimeRange';
 import { IPolylineRouteMethods, PolylineRoute } from '../Route/PolylineRoute';

@@ -1,4 +1,4 @@
-import { ICloneable } from 'common/interfaces';
+import { ICloneable } from '@markpthomas/common-libraries/interfaces';
 import { Node, NodeDouble, NodeKeyVal, NodeDoubleKeyVal } from './LinkedListNodes';
 
 

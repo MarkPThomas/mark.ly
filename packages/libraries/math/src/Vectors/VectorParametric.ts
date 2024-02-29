@@ -1,5 +1,5 @@
 // TODO: Make Generic form of VectorParametric for this to derive from.
-import { DivideByZeroException } from "common/errors/exceptions";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
 
 import { ITolerance } from "../ITolerance";
 import { Numbers } from "../Numbers";

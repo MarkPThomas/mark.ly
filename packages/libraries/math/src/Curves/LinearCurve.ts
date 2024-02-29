@@ -2,7 +2,7 @@ import {
   ArgumentOutOfRangeException,
   NotImplementedException,
   ArgumentException
-} from 'common/errors/exceptions';
+} from '@markpthomas/common-libraries/exceptions';
 
 import { AlgebraLibrary } from '../algebra/AlgebraLibrary';
 import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';

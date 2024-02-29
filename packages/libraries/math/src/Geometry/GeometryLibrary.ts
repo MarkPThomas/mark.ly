@@ -1,4 +1,4 @@
-import { DivideByZeroException } from "common/errors/exceptions";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
 
 import { Numbers } from "../Numbers";
 import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';

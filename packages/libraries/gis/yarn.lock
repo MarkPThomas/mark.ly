@@ -661,23 +661,37 @@
   resolved "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
+"@markpthomas/common-libraries@^0.0.1":
+  version "0.0.1"
+  resolved "file:../common"
+  dependencies:
+    "@xmldom/xmldom" "^0.8.10"
+    dotenv "^16.0.1"
+
 "@markpthomas/geojson@^0.0.1":
   version "0.0.1"
   resolved "file:../geojson"
+  dependencies:
+    "@markpthomas/common-libraries" "^0.0.1"
 
-"@markpthomas/geometry@file:../geometry":
+"@markpthomas/geometry@^0.0.1":
   version "0.0.1"
   resolved "file:../geometry"
   dependencies:
+    "@markpthomas/common-libraries" "^0.0.1"
     "@markpthomas/data-structures" "^0.0.1"
 
 "@markpthomas/math@^0.0.1":
   version "0.0.1"
   resolved "file:../math"
+  dependencies:
+    "@markpthomas/common-libraries" "^0.0.1"
 
-"@markpthomas/units@^0.0.1":
+"@markpthomas/units@file:../units":
   version "0.0.1"
   resolved "file:../units"
+  dependencies:
+    "@markpthomas/common-libraries" "^0.0.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

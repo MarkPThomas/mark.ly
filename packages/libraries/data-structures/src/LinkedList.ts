@@ -1,4 +1,4 @@
-import { IEquatable } from 'common/interfaces';
+import { IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { Node } from './LinkedListNodes';
 

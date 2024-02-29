@@ -1,4 +1,4 @@
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { LinkedListDoubleGeneric } from '@markpthomas/data-structures';
 

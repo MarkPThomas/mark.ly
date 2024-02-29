@@ -1,4 +1,4 @@
-import { DivideByZeroException, ArgumentException } from "common/errors/exceptions";
+import { DivideByZeroException, ArgumentException } from "@markpthomas/common-libraries/exceptions";
 
 /**
  * ${1:Description placeholder}

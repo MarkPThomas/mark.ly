@@ -1,4 +1,4 @@
-import { ICloneable } from "common/interfaces";
+import { ICloneable } from "@markpthomas/common-libraries/interfaces";
 
 import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { CartesianParametricEquationXY } from "./parametrics/components/CartesianParametricEquationXY";

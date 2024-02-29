@@ -1,4 +1,4 @@
-import { ArgumentOutOfRangeException } from "common/errors/exceptions";
+import { ArgumentOutOfRangeException } from "@markpthomas/common-libraries/exceptions";
 
 import { CartesianCoordinate, CartesianOffset } from "@markpthomas/math/coordinates";
 import { LinearCurve } from "@markpthomas/math/curves";

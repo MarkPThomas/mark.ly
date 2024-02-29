@@ -1,4 +1,4 @@
-import { IComparable } from 'common/interfaces';
+import { IComparable } from '@markpthomas/common-libraries/interfaces';
 
 import { Generics } from './Generics'; // Import the Generics class from your TypeScript implementation
 

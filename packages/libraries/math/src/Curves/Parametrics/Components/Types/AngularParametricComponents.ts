@@ -1,4 +1,4 @@
-import { DivideByZeroException } from "common/errors/exceptions";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
 
 import { Angle } from "../../../../coordinates/Angle";
 import { Curve } from "../../../Curve";

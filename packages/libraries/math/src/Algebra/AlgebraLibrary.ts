@@ -1,7 +1,7 @@
 // TODO: Quadratic formula from object
 // TODO: Summation from object & strategy pattern
 
-import { ArgumentException, ArgumentOutOfRangeException } from "common/errors/exceptions";
+import { ArgumentException, ArgumentOutOfRangeException } from "@markpthomas/common-libraries/exceptions";
 import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";
 import { Numbers } from "../Numbers";
 

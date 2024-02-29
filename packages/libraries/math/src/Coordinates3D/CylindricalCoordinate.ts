@@ -1,4 +1,4 @@
-import { IEquatable } from "common/interfaces";
+import { IEquatable } from "@markpthomas/common-libraries/interfaces";
 
 import { Angle } from "../coordinates/Angle";
 import { Numbers } from "../Numbers";

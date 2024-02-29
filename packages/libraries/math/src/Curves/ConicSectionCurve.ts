@@ -1,4 +1,4 @@
-import { NotImplementedException } from 'common/errors/exceptions';
+import { NotImplementedException } from '@markpthomas/common-libraries/exceptions';
 
 import { TrigonometryLibrary as Trig } from '../trigonometry/TrigonometryLibrary';
 import { CartesianOffset } from '../coordinates/CartesianOffset';

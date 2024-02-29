@@ -1,5 +1,5 @@
-import { DivideByZeroException } from "common/errors/exceptions";
-import { IComparable, IEquatable } from "common/interfaces";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
+import { IComparable, IEquatable } from "@markpthomas/common-libraries/interfaces";
 
 import { Generics } from "../Generics";
 import { ITolerance } from "../ITolerance";

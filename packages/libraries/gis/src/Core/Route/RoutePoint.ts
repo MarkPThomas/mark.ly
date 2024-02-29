@@ -1,4 +1,4 @@
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { Position } from "@markpthomas/geojson";
 import { Point } from "@markpthomas/geojson/geometries";

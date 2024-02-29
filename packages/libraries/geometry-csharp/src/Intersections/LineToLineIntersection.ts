@@ -1,4 +1,4 @@
-import { ArgumentException } from "common/errors/exceptions";
+import { ArgumentException } from "@markpthomas/common-libraries/exceptions";
 
 import { CartesianCoordinate } from "@markpthomas/math/coordinates";
 import { LinearCurve } from "@markpthomas/math/curves";

@@ -1,6 +1,6 @@
 import { BBox as SerialBBox } from "geojson";
 
-import { ICloneable, IEquatable } from "common/interfaces";
+import { ICloneable, IEquatable } from "@markpthomas/common-libraries/interfaces";
 
 import { Position } from "./types";
 

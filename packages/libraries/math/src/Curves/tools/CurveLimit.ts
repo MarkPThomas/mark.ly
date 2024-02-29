@@ -1,5 +1,5 @@
-import { ArgumentOutOfRangeException, NotSupportedException } from "common/errors/exceptions";
-import { ICloneable } from "common/interfaces";
+import { ArgumentOutOfRangeException, NotSupportedException } from "@markpthomas/common-libraries/exceptions";
+import { ICloneable } from "@markpthomas/common-libraries/interfaces";
 
 import { CartesianCoordinate } from "../../coordinates/CartesianCoordinate";
 import { Curve } from "../Curve";

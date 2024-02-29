@@ -1,4 +1,4 @@
-import { DivideByZeroException } from "common/errors/exceptions";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
 
 import { Curve } from "../../../Curve";
 import { ParametricEquation } from "../ParametricEquation";

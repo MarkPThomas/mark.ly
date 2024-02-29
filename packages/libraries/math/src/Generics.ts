@@ -1,5 +1,5 @@
-import { ArgumentException } from "common/errors/exceptions";
-import { IComparable } from "common/interfaces/IComparable";
+import { ArgumentException } from "@markpthomas/common-libraries/exceptions";
+import { IComparable } from "@markpthomas/common-libraries/interfaces";
 
 import { ITolerance } from "./ITolerance";
 import { Numbers } from "./Numbers";

@@ -1,4 +1,4 @@
-import { IEquatable } from "common/interfaces";
+import { IEquatable } from "@markpthomas/common-libraries/interfaces";
 
 import { ICoordinate } from "./coordinates/ICoordinate";
 import { ICoordinate3D } from "./coordinates3D/ICoordinate3D";

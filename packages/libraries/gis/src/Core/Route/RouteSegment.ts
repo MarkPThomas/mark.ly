@@ -4,7 +4,7 @@ import {
   Segment as SegmentGeometry
 } from '@markpthomas/geometry';
 
-import { ICloneable, IEquatable } from 'common/interfaces';
+import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { IDirection } from '../Direction';
 import { IPointProperties, PPoint } from '../point/Point';

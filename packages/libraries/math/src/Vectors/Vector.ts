@@ -1,5 +1,5 @@
-import { DivideByZeroException } from "common/errors/exceptions";
-import { IEquatable } from "common/interfaces";
+import { DivideByZeroException } from "@markpthomas/common-libraries/exceptions";
+import { IEquatable } from "@markpthomas/common-libraries/interfaces";
 
 import { Angle } from "../coordinates/Angle";
 import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";

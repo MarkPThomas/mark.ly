@@ -1,4 +1,4 @@
-import { NotImplementedException } from "common/errors/exceptions";
+import { NotImplementedException } from "@markpthomas/common-libraries/exceptions";
 
 import { Angle } from "../coordinates/Angle";
 import { CartesianCoordinate } from "../coordinates/CartesianCoordinate";

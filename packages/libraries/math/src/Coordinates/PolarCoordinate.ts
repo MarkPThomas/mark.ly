@@ -1,4 +1,4 @@
-import { IEquatable } from 'common/interfaces';
+import { IEquatable } from '@markpthomas/common-libraries/interfaces';
 
 import { Cartesian2DPolarConverter } from '../coordinate-converters/Cartesian2DPolarConverter';
 import { Numbers } from '../Numbers';
