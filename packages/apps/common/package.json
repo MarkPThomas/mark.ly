@@ -53,7 +53,7 @@
     "lint:diff": "git diff --name-only --diff-filter=ACMRTUXB origin/main -- . | grep -E \"(.ts$|.tsx$)\" | cut -d'/' -f3- | xargs -t -r eslint --ext=ts,tsx",
     "publish": "npm publish --access public",
     "publish:dry": "npm publish --dry-run",
-    "clear": "rimraf build",
+    "clear": "rimraf dist",
     "clear:build": "rimraf ./tsconfig.tsbuildinfo",
     "clear:dev": "npm-run-all clear clear:build",
     "docs": "typedoc --out docs --name Units",
