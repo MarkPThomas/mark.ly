@@ -1,26 +1,27 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "es6",
+    // "module": "Node16",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "sourceMap": true,
     "downlevelIteration": true,
+    "jsx": "react-jsx",
+    "allowJs": false,
+    // "skipLibCheck": true,
+    // "preserveSymlinks": true,
+    "resolveJsonModule": true,
     "lib": [
       "dom",
       "es2021",
       "scripthost"
     ],
-    "jsx": "react-jsx",
-    "allowJs": false,
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
     "paths": {
-      "common/*": [
-        "../../libraries/common/*"
-      ]
+      // "common/*": [
+      //   "../../libraries/common/*"
+      // ]
     },
-    "preserveSymlinks": true,
-    "resolveJsonModule": true,
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"

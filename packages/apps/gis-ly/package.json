@@ -1,9 +1,21 @@
 {
-  "name": "gis-ly",
+  "name": "@markpthomas/gis-ly",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "homepage": "https://github.com/MarkPThomas/mark.ly#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarkPThomas/mark.ly.git"
+  },
+  "author": "Mark P Thomas <MarkPorterThomas@gmail.com> (https://github.com/MarkPThomas)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarkPThomas/mark.ly/issues"
+  },
   "main": "server/index.ts",
   "scripts": {
+    "build": "tsc --skipLibCheck --allowJs",
     "build:dev:client": "webpack --config webpack.client.config.js --node-env development",
     "build:prod:client": "webpack --config webpack.client.config.js --node-env production",
     "build:dev:server": "webpack --config webpack.server.config.js --node-env development",
@@ -25,17 +37,18 @@
     "test:watch": "cross-env NODE_ENV=test && jest --watchAll --coverage --testResultsProcessor=jest-sonar-reporter",
     "test:results": "open-cli ./testResults/coverage/lcov-report/index.html",
     "test:u": "cross-env NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config jest.config.ts --runInBand --forceExit",
-    "posttest": "echo posttest script is running... && npm-run-all clear test:results",
+    "posttest": "echo posttest script is running... && npm-run-all clear:dev test:results",
     "sync:watch": "browser-sync start -p localhost:3000 -w -f ./dist",
+    "publish": "npm publish --access public",
+    "publish:dry": "npm publish --dry-run",
     "clear": "rimraf dist",
-    "docs": "typedoc ui/src/model/GeoJSON/*.ts --name GeoJSON"
+    "clear:build": "rimraf ./tsconfig.tsbuildinfo",
+    "clear:dev": "npm-run-all clear clear:build",
+    "docs": "typedoc --out docs --name Units",
+    "docs:copy": "./bin/update-docs.sh",
+    "docs:update": "npm run docs && npm run docs:copy"
   },
-  "keywords": [],
-  "author": "Mark P Thomas <markporterthomas@gmail.com> (https://github.com/MarkPThomas)",
-  "license": "ISC",
   "dependencies": {
-    "@markpthomas/math": "^0.0.1",
-    "@markpthomas/geometry-csharp": "^0.0.1",
     "@mapbox/geojson-rewind": "^0.5.2",
     "@react-leaflet/core": "^2.1.0",
     "@tmcw/togeojson": "^5.7.0",
