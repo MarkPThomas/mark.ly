@@ -12,6 +12,8 @@ sonar-report.xml
 
 # production
 /dist
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 
 ### OSX ###
 *.DS_Store
