@@ -3,6 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     // "module": "Node16",
+    "strict": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "sourceMap": true,
@@ -17,6 +18,12 @@
       "es2021",
       "scripthost"
     ],
+    // "rootDir": "./",
+    "outDir": "dist",
+    "typeRoots": [
+      "./typings/",
+      "./node_modules/@types"
+    ],
     "paths": {
       // "common/*": [
       //   "../../libraries/common/*"
@@ -30,6 +37,18 @@
   },
   "include": [
     "ui",
-    "server"
+    "server",
+    "project.config.ts",
+    "**/config.json",
+    "**/gpsRaw/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "scripts",
+    "webpack",
+    "jest",
+    "coverage"
   ]
 }
