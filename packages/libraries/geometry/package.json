@@ -65,8 +65,8 @@
     "docs:update": "npm run docs && npm run docs:copy"
   },
   "dependencies": {
-    "@markpthomas/common-libraries": "^0.0.1",
-    "@markpthomas/data-structures": "^0.0.1"
+    "@markpthomas/common-libraries": "workspace:^",
+    "@markpthomas/data-structures": "workspace:^"
   },
   "devDependencies": {
     "@types/jest": "^28.1.4",

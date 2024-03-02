@@ -1,6 +1,6 @@
 {
-  "name": "mark.ly",
-  "version": "0.0.0",
+  "name": "@markpthomas/mark.ly",
+  "version": "0.1.0",
   "private": true,
   "description": "Personal website and related apps",
   "homepage": "https://github.com/MarkPThomas/mark.ly#readme",
@@ -28,6 +28,7 @@
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.18.0",
     "eslint-plugin-import": "^2.29.1",
+    "lerna": "^8.1.2",
     "lint-staged": "^13.3.0",
     "prettier": "^2.8.8",
     "typescript": "^4.9.5"
