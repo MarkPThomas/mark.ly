@@ -10,6 +10,9 @@ module.exports = {
         use: {
           loader: 'ts-loader',
         },
+        include: [
+          // path.resolve(__dirname, '../../libraries/'),
+        ]
       },
     ],
   },

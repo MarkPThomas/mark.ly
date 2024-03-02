@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://github.com/MarkPThomas/mark.ly/issues"
   },
-  "main": "server/index.ts",
+  "main": "./server/index.ts",
   "scripts": {
     "build": "tsc --skipLibCheck --allowJs",
     "build:dev:client": "webpack --config webpack.client.config.js --node-env development",
@@ -50,14 +50,14 @@
   },
   "dependencies": {
     "@mapbox/geojson-rewind": "^0.5.2",
-    "@markpthomas/common": "^0.0.1",
-    "@markpthomas/common-libraries": "^0.0.1",
-    "@markpthomas/geometry": "^0.0.1",
-    "@markpthomas/geometry-csharp": "^0.0.1",
-    "@markpthomas/gis": "^0.0.1",
-    "@markpthomas/history": "^0.0.1",
-    "@markpthomas/math": "^0.0.1",
-    "@markpthomas/units": "^0.0.1",
+    "@markpthomas/common": "workspace:^",
+    "@markpthomas/common-libraries": "workspace:^",
+    "@markpthomas/geometry": "workspace:^",
+    "@markpthomas/geometry-csharp": "workspace:^",
+    "@markpthomas/gis": "workspace:^",
+    "@markpthomas/history": "workspace:^",
+    "@markpthomas/math": "workspace:^",
+    "@markpthomas/units": "workspace:^",
     "@react-leaflet/core": "^2.1.0",
     "@tmcw/togeojson": "^5.7.0",
     "axios": "^1.6.4",
