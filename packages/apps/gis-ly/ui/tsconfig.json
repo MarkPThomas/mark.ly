@@ -1,0 +1,65 @@
+{
+  "extends": "../../../tsconfig.root.json",
+  "compilerOptions": {
+    "strict": false,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "jsx": "react-jsx",
+    "allowJs": false,
+    // "skipLibCheck": true,
+    // "preserveSymlinks": true,
+    "lib": [
+      "dom",
+      "scripthost",
+      "es2021",
+    ],
+    "rootDir": "./src",
+    "outDir": "dist",
+    "typeRoots": [
+      "./typings/",
+      "./node_modules/@types"
+    ],
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
+  },
+  "references": [
+    {
+      "path": "../../../libraries/common"
+    },
+    {
+      "path": "../../../libraries/geometry"
+    },
+    {
+      "path": "../../../libraries/gis"
+    },
+    {
+      "path": "../../../libraries/history"
+    },
+    {
+      "path": "../../../libraries/math"
+    },
+    {
+      "path": "../../../libraries/units"
+    },
+  ],
+  "include": [
+    "src",
+    "**/config.json",
+    "../project.config.ts",
+    "../**/gpsRaw/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "scripts",
+    "webpack",
+    "jest",
+    "coverage"
+  ]
+}

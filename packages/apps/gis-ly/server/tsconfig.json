@@ -1,0 +1,46 @@
+{
+  "extends": "../../../../tsconfig.root.json",
+  "compilerOptions": {
+    "strict": false,
+    "lib": [
+      "scripthost",
+      "es2021",
+    ],
+    "rootDir": ".",
+    "outDir": "dist",
+    "typeRoots": [
+      "./typings/",
+      "./node_modules/@types"
+    ]
+  },
+  "references": [
+    {
+      "path": "../../../common"
+    },
+    {
+      "path": "../../../libraries/common"
+    },
+    {
+      "path": "../../../libraries/geometry-csharp"
+    },
+    {
+      "path": "../../../libraries/math"
+    },
+  ],
+  "include": [
+    "ui",
+    "server",
+    "project.config.ts",
+    "**/config.json",
+    "**/gpsRaw/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "scripts",
+    "webpack",
+    "jest",
+    "coverage"
+  ]
+}
