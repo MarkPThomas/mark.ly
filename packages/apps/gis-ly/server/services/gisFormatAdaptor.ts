@@ -39,7 +39,7 @@ export interface IGisFormatAdaptor {
 export class GisFormatAdaptor implements IGisFormatAdaptor {
   private constructor() { }
 
-  toGeoJsonByType(text: string, type: 'kml' | 'gpx' | string) {
+  toGeoJsonByType(text: string, type: 'kml' | 'gpx' | string): GeoJSON {
     switch (type) {
       case 'kml':
         return this.kmlToGeoJson(text);
@@ -71,9 +71,9 @@ export class GisFormatAdaptor implements IGisFormatAdaptor {
 
 
   // === KML File Format
-  kmlToGeoJson(kml: string) {
+  kmlToGeoJson(kml: string): GeoJSON {
     const xmlDom = parseXML(kml);
-    const converted = fromKml(xmlDom);
+    const converted = fromKml(xmlDom) as GeoJSON;
     prepareGeoJson(converted);
 
     return converted;
@@ -107,7 +107,7 @@ export const gpxToGeoJson = (gpx: string) => {
 
 export const kmlToGeoJson = (kml: string) => {
   const xmlDom = parseXML(kml);
-  const converted = fromKml(xmlDom);
+  const converted = fromKml(xmlDom) as GeoJSON;
   prepareGeoJson(converted);
 
   return converted;
