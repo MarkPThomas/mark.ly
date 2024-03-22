@@ -12,7 +12,6 @@ This app deals with GIS (Geographic Information System) oriented tasks using Lea
 - **Tracks**
     - Elevation-based functionality
     - Improved speed
-    - Improved controls
     - More automation by activity
     - Custom & CRUD-able user settings for units, activity, etc.
 - **Routes**
@@ -33,7 +32,6 @@ See the [Project Wiki](https://markpthomas.github.io/wiki/GIS.ly_19333121.html) 
 
 <!-- ## Team Members
 - [Mark Thomas](https://github.com/MarkPThomas) - [Engineering Journal](https://gist.github.com/MarkPThomas/7ce6b7a2a48820ad1995afc5ee6ba506) -->
-
 
 # Demos
 Below are some brief descriptions of the various app components, with animations showing their dynamic behavior.
@@ -76,6 +74,16 @@ The responsive flow of the layout design and consideration for different screen 
 <img src="https://github.com/MarkPThomas/mark.ly/assets/6684303/b2cc28df-e25b-46af-b186-bdb4fe7fb881"/> 
 </p>
 
+## Internal Dependencies
+The following libraries in the `MarkPThomas` namespace are used in this project. Each one has its own documentation and independently usable NPM package.
+- [GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/geojson)
+- [GIS](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/gis)
+- [Units](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/units)
+- [Data-Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/data-structures)
+- [History](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/history)
+- [Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/math) (In the process of being ported from C#)
+- [Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/geometry)
+- [Geometry-CSharp](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/geometry-csharp) (In the process of being ported from C#. Will ulimately be merged with 'Geometry' library)
 
 # CI/CD
 <!-- ## Continuous Integration
