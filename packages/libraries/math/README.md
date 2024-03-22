@@ -1,6 +1,8 @@
 # Math
 Contains methods & objects for mathematical operations, such as vector math, point/curve intersections, coordinate conversions, 2D interpolations, cube root derivations, parametric equations, and more!
 
+![image](https://github.com/MarkPThomas/mark.ly/assets/6684303/8fc74be5-a158-406b-8a9e-9d7af0def825)
+
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/Math_52756526.html) for topics like:
 - Complete product description
