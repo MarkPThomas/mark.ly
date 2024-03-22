@@ -1,5 +1,7 @@
 # GeoJSON
 GeoJSON is a wrapper library that makes it easy to store, access, manipulate, and update GeoJSON objects as immutable entities. It also has convenience features, such as tolerance limits & validations for Geometries.
+![image](https://github.com/MarkPThomas/mark.ly/assets/6684303/326b31f4-67ed-41c8-b895-97d80aa2e482)
+
 
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/GeoJSON_52559930.html) for topics like:
