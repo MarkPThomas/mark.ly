@@ -1,6 +1,8 @@
 # Data Structures
 JavaScript lacks many useful data structures, such as Linked Lists, Heaps, and LRUs. This library implements such structures, including making them easily extendable for those that want further customization.
 
+![image](https://github.com/MarkPThomas/mark.ly/assets/6684303/acc57cd9-a6b8-4471-ba3f-1f1cfe16032b)
+
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/Data-Structures_52658190.html) for topics like:
 - Complete product description
