@@ -1,5 +1,7 @@
 # Geometry
 Need more out of a shapes library than basic lines, curves, & bounding box collisions for video games? This library allows deep and complex modeling of polylines, polygons, and more, with an ability to get detailed shape properties and segment information, such as normal vectors.
+![image](https://github.com/MarkPThomas/mark.ly/assets/6684303/af6da268-c994-476f-83f2-ec77dc810d08)
+
 
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/Geometry_52723714.html) for topics like:
@@ -8,6 +10,10 @@ See the [Project Wiki](https://markpthomas.github.io/wiki/Geometry_52723714.html
 - How-to articles
 - API documentation
 - Algorithms, diagrams, and other development documentation
+
+## Internal Dependencies
+The following libraries in the `MarkPThomas` namespace are used in this project. Each one has its own documentation and independently usable NPM package.
+- [Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/math) (In the process of being ported from C#)
 
 ## Testing
 There is one type of test run (unit), which is run in two different environments (default, and dev). Dev environments run tests from within a running container.
