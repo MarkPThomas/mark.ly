@@ -1,5 +1,10 @@
 # Units
-...
+Conveniently converts between different units. Beginning with unit primitives, it builds on those to convert between more complex units, such as speed, stress, etc. The library is also set up for users to extend it in order to add support for units conversions not yet added.
+
+The library also handles formatting with unit conversions, such as displaying Latitude/Longitude coordinates, recorded as decimal degrees, as degrees/minutes/seconds, e.g. `77.65367°` = `77°39'13.2''W`
+
+![image](https://github.com/MarkPThomas/mark.ly/assets/6684303/2a407114-5214-4330-bdad-1748cbc27b03)
+
 
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/Data-Structures_52658190.html) for topics like:
