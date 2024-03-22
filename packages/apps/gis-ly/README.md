@@ -4,7 +4,7 @@ Do you have unwanted TrackPoints in your GPS recording? Did you lose satellite r
 
 <img width="1409" alt="Screen Shot 2024-03-21 at 10 45 07 AM" src="https://github.com/MarkPThomas/mark.ly/assets/6684303/c9b0e834-2453-44d9-b794-55d94f46a8dc">
 
-This app deals with GIS (Geographic Information System) oriented tasks using Leaflet & Leaflet-React as a core element of the GUI.
+This app deals with GIS (Geographic Information System) oriented tasks using [Leaflet](https://leafletjs.com/) & [React Leaflet](https://react-leaflet.js.org/) as a core element of the GUI.
 
 <img src="https://github.com/MarkPThomas/mark.ly/assets/6684303/02bfe7e5-7481-4988-8412-4912df919c9b" alt="BannerDemo-320px" width="320"/>
 
