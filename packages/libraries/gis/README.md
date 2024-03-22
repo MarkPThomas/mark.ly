@@ -1,5 +1,7 @@
 # GIS
 GIS is a one-stop shop for GIS work, such as generating layers for Leaflet, CRUD and auto-cleaning features for routes & tracks. It is made to be extensible, so you can derive your own custom objects and methods of manipulating & cleaning them.
+![image](https://github.com/MarkPThomas/mark.ly/assets/6684303/47746807-6bca-4737-a9f8-5d29fa615929)
+
 
 ## Documentation
 See the [Project Wiki](https://markpthomas.github.io/wiki/GIS_52756784.html) for topics like:
@@ -8,6 +10,16 @@ See the [Project Wiki](https://markpthomas.github.io/wiki/GIS_52756784.html) for
 - How-to articles
 - API documentation
 - Algorithms, diagrams, and other development documentation
+
+## Internal Dependencies
+The following libraries in the `MarkPThomas` namespace are used in this project. Each one has its own documentation and independently usable NPM package.
+- [GeoJSON](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/geojson)
+- [Units](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/units)
+- [Data-Structures](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/data-structures)
+- [History](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/history)
+- [Math](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/math) (In the process of being ported from C#)
+- [Geometry](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/geometry)
+- [Geometry-CSharp](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries/geometry-csharp) (In the process of being ported from C#. Will ulimately be merged with 'Geometry' library)
 
 ## Testing
 There is one type of test run (unit), which is run in two different environments (default, and dev). Dev environments run tests from within a running container.
