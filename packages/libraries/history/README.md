@@ -1,4 +1,5 @@
 # History
+The history library contains data structures with which one can undo or redo certain actions in a program.
 ![History_Evolution_3b](https://github.com/MarkPThomas/mark.ly/assets/6684303/6cb707fb-5c77-4cd8-91f0-6efdccfd4677)
 
 ## Documentation
