@@ -7,7 +7,7 @@ See my [Wiki](https://markpthomas.github.io/wiki/Apps_819631.html) for more info
 
 # GIS.ly
 🎉🎉🎉 This is currently my most mature project within this repo 🎉🎉🎉 \
-[See it here](https://github.com/MarkPThomas/mark.ly/tree/main/packages/apps/GIS-ly#gisly).
+[See it here](https://github.com/MarkPThomas/mark.ly/tree/main/packages/apps/gis-ly#gisly).
 
 # Projects
 The following is a list of active projects in this repo.
@@ -15,7 +15,7 @@ The following is a list of active projects in this repo.
 ## [Apps](https://github.com/MarkPThomas/mark.ly/tree/main/packages/apps)
 These are under active development. The apps projects are the front-end development, possibly combined with [services](https://github.com/MarkPThomas/mark.ly/tree/main/packages/libraries) & [libraries](https://github.com/MarkPThomas/mark.ly/tree/main/packages/services) packages from this repo. Testing here tends to be front-end, integration testing and end-to-end testing.
 
-### [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/apps/GIS-ly#gisly)
+### [GIS.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/apps/gis-ly#gisly)
 App for GIS-oriented work, such as Track cleaning, route planning.
 
 ### [Weather.ly](https://github.com/MarkPThomas/mark.ly/tree/main/packages/apps/weather-ly#weatherly)
