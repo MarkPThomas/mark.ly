@@ -5,14 +5,14 @@ import { Transformations } from "../../../Transformations";
 import { CircularCurve } from "../../CircularCurve";
 import { IntersectingCurveException } from "../../IntersectingCurveException";
 import { OverlappingCurvesException } from "../../OverlappingCurvesException";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Class representing the intersection between two circular curves.
- * @extends {IntersectionAbstract<CircularCurve, CircularCurve>}
+ * @extends {CurveIntersection<CircularCurve, CircularCurve>}
  */
-export class IntersectionCircularCircular extends IntersectionAbstract<CircularCurve, CircularCurve> {
+export class IntersectionCircularCircular extends CurveIntersection<CircularCurve, CircularCurve> {
   /**
    * Transformations object for local vs. global coordinates.
    * @type {Transformations}

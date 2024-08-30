@@ -1,3 +1,4 @@
+import { ICloneable } from '@markpthomas/common-libraries';
 import { BoundingBox } from '@markpthomas/geojson';
 import {
   Vertex,

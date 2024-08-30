@@ -2,13 +2,13 @@ import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { CircularCurve } from "../../CircularCurve";
 import { CubicCurve } from "../../CubicCurve";
 import { LinearCurve } from "../../LinearCurve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 /**
  * Represents the intersection of a linear curve and a cubic curve.
- * @extends {IntersectionAbstract<LinearCurve, CubicCurve>}
+ * @extends {CurveIntersection<LinearCurve, CubicCurve>}
  */
-export class IntersectionLinearCubic extends IntersectionAbstract<LinearCurve, CubicCurve> {
+export class IntersectionLinearCubic extends CurveIntersection<LinearCurve, CubicCurve> {
   /**
    * Gets the linear curve.
    * @type {LinearCurve}

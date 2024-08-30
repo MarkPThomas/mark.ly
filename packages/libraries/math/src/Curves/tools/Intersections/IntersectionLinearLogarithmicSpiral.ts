@@ -1,14 +1,14 @@
 import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { LinearCurve } from "../../LinearCurve";
 import { LogarithmicSpiralCurve } from "../../LogarithmicSpiralCurve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Represents the intersection of a linear curve and a logarithmic spiral curve.
- * @extends {IntersectionAbstract<LinearCurve, LogarithmicSpiralCurve>}
+ * @extends {CurveIntersection<LinearCurve, LogarithmicSpiralCurve>}
  */
-export class IntersectionLinearLogarithmicSpiral extends IntersectionAbstract<LinearCurve, LogarithmicSpiralCurve> {
+export class IntersectionLinearLogarithmicSpiral extends CurveIntersection<LinearCurve, LogarithmicSpiralCurve> {
   /**
    * Gets the linear curve.
    * @type {LinearCurve}

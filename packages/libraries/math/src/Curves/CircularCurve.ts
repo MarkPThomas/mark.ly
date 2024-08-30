@@ -90,12 +90,12 @@ export class CircularCurve extends ConicSectionEllipticCurve {
  * @param {CartesianCoordinate} center
  * @param {number} [tolerance=Curve.DEFAULT_TOLERANCE]
  */
-  constructor(
+  protected constructor(
     radiusOrVertex: number | CartesianCoordinate,
     center: CartesianCoordinate,
     tolerance: number = Curve.DEFAULT_TOLERANCE
   ) {
-    const props = CircularCurve.formArguments(radiusOrVertex, center);
+    const props = CircularCurve.fromArguments(radiusOrVertex, center);
     super(props, tolerance);
   }
 
@@ -109,7 +109,7 @@ export class CircularCurve extends ConicSectionEllipticCurve {
  * @param {CartesianCoordinate} center
  * @returns {FocusProps}
  */
-  protected static formArguments(
+  protected static fromArguments(
     radiusOrVertex: number | CartesianCoordinate,
     center: CartesianCoordinate
   ): FocusProps {

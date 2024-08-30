@@ -1,6 +1,7 @@
 import {
   VertexNode,
-  Polyline
+  Polyline,
+  IPolyline
 } from '@markpthomas/geometry/polyline';
 
 import { ICloneable, IEquatable } from '@markpthomas/common-libraries/interfaces';
@@ -333,8 +334,8 @@ export interface IPolylineTrackMethods
  */
 export interface IPolylineTrack
   extends
-  IPolylineTrackMethods,
-  ICloneable<PolylineTrack> {
+  IPolyline<TrackPoint, TrackSegment>,
+  IPolylineTrackMethods {
 
 }
 

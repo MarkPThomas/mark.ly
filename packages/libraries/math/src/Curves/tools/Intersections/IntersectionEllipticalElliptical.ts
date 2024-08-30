@@ -1,13 +1,13 @@
 import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { EllipticalCurve } from "../../EllipticalCurve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Represents the intersection of two elliptical curves.
- * @extends {IntersectionAbstract<EllipticalCurve, EllipticalCurve>}
+ * @extends {CurveIntersection<EllipticalCurve, EllipticalCurve>}
  */
-export class IntersectionEllipticalElliptical extends IntersectionAbstract<EllipticalCurve, EllipticalCurve> {
+export class IntersectionEllipticalElliptical extends CurveIntersection<EllipticalCurve, EllipticalCurve> {
   /**
    * Initializes a new instance of the IntersectionEllipticalElliptical class.
    * @param {EllipticalCurve} curve1 The first curve.

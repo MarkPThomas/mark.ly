@@ -77,7 +77,7 @@ export class EllipticalCurve extends ConicSectionEllipticCurve {
     a?: number,
     tolerance: number = Curve.DEFAULT_TOLERANCE
   ) {
-    const props = EllipticalCurve.formArguments(a, b, center, vertexMajorOrRotation);
+    const props = EllipticalCurve.fromArguments(a, b, center, vertexMajorOrRotation);
     super(props, tolerance);
   }
 
@@ -93,7 +93,7 @@ export class EllipticalCurve extends ConicSectionEllipticCurve {
  * @param {(CartesianCoordinate | Angle)} vertexMajorOrRotation
  * @returns {RotationProps}
  */
-  protected static formArguments(
+  protected static fromArguments(
     a: number | undefined,
     b: number,
     center: CartesianCoordinate,

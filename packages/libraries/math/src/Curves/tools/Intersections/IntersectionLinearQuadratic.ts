@@ -1,14 +1,14 @@
 import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { LinearCurve } from "../../LinearCurve";
 import { QuadraticCurve } from "../../QuadraticCurve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Represents the intersection of a linear curve and a quadratic curve.
- * @extends {IntersectionAbstract<LinearCurve, QuadraticCurve>}
+ * @extends {CurveIntersection<LinearCurve, QuadraticCurve>}
  */
-export class IntersectionLinearQuadratic extends IntersectionAbstract<LinearCurve, QuadraticCurve> {
+export class IntersectionLinearQuadratic extends CurveIntersection<LinearCurve, QuadraticCurve> {
   /**
    * Gets the linear curve.
    * @type {LinearCurve}

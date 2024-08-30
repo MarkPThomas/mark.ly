@@ -5,14 +5,14 @@ import { Numbers } from "../../../Numbers";
 import { Transformations } from "../../../Transformations";
 import { CircularCurve } from "../../CircularCurve";
 import { LinearCurve } from "../../LinearCurve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Class representing the intersection between a linear curve and a circular curve.
- * @extends {IntersectionAbstract<LinearCurve, CircularCurve>}
+ * @extends {CurveIntersection<LinearCurve, CircularCurve>}
  */
-export class IntersectionLinearCircular extends IntersectionAbstract<LinearCurve, CircularCurve> {
+export class IntersectionLinearCircular extends CurveIntersection<LinearCurve, CircularCurve> {
   /**
    * Gets the linear curve.
    * @type {LinearCurve}

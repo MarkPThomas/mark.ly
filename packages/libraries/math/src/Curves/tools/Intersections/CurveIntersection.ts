@@ -10,7 +10,7 @@ import { ICurveIntersection } from "./ICurveIntersection";
  * @abstract
  * @implements {ICurveIntersection<T1, T2>}
  */
-export abstract class IntersectionAbstract<T1 extends Curve, T2 extends Curve> implements ICurveIntersection<T1, T2> {
+export abstract class CurveIntersection<T1 extends Curve, T2 extends Curve> implements ICurveIntersection<T1, T2> {
   /**
    * Gets the first curve.
    * @type {T1}

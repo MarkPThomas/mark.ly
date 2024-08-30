@@ -1,14 +1,14 @@
 import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { EllipticalCurve } from "../../EllipticalCurve";
 import { LinearCurve } from "../../LinearCurve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Represents the intersection of a linear curve and an elliptical curve.
- * @extends {IntersectionAbstract<LinearCurve, EllipticalCurve>}
+ * @extends {CurveIntersection<LinearCurve, EllipticalCurve>}
  */
-export class IntersectionLinearElliptical extends IntersectionAbstract<LinearCurve, EllipticalCurve> {
+export class IntersectionLinearElliptical extends CurveIntersection<LinearCurve, EllipticalCurve> {
   /**
    * Gets the linear curve.
    * @type {LinearCurve}

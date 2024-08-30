@@ -1,13 +1,13 @@
 import { CartesianCoordinate } from "../../../coordinates/CartesianCoordinate";
 import { Curve } from "../../Curve";
-import { IntersectionAbstract } from "./IntersectionAbstract";
+import { CurveIntersection } from "./CurveIntersection";
 
 
 /**
  * Class representing the intersection between two curves.
- * @extends {IntersectionAbstract<Curve, Curve>}
+ * @extends {CurveIntersection<Curve, Curve>}
  */
-export class IntersectionCurveCurve extends IntersectionAbstract<Curve, Curve> {
+export class IntersectionCurveCurve extends CurveIntersection<Curve, Curve> {
   /**
    * Creates an instance of IntersectionCurveCurve.
    * @param {Curve} curve1 The first curve.

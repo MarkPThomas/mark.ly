@@ -98,7 +98,7 @@ export class HyperbolicCurve extends ConicSectionCurve {
     b?: number,
     tolerance: number = ConicSectionCurve.DEFAULT_TOLERANCE
   ) {
-    const props = HyperbolicCurve.formArguments(a, vertexMajor, focus);
+    const props = HyperbolicCurve.fromArguments(a, vertexMajor, focus);
     super(props, tolerance);
 
     if (rotation && center && b) {
@@ -121,7 +121,7 @@ export class HyperbolicCurve extends ConicSectionCurve {
  * @param {?number} [b]
  * @returns {(FocusProps | RotationProps)}
  */
-  protected static formArguments(
+  protected static fromArguments(
     a: number,
     vertexMajor?: CartesianCoordinate,
     focus?: CartesianCoordinate,

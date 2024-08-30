@@ -160,7 +160,7 @@ export class LinearCurve extends Curve implements
  * @param {number} yIntercept
  * @returns {LinearCurve}
  */
-  public static CurveByYIntercept(slope: number, yIntercept: number): LinearCurve {
+  public static FromYIntercept(slope: number, yIntercept: number): LinearCurve {
     return new LinearCurve(
       new CartesianCoordinate(0, yIntercept),
       new CartesianCoordinate(1, yIntercept + slope)
@@ -183,7 +183,7 @@ export class LinearCurve extends Curve implements
  * @param {number} xIntercept
  * @returns {LinearCurve}
  */
-  public static CurveByXIntercept(slope: number, xIntercept: number): LinearCurve {
+  public static FromXIntercept(slope: number, xIntercept: number): LinearCurve {
     return new LinearCurve(
       new CartesianCoordinate(xIntercept, 0),
       new CartesianCoordinate(xIntercept + 1, slope)
@@ -1316,19 +1316,19 @@ export class LinearCurve extends Curve implements
     // check for vertical lines and handle those cases here
     // in sub-functions, throw exceptions
     if (LinearCurve.SlopeVertical(slope1) && !LinearCurve.SlopeVertical(slope2)) {
-      const curve2 = LinearCurve.CurveByYIntercept(slope2, yIntercept2);
+      const curve2 = LinearCurve.FromYIntercept(slope2, yIntercept2);
       return new CartesianCoordinate(xIntercept1, curve2.YatX(xIntercept1));
     }
     if (!LinearCurve.SlopeVertical(slope1) && LinearCurve.SlopeVertical(slope2)) {
-      const curve2 = LinearCurve.CurveByYIntercept(slope1, yIntercept1);
+      const curve2 = LinearCurve.FromYIntercept(slope1, yIntercept1);
       return new CartesianCoordinate(xIntercept2, curve2.YatX(xIntercept2));
     }
     if (LinearCurve.SlopeHorizontal(slope1) && !LinearCurve.SlopeHorizontal(slope2)) {
-      const curve2 = LinearCurve.CurveByYIntercept(slope2, yIntercept2);
+      const curve2 = LinearCurve.FromYIntercept(slope2, yIntercept2);
       return new CartesianCoordinate(curve2.XatY(yIntercept1), yIntercept1);
     }
     if (!LinearCurve.SlopeHorizontal(slope1) && LinearCurve.SlopeHorizontal(slope2)) {
-      const curve2 = LinearCurve.CurveByYIntercept(slope1, yIntercept1);
+      const curve2 = LinearCurve.FromYIntercept(slope1, yIntercept1);
       return new CartesianCoordinate(curve2.XatY(yIntercept2), yIntercept2);
     }
 
